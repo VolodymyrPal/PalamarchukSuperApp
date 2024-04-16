@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainScreenFragment">
+
+    <fragment
+        android:id="@+id/mainScreenFragment"
+        tools:layout="@layout/main_screen_fragment"
+        android:name="com.hfad.palamarchuksuperapp.MainScreenFragment"
+        android:label="MainScreenFragment" >
+        <action
+            android:id="@+id/to_skills_fragment"
+            app:destination="@id/skillsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/skillsFragment"
+        android:name="com.hfad.palamarchuksuperapp.SkillsFragment"
+        android:label="fragment_skills"
+        tools:layout="@layout/fragment_skills" />
+</navigation>

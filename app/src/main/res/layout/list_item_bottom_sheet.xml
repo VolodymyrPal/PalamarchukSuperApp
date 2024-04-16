@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:isScrollContainer="false">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true"
+        android:paddingBottom="100dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:context=".BottomSheetFragment">
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_gravity="center_horizontal"
+            app:dividerThickness="3dp"
+            />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/name_skill_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:hint="Skill name"
+                app:placeholderText="Jetpack Compose"
+                app:placeholderTextColor="@color/my_gray"
+                android:textColorHint="@color/md_theme_scrim"
+                app:boxStrokeColor="@color/md_theme_primary"
+                app:hintTextColor="@color/md_theme_scrim"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/skill_name_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:textColorHint="@color/md_theme_scrim"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textField2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:hint="Description"
+                app:placeholderText="State, composition, theme, etc."
+                app:placeholderTextColor="@color/my_gray"
+                android:textColorHint="@color/md_theme_scrim"
+                app:boxStrokeColor="@color/md_theme_primary"
+                app:hintTextColor="@color/md_theme_scrim"
+                app:layout_constraintTop_toBottomOf="@+id/name_skill_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/skill_description_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:gravity="start"
+                    android:textColorHint="@color/md_theme_scrim"
+                     />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/date_skill_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:hint="Date"
+                android:clickable="true"
+                android:focusable="true"
+
+                app:placeholderText="12.12.2024"
+                app:placeholderTextColor="@color/my_gray"
+                android:textColorHint="@color/md_theme_scrim"
+                app:boxStrokeColor="@color/md_theme_primary"
+                app:hintTextColor="@color/md_theme_scrim"
+                app:layout_constraintTop_toBottomOf="@+id/textField2"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/skill_date_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:clickable="false"
+                    android:gravity="start"
+                    android:textColorHint="@color/md_theme_scrim"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/materialButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                android:text="save"
+                app:cornerRadius="12dp"
+                app:backgroundTint="@color/md_theme_onPrimaryContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/date_skill_layout" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</androidx.core.widget.NestedScrollView>
