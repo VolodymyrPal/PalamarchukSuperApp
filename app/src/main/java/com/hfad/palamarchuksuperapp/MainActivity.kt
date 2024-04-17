@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             vibratorManager.defaultVibrator
         } else {
             @Suppress("DEPRECATION")
-            getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+            getSystemService(VIBRATOR_SERVICE) as Vibrator
         }
 
         @Suppress("DEPRECATION")
