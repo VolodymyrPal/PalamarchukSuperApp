@@ -5,14 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.compose.animation.core.keyframes
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hfad.palamarchuksuperapp.data.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
-import javax.inject.Inject
 
 class BottomSheetFragment (private val skill: Skill = Skill()) : BottomSheetDialogFragment() {
 
@@ -26,7 +22,7 @@ class BottomSheetFragment (private val skill: Skill = Skill()) : BottomSheetDial
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = ListItemBottomSheetBinding.inflate(inflater, container, false)
         if (skill.id != null) {
             binding.apply {

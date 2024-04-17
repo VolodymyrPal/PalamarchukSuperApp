@@ -4,35 +4,21 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.FileObserver
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.provider.MediaStore
-import android.text.Layout
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.FileProvider
 import androidx.core.net.toUri
-import androidx.fragment.app.findFragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.hfad.palamarchuksuperapp.databinding.MainScreenFragmentBinding
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.File
 
 
@@ -47,7 +33,7 @@ class MainScreenFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         Log.d("MainScreenFragment", "STARTED")
         _binding = MainScreenFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -62,6 +48,7 @@ class MainScreenFragment : Fragment() {
             requireActivity().getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
         }
 
+        @Suppress("DEPRECATION")
         fun onClickVibro() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibe.vibrate(VibrationEffect.createOneShot(2, 60))

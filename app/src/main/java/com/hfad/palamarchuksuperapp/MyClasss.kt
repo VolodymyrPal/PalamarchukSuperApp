@@ -1,13 +1,8 @@
 package com.hfad.palamarchuksuperapp
 
-import android.provider.ContactsContract.Data
-import com.hfad.palamarchuksuperapp.data.Skill
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class Automobile @Inject constructor() {

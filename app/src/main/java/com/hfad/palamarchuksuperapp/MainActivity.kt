@@ -12,17 +12,12 @@ import android.os.VibratorManager
 import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.lang.System.out
 
 
 class MainActivity : AppCompatActivity() {
@@ -62,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
         }
 
+        @Suppress("DEPRECATION")
         fun onClickVibro() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibe.vibrate(VibrationEffect.createOneShot(2, 60))
@@ -115,6 +111,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun compressImageToWebP(image: File): File? {
         return try {
             val bitmap = BitmapFactory.decodeFile(image.path)
