@@ -1,8 +1,6 @@
 package com.hfad.palamarchuksuperapp
 
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -11,8 +9,6 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.hfad.palamarchuksuperapp.data.ScreenRoute
 import com.hfad.palamarchuksuperapp.data.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import java.text.SimpleDateFormat
@@ -72,7 +68,7 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
                             ).show()
                         }
                         R.id.menu_option_delete -> {
-                            myViewModel.deleteItem(myViewModel.dataListFlow.value.indexOf(skill))
+                            myViewModel.deleteItem(myViewModel.date.value.indexOf(skill))
                            // bindingAdapter?.notifyItemRemoved(bindingAdapterPosition)
                            // myViewModel.dataList.removeAt(myViewModel.dataList.indexOf(skill))
                             Toast.makeText(
@@ -83,7 +79,7 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
                         }
 
                         R.id.menu_item_moveUp -> {
-                            myViewModel.updateDataListFlow(skill)
+                            myViewModel.moveSkillToFirstPosition(skill)
 
                          //   myViewModel.dataList.remove(skill)
                          //   myViewModel.dataList.add(0, skill)

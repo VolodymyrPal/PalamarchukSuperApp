@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.Skill
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.lang.reflect.Constructor
 import java.util.UUID
 import javax.inject.Inject
 
@@ -38,24 +39,24 @@ class SkillsViewModel @Inject constructor() : ViewModel() {
     private val ten = Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID())
 
 
-    private var dataList = mutableListOf(one, two, three, four, five, six, seven, eight, nine, ten)
+    private val dataListNewFlow = MutableStateFlow<MutableList<Skill>>(mutableListOf(one, two, three, four, five, six, seven, eight, nine, ten))
+    val date: StateFlow<List<Skill>> = this.dataListNewFlow.asStateFlow()
 
-    val dataListFlow: MutableStateFlow<List<Skill>> = MutableStateFlow(dataList)
-
-    fun updateDataListFlow(skill: Skill) {
+    fun moveSkillToFirstPosition (skill: Skill) {
         viewModelScope.launch {
-            val newList = dataListFlow.value.toMutableList()
-            newList.remove(skill)
-            newList.add(0, skill)
-            dataListFlow.value = newList
+            val newListNew = date.value.toMutableList()
+            newListNew.remove(skill)
+            newListNew.add(0, skill)
+            dataListNewFlow.value = newListNew
+
         }
     }
 
     fun deleteItem(index: Int) {
         viewModelScope.launch {
-            val newList = dataListFlow.value.toMutableList()
-            newList.removeAt(index)
-            dataListFlow.value = newList
+            val newListNew = date.value.toMutableList()
+            newListNew.removeAt(index)
+            dataListNewFlow.value = newListNew
         }
     }
 }

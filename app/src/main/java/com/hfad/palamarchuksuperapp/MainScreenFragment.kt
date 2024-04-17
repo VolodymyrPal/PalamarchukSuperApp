@@ -74,7 +74,7 @@ class MainScreenFragment : Fragment() {
         if (!filesDir.exists()) {
             filesDir.mkdirs()
         }
-        mainPhoto = File(filesDir, "MainImage.jpg")
+        mainPhoto = File(filesDir, "MainImage")
 
         updatePhoto()
 

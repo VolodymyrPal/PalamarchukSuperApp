@@ -49,4 +49,9 @@ class BottomSheetFragment (private val skill: Skill = Skill()) : BottomSheetDial
         val view = binding.root
         return view
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

@@ -1,8 +1,13 @@
 package com.hfad.palamarchuksuperapp
 
+import android.provider.ContactsContract.Data
+import com.hfad.palamarchuksuperapp.data.Skill
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class Automobile @Inject constructor() {
@@ -18,7 +23,7 @@ class NewClass {
     }
 }
 
-@Component (modules = [AppModule :: class])
+@Component (modules = [AppModule :: class, OtherModule::class])
 interface AppComponent {
 
     fun inject(newClass: NewClass)
@@ -26,16 +31,20 @@ interface AppComponent {
 
     val viewModel: SkillsViewModel
 
-    fun getVooModel(): SkillsViewModel
-
-  //  fun inject(activity: Activity)
 }
 
 @Module
 object AppModule {
-
     @Provides
     fun getVooModel () : SkillsViewModel {
         return SkillsViewModel()
     }
 }
+@Module
+class OtherModule {
+    @Provides
+    fun getAuto (): Automobile {
+        return Automobile()
+    }
+}
+
