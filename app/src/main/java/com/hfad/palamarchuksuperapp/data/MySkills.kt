@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.data
 
 import java.util.Date
 import java.util.UUID
-import javax.inject.Inject
 
 data class Skill (
     val id: UUID? = null,
@@ -11,3 +10,9 @@ data class Skill (
     val date: Date = Date(),
     val chosen: Boolean = false,
     )
+
+interface SkillsDataSource {
+    fun getSkill(): List<Skill>
+    fun deleteSkill(position: Int)
+    fun moveToFirstPosition (skill: Skill)
+}

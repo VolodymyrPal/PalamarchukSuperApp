@@ -55,8 +55,6 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
                 popupMenu.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
 
-
-
                         R.id.menu_option_edit -> {
                                 val bottomSheetFragment = BottomSheetFragment(skill)
                                 bottomSheetFragment.show(parentFragmentManager, "BSDialogFragment")
@@ -68,7 +66,7 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
                             ).show()
                         }
                         R.id.menu_option_delete -> {
-                            myViewModel.deleteItem(myViewModel.date.value.indexOf(skill))
+                            myViewModel.deleteSkill(myViewModel.date.value.indexOf(skill))
                            // bindingAdapter?.notifyItemRemoved(bindingAdapterPosition)
                            // myViewModel.dataList.removeAt(myViewModel.dataList.indexOf(skill))
                             Toast.makeText(
@@ -79,7 +77,7 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
                         }
 
                         R.id.menu_item_moveUp -> {
-                            myViewModel.moveSkillToFirstPosition(skill)
+                            myViewModel.moveToFirstPosition(skill)
 
                          //   myViewModel.dataList.remove(skill)
                          //   myViewModel.dataList.add(0, skill)
