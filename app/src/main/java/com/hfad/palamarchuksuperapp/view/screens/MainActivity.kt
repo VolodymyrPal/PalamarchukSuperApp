@@ -15,11 +15,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.navigation.Navigation
-import com.hfad.palamarchuksuperapp.DaggerLoginComponent
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent2
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
 import com.hfad.palamarchuksuperapp.di.AppDeps
+import com.hfad.palamarchuksuperapp.di.DaggerLoginComponent
 import com.hfad.palamarchuksuperapp.di.LoginViewModel
 import java.io.ByteArrayOutputStream
 import java.io.File
