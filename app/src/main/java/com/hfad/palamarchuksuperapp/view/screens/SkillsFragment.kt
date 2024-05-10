@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +28,6 @@ class SkillsFragment: Fragment() {
         _binding = FragmentSkillsBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        requireContext().appComponent.inject(this)
        // viewModel = DaggerAppComponent.create().getVooModel()
 
 

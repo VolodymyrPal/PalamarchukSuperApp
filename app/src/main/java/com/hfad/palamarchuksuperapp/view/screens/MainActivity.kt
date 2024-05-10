@@ -16,20 +16,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.navigation.Navigation
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.appComponent2
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
-import com.hfad.palamarchuksuperapp.di.AppDeps
-import com.hfad.palamarchuksuperapp.di.DaggerLoginComponent
-import com.hfad.palamarchuksuperapp.di.LoginViewModel
 import java.io.ByteArrayOutputStream
 import java.io.File
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
-
-    private inner class AppDependenciesImpl : AppDeps {
-        override val context: Context = applicationContext
-    }
 
     lateinit var binding: ActivityMainBinding
 
@@ -53,23 +44,11 @@ class MainActivity : AppCompatActivity() {
 //    @Inject
 //    lateinit var shitFactory: Shitt.Factory
 
-    @Inject
-    lateinit var loginViewModel: LoginViewModel
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        val appComponent = applicationContext.appComponent2
-        val myComponent = DaggerLoginComponent.factory().create(appComponent)
-        myComponent.inject(this)
-
-        Log.d("View model must be injected: ", "${loginViewModel}")
-
 
 //        view.context.appComponent.inject(this)
 //        val shit = shitFactory.create(15)
