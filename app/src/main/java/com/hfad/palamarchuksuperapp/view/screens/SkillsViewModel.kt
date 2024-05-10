@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp
+package com.hfad.palamarchuksuperapp.view.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,14 +27,14 @@ class SkillsViewModel @Inject constructor() : ViewModel(), SkillsDataSource {
         Skill(name = "Async", description = "One, Two, Three", id = UUID.randomUUID())
     private val six = Skill(
         name = "Dependency injections",
-        description = "Injections in code, injections in constructor, injections via developer class. " +
-                "\nPlus libraries: Dagger 2, Hilt, ---Kodein, ---Koin",
+        description = "Multi-module architecture, Component Dependencies, Multibindings, Components, Scope, Injections" +
+                "\n Libraries: Dagger 2, Hilt, ---Kodein, ---Koin",
         id = UUID.randomUUID()
     )
     private val seven =
         Skill(name = "RxJava", description = "One, Two, Three", id = UUID.randomUUID())
     private val eight =
-        Skill(name = "Recycler View", description = "One, Two, Three", id = UUID.randomUUID())
+        Skill(name = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, REST API!!!, JSON!, PUSH NOTIFICATIONS!!!", description = "One, Two, Three", id = UUID.randomUUID())
     private val nine =
         Skill(name = "Recycler View", description = "One, Two, Three", id = UUID.randomUUID())
     private val ten = Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID())

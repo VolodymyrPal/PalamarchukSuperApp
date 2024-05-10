@@ -16,7 +16,7 @@
         android:name=".AppApplication"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".view.screens.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ComposeMainActivity"
+            android:name=".compose.ComposeMainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme"

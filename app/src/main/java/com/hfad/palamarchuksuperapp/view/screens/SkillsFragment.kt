@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp
+package com.hfad.palamarchuksuperapp.view.screens
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,12 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class SkillsFragment : Fragment() {
+class SkillsFragment: Fragment() {
     private var _binding: FragmentSkillsBinding? = null
     private val binding
         get() = checkNotNull(_binding) {

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="@color/md_theme_inverseOnSurface"
-    tools:context=".MainActivity">
+    tools:context=".view.screens.MainActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/day_night_button"

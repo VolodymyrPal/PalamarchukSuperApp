@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp
+package com.hfad.palamarchuksuperapp.view.screens
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.data.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import java.text.SimpleDateFormat

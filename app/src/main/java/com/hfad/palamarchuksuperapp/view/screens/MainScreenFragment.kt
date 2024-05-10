@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp
+package com.hfad.palamarchuksuperapp.view.screens
 
 import android.content.Context
 import android.content.Intent
@@ -16,6 +16,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.hfad.palamarchuksuperapp.compose.ComposeMainActivity
+import com.hfad.palamarchuksuperapp.PreferencesRepository
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.MainScreenFragmentBinding
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

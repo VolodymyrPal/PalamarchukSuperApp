@@ -1,7 +1,12 @@
-package com.hfad.palamarchuksuperapp.mainScreen
+package com.hfad.palamarchuksuperapp.compose
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,12 +15,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,14 +50,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.MainActivity
+import com.hfad.palamarchuksuperapp.view.screens.MainActivity
 import com.hfad.palamarchuksuperapp.R
 import java.io.File
+import androidx.constraintlayout.compose.ConstraintLayout
 
 @Composable
-fun MainScreen(
+fun MainScreenConstraint(
     modifier: Modifier = Modifier,
     actionForDayNight: () -> Unit = {},
+    actionSkillsButton: () -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(0.dp),
     activity: AppCompatActivity? = null,
     mainPhotoBitmap: ImageBitmap = BitmapFactory.decodeResource(
@@ -67,15 +74,39 @@ fun MainScreen(
     val context = LocalContext.current
     val mainPhoto = File(File(context.filesDir, "app_images"), "MainImage.jpg")
 
-    Surface(color = Color.Transparent, modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = modifier
-                .padding(16.dp)
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Surface(
+        color = Color.Transparent, modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = paddingValues.calculateBottomPadding())
+
+    ) {
+        ConstraintLayout {
+            val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager =
+                    LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+            }
+
+            @Suppress("DEPRECATION")
+            fun onClickVibro() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibe.vibrate(VibrationEffect.createOneShot(2, 60))
+                } else {
+                    vibe.vibrate(1)
+                }
+            }
+
+            val (topRow, userImage, skills, secondProgram, thirdProgram, fourthProgram) = createRefs()
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .constrainAs(topRow) {
+                        top.linkTo(parent.top)
+                    }
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
@@ -85,17 +116,21 @@ fun MainScreen(
                         defaultElevation = 5.dp,
                     ),
                     onClick = {
+                        onClickVibro()
                         val a = Intent(context, MainActivity::class.java)
                         activity!!.startActivity(a)
                         activity.finish()
                     }
                 ) {
-                    Text(text = "xml view")
+                    Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
                 }
 
                 FloatingActionButton(
                     modifier = modifier,
-                    onClick = { actionForDayNight() },
+                    onClick = {
+                        actionForDayNight()
+                        onClickVibro()
+                    },
                     shape = CircleShape,
                     elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
                         defaultElevation = 5.dp,
@@ -111,9 +146,10 @@ fun MainScreen(
                 }
             }
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
+                modifier = Modifier.constrainAs(userImage) {
+                    top.linkTo(parent.top, margin = 72.dp)
+                    centerHorizontallyTo(parent)
+                }
             ) {
                 Card(
                     elevation = CardDefaults.elevatedCardElevation(10.dp),
@@ -132,23 +168,61 @@ fun MainScreen(
                     )
                 }
             }
-            Spacer(modifier = modifier.size(16.dp))
-            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
-                ButtonToNav(modifier.align(Alignment.TopCenter))
-                ButtonToNav(modifier.align(Alignment.TopStart))
-                ButtonToNav(modifier.align(Alignment.TopEnd))
-                ButtonToNav(modifier.align(Alignment.BottomEnd))
-            }
+
+
+            ButtonToNavConstraint(
+                modifier = modifier.constrainAs(skills) {
+                    top.linkTo(userImage.bottom, margin = 16.dp)
+                    centerHorizontallyTo(userImage)
+                },
+                action = actionSkillsButton
+            )
+            ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
+                start.linkTo(parent.start, margin = 32.dp)
+                top.linkTo(skills.bottom)
+                bottom.linkTo(fourthProgram.top)
+            })
+            ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
+                end.linkTo(parent.end, margin = 32.dp)
+                top.linkTo(skills.bottom)
+                bottom.linkTo(fourthProgram.top)
+            })
+            ButtonToNavConstraint(modifier.constrainAs(fourthProgram) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom, margin = 16.dp)
+            })
         }
     }
 }
 
-
-@Preview
 @Composable
-fun ButtonToNav(modifier: Modifier = Modifier) {
+fun ButtonToNavConstraint(modifier: Modifier, action: () -> Unit = {}) {
+    val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val vibratorManager =
+            LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        vibratorManager.defaultVibrator
+    } else {
+        @Suppress("DEPRECATION")
+        LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+    }
+
+    @Suppress("DEPRECATION")
+    fun onClickVibro() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibe.vibrate(VibrationEffect.createOneShot(2, 60))
+        } else {
+            vibe.vibrate(1)
+        }
+    }
+
     OutlinedCard(
-        modifier = Modifier.size(100.dp),
+        onClick = {
+            onClickVibro()
+            action()
+        },
+        shape = RoundedCornerShape(20.dp),
+        modifier = modifier.size(100.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -164,7 +238,6 @@ fun ButtonToNav(modifier: Modifier = Modifier) {
             Image(
                 modifier = Modifier
                     .padding(start = 5.dp, end = 5.dp, top = 5.dp)
-                    .fillMaxWidth()
                     .weight(0.9f),
                 contentScale = ContentScale.FillBounds,
                 imageVector = ImageVector.vectorResource(id = R.drawable.skills_image),
@@ -186,6 +259,6 @@ fun ButtonToNav(modifier: Modifier = Modifier) {
 
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
-fun MainScreenPreview() {
-    MainScreen()
+fun MainScreenConstraintPreview() {
+    MainScreenConstraint()
 }

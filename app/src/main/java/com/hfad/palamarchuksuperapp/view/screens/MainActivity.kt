@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp
+package com.hfad.palamarchuksuperapp.view.screens
 
 import android.content.Context
 import android.content.Intent
@@ -15,17 +15,26 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.navigation.Navigation
+import com.hfad.palamarchuksuperapp.DaggerLoginComponent
+import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.appComponent2
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
+import com.hfad.palamarchuksuperapp.di.AppDeps
+import com.hfad.palamarchuksuperapp.di.LoginViewModel
 import java.io.ByteArrayOutputStream
 import java.io.File
-
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private inner class AppDependenciesImpl : AppDeps {
+        override val context: Context = applicationContext
+    }
+
+    lateinit var binding: ActivityMainBinding
 
     private val myFilesDir: File by lazy {
-        File (applicationContext.filesDir, "app_images").apply {
+        File(applicationContext.filesDir, "app_images").apply {
             if (!exists()) mkdirs()
         }
     }
@@ -37,12 +46,40 @@ class MainActivity : AppCompatActivity() {
         File.createTempFile("image", "temp", myFilesDir)
     }
 
+//    @Inject
+//    lateinit var newClass: NewClass
+//    @Inject
+//    lateinit var auto: Automobile
+//    @Inject
+//    lateinit var shitFactory: Shitt.Factory
+
+    @Inject
+    lateinit var loginViewModel: LoginViewModel
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        val appComponent = applicationContext.appComponent2
+        val myComponent = DaggerLoginComponent.factory().create(appComponent)
+        myComponent.inject(this)
+
+        Log.d("View model must be injected: ", "${loginViewModel}")
+
+
+//        view.context.appComponent.inject(this)
+//        val shit = shitFactory.create(15)
+//        var router = DaggeratmComponent.factory().create(AppModulion(applicationContext), AppDependenciesImpl() ).router
+//        //router = DaggeratmComponent.builder().provideCon(AppModulion(applicationContext)).build().router
+//        Log.d("router", "${router?.commandRouterStack?.first?.commands?.size}")
+//        Log.d("router", " ${router?.process("login peta")}")
+//        Log.d("router", "${router?.commandRouterStack?.first?.commands?.size}")
+
+
 
         val badge = binding.bottomNavigation.getOrCreateBadge(R.id.bnav_settings)
         badge.isVisible = true
@@ -68,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        binding.bottomNavigation.setOnItemSelectedListener {menuItem ->
+        binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
 
             when (menuItem.itemId) {
 
@@ -154,5 +191,4 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
 }

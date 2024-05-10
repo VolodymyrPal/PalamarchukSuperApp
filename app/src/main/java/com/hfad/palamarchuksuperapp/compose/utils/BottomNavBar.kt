@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.utils
+package com.hfad.palamarchuksuperapp.compose.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -50,6 +50,7 @@ fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.curr
         @Suppress("DEPRECATION")
         LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
     }
+    @Suppress("DEPRECATION")
     fun onClickVibro () {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibe.vibrate(VibrationEffect.createOneShot(2, 60))
@@ -175,5 +176,5 @@ fun MyNavBarPreviewElement () {
 @Preview (showBackground = true, showSystemUi = true)
 @Composable
 fun MyNavBarPreviewApp () {
-    Scaffold (bottomBar = {MyNavBar()}) {}
+    Scaffold (bottomBar = { MyNavBar() }) {}
 }

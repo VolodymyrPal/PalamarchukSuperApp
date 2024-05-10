@@ -13,7 +13,7 @@
         android:isScrollContainer="true"
         android:paddingBottom="100dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        tools:context=".BottomSheetFragment">
+        tools:context=".view.screens.BottomSheetFragment">
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="200dp"
