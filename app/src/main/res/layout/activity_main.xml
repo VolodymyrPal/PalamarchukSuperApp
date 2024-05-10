@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:backgroundTint="@color/md_theme_inverseOnSurface"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".view.screens.MainActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"
