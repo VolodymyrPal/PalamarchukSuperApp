@@ -47,6 +47,11 @@ androidx-databinding-runtime = { group = "androidx.databinding", name = "databin
 dagger = {group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger"}
 
+coil-compose = {group = "io.coil-kt", name = "coil-compose", version ="2.6.0"}
+coil = {group = "io.coil-kt", name = "coil", version ="2.6.0"}
+zelory-compressor = { group ="id.zelory", name = "compressor", version = "3.0.1" }
+
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

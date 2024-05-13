@@ -86,4 +86,9 @@ dependencies {
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
+
+    implementation (libs.coil)
+    implementation (libs.coil.compose)
+
+    implementation (libs.zelory.compressor)
 }

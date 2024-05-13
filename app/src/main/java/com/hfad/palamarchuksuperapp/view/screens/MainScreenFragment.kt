@@ -6,16 +6,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.os.VibratorManager
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.hfad.palamarchuksuperapp.compose.ComposeMainActivity
 import com.hfad.palamarchuksuperapp.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
@@ -46,21 +44,12 @@ class MainScreenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("MainScreenFragment", "STARTED")
+
         _binding = MainScreenFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        updatePhoto()
 
-        val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                requireActivity().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            requireActivity().getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
-        }
-
-        @Suppress("DEPRECATION")
         fun onClickVibro() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibe.vibrate(VibrationEffect.createOneShot(2, 60))
@@ -68,14 +57,6 @@ class MainScreenFragment : Fragment() {
                 vibe.vibrate(1)
             }
         }
-
-        filesDir = File(binding.root.context.filesDir, "app_images")
-        if (!filesDir.exists()) {
-            filesDir.mkdirs()
-        }
-        mainPhoto = File(filesDir, "MainImage")
-
-        updatePhoto()
 
         binding.dayNightButton.setOnClickListener {
             onClickVibro()
@@ -91,51 +72,28 @@ class MainScreenFragment : Fragment() {
             requireActivity().finish()
         }
 
-
-        binding.skillButton1.setOnClickListener {
-            findNavController().navigate(MainScreenFragmentDirections.toSkillsFragment()    )
-            onClickVibro()
+        binding.let {
+            it.skillButton1.setOnClickListener {
+                findNavController().navigate(MainScreenFragmentDirections.toSkillsFragment())
+                onClickVibro()
+            }
+            it.skillButton2.setOnClickListener { onClickVibro() }
+            it.skillButton3.setOnClickListener { onClickVibro() }
+            it.skillButton4.setOnClickListener { onClickVibro() }
         }
-        binding.skillButton2.setOnClickListener {
-            onClickVibro()
-        }
-        binding.skillButton3.setOnClickListener {
-            onClickVibro()
-        }
-        binding.skillButton4.setOnClickListener {
-            onClickVibro()
-        }
-
 
         return view
     }
 
 
-    fun updatePhoto (tempImage: File? = null) {
-        Log.d("MainScreenFragment Photo", "was called")
-        if (tempImage == null) {
-            if (mainPhoto.exists()) {
-                val mainPhotoUri = mainPhoto.toUri()
-                binding.imageView.setImageURI(mainPhotoUri)
-            } else {
-                binding.imageView.setImageResource(R.drawable.lion_jpg_21)
-            }
-        } else {
-            binding.imageView.setImageResource(R.drawable.lion_jpg_21)
-            mainPhoto.delete()
-            tempImage.renameTo(mainPhoto)
-            binding.imageView.setImageURI(mainPhoto.toUri())
-        }
-    }
+    fun updatePhoto() {
+        binding.imageView.load (appImages.mainImage.mainPhoto) {
+            crossfade(true).transformations()
+            placeholder(R.drawable.lion_jpg_21) } }
 
     override fun onResume() {
         super.onResume()
-        if (mainPhoto.exists()) {
-            val mainPhotoUri = mainPhoto.toUri()
-            binding.imageView.setImageURI(mainPhotoUri)
-        } else {
-            binding.imageView.setImageResource(R.drawable.lion_jpg_21)
-        }
+        updatePhoto()
     }
 
     override fun onDestroyView() {
