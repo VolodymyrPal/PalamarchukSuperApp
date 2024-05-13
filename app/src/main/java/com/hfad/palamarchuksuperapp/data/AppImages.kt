@@ -16,29 +16,33 @@ class AppImages @Inject constructor(val context: Context) {
 
     class MainImage(val context: Context) {
 
-        var isMainImageExist: Boolean = false
-
         fun getAsCoilRequest(): ImageRequest {
             return ImageRequest.Builder(context).data(mainPhoto)
                 .build()
         }
 
-        private val myFilesDir: File = File(context.filesDir, "app_images").apply {
-            if (!exists()) mkdirs()
-        }
+        private val myFilesDir: File = File(context.filesDir, "app_images")
 
         val mainPhoto: File = File(myFilesDir, "MainPhoto")
 
-        var tempImageFileForIntent: File = File.createTempFile("image", "temp", myFilesDir)
+        private val tempImageFileForIntent: File by lazy {
+            File.createTempFile(
+                "image",
+                "temp",
+                myFilesDir
+            )
+        }
 
-        val tempUriForIntent: Uri = FileProvider.getUriForFile(
-            context, "${context.packageName}.provider",
-            tempImageFileForIntent
-        )
+        val tempUriForIntent: Uri by lazy {
+            FileProvider.getUriForFile(
+                context, "${context.packageName}.provider",
+                tempImageFileForIntent
+            )
+        }
 
         suspend fun updateMainPhoto() {
             val compressedMainPhoto: File = Compressor.compress(context, tempImageFileForIntent)
-            { size(2_097_152)}
+            { size(2_097_152) }
             compressedMainPhoto.renameTo(mainPhoto)
         }
     }

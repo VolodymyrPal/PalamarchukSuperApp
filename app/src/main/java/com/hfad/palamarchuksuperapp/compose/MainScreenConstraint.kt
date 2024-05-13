@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.compose
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -37,10 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -52,8 +48,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.view.screens.MainActivity
 import com.hfad.palamarchuksuperapp.R
-import java.io.File
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import com.hfad.palamarchuksuperapp.data.AppImages
 
 @Composable
 fun MainScreenConstraint(
@@ -62,17 +60,13 @@ fun MainScreenConstraint(
     actionSkillsButton: () -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(0.dp),
     activity: AppCompatActivity? = null,
-    mainPhotoBitmap: ImageBitmap = BitmapFactory.decodeResource(
-        LocalContext.current.resources,
-        R.drawable.lion_jpg_21
-    ).asImageBitmap()
 ) {
     val buttonColor = ButtonDefaults.elevatedButtonColors(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onBackground
     )
     val context = LocalContext.current
-    val mainPhoto = File(File(context.filesDir, "app_images"), "MainImage.jpg")
+
 
     Surface(
         color = Color.Transparent, modifier = modifier
@@ -157,43 +151,48 @@ fun MainScreenConstraint(
                         .size(320.dp),
                     shape = CircleShape
                 ) {
-                    Image(
-                        bitmap = mainPhotoBitmap,
-                        contentDescription = "Users photo",
-                        contentScale = ContentScale.Crop,
-                        modifier = modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
-                            .rotate(if (mainPhoto.exists()) 90f else 0f)
-                    )
-                }
+
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = ImageRequest
+                            .Builder(LocalContext.current)
+                            .data(AppImages(context).mainImage.mainPhoto)
+                            .build()
+                    ),
+                    contentDescription = "Users photo",
+                    contentScale = ContentScale.Crop,
+                    modifier = modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                )
             }
-
-
-            ButtonToNavConstraint(
-                modifier = modifier.constrainAs(skills) {
-                    top.linkTo(userImage.bottom, margin = 16.dp)
-                    centerHorizontallyTo(userImage)
-                },
-                action = actionSkillsButton
-            )
-            ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
-                start.linkTo(parent.start, margin = 32.dp)
-                top.linkTo(skills.bottom)
-                bottom.linkTo(fourthProgram.top)
-            })
-            ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
-                end.linkTo(parent.end, margin = 32.dp)
-                top.linkTo(skills.bottom)
-                bottom.linkTo(fourthProgram.top)
-            })
-            ButtonToNavConstraint(modifier.constrainAs(fourthProgram) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom, margin = 16.dp)
-            })
         }
+
+
+        ButtonToNavConstraint(
+            modifier = modifier.constrainAs(skills) {
+                top.linkTo(userImage.bottom, margin = 16.dp)
+                centerHorizontallyTo(userImage)
+            },
+            action = actionSkillsButton
+        )
+        ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
+            start.linkTo(parent.start, margin = 32.dp)
+            top.linkTo(skills.bottom)
+            bottom.linkTo(fourthProgram.top)
+        })
+        ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
+            end.linkTo(parent.end, margin = 32.dp)
+            top.linkTo(skills.bottom)
+            bottom.linkTo(fourthProgram.top)
+        })
+        ButtonToNavConstraint(modifier.constrainAs(fourthProgram) {
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            bottom.linkTo(parent.bottom, margin = 16.dp)
+        })
     }
+}
 }
 
 @Composable

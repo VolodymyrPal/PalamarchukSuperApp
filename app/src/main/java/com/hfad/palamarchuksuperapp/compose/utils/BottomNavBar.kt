@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -27,8 +26,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -41,7 +38,7 @@ import com.hfad.palamarchuksuperapp.data.TabBarItem
 import java.io.File
 
 @Composable
-fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.current, actionForCamera: (ImageBitmap) -> Unit = {}) {
+fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.current) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
             LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -60,7 +57,7 @@ fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.curr
     }
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     var tempImageFile: File? = null
-    val mainPhoto = File(File(context.filesDir, "app_images"), "MainImage.jpg")
+    val mainPhoto = File(File(context.filesDir, "app_images"), "MainPhoto")
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
@@ -68,7 +65,6 @@ fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.curr
             if (it.resultCode == Activity.RESULT_OK) {
                 mainPhoto.delete()
                 tempImageFile!!.renameTo(mainPhoto)
-                actionForCamera(BitmapFactory.decodeFile(mainPhoto.path).asImageBitmap())
             }
         })
 

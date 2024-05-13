@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 class AppApplication: Application() {
 
@@ -13,6 +14,9 @@ class AppApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        File(this.filesDir, "app_images").mkdir()
+
         PreferencesRepository.initialize(this)
         runBlocking {
             PreferencesRepository.get().setNightMode(PreferencesRepository.get().storedQuery.first()) }
