@@ -16,19 +16,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.navigation.Navigation
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.AppImages
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
-import java.io.ByteArrayOutputStream
-import java.io.File
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
 
-    private val myFilesDir: File by lazy {
-        File(applicationContext.filesDir, "app_images").apply {
-            if (!exists()) mkdirs()
-        }
-    }
+    @Inject lateinit var appImages: AppImages
+    @Inject lateinit var vibe: Vibrator
 
     private val mainPhoto: File by lazy {
         File(myFilesDir, "MainPhoto")
@@ -50,28 +49,13 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-//        view.context.appComponent.inject(this)
-//        val shit = shitFactory.create(15)
-//        var router = DaggeratmComponent.factory().create(AppModulion(applicationContext), AppDependenciesImpl() ).router
-//        //router = DaggeratmComponent.builder().provideCon(AppModulion(applicationContext)).build().router
-//        Log.d("router", "${router?.commandRouterStack?.first?.commands?.size}")
-//        Log.d("router", " ${router?.process("login peta")}")
-//        Log.d("router", "${router?.commandRouterStack?.first?.commands?.size}")
+        applicationContext.appComponent.inject(this)
 
 
 
         val badge = binding.bottomNavigation.getOrCreateBadge(R.id.bnav_settings)
         badge.isVisible = true
         badge.number = 10
-
-        val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(VIBRATOR_SERVICE) as Vibrator
-        }
 
         @Suppress("DEPRECATION")
         fun onClickVibro() {

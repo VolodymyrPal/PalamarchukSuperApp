@@ -19,19 +19,28 @@ import androidx.navigation.fragment.findNavController
 import com.hfad.palamarchuksuperapp.compose.ComposeMainActivity
 import com.hfad.palamarchuksuperapp.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.AppImages
 import com.hfad.palamarchuksuperapp.databinding.MainScreenFragmentBinding
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.io.File
+import javax.inject.Inject
 
 
 class MainScreenFragment : Fragment() {
 
     private var _binding: MainScreenFragmentBinding? = null
     private val binding get() = _binding!!
-    private val preferencesRepository = PreferencesRepository.get()
-    private lateinit var filesDir: File
-    private lateinit var mainPhoto: File
+
+
+    @Inject lateinit var preferencesRepository: PreferencesRepository
+    @Inject lateinit var appImages : AppImages
+    @Inject lateinit var vibe: Vibrator
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        context.appComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

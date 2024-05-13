@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,8 +29,7 @@ class SkillsFragment: Fragment() {
         _binding = FragmentSkillsBinding.inflate(inflater, container, false)
         val view = binding.root
 
-       // viewModel = DaggerAppComponent.create().getVooModel()
-
+        view.context.appComponent.inject(this)
 
         binding.skillsRecyclerView.layoutManager = LinearLayoutManager(context)
         val adapter = SkillsListAdapter(viewModel, parentFragmentManager)

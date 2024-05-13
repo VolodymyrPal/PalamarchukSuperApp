@@ -16,7 +16,7 @@ class AppApplication: Application() {
         PreferencesRepository.initialize(this)
         runBlocking {
             PreferencesRepository.get().setNightMode(PreferencesRepository.get().storedQuery.first()) }
-        appComponent = DaggerAppComponent.create()
+        appComponent = DaggerAppComponent.builder().getContext(this).build()
     }
 }
 
