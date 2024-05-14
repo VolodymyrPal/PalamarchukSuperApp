@@ -15,7 +15,7 @@ class AppApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        File(this.filesDir, "app_images").mkdir()
+        File(this.filesDir, "app_images").mkdir()  // Create app_images folder here to fix compose preview
 
         PreferencesRepository.initialize(this)
         runBlocking {

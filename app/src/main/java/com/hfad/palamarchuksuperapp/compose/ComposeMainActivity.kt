@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-
 class ComposeMainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +31,6 @@ class ComposeMainActivity : AppCompatActivity() {
         }
     }
 }
-
 
 @Composable
 fun MainContent(

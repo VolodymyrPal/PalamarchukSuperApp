@@ -88,7 +88,6 @@ class MainScreenFragment : Fragment() {
 
     fun updatePhoto() {
         binding.imageView.load (appImages.mainImage.mainPhoto) {
-            crossfade(true).transformations()
             placeholder(R.drawable.lion_jpg_21) } }
 
     override fun onResume() {

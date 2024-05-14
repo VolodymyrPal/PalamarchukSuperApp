@@ -1,11 +1,9 @@
 package com.hfad.palamarchuksuperapp.view.screens
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
@@ -20,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
 
-    @Inject lateinit var appImages: AppImages
+    @Inject lateinit var mainImage: AppImages.MainImage
     @Inject lateinit var vibe: Vibrator
 
 
@@ -31,8 +29,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         applicationContext.appComponent.inject(this)
-
-
 
         val badge = binding.bottomNavigation.getOrCreateBadge(R.id.bnav_settings)
         badge.isVisible = true
@@ -58,9 +54,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.bnav_camera -> {
                     onClickVibro()
-                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, appImages.mainImage.tempUriForIntent)
-                    getContent.launch(cameraIntent)
+                    getContent.launch(mainImage.getIntentToUpdatePhoto())
                     true
                 }
 
@@ -83,27 +77,7 @@ class MainActivity : AppCompatActivity() {
     private val getContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                runBlocking { appImages.mainImage.updateMainPhoto() }
-
-                /*
-                when (val frag = navHost?.childFragmentManager?.primaryNavigationFragment) {
-                    is MainScreenFragment -> frag.updatePhoto(tempImage = appImages.mainImage.tempImageFile)
-                    else -> {
-                        appImages.mainImage.mainPhoto.delete()
-                        if (appImages.mainImage.tempImageFile != null) {
-                            appImages.mainImage.tempImageFile.renameTo(appImages.mainImage.mainPhoto)
-                        } else {
-                            Log.e("MainActivity", "Ошибка сжатия изображения")
-                        }
-
-
-
-                // mainPhoto.delete()
-                // tempImageFile.renameTo(mainPhoto)
-                // val a = BitmapFactory.decodeFile(mainPhoto.path).compress(Bitmap.CompressFormat.WEBP, 100, out)
-            }
-        }*/
+                runBlocking { mainImage.updateMainPhoto() }
             }
         }
-
 }
