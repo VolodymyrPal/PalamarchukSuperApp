@@ -9,18 +9,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
-import javax.inject.Inject
 
-class SkillsViewModel @Inject constructor() : ViewModel(), SkillsDataSource {
+class SkillsViewModel : ViewModel(), SkillsDataSource {
+
+//    @Inject lateinit var myRepository: MyRepository
 
     private val one =
         Skill(name = "Compose", description = "One, Two, Three", id = UUID.randomUUID())
     private val two = Skill(name = "XML", description = "One, Two, Three", id = UUID.randomUUID())
-    private val three = Skill(
-        name = "Recycler View",
-        description = "Paging, DiffUtil, Adapter",
-        id = UUID.randomUUID()
-    )
+    private val three = Skill(name = "Recycler View", description = "Paging, DiffUtil, Adapter", id = UUID.randomUUID() )
     private val four =
         Skill(name = "Retrofit", description = "One, Two, Three", id = UUID.randomUUID())
     private val five =
@@ -38,9 +35,10 @@ class SkillsViewModel @Inject constructor() : ViewModel(), SkillsDataSource {
     private val nine =
         Skill(name = "Recycler View", description = "One, Two, Three", id = UUID.randomUUID())
     private val ten = Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID())
+    private val eleven = Skill(name = "Work with Image", description = "FileProvider, Coil", id = UUID.randomUUID())
 
 
-    private val dataListNewFlow = MutableStateFlow<MutableList<Skill>>(mutableListOf(one, two, three, four, five, six, seven, eight, nine, ten))
+    private val dataListNewFlow = MutableStateFlow<MutableList<Skill>>(mutableListOf(one, two, three, four, five, six, seven, eight, nine, ten, eleven))
     val date: StateFlow<List<Skill>> = this.dataListNewFlow.asStateFlow()
 
     override fun getSkill(): List<Skill> {
@@ -52,7 +50,6 @@ class SkillsViewModel @Inject constructor() : ViewModel(), SkillsDataSource {
             newListNew.remove(skill)
             newListNew.add(0, skill)
             dataListNewFlow.value = newListNew
-
         }
     }
 

@@ -1,9 +1,11 @@
 package com.hfad.palamarchuksuperapp.view.screens
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -15,7 +17,9 @@ import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fragmentManager: FragmentManager) :
+class SkillsListAdapter (
+    private val viewModel: SkillsViewModel,
+    private val fragmentManager: FragmentManager) :
     ListAdapter<Skill, SkillsListAdapter.SkillHolder>(SkillDiffItemCallback()) {
 
     private val asyncListDiffer = AsyncListDiffer(this, SkillDiffItemCallback())
@@ -25,8 +29,7 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SkillHolder {
-        val binding =
-            ListItemSkillsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ListItemSkillsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return SkillHolder(binding, viewModel, fragmentManager)
     }
 
@@ -45,6 +48,18 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(skill: Skill) {
+
+            if(binding.skillDescription.text.length<skill.description.length) {
+                binding.expandDetails.isVisible = true
+                binding.cardSkill.setOnClickListener {
+                    Log.d("Was clicked", "expandDetails")
+                    val layoutParams = binding.skillCard.layoutParams
+                    layoutParams.height = 200
+                    binding.skillCard.layoutParams = layoutParams
+                    binding.skillDescription.maxLines = Int.MAX_VALUE
+                    binding.expandDetails.isVisible = false
+                }
+            }
 
             binding.skillTitle.text = skill.name.uppercase(Locale.getDefault())
             binding.skillDescription.text = skill.description
@@ -68,8 +83,6 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
                         }
                         R.id.menu_option_delete -> {
                             myViewModel.deleteSkill(myViewModel.date.value.indexOf(skill))
-                           // bindingAdapter?.notifyItemRemoved(bindingAdapterPosition)
-                           // myViewModel.dataList.removeAt(myViewModel.dataList.indexOf(skill))
                             Toast.makeText(
                                 this.binding.root.context,
                                 "Clicked delete",
@@ -79,11 +92,6 @@ class SkillsListAdapter (private val viewModel: SkillsViewModel, private val fra
 
                         R.id.menu_item_moveUp -> {
                             myViewModel.moveToFirstPosition(skill)
-
-                         //   myViewModel.dataList.remove(skill)
-                         //   myViewModel.dataList.add(0, skill)
-                         //   bindingAdapter?.notifyItemMoved(bindingAdapterPosition, 0)
-
                             Toast.makeText(
                                 this.binding.root.context,
                                 "Clicked moving Up",

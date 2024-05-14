@@ -4,11 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="6dp"
     android:layout_width="match_parent"
+    android:id="@+id/skill_card"
     android:layout_height="100dp">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_skill"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +31,7 @@
                 android:textStyle="bold"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:paddingTop="8dp"
+                android:paddingTop="4dp"
                 android:text="COMPOSE"
 
                 app:layout_constraintEnd_toEndOf="parent"
@@ -37,10 +41,17 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/skill_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="6dp"
-                android:text="Just some skills was learned for future"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:maxLines="2"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:paddingTop="2dp"
+                android:ellipsize="end"
+                android:text="Just some skills was learned for future fsdfsdlfks;dlf ksd;fk sd;fl ksd; flskd ;fsdk f;sdlk f;sd kfs;dl fks;d fksd; flksd; fklsd;f lsd"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toTopOf="@+id/skill_date"
+                app:layout_constraintEnd_toStartOf="@+id/materialCheckBox"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/skill_title" />
 
@@ -48,12 +59,29 @@
                 android:id="@+id/skill_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="2dp"
+                android:paddingBottom="2dp"
+                android:paddingStart="2dp"
                 android:textStyle="italic"
                 android:textSize="10sp"
                 android:text="19.04.2024"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/expand_details"
+                android:enabled="false"
+                android:visibility="invisible"
+                android:clickable="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="2dp"
+                android:paddingBottom="2dp"
+                android:text="Details >>"
+                android:textSize="10sp"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/materialCheckBox"
+                app:layout_constraintStart_toEndOf="@+id/skill_date" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/moreButton"
@@ -65,6 +93,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/materialCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
