@@ -21,4 +21,5 @@ interface SkillsDataSource {
     fun getSkill(): List<Skill>
     fun deleteSkill(position: Int)
     fun moveToFirstPosition(skill: Skill)
+    fun addSkill(skill: Skill)
 }

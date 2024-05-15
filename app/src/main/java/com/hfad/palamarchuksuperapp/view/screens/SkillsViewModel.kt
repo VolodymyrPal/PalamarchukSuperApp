@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.view.screens
 
+import android.text.Editable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.Skill
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 import java.util.UUID
 
 class SkillsViewModel : ViewModel(), SkillsDataSource {
@@ -31,14 +33,18 @@ class SkillsViewModel : ViewModel(), SkillsDataSource {
     private val seven =
         Skill(name = "RxJava", description = "One, Two, Three", id = UUID.randomUUID())
     private val eight =
-        Skill(name = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, REST API!!!, JSON!, PUSH NOTIFICATIONS!!!", description = "One, Two, Three", id = UUID.randomUUID())
+        Skill(name = "To learn", description = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, REST API!!!, JSON!, PUSH NOTIFICATIONS!!!, ", id = UUID.randomUUID())
     private val nine =
         Skill(name = "Recycler View", description = "One, Two, Three", id = UUID.randomUUID())
     private val ten = Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID())
-    private val eleven = Skill(name = "Work with Image", description = "FileProvider, Coil", id = UUID.randomUUID())
+    private val eleven = Skill(name = "Work with Image", description = "FileProvider,Coil", id = UUID.randomUUID())
+    private val twelve = Skill(name = "Work with Image", description = "FileProvider,Coil", id = UUID.randomUUID())
+
+    private val thirteen = Skill(name = "Work with Image", description = "FileProvider,Coil", id = UUID.randomUUID())
 
 
-    private val dataListNewFlow = MutableStateFlow<MutableList<Skill>>(mutableListOf(one, two, three, four, five, six, seven, eight, nine, ten, eleven))
+
+    private val dataListNewFlow = MutableStateFlow<MutableList<Skill>>(mutableListOf(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen))
     val date: StateFlow<List<Skill>> = this.dataListNewFlow.asStateFlow()
 
     override fun getSkill(): List<Skill> {
@@ -57,6 +63,24 @@ class SkillsViewModel : ViewModel(), SkillsDataSource {
         viewModelScope.launch {
             val newListNew = date.value.toMutableList()
             newListNew.removeAt(position)
+            dataListNewFlow.value = newListNew
+        }
+    }
+
+    override fun addSkill(skill: Skill) {
+        viewModelScope.launch {
+            val newListNew = date.value.toMutableList()
+            newListNew.add(skill)
+            dataListNewFlow.value = newListNew
+        }
+    }
+
+    fun updateSkill(skill: Skill, skillName: String, skillDescription: String) {
+        viewModelScope.launch {
+            val newListNew = date.value.toMutableList()
+            newListNew.indexOf(skill).let {
+                newListNew[it] = Skill(name = skillName, description = skillDescription, id = skill.id)
+            }
             dataListNewFlow.value = newListNew
         }
     }

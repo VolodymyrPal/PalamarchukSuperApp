@@ -9,8 +9,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hfad.palamarchuksuperapp.data.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
+import java.util.Date
+import java.util.UUID
 
-class BottomSheetFragment (private val skill: Skill = Skill()) : BottomSheetDialogFragment() {
+class BottomSheetFragment (private val skill: Skill = Skill(), private val viewModel: SkillsViewModel) : BottomSheetDialogFragment() {
 
     private var _binding: ListItemBottomSheetBinding? = null
     private val binding
@@ -40,6 +42,20 @@ class BottomSheetFragment (private val skill: Skill = Skill()) : BottomSheetDial
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
                 .build()
                 .show(parentFragmentManager, "")
+        }
+
+        binding.saveSkillButton.setOnClickListener {
+            if (skill.id == null) {
+                val skillName = binding.skillNameField.text.toString()
+                val skillDescription = binding.skillDescriptionField.text.toString()
+                viewModel.addSkill(Skill(UUID.randomUUID(), skillName, skillDescription))
+                this.dismiss()
+            } else {
+                val skillName = binding.skillNameField.text.toString()
+                val skillDescription = binding.skillDescriptionField.text.toString()
+                viewModel.updateSkill(skill, skillName, skillDescription)
+                this.dismiss()
+            }
         }
 
         val view = binding.root
