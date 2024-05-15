@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="6dp"
     android:layout_width="match_parent"
     android:id="@+id/skill_card"
-    android:layout_height="100dp">
+    android:layout_height="110dp"
+    >
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_skill"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:clickable="true"
         android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,13 +45,11 @@
                 android:id="@+id/skill_description"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:maxLines="2"
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp"
                 android:paddingTop="2dp"
                 android:ellipsize="end"
                 android:text="Just some skills was learned for future fsdfsdlfks;dlf ksd;fk sd;fl ksd; flskd ;fsdk f;sdlk f;sd kfs;dl fks;d fksd; flksd; fklsd;f lsd"
-                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@+id/skill_date"
                 app:layout_constraintEnd_toStartOf="@+id/materialCheckBox"
                 app:layout_constraintStart_toStartOf="parent"
@@ -71,6 +71,7 @@
                 android:id="@+id/expand_details"
                 android:enabled="false"
                 android:visibility="invisible"
+                android:focusable="true"
                 android:clickable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,6 +80,7 @@
                 android:text="Details >>"
                 android:textSize="10sp"
                 android:textStyle="italic"
+                android:alpha="0.5"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/materialCheckBox"
                 app:layout_constraintStart_toEndOf="@+id/skill_date" />
@@ -97,7 +99,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/moreButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
