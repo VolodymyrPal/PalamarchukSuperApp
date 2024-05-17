@@ -36,13 +36,13 @@ class SkillsFragment: Fragment() {
         binding.skillsRecyclerView.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.date.collect {
-                    adapter.setDate(viewModel.date.value)
+            viewModel.date.collect {
+                adapter.setDate(viewModel.date.value)
             }
         }
 
         binding.floatingActionButton.setOnClickListener {
-            val bottomSheetFragment = BottomSheetFragment()
+            val bottomSheetFragment = BottomSheetFragment(viewModel = viewModel)
             bottomSheetFragment.show(parentFragmentManager, "BSDialogFragment")
         }
 
