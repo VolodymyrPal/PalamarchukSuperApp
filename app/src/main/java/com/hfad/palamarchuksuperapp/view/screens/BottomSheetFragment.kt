@@ -12,7 +12,7 @@ import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
 import java.util.Date
 import java.util.UUID
 
-class BottomSheetFragment (private val skill: Skill = Skill(), private val viewModel: SkillsViewModel) : BottomSheetDialogFragment() {
+class BottomSheetFragment (private val recyclerSkill: RecyclerSkill = RecyclerSkill(Skill()), private val viewModel: SkillsViewModel) : BottomSheetDialogFragment() {
 
     private var _binding: ListItemBottomSheetBinding? = null
     private val binding
@@ -26,11 +26,11 @@ class BottomSheetFragment (private val skill: Skill = Skill(), private val viewM
         savedInstanceState: Bundle?
     ): View {
         _binding = ListItemBottomSheetBinding.inflate(inflater, container, false)
-        if (skill.id != null) {
+        if (recyclerSkill.skill.id != null) {
             binding.apply {
-                skillNameField.setText(skill.name)
-                skillDescriptionField.setText(skill.description)
-                skillDateField.setText(skill.date.toString())
+                skillNameField.setText(recyclerSkill.skill.name)
+                skillDescriptionField.setText(recyclerSkill.skill.description)
+                skillDateField.setText(recyclerSkill.skill.date.toString())
             }
         }
         binding.skillDateField.inputType = EditorInfo.TYPE_NULL
@@ -45,7 +45,7 @@ class BottomSheetFragment (private val skill: Skill = Skill(), private val viewM
         }
 
         binding.saveSkillButton.setOnClickListener {
-            if (skill.id == null) {
+            if (recyclerSkill.skill.id == null) {
                 val skillName = binding.skillNameField.text.toString()
                 val skillDescription = binding.skillDescriptionField.text.toString()
                 viewModel.addSkill(Skill(UUID.randomUUID(), skillName, skillDescription))
@@ -53,7 +53,7 @@ class BottomSheetFragment (private val skill: Skill = Skill(), private val viewM
             } else {
                 val skillName = binding.skillNameField.text.toString()
                 val skillDescription = binding.skillDescriptionField.text.toString()
-                viewModel.updateSkill(skill, skillName, skillDescription)
+                viewModel.updateSkill(recyclerSkill, skillName, skillDescription)
                 this.dismiss()
             }
         }

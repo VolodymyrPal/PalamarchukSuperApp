@@ -51,6 +51,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:textColorHint="@color/md_theme_scrim"
+                    android:imeOptions="actionDone"
                     />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,7 +90,6 @@
                 android:hint="Date"
                 android:clickable="true"
                 android:focusable="true"
-
                 app:placeholderText="12.12.2024"
                 app:placeholderTextColor="@color/my_gray"
                 android:textColorHint="@color/md_theme_scrim"
@@ -111,7 +111,7 @@
 
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/materialButton2"
+                android:id="@+id/save_skill_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="24dp"

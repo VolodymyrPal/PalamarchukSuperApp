@@ -8,8 +8,6 @@ data class Skill(
     val name: String = "",
     val description: String = "",
     val date: Date = Date(),
-    val chosen: Boolean = false,
-    var isExpanded: Boolean = false,
 )
 
 data class SkillDescription (
@@ -20,6 +18,5 @@ data class SkillDescription (
 interface SkillsDataSource {
     fun getSkill(): List<Skill>
     fun deleteSkill(position: Int)
-    fun moveToFirstPosition(skill: Skill)
     fun addSkill(skill: Skill)
 }
