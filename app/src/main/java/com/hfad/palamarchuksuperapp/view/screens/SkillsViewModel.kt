@@ -109,14 +109,14 @@ class SkillsViewModel : ViewModel(), SkillsDataSource {
                 CHOOSE_SKILL -> {
                     val newListNew = date.value.toMutableList()
                     newListNew.indexOf(recyclerSkill).let {
-                        newListNew[it] = newListNew[it].copy(chosen = true, isExpandable = false, isExpanded = false)
+                        newListNew[it] = newListNew[it].copy(chosen = true)
                     }
                     dataListNewFlow.value = newListNew
                 }
                 NOT_CHOOSE_SKILL -> {
                     val newListNew = date.value.toMutableList()
                     newListNew.indexOf(recyclerSkill).let {
-                        newListNew[it] = newListNew[it].copy(chosen = false, isExpandable = false, isExpanded = false)
+                        newListNew[it] = newListNew[it].copy(chosen = false)
                     }
                     dataListNewFlow.value = newListNew
                 }

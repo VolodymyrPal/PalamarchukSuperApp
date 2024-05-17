@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.view.screens
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupMenu
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import com.hfad.palamarchuksuperapp.view.screens.SkillsViewModel.Companion.CHOOSE_SKILL
-import com.hfad.palamarchuksuperapp.view.screens.SkillsViewModel.Companion.EXPANDABLE
 import com.hfad.palamarchuksuperapp.view.screens.SkillsViewModel.Companion.NOT_CHOOSE_SKILL
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -102,45 +100,77 @@ class SkillsListAdapter(
                 popupMenu.show()
             }
 
-            binding.skillDescription.text = recyclerSkill.skill.description
-            binding.materialCheckBox.isChecked = recyclerSkill.chosen
-
-            binding.cardSkill.setOnClickListener {
-                binding.materialCheckBox.performClick()
-            }
-            binding.materialCheckBox.setOnClickListener {
+            fun onCheckboxClicked() {
                 recyclerSkill.chosen = !recyclerSkill.chosen
                 if (recyclerSkill.chosen) myViewModel.updateSkill(recyclerSkill, CHOOSE_SKILL)
                 else myViewModel.updateSkill(recyclerSkill, NOT_CHOOSE_SKILL)
+                binding.materialCheckBox.isChecked = recyclerSkill.chosen
+            }
+
+            binding.cardSkill.setOnClickListener {
+                onCheckboxClicked()
+            }
+            binding.materialCheckBox.setOnClickListener {
+                onCheckboxClicked()
             }
 
 
             //Log.d("My lines: ","${binding.skillDescription.layout.lineCount}")
 
-            binding.skillDescription.post {
-                if (binding.skillDescription.lineCount > 2) {
-                    myViewModel.updateSkill(recyclerSkill, EXPANDABLE)
-                }
-            }
             binding.expandDetails.isEnabled = false
             binding.expandDetails.isVisible = false
-            if (recyclerSkill.isExpandable) {
-                binding.skillDescription.maxLines = 2
-                binding.expandDetails.isEnabled = true
-                binding.expandDetails.isVisible = true
-                binding.expandDetails.setOnClickListener {
-                    expandOrHide(recyclerSkill)
+
+//            if (recyclerSkill.isExpandable) {
+//                binding.expandDetails.isEnabled = true
+//                binding.expandDetails.isVisible = true
+//                binding.expandDetails.setOnClickListener {
+//                    expandOrHide(recyclerSkill)
+//                }
+//            }
+
+            binding.expandDetails.post {
+                if (binding.skillDescription.layout.getEllipsisCount(1) > 0) {
+                    binding.expandDetails.isEnabled = true
+                    binding.expandDetails.isVisible = true
                 }
             }
+
+//            if (recyclerSkill.isExpandable) {
+//                binding.expandDetails.maxLines = 2
+//                binding.expandDetails.isEnabled = true
+//                binding.expandDetails.isVisible = true
+//            }
+
+            binding.expandDetails.setOnClickListener {
+                expandOrHide(recyclerSkill)
+            }
+
+            binding.skillDescription.text = recyclerSkill.skill.description
+            binding.materialCheckBox.isChecked = recyclerSkill.chosen
+
+
+//            binding.expandDetails.post {
+//                if (binding.skillDescription.lineCount > 2) {
+//                    binding.expandDetails.isVisible = true
+//                    binding.expandDetails.isEnabled = true
+//                    binding.expandDetails.setOnClickListener {
+//                        recyclerSkill.isExpandable = true
+//                        expandOrHide(recyclerSkill)
+//                    }
+//                }
+//            }
         }
+
 
         private fun expandOrHide(recyclerSkill: RecyclerSkill) {
 
             if (!recyclerSkill.isExpanded) {
+                binding.skillDescription.maxLines = Int.MAX_VALUE
+                binding.skillDescription.text = recyclerSkill.skill.description
+
                 val layoutParamsDescription = binding.skillDescription.layoutParams
                 layoutParamsDescription.height = LayoutParams.MATCH_PARENT
                 binding.skillDescription.layoutParams = layoutParamsDescription
-                binding.skillDescription.maxLines = Int.MAX_VALUE
 
                 val layoutParamsCard = binding.skillCard.layoutParams
                 layoutParamsCard.height = LayoutParams.WRAP_CONTENT
@@ -150,6 +180,8 @@ class SkillsListAdapter(
                 recyclerSkill.isExpanded = true
 
             } else {
+//                binding.skillDescription.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(100))
+//                binding.skillDescription.text = recyclerSkill.skill.description
 
                 val layoutParamsDescription = binding.skillDescription.layoutParams
                 layoutParamsDescription.height = WRAP_CONTENT
@@ -167,8 +199,10 @@ class SkillsListAdapter(
     }
 
     class SkillDiffItemCallback : DiffUtil.ItemCallback<RecyclerSkill>() {
-        override fun areItemsTheSame(oldItem: RecyclerSkill, newItem: RecyclerSkill): Boolean = oldItem == newItem
+        override fun areItemsTheSame(oldItem: RecyclerSkill, newItem: RecyclerSkill): Boolean =
+            oldItem == newItem
+
         override fun areContentsTheSame(oldItem: RecyclerSkill, newItem: RecyclerSkill): Boolean =
-            oldItem.skill.description == newItem.skill.description || oldItem.skill.name == newItem.skill.name || oldItem.skill.date == newItem.skill.date
+            oldItem.skill.description == newItem.skill.description
     }
 }

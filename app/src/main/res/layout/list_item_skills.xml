@@ -39,15 +39,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/skill_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:layout_marginEnd="6dp"
+                android:maxLines="2"
                 android:ellipsize="end"
-
                 android:text="Just some skills was learned for future fsdfsdlfks;dlf ksd;fk sd;fl ksd; flskd ;fsdk f;sdlk f;sd kfs;dl fks;d fksd; flksd; fklsd;f lsd"
                 app:layout_constraintBottom_toTopOf="@+id/skill_date"
                 app:layout_constraintEnd_toStartOf="@+id/materialCheckBox"

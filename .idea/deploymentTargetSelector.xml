@@ -10,10 +10,10 @@
       </SelectionState>
       <SelectionState runConfigName="AndroidStudioProjects.PalamarchukSuperApp.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-05-16T13:37:04.244826Z">
+        <DropdownSelection timestamp="2024-05-17T13:33:08.189717Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/palamarchukhome/.android/avd/Small_Phone_API_34.avd" />
+              <DeviceId pluginId="Default" identifier="serial=192.168.0.136:45417;connection=13a73ddc" />
             </handle>
           </Target>
         </DropdownSelection>
