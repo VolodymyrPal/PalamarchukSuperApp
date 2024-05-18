@@ -31,9 +31,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.data.AppImages
-import com.hfad.palamarchuksuperapp.data.ScreenRoute
-import com.hfad.palamarchuksuperapp.data.TabBarItem
+import com.hfad.palamarchuksuperapp.domain.models.AppImages
+import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
+import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import kotlinx.coroutines.launch
 
 @Composable

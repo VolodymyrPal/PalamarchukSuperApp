@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.data
+package com.hfad.palamarchuksuperapp.domain.models
 
 import androidx.compose.ui.graphics.painter.Painter
 

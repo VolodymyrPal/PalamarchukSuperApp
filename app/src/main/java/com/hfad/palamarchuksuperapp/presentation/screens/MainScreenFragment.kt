@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.view.screens
+package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.content.Context
 import android.content.Intent
@@ -14,13 +14,14 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
-import com.hfad.palamarchuksuperapp.compose.ComposeMainActivity
-import com.hfad.palamarchuksuperapp.PreferencesRepository
+import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.AppImages
+import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.databinding.MainScreenFragmentBinding
-import kotlinx.coroutines.flow.first
+import com.hfad.palamarchuksuperapp.domain.models.ActivityKey
+import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

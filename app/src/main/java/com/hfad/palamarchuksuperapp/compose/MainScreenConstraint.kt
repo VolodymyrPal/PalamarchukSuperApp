@@ -46,12 +46,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.view.screens.MainActivity
 import com.hfad.palamarchuksuperapp.R
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.hfad.palamarchuksuperapp.data.AppImages
+import com.hfad.palamarchuksuperapp.domain.models.ActivityKey
+import com.hfad.palamarchuksuperapp.domain.models.AppImages
+import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun MainScreenConstraint(

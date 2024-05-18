@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.view.screens
+package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.os.Build
 import android.os.Bundle
@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.AppImages
+import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.view.screens
+package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.hfad.palamarchuksuperapp.data.Skill
+import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
-import java.util.Date
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkill
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import java.util.UUID
 
 class BottomSheetFragment (private val recyclerSkill: RecyclerSkill = RecyclerSkill(Skill()), private val viewModel: SkillsViewModel) : BottomSheetDialogFragment() {

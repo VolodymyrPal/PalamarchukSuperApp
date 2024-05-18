@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.view.screens
+package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

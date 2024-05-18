@@ -10,10 +10,10 @@
       </SelectionState>
       <SelectionState runConfigName="AndroidStudioProjects.PalamarchukSuperApp.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-05-17T13:33:08.189717Z">
+        <DropdownSelection timestamp="2024-05-18T16:06:29.692520Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=192.168.0.136:45417;connection=13a73ddc" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/palamarchukhome/.android/avd/Copy_of_Pixel_8_Pro_API_34.avd" />
             </handle>
           </Target>
         </DropdownSelection>

@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/md_theme_inverseOnSurface"
         android:isScrollContainer="true"
-        tools:context=".view.screens.MainActivity">
+        tools:context=".presentation.screens.MainActivity">
 
 
 

@@ -5,11 +5,11 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
-import com.hfad.palamarchuksuperapp.PreferencesRepository
-import com.hfad.palamarchuksuperapp.view.screens.MainActivity
-import com.hfad.palamarchuksuperapp.view.screens.MainScreenFragment
-import com.hfad.palamarchuksuperapp.view.screens.SkillsFragment
-import com.hfad.palamarchuksuperapp.view.screens.SkillsViewModel
+import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
+import com.hfad.palamarchuksuperapp.presentation.screens.MainActivity
+import com.hfad.palamarchuksuperapp.presentation.screens.MainScreenFragment
+import com.hfad.palamarchuksuperapp.presentation.screens.SkillsFragment
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module

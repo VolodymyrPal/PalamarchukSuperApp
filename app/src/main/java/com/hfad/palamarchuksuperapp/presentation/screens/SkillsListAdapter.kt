@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.view.screens
+package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
-import com.hfad.palamarchuksuperapp.view.screens.SkillsViewModel.Companion.CHOOSE_SKILL
-import com.hfad.palamarchuksuperapp.view.screens.SkillsViewModel.Companion.NOT_CHOOSE_SKILL
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkill
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel.Companion.CHOOSE_SKILL
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel.Companion.NOT_CHOOSE_SKILL
 import java.text.SimpleDateFormat
 import java.util.Locale
 

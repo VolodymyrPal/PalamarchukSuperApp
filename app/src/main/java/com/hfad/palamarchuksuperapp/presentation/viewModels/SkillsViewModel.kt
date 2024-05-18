@@ -1,25 +1,20 @@
-package com.hfad.palamarchuksuperapp.view.screens
+package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.Skill
-import com.hfad.palamarchuksuperapp.data.SkillsDataSource
+import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
+import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkill
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
+import javax.inject.Inject
 
-data class RecyclerSkill (
-    val skill: Skill,
-    var chosen: Boolean = false,
-    var isExpandable: Boolean = false,
-    var isExpanded: Boolean = false
-    )
+class SkillsViewModel : ViewModel() {
 
-class SkillsViewModel : ViewModel(), SkillsDataSource {
-
-//    @Inject lateinit var myRepository: MyRepository
+    @Inject lateinit var myRepository: SkillsRepositoryImpl
 
     private val one =
         RecyclerSkill(Skill(name = "Compose", description = "One, Two, Three", id = UUID.randomUUID()))
@@ -52,7 +47,7 @@ class SkillsViewModel : ViewModel(), SkillsDataSource {
     private val dataListNewFlow = MutableStateFlow<MutableList<RecyclerSkill>>(mutableListOf(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen))
     val date: StateFlow<List<RecyclerSkill>> = this.dataListNewFlow.asStateFlow()
 
-    override fun getSkill(): List<Skill> {
+    fun getSkill(): List<Skill> {
         return date.value.map { it.skill }
     }
     fun moveToFirstPosition (recyclerSkill: RecyclerSkill) {
@@ -64,7 +59,7 @@ class SkillsViewModel : ViewModel(), SkillsDataSource {
         }
     }
 
-    override fun deleteSkill (position: Int) {
+    fun deleteSkill (position: Int) {
         viewModelScope.launch {
             val newListNew = date.value.toMutableList()
             newListNew.removeAt(position)
@@ -72,7 +67,7 @@ class SkillsViewModel : ViewModel(), SkillsDataSource {
         }
     }
 
-    override fun addSkill(skill: Skill) {
+    fun addSkill(skill: Skill) {
         viewModelScope.launch {
             val newListNew = date.value.toMutableList()
             newListNew.add(RecyclerSkill(skill))

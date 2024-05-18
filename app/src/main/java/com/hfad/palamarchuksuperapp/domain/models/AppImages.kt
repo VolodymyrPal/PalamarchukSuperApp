@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.data
+package com.hfad.palamarchuksuperapp.domain.models
 
 import android.content.Context
 import android.content.Intent
