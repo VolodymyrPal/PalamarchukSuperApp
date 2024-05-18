@@ -9,14 +9,3 @@ data class Skill(
     val description: String = "",
     val date: Date = Date(),
 )
-
-data class SkillDescription (
-    val name: String,
-    val description: String
-)
-
-interface SkillsDataSource {
-    fun getSkill(): List<Skill>
-    fun deleteSkill(position: Int)
-    fun addSkill(skill: Skill)
-}
