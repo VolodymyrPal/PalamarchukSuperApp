@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -62,15 +61,13 @@ class MainScreenFragment : Fragment() {
         binding.dayNightButton.setOnClickListener {
             onClickVibro()
             lifecycleScope.launch {
-                preferencesRepository.setStoredNightMode(!preferencesRepository.storedQuery.first())
+                ChangeDayNightModeUseCase()()
             }
         }
 
         binding.composeButton.setOnClickListener {
             onClickVibro()
-            val a = Intent(view.context, ComposeMainActivity::class.java)
-            startActivity(a)
-            requireActivity().finish()
+            SwitchToActivityUseCase()(oldActivity = requireActivity(), key = ActivityKey.ActivityCompose)
         }
 
         binding.let {

@@ -16,10 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
 import com.hfad.palamarchuksuperapp.compose.utils.MyNavBar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 class ComposeMainActivity : AppCompatActivity() {
 
@@ -34,7 +30,6 @@ class ComposeMainActivity : AppCompatActivity() {
 @Composable
 fun MainContent(
     modifier: Modifier = Modifier,
-    preferencesRepository: PreferencesRepository? = PreferencesRepository.get(),
     context: Context = LocalContext.current,
     activity: AppCompatActivity? = context as AppCompatActivity
 ) {
@@ -52,11 +47,6 @@ fun MainContent(
                     MainScreenConstraint(
                         paddingValues = paddingValues,
                         activity = activity,
-                        actionForDayNight = {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                preferencesRepository?.setStoredNightMode(!preferencesRepository.storedQuery.first())
-                            }
-                        },
                         actionSkillsButton = { navController.navigate("skills") }
                     )
                 }
@@ -71,6 +61,6 @@ fun MainContent(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainContentPreview(modifier: Modifier = Modifier) {
-    MainContent(preferencesRepository = null, activity = null)
+    MainContent(activity = null)
 }
 

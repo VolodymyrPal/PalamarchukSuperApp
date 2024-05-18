@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.compose
 
+import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -59,7 +59,6 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun MainScreenConstraint(
     modifier: Modifier = Modifier,
-    actionForDayNight: () -> Unit = {},
     actionSkillsButton: () -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(0.dp),
     activity: AppCompatActivity? = null,
@@ -69,7 +68,6 @@ fun MainScreenConstraint(
         contentColor = MaterialTheme.colorScheme.onBackground
     )
     val context = LocalContext.current
-
 
     Surface(
         color = Color.Transparent, modifier = modifier
@@ -114,9 +112,7 @@ fun MainScreenConstraint(
                     ),
                     onClick = {
                         onClickVibro()
-                        val a = Intent(context, MainActivity::class.java)
-                        activity!!.startActivity(a)
-                        activity.finish()
+                        SwitchToActivityUseCase()(activity as Activity, key = ActivityKey.ActivityXML)
                     }
                 ) {
                     Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
@@ -125,7 +121,7 @@ fun MainScreenConstraint(
                 FloatingActionButton(
                     modifier = modifier,
                     onClick = {
-                        actionForDayNight()
+                        runBlocking { ChangeDayNightModeUseCase()()  }
                         onClickVibro()
                     },
                     shape = CircleShape,
