@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
