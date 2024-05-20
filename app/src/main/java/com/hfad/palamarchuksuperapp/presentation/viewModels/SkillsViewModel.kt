@@ -8,6 +8,8 @@ import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkill
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -61,52 +63,76 @@ class SkillsViewModel : ViewModel() {
 
     fun deleteSkill (position: Int) {
         viewModelScope.launch {
-            val newListNew = date.value.toMutableList()
-            newListNew.removeAt(position)
-            dataListNewFlow.value = newListNew
+            dataListNewFlow.update {
+                val newList = it.toMutableList()
+                newList.removeAt(position)
+                newList
+            }
         }
     }
 
     fun addSkill(skill: Skill) {
         viewModelScope.launch {
-            val newListNew = date.value.toMutableList()
-            newListNew.add(RecyclerSkill(skill))
-            dataListNewFlow.value = newListNew
+            dataListNewFlow.update { currentList ->
+                val newList = currentList.toMutableList()
+                newList.add(RecyclerSkill(skill))
+                newList
+            }
         }
     }
 
     fun updateSkill(recyclerSkill: RecyclerSkill, skillName: String, skillDescription: String) {
         viewModelScope.launch {
-            val newListNew = date.value.toMutableList()
-            newListNew.indexOf(recyclerSkill).let {
-                newListNew[it] = RecyclerSkill(skill = Skill(name = skillName, description = skillDescription, id = recyclerSkill.skill.id))
+            dataListNewFlow.update { currentList ->
+                val newList = currentList.toMutableList()
+                newList.indexOf(recyclerSkill).let {
+                    if (it != -1) {
+                        newList[it] = RecyclerSkill(
+                            skill = Skill(
+                                name = skillName,
+                                description = skillDescription,
+                                id = recyclerSkill.skill.id
+                            )
+                        )
+                    } else {
+                        throw Exception("Skill not found")
+                    }
+                }
+                newList
             }
-            dataListNewFlow.value = newListNew
         }
     }
     fun updateSkill(recyclerSkill: RecyclerSkill, changeConst: Int) {
         viewModelScope.launch {
             when (changeConst) {
                 EXPANDED_SKILL -> {
-                    val newListNew = date.value.toMutableList()
-                    newListNew.indexOf(recyclerSkill).let {
-                        newListNew[it] = newListNew[it].copy(isExpanded = true)
+                    dataListNewFlow.update {
+                        val newList = it.toMutableList()
+                        newList.indexOf(recyclerSkill).let {
+                            newList[it] = newList[it].copy(isExpanded = true)
+                        }
+                        newList
                     }
-                    dataListNewFlow.value = newListNew
                 }
                 NON_EXPANDED_SKILL -> {
-                    val newListNew = date.value.toMutableList()
-                    newListNew.indexOf(recyclerSkill).let {
-                        newListNew[it] = newListNew[it].copy(isExpanded = false)
+
+                    dataListNewFlow.update {
+                        val newList = it.toMutableList()
+                        newList.indexOf(recyclerSkill).let {
+                            newList[it] = newList[it].copy(isExpanded = false)
+                        }
+                        newList
                     }
-                    dataListNewFlow.value = newListNew
                 }
                 CHOOSE_SKILL -> {
-                    val newListNew = date.value.toMutableList()
-                    newListNew.indexOf(recyclerSkill).let {
-                        newListNew[it] = newListNew[it].copy(chosen = true)
+                    dataListNewFlow.update {
+                        val newList = it.toMutableList()
+                        newList.indexOf(recyclerSkill).let {
+                            newList[it] = newList[it].copy(chosen = true)
+                        }
+                        newList
                     }
-                    dataListNewFlow.value = newListNew
+
                 }
                 NOT_CHOOSE_SKILL -> {
                     val newListNew = date.value.toMutableList()
@@ -115,20 +141,7 @@ class SkillsViewModel : ViewModel() {
                     }
                     dataListNewFlow.value = newListNew
                 }
-                EXPANDABLE -> {
-                    val newListNew = date.value.toMutableList()
-                    newListNew.indexOf(recyclerSkill).let {
-                        newListNew[it] = newListNew[it].copy(isExpandable = true)
-                    }
-                    dataListNewFlow.value = newListNew
-                }
-                NOT_EXPANDABLE -> {
-                    val newListNew = date.value.toMutableList()
-                    newListNew.indexOf(recyclerSkill).let {
-                        newListNew[it] = newListNew[it].copy(isExpandable = false)
-                    }
-                    dataListNewFlow.value = newListNew
-                }
+
             }
         }
     }
@@ -138,8 +151,5 @@ class SkillsViewModel : ViewModel() {
         const val NON_EXPANDED_SKILL = 2
         const val CHOOSE_SKILL = 3
         const val NOT_CHOOSE_SKILL = 4
-        const val EXPANDABLE = 5
-        const val NOT_EXPANDABLE = 6
     }
-
 }

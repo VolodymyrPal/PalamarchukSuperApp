@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
@@ -37,7 +39,7 @@ class SkillsFragment: Fragment() {
         binding.skillsRecyclerView.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.date.collect {
+            viewModel.date.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
                 adapter.setDate(viewModel.date.value)
             }
         }
