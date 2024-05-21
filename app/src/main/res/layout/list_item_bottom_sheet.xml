@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:isScrollContainer="true"
-        android:paddingBottom="100dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         tools:context=".presentation.screens.BottomSheetFragment">
 
@@ -20,6 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_gravity="center_horizontal"
+            app:dividerColor="@color/material_on_background_disabled"
             app:dividerThickness="3dp"
             />
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,12 +34,13 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
+                android:layout_marginBottom="6dp"
                 android:hint="Skill name"
                 app:placeholderText="Jetpack Compose"
-                app:placeholderTextColor="@color/my_gray"
-                android:textColorHint="@color/md_theme_scrim"
-                app:boxStrokeColor="@color/md_theme_primary"
-                app:hintTextColor="@color/md_theme_scrim"
+                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha"
+                android:textColorHint="@color/md_theme_onPrimaryContainer_alpha"
+                app:boxStrokeColor="@color/md_theme_onPrimaryContainer"
+                app:hintTextColor="@color/md_theme_onPrimaryContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -59,15 +60,17 @@
                 android:id="@+id/textField2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
+                android:layout_marginBottom="6dp"
                 android:hint="Description"
                 app:placeholderText="State, composition, theme, etc."
-                app:placeholderTextColor="@color/my_gray"
-                android:textColorHint="@color/md_theme_scrim"
-                app:boxStrokeColor="@color/md_theme_primary"
-                app:hintTextColor="@color/md_theme_scrim"
+                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha"
+                android:textColorHint="@color/md_theme_onPrimaryContainer_alpha"
+                app:boxStrokeColor="@color/md_theme_onPrimaryContainer"
+                app:hintTextColor="@color/md_theme_onPrimaryContainer"
+
                 app:layout_constraintTop_toBottomOf="@+id/name_skill_layout">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -84,17 +87,16 @@
                 android:id="@+id/date_skill_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
+                android:layout_marginBottom="6dp"
                 android:hint="Date"
-                android:clickable="true"
-                android:focusable="true"
                 app:placeholderText="12.12.2024"
-                app:placeholderTextColor="@color/my_gray"
-                android:textColorHint="@color/md_theme_scrim"
-                app:boxStrokeColor="@color/md_theme_primary"
-                app:hintTextColor="@color/md_theme_scrim"
+                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha"
+                android:textColorHint="@color/md_theme_onPrimaryContainer_alpha"
+                app:boxStrokeColor="@color/md_theme_onPrimaryContainer"
+                app:hintTextColor="@color/md_theme_onPrimaryContainer"
                 app:layout_constraintTop_toBottomOf="@+id/textField2"
                 >
 
@@ -103,7 +105,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:clickable="false"
                     android:gravity="start"
                     android:textColorHint="@color/md_theme_scrim"
                     />

@@ -46,22 +46,36 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
-        <item name="android:statusBarColor">
-            @color/md_theme_onPrimary
-        </item>
-        <item name="android:navigationBarColor">
-            @color/md_theme_primaryContainer
-        </item>
+
+        <item name="android:statusBarColor"> @color/md_theme_onPrimary </item>
+        <item name="android:navigationBarColor"> @color/md_theme_primaryContainer </item>
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+
     </style>
 
 
-    <style name="AppBottomSheetDialogTheme" parent="Theme.Material3.Dark.BottomSheetDialog">
+
+
+
+    <style name="PopupMenu" parent="@style/Widget.Material3.PopupMenu">
+        <item name="android:popupBackground">@drawable/custom_popup_background</item>
+        <item name="android:popupElevation">5dp</item>
+    </style>
+
+
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog" >
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
-    </style>
+        <item name="android:windowSoftInputMode">adjustResize|stateAlwaysVisible</item>
+        <item name="android:windowIsFloating">false</item>
 
+        <item name="android:statusBarColor"> @color/md_theme_onPrimary </item>
+        <item name="android:navigationBarColor"> @color/md_theme_primaryContainer </item>
+
+    </style>
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/rounded_shape</item>
     </style>
+
 
 </resources>
