@@ -94,29 +94,32 @@ fun MainScreenConstraint(
                 }
             }
 
-            val (topRow, userImage, skills, secondProgram, thirdProgram, fourthProgram) = createRefs()
-            Row(
-                modifier = modifier
-                    .constrainAs(topRow) {
-                        top.linkTo(parent.top)
-                    }
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
-                    modifier = modifier,
-                    colors = buttonColor,
-                    elevation = ButtonDefaults.buttonElevation(
-                        defaultElevation = 5.dp,
-                    ),
-                    onClick = {
-                        onClickVibro()
-                        SwitchToActivityUseCase()(activity as Activity, key = ActivityKey.ActivityXML)
-                    }
+                val (topRow, userImage, skills, secondProgram, thirdProgram, fourthProgram) = createRefs()
+                Row(
+                    modifier = modifier
+                        .constrainAs(topRow) {
+                            top.linkTo(parent.top)
+                        }
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
-                }
+                    Button(
+                        modifier = modifier,
+                        colors = buttonColor,
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 5.dp,
+                        ),
+                        onClick = {
+                            onClickVibro()
+                            SwitchToActivityUseCase()(
+                                context as Activity,
+                                key = ActivityKey.ActivityXML
+                            )
+                        }
+                    ) {
+                        Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
+                    }
 
                 FloatingActionButton(
                     modifier = modifier,

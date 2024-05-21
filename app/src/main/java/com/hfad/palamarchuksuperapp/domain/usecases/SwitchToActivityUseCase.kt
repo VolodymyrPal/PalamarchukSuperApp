@@ -2,9 +2,7 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 
 import android.app.Activity
 import android.content.Intent
-import androidx.recyclerview.widget.RecyclerView
 import com.hfad.palamarchuksuperapp.compose.ComposeMainActivity
-import com.hfad.palamarchuksuperapp.domain.models.ActivityKey
 import com.hfad.palamarchuksuperapp.presentation.screens.MainActivity
 
 class SwitchToActivityUseCase {
@@ -25,4 +23,8 @@ class SwitchToActivityUseCase {
             else -> throw IllegalArgumentException("Unknown activity key: $key")
         }
     }
+}
+sealed class ActivityKey {
+    object ActivityXML : ActivityKey()
+    object ActivityCompose : ActivityKey()
 }
