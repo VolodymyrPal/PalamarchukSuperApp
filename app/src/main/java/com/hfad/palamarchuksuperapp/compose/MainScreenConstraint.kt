@@ -29,6 +29,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,10 +49,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.hfad.palamarchuksuperapp.domain.models.ActivityKey
+import com.hfad.palamarchuksuperapp.compose.utils.MyNavBar
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
+import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.runBlocking
@@ -60,39 +64,52 @@ import kotlinx.coroutines.runBlocking
 fun MainScreenConstraint(
     modifier: Modifier = Modifier,
     actionSkillsButton: () -> Unit = {},
-    paddingValues: PaddingValues = PaddingValues(0.dp),
-    activity: AppCompatActivity? = null,
+    navController: NavHostController = rememberNavController()
 ) {
-    val buttonColor = ButtonDefaults.elevatedButtonColors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onBackground
-    )
-    val context = LocalContext.current
 
-    Surface(
-        color = Color.Transparent, modifier = modifier
-            .fillMaxSize()
-            .padding(bottom = paddingValues.calculateBottomPadding())
+//    LocalContext.current.contentResolver.registerContentObserver(
+//        AppImages.MainImage(LocalContext.current).mainPhoto.toUri(),
+//        true,
+//
+//    ) { _, _ ->
+//    }
 
-    ) {
-        ConstraintLayout {
-            val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager =
-                    LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                vibratorManager.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
-            }
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        bottomBar = {
+            MyNavBar()
+        }
+    ) { paddingValues ->
+        val buttonColor = ButtonDefaults.elevatedButtonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onBackground
+        )
+        val context = LocalContext.current
 
-            @Suppress("DEPRECATION")
-            fun onClickVibro() {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibe.vibrate(VibrationEffect.createOneShot(2, 60))
+        Surface(
+            color = Color.Transparent, modifier = modifier
+                .fillMaxSize()
+                .padding(bottom = paddingValues.calculateBottomPadding())
+
+        ) {
+            ConstraintLayout {
+                val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val vibratorManager =
+                        LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                    vibratorManager.defaultVibrator
                 } else {
-                    vibe.vibrate(1)
+                    @Suppress("DEPRECATION")
+                    LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
                 }
-            }
+
+                @Suppress("DEPRECATION")
+                fun onClickVibro() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibe.vibrate(VibrationEffect.createOneShot(2, 60))
+                    } else {
+                        vibe.vibrate(1)
+                    }
+                }
 
                 val (topRow, userImage, skills, secondProgram, thirdProgram, fourthProgram) = createRefs()
                 Row(
@@ -121,80 +138,81 @@ fun MainScreenConstraint(
                         Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
                     }
 
-                FloatingActionButton(
-                    modifier = modifier,
-                    onClick = {
-                        runBlocking { ChangeDayNightModeUseCase()()  }
-                        onClickVibro()
-                    },
-                    shape = CircleShape,
-                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
-                        defaultElevation = 5.dp,
-                        pressedElevation = 30.dp
-                    ),
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
-                        "Night mode",
-                        modifier = modifier.size(24.dp)
-                    )
+                    FloatingActionButton(
+                        modifier = modifier,
+                        onClick = {
+                            runBlocking { ChangeDayNightModeUseCase()() }
+                            onClickVibro()
+                        },
+                        shape = CircleShape,
+                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
+                            defaultElevation = 5.dp,
+                            pressedElevation = 30.dp
+                        ),
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
+                            "Night mode",
+                            modifier = modifier.size(24.dp)
+                        )
+                    }
                 }
-            }
-            Box(
-                modifier = Modifier.constrainAs(userImage) {
-                    top.linkTo(parent.top, margin = 72.dp)
-                    centerHorizontallyTo(parent)
-                }
-            ) {
-                Card(
-                    elevation = CardDefaults.elevatedCardElevation(10.dp),
-                    modifier = modifier
-                        .size(320.dp),
-                    shape = CircleShape
+                Box(
+                    modifier = Modifier.constrainAs(userImage) {
+                        top.linkTo(parent.top, margin = 72.dp)
+                        centerHorizontallyTo(parent)
+                    }
                 ) {
+                    Card(
+                        elevation = CardDefaults.elevatedCardElevation(10.dp),
+                        modifier = modifier
+                            .size(320.dp),
+                        shape = CircleShape
+                    ) {
 
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = ImageRequest
-                            .Builder(LocalContext.current)
-                            .data(AppImages(context).mainImage.mainPhoto)
-                            .build()
-                    ),
-                    contentDescription = "Users photo",
-                    contentScale = ContentScale.Crop,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                model = ImageRequest
+                                    .Builder(LocalContext.current)
+                                    .data(AppImages(context).mainImage.mainPhoto)
+                                    .build()
+                            ),
+                            contentDescription = "Users photo",
+                            contentScale = ContentScale.Crop,
+                            modifier = modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                        )
+                    }
+                }
+
+
+                ButtonToNavConstraint(
+                    modifier = modifier.constrainAs(skills) {
+                        top.linkTo(userImage.bottom, margin = 16.dp)
+                        centerHorizontallyTo(userImage)
+                    },
+                    action = actionSkillsButton
                 )
+                ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
+                    start.linkTo(parent.start, margin = 32.dp)
+                    top.linkTo(skills.bottom)
+                    bottom.linkTo(fourthProgram.top)
+                })
+                ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
+                    end.linkTo(parent.end, margin = 32.dp)
+                    top.linkTo(skills.bottom)
+                    bottom.linkTo(fourthProgram.top)
+                })
+                ButtonToNavConstraint(modifier.constrainAs(fourthProgram) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom, margin = 16.dp)
+                })
             }
         }
-
-
-        ButtonToNavConstraint(
-            modifier = modifier.constrainAs(skills) {
-                top.linkTo(userImage.bottom, margin = 16.dp)
-                centerHorizontallyTo(userImage)
-            },
-            action = actionSkillsButton
-        )
-        ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
-            start.linkTo(parent.start, margin = 32.dp)
-            top.linkTo(skills.bottom)
-            bottom.linkTo(fourthProgram.top)
-        })
-        ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
-            end.linkTo(parent.end, margin = 32.dp)
-            top.linkTo(skills.bottom)
-            bottom.linkTo(fourthProgram.top)
-        })
-        ButtonToNavConstraint(modifier.constrainAs(fourthProgram) {
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            bottom.linkTo(parent.bottom, margin = 16.dp)
-        })
     }
-}
 }
 
 @Composable

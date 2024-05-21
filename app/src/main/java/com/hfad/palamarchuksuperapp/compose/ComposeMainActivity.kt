@@ -18,7 +18,6 @@ import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
 import com.hfad.palamarchuksuperapp.compose.utils.MyNavBar
 
 class ComposeMainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,39 +27,52 @@ class ComposeMainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun MainContent(
-    modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
-    activity: AppCompatActivity? = context as AppCompatActivity
-) {
-
+fun MainContent() {
     val navController = rememberNavController()
-
     AppTheme {
 
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            bottomBar = { MyNavBar() }
-        ) { paddingValues ->
-            NavHost(navController = navController, startDestination = ScreenRoute.Home.route) {
-                composable(ScreenRoute.Home.route) {
-                    MainScreenConstraint(
-                        paddingValues = paddingValues,
-                        activity = activity,
-                        actionSkillsButton = { navController.navigate("skills") }
-                    )
-                }
-                composable(ScreenRoute.Skills.route) {
-                    MyNavBar()
-                }
+        NavHost(navController = navController, startDestination = ScreenRoute.Home.route) {
+
+            composable(ScreenRoute.Home.route) {
+                MainScreenConstraint(
+                    actionSkillsButton = { navController.navigate("skills") },
+                    navController = navController
+                )
+            }
+            composable(ScreenRoute.Skills.route) {
             }
         }
+
+//        Scaffold(
+//            modifier = modifier.fillMaxSize(),
+//            bottomBar = {
+//                MyNavBar()
+//            }
+//        ) { paddingValues ->
+//            NavHost(
+//                navController = navController,
+//                startDestination = ScreenRoute.Home.route
+//            ) {
+//                composable(ScreenRoute.Home.route) {
+//                    MainScreenConstraint(
+//                        actionSkillsButton = { navController.navigate("skills") }
+//                    )
+//                }
+//                composable(ScreenRoute.Skills.route) {
+//
+//                }
+//
+//                composable(ScreenRoute.Settings.route) {
+//
+//                }
+//            }
+//        }
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainContentPreview(modifier: Modifier = Modifier) {
-    MainContent(activity = null)
+fun MainContentPreview () {
+    MainContent()
 }
 
