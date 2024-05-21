@@ -18,7 +18,7 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.databinding.MainScreenFragmentBinding
-import com.hfad.palamarchuksuperapp.domain.models.ActivityKey
+import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.launch
