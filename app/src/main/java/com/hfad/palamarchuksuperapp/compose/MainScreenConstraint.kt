@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.compose
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import android.os.FileObserver
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -12,7 +13,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +33,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +54,7 @@ import com.hfad.palamarchuksuperapp.R
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.hfad.palamarchuksuperapp.compose.utils.MyNavBar
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
@@ -85,6 +88,24 @@ fun MainScreenConstraint(
             contentColor = MaterialTheme.colorScheme.onBackground
         )
         val context = LocalContext.current
+        val timestap = remember { mutableLongStateOf(System.currentTimeMillis()) }
+        val mainPhoto = AppImages.MainImage(context).mainPhoto
+        val fileObserver = object : FileObserver(mainPhoto.parentFile?.path) {
+            override fun onEvent(event: Int, path: String?) {
+                if (event == MOVED_TO) {
+                    timestap.longValue = System.currentTimeMillis()
+                }
+            }
+        }
+
+        DisposableEffect(LocalLifecycleOwner.current) {
+            fileObserver.startWatching()
+            onDispose {
+                fileObserver.stopWatching()
+            }
+        }
+
+
 
         Surface(
             color = Color.Transparent, modifier = modifier
@@ -171,18 +192,18 @@ fun MainScreenConstraint(
                         shape = CircleShape
                     ) {
 
-                        Image(
-                            painter = rememberAsyncImagePainter(
-                                model = ImageRequest
-                                    .Builder(LocalContext.current)
-                                    .data(AppImages(context).mainImage.mainPhoto)
-                                    .build()
-                            ),
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(mainPhoto)
+                                .setParameter(key = "timestamp", value = timestap.longValue, null)
+                                .crossfade(true)
+                                .error(R.drawable.lion_jpg_21)
+                                .build(),
                             contentDescription = "Users photo",
                             contentScale = ContentScale.Crop,
-                            modifier = modifier
+                            modifier = Modifier
                                 .fillMaxSize()
-                                .clip(CircleShape)
+                                .clip(CircleShape),
                         )
                     }
                 }
