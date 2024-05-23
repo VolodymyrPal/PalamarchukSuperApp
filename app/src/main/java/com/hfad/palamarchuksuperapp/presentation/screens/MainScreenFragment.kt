@@ -86,7 +86,9 @@ class MainScreenFragment : Fragment() {
 
     fun updatePhoto() {
         binding.imageView.load (appImages.mainImage.mainPhoto) {
-            placeholder(R.drawable.lion_jpg_21) } }
+            placeholder(R.drawable.lion_jpg_21)
+        this.error(R.drawable.lion_jpg_21)}
+    }
 
     override fun onResume() {
         super.onResume()
