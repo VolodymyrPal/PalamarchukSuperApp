@@ -79,7 +79,7 @@ class SkillsListAdapter(
                         }
 
                         R.id.menu_option_delete -> {
-                            myViewModel.deleteSkill(myViewModel.date.value.indexOf(recyclerSkillFowViewModel))
+                            myViewModel.deleteSkill(recyclerSkillFowViewModel)
                             Toast.makeText(
                                 this.binding.root.context,
                                 "Clicked delete",
