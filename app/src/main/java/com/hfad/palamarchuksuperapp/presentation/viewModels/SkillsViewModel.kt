@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.presentation.viewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.compose.UiEvent
 import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
@@ -132,6 +133,23 @@ class SkillsViewModel : ViewModel() {
         return date.value.map { it.skill }
     }
 
+    fun handleEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.EditItem -> {
+
+                Log.d("Skill: ", "Asked for editing ${date.value.size}")
+            }
+            is UiEvent.DeleteItem -> {
+                deleteSkill(event.item)
+                Log.d("Skill: ", "Asked for deleting ${date.value.size}")
+            }
+            is UiEvent.MoveItemUp -> {
+                moveToFirstPosition(event.item)
+                Log.d("Skill: ", "Asked for movingUp ${date.value.size}")
+            }
+        }
+    }
+
     fun moveToFirstPosition(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
         viewModelScope.launch {
             val newListNew = date.value.toMutableList()
@@ -141,12 +159,15 @@ class SkillsViewModel : ViewModel() {
         }
     }
 
-    fun deleteSkill(position: Int) {
-
+    fun deleteSkill(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
         viewModelScope.launch {
             dataListNewFlow.update { it ->
+                val index = it.indexOf(recyclerSkillFowViewModel)
                 val newList = it.toMutableList()
-                newList.removeAt(position)
+                Log.d("My index is:", "$index")
+                if (index != -1) {
+                    newList.remove(recyclerSkillFowViewModel)
+                }
                 newList.removeIf {
                     it.chosen
                 }
