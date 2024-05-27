@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
@@ -37,7 +38,7 @@ import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import kotlinx.coroutines.launch
 
 @Composable
-fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.current) {
+fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.current, navController: NavController?) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
             LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -74,7 +75,9 @@ fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.curr
         title = stringResource(id = ScreenRoute.Home.resourceId),
         selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
-        onClick = { onClickVibro() }
+        onClick = { onClickVibro()
+            navController?.navigate(ScreenRoute.Home.route)
+        }
     )
     val cameraTab = TabBarItem(
         title = stringResource(id = ScreenRoute.Skills.resourceId),
@@ -90,7 +93,9 @@ fun MyNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.curr
         selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
         badgeAmount = 10,
-        onClick = { onClickVibro() }
+        onClick = { onClickVibro()
+            navController?.navigate(ScreenRoute.Settings.route)
+            }
     )
 
     val tabBarItems = listOf(homeTab, cameraTab, settingsTab)
@@ -158,12 +163,12 @@ fun TabBarIconView(
 @Preview
 @Composable
 fun MyNavBarPreviewElement() {
-    MyNavBar()
+    BottomNavBar(navController = null)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MyNavBarPreviewApp() {
-    Scaffold(bottomBar = { MyNavBar() }) {}
+    Scaffold(bottomBar = {  }) {}
 }
