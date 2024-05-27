@@ -6,7 +6,7 @@
     android:padding="6dp"
     android:layout_width="match_parent"
     android:id="@+id/skill_card"
-    android:layout_height="100dp"
+    android:layout_height="wrap_content"
     >
 
     <com.google.android.material.card.MaterialCardView
@@ -60,7 +60,7 @@
                 android:paddingBottom="2dp"
                 android:paddingStart="2dp"
                 android:textStyle="italic"
-                android:textSize="10sp"
+                android:textSize="11sp"
                 android:text="19.04.2024"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
