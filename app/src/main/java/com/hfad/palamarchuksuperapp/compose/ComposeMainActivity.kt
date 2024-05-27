@@ -1,21 +1,27 @@
 package com.hfad.palamarchuksuperapp.compose
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
-import com.hfad.palamarchuksuperapp.compose.utils.MyNavBar
 
 class ComposeMainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,44 +35,119 @@ class ComposeMainActivity : AppCompatActivity() {
 @Composable
 fun MainContent() {
     val navController = rememberNavController()
+
+    fun scaleIntoContainer(
+        direction: ScaleTransitionDirection = ScaleTransitionDirection.INWARDS,
+        initialScale: Float = if (direction == ScaleTransitionDirection.OUTWARDS) 1.5f else 0.6f
+    ): EnterTransition {
+        return fadeIn(animationSpec = tween(100, delayMillis = 100))
+    }
+
+    fun scaleOutOfContainer(
+        direction: ScaleTransitionDirection = ScaleTransitionDirection.OUTWARDS,
+        targetScale: Float = if (direction == ScaleTransitionDirection.INWARDS) 0.1f else 3.1f
+    ): ExitTransition {
+        return fadeOut(tween(delayMillis = 90))
+    }
+
     AppTheme {
 
         NavHost(navController = navController, startDestination = ScreenRoute.Home.route) {
 
-            composable(ScreenRoute.Home.route) {
-                MainScreenConstraint(
-                    actionSkillsButton = { navController.navigate("skills") },
+            composable(ScreenRoute.Home.route,
+//                enterTransition = {
+//                    when (ScreenRoute.Home.route) {
+//                        "home" ->
+//                            slideIntoContainer(
+//                                AnimatedContentTransitionScope.SlideDirection.Right,
+//                                animationSpec = tween(400)
+//                            )
+//
+//                        else -> null
+//                    }
+//                },
+//                exitTransition = {
+//                    when (targetState.destination.route) {
+//                        "skills" ->
+//                            slideOutOfContainer(
+//                                AnimatedContentTransitionScope.SlideDirection.Right,
+//                                animationSpec = tween(700)
+//                            )
+//
+//                        else -> null
+//                    }
+//                                 },
+//                popEnterTransition = {
+//                    when (initialState.destination.route) {
+//                        "details" ->
+//                            slideIntoContainer(
+//                                AnimatedContentTransitionScope.SlideDirection.Left,
+//                                animationSpec = tween(400)
+//                            )
+//
+//                        else -> null
+//                    }
+//                },
+//                popExitTransition = {
+//                    when (targetState.destination.route) {
+//                        "details" ->
+//                            slideOutOfContainer(
+//                                AnimatedContentTransitionScope.SlideDirection.Left,
+//                                animationSpec = tween(400)
+//                            )
+//
+//                        else -> null
+//                    }
+//                }
+            ) {
+                AnimatedVisibility(
+                    visible = true,
+                    enter = slideInHorizontally() + expandHorizontally(expandFrom = Alignment.End)
+                            + fadeIn(),
+                    exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth })
+                            + shrinkHorizontally() + fadeOut(),
+                ) {
+                    MainScreenConstraint(
+                        actionSkillsButton = { navController.navigate("skills") },
+                        navController = navController
+                    )
+                }
+            }
+            composable(ScreenRoute.Skills.route,
+//                enterTransition = {
+//                    scaleIntoContainer()
+//                },
+//                exitTransition = {
+//                    scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS)
+//                },
+//                popEnterTransition = {
+//                    scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS)
+//                },
+//                popExitTransition = {
+//                    scaleOutOfContainer()
+//                }
+                )
+            {
+                SkillScreen(
                     navController = navController
                 )
             }
-            composable(ScreenRoute.Skills.route) {
+            composable(ScreenRoute.Settings.route,
+                enterTransition = {
+                    scaleIntoContainer()
+                },
+                exitTransition = {
+                    scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS)
+                },
+                popEnterTransition = {
+                    scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS)
+                },
+                popExitTransition = {
+                    scaleOutOfContainer()
+                } ) {
+                Text(text = "Settings")
             }
         }
-
-//        Scaffold(
-//            modifier = modifier.fillMaxSize(),
-//            bottomBar = {
-//                MyNavBar()
-//            }
-//        ) { paddingValues ->
-//            NavHost(
-//                navController = navController,
-//                startDestination = ScreenRoute.Home.route
-//            ) {
-//                composable(ScreenRoute.Home.route) {
-//                    MainScreenConstraint(
-//                        actionSkillsButton = { navController.navigate("skills") }
-//                    )
-//                }
-//                composable(ScreenRoute.Skills.route) {
-//
-//                }
-//
-//                composable(ScreenRoute.Settings.route) {
-//
-//                }
-//            }
-//        }
     }
 }
 
@@ -76,3 +157,6 @@ fun MainContentPreview () {
     MainContent()
 }
 
+enum class ScaleTransitionDirection {
+    INWARDS, OUTWARDS
+}
