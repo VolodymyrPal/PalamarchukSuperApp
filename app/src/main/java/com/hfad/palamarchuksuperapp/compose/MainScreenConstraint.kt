@@ -56,8 +56,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.hfad.palamarchuksuperapp.compose.utils.MyNavBar
+import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
+import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
@@ -69,18 +70,12 @@ fun MainScreenConstraint(
     actionSkillsButton: () -> Unit = {},
     navController: NavHostController = rememberNavController()
 ) {
-
-//    LocalContext.current.contentResolver.registerContentObserver(
-//        AppImages.MainImage(LocalContext.current).mainPhoto.toUri(),
-//        true,
-//
-//    ) { _, _ ->
-//    }
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            MyNavBar()
+            BottomNavBar(
+                navController = navController,
+            )
         }
     ) { paddingValues ->
         val buttonColor = ButtonDefaults.elevatedButtonColors(
@@ -214,7 +209,7 @@ fun MainScreenConstraint(
                         top.linkTo(userImage.bottom, margin = 16.dp)
                         centerHorizontallyTo(userImage)
                     },
-                    action = actionSkillsButton
+                    action = { navController.navigate(ScreenRoute.Skills.route) }
                 )
                 ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
                     start.linkTo(parent.start, margin = 32.dp)
