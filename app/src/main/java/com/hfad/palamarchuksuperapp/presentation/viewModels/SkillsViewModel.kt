@@ -3,7 +3,6 @@ package com.hfad.palamarchuksuperapp.presentation.viewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.compose.UiEvent
 import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
@@ -147,6 +146,12 @@ class SkillsViewModel : ViewModel() {
                 moveToFirstPosition(event.item)
                 Log.d("Skill: ", "Asked for movingUp ${date.value.size}")
             }
+            is UiEvent.ChangeVisible -> {
+                changeVisible(event.item)
+            }
+            is UiEvent.AddItem -> {
+                addSkill(skill = event.item.skill)
+            }
         }
     }
 
@@ -186,6 +191,18 @@ class SkillsViewModel : ViewModel() {
         }
     }
 
+    fun changeVisible(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
+        viewModelScope.launch {
+            dataListNewFlow.update { currentList ->
+                val newList = currentList.toMutableList()
+                newList.indexOf(recyclerSkillFowViewModel).let {
+                    newList[it] = newList[it].copy(isVisible = !newList[it].isVisible)
+                }
+                newList
+            }
+        }
+    }
+
     fun updateSkill(recyclerSkillFowViewModel: RecyclerSkillFowViewModel, skillName: String, skillDescription: String) {
         viewModelScope.launch {
             dataListNewFlow.update { currentList ->
@@ -211,7 +228,6 @@ class SkillsViewModel : ViewModel() {
     fun updateSkill(recyclerSkillFowViewModel: RecyclerSkillFowViewModel, changeConst: SkillsChangeConst) {
         viewModelScope.launch {
             when (changeConst) {
-
                 SkillsChangeConst.ChooseSkill -> {
                     dataListNewFlow.update {
                         val newList = it.toMutableList()
@@ -251,4 +267,12 @@ sealed class SkillsChangeConst {
     object ChooseSkill : SkillsChangeConst()
     object NotChooseSkill : SkillsChangeConst()
     object FullSkill : SkillsChangeConst()
+}
+
+sealed class UiEvent {
+    data class EditItem(val item: RecyclerSkillFowViewModel) : UiEvent()
+    data class DeleteItem(val item: RecyclerSkillFowViewModel) : UiEvent()
+    data class MoveItemUp(val item: RecyclerSkillFowViewModel) : UiEvent()
+    data class ChangeVisible(val item: RecyclerSkillFowViewModel) : UiEvent()
+    data class AddItem(val item: RecyclerSkillFowViewModel) : UiEvent()
 }
