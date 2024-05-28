@@ -90,12 +90,37 @@ fun SkillScreen(
     navController: NavHostController?,
 ) {
     val viewModel = SkillsViewModel()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             BottomNavBar(navController = navController)
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                shape = RoundedCornerShape(33),
+                modifier = Modifier,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                onClick = {
+                    showBottomSheet = true
+                },
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.add_fab_button),
+                        "Floating action button."
+                    )
+                }
+            )
         }
     ) { paddingValues ->
+
+        if (showBottomSheet) {
+            MyBottomSheet(
+                onDismiss = { showBottomSheet = false },
+            )
+        }
+
 
         Surface(
             color = Color.Transparent, modifier = modifier
@@ -315,7 +340,8 @@ fun MyDropDownMenus(
     modifier: Modifier = Modifier,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onMoveUp: () -> Unit
+    onMoveUp: () -> Unit,
+    onAdding: () -> Unit = {},
 ) {
     if (expanded) {
         MaterialTheme(
@@ -342,6 +368,12 @@ fun MyDropDownMenus(
                         onDismissRequest()
                     }
                 )
+                TextFieldWithHint(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "MyText",
+                    onValueChange = {},
+                    hintText = "MyHint"
+                )
                 HorizontalDivider()
                 DropdownMenuItem(
                     text = { Text("Move UP") },
@@ -350,14 +382,156 @@ fun MyDropDownMenus(
                         onDismissRequest()
                     }
                 )
+                TextFieldWithHint(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "MyText",
+                    onValueChange = {},
+                    hintText = "MyHint"
+                )
+                TextFieldWithHint(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "MyText",
+                    onValueChange = {},
+                    hintText = "MyHint"
+                )
+                TextFieldWithHint(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = "MyText",
+                    onValueChange = {},
+                    hintText = "MyHint"
+                )
+
             }
         }
     }
 }
 
-sealed class UiEvent {
-    data class EditItem(val item: RecyclerSkillFowViewModel) : UiEvent()
-    data class DeleteItem(val item: RecyclerSkillFowViewModel) : UiEvent()
-    data class MoveItemUp(val item: RecyclerSkillFowViewModel) : UiEvent()
+@Composable
+fun TextFieldWithHint(
+    modifier: Modifier = Modifier,
+    value: String = "",
+    onValueChange: (String) -> Unit = {},
+    hintText: String = "",
+) {
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        decorationBox = { innerTextField ->
+            Box(modifier = modifier) {
+                if (value.isEmpty()) {
+                    Text(
+                        text = hintText,
+                        style = TextStyle(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
+                innerTextField()
+            }
+        }
+    )
+}
+@Composable
+@Preview
+fun TextFieldWithHintPreview() {
+    TextFieldWithHint(
+        modifier = Modifier.fillMaxWidth(),
+        value = "MyText",
+        onValueChange = {},
+        hintText = "MyHint"
+    )
+}
 
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyBottomSheet(
+    modifier: Modifier = Modifier,
+    onEvent: (SkillsChangeConst) -> Unit = {},
+    sheetState: SheetState = rememberModalBottomSheetState(),
+    onDismiss: () -> Unit
+) {
+    Log.d("Sheet state is: ", "${sheetState.isVisible}")
+    ModalBottomSheet(
+        modifier = Modifier.wrapContentSize(),
+        onDismissRequest = { onDismiss() },
+        sheetState = sheetState,
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.primaryContainer
+    ) {
+
+        Surface(modifier = Modifier, color = MaterialTheme.colorScheme.primaryContainer) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                var textName by remember { mutableStateOf("textName") }
+
+
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = textName,
+                    onValueChange = { textName = it },
+                    placeholder = { Text("Name", color = Color.Gray) },
+                    label = {
+                        if (textName.isNotEmpty()) Text("Skill Name")
+                    }
+                )
+
+                var textDescription by remember { mutableStateOf("textDescription") }
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = textDescription,
+                    onValueChange = { textDescription = it },
+                    placeholder = { Text("Name", color = Color.Gray) },
+                    label = {
+                        if (textDescription.isNotEmpty()) Text("Skill Description")
+                    })
+
+                var textDate by remember { mutableStateOf("textDate") }
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = textDate,
+                    onValueChange = { textDate = it },
+                    placeholder = { Text("Name", color = Color.Gray) },
+                    label = {
+                        if (textDate.isNotEmpty()) Text("Skill Date")
+                    })
+                Spacer(modifier = Modifier.size(50.dp))
+            }
+        }
+    }
+}
+
+
+@Composable
+@Preview
+fun ListItemSkillPreview() {
+    ListItemSkill(
+        item = RecyclerSkillFowViewModel(
+            skill = Skill(
+                name = "MySkill",
+                description = "Some good skills, that i know",
+                date = Date()
+            )
+        ),
+        onEvent = {}
+    )
+    println("true".toBooleanStrictOrNull())
+}
+
+@Composable
+@Preview
+fun SkillScreenPreview() {
+    SkillScreen(navController = null)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview
+fun MyBottomSheetPreview() {
+    MyBottomSheet(onDismiss = {})
 }
