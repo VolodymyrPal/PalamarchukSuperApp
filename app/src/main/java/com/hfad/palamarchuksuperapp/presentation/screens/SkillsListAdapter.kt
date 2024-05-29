@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
-import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst.*
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -52,12 +52,10 @@ class SkillsListAdapter(
         private val parentFragmentManager: FragmentManager
     ) : RecyclerView.ViewHolder(binding.root) {
         private val startedHeight = binding.skillCard.layoutParams.height
+
         fun bind(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
-
             binding.materialCheckBox.isChecked = recyclerSkillFowViewModel.chosen
-
             binding.skillTitle.text = recyclerSkillFowViewModel.skill.name.uppercase(Locale.getDefault())
-            //    binding.skillDescription.text = skill.description
             binding.skillDate.text =
                 SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(recyclerSkillFowViewModel.skill.date)
             binding.moreButton.setOnClickListener {
@@ -73,7 +71,7 @@ class SkillsListAdapter(
 
                             Toast.makeText(
                                 this.binding.root.context,
-                                "Clicked edit ",
+                                "Clicked edi",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -103,8 +101,8 @@ class SkillsListAdapter(
 
             fun onCheckboxClicked() {
                 recyclerSkillFowViewModel.chosen = !recyclerSkillFowViewModel.chosen
-                if (recyclerSkillFowViewModel.chosen) myViewModel.updateSkill(recyclerSkillFowViewModel, ChooseSkill)
-                else myViewModel.updateSkill(recyclerSkillFowViewModel, NotChooseSkill)
+                if (recyclerSkillFowViewModel.chosen) myViewModel.updateSkill(recyclerSkillFowViewModel,SkillsChangeConst.ChooseSkill)
+                else myViewModel.updateSkill(recyclerSkillFowViewModel, SkillsChangeConst.NotChooseSkill)
                 binding.materialCheckBox.isChecked = recyclerSkillFowViewModel.chosen
             }
 
