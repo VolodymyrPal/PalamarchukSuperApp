@@ -73,9 +73,9 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
+import com.hfad.palamarchuksuperapp.compose.utils.BottomSheetSkill
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
-import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.UiEvent
 import java.text.SimpleDateFormat
@@ -116,7 +116,7 @@ fun SkillScreen(
     ) { paddingValues ->
 
         if (showBottomSheet) {
-            MyBottomSheet(
+            BottomSheetSkill(
                 onDismiss = { showBottomSheet = false },
             )
         }
@@ -361,19 +361,7 @@ fun MyDropDownMenus(
                         onDismissRequest()
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Delete") },
-                    onClick = { /* Handle settings! */
-                        onDelete()
-                        onDismissRequest()
-                    }
-                )
-                TextFieldWithHint(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = "MyText",
-                    onValueChange = {},
-                    hintText = "MyHint"
-                )
+
                 HorizontalDivider()
                 DropdownMenuItem(
                     text = { Text("Move UP") },
@@ -382,130 +370,10 @@ fun MyDropDownMenus(
                         onDismissRequest()
                     }
                 )
-                TextFieldWithHint(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = "MyText",
-                    onValueChange = {},
-                    hintText = "MyHint"
-                )
-                TextFieldWithHint(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = "MyText",
-                    onValueChange = {},
-                    hintText = "MyHint"
-                )
-                TextFieldWithHint(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = "MyText",
-                    onValueChange = {},
-                    hintText = "MyHint"
-                )
-
             }
         }
     }
 }
-
-@Composable
-fun TextFieldWithHint(
-    modifier: Modifier = Modifier,
-    value: String = "",
-    onValueChange: (String) -> Unit = {},
-    hintText: String = "",
-) {
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
-        decorationBox = { innerTextField ->
-            Box(modifier = modifier) {
-                if (value.isEmpty()) {
-                    Text(
-                        text = hintText,
-                        style = TextStyle(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-                }
-                innerTextField()
-            }
-        }
-    )
-}
-@Composable
-@Preview
-fun TextFieldWithHintPreview() {
-    TextFieldWithHint(
-        modifier = Modifier.fillMaxWidth(),
-        value = "MyText",
-        onValueChange = {},
-        hintText = "MyHint"
-    )
-}
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyBottomSheet(
-    modifier: Modifier = Modifier,
-    onEvent: (SkillsChangeConst) -> Unit = {},
-    sheetState: SheetState = rememberModalBottomSheetState(),
-    onDismiss: () -> Unit
-) {
-    Log.d("Sheet state is: ", "${sheetState.isVisible}")
-    ModalBottomSheet(
-        modifier = Modifier.wrapContentSize(),
-        onDismissRequest = { onDismiss() },
-        sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primaryContainer
-    ) {
-
-        Surface(modifier = Modifier, color = MaterialTheme.colorScheme.primaryContainer) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                var textName by remember { mutableStateOf("textName") }
-
-
-
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = textName,
-                    onValueChange = { textName = it },
-                    placeholder = { Text("Name", color = Color.Gray) },
-                    label = {
-                        if (textName.isNotEmpty()) Text("Skill Name")
-                    }
-                )
-
-                var textDescription by remember { mutableStateOf("textDescription") }
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = textDescription,
-                    onValueChange = { textDescription = it },
-                    placeholder = { Text("Name", color = Color.Gray) },
-                    label = {
-                        if (textDescription.isNotEmpty()) Text("Skill Description")
-                    })
-
-                var textDate by remember { mutableStateOf("textDate") }
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = textDate,
-                    onValueChange = { textDate = it },
-                    placeholder = { Text("Name", color = Color.Gray) },
-                    label = {
-                        if (textDate.isNotEmpty()) Text("Skill Date")
-                    })
-                Spacer(modifier = Modifier.size(50.dp))
-            }
-        }
-    }
-}
-
 
 @Composable
 @Preview
@@ -529,9 +397,3 @@ fun SkillScreenPreview() {
     SkillScreen(navController = null)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-@Preview
-fun MyBottomSheetPreview() {
-    MyBottomSheet(onDismiss = {})
-}
