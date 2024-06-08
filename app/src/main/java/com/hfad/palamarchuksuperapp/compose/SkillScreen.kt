@@ -133,7 +133,7 @@ fun SkillScreen(
             LazyColumn {
                 items(
                     items = SkillList,
-                    key = { item: RecyclerSkillFowViewModel -> item.skill.id.toString() }
+                    key = { item: RecyclerSkillForViewModel -> item.skill.id.toString() }
                 ) { item ->
                     AnimatedVisibility(
                         modifier = Modifier.animateItemPlacement(),
@@ -168,8 +168,9 @@ fun SkillScreen(
 @Composable
 fun ListItemSkill(
     modifier: Modifier = Modifier,
-    item: RecyclerSkillFowViewModel,
-    onEvent: (UiEvent) -> Unit
+    item: RecyclerSkillForViewModel,
+    onEvent: (UiEvent) -> Unit,
+    onSheetSaveButton: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit,
 ) {
     var isVisible by remember { mutableStateOf(false) }
     var isExpanded by remember { mutableStateOf(false) }
@@ -379,7 +380,7 @@ fun MyDropDownMenus(
 @Preview
 fun ListItemSkillPreview() {
     ListItemSkill(
-        item = RecyclerSkillFowViewModel(
+        item = RecyclerSkillForViewModel(
             skill = Skill(
                 name = "MySkill",
                 description = "Some good skills, that i know",

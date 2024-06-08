@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
-import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import java.text.SimpleDateFormat
@@ -18,7 +18,7 @@ import java.util.Locale
 import java.util.UUID
 
 class BottomSheetFragment(
-    private val recyclerSkillFowViewModel: RecyclerSkillFowViewModel = RecyclerSkillFowViewModel(
+    private val recyclerSkillForViewModel: RecyclerSkillForViewModel = RecyclerSkillForViewModel(
         Skill()
     ),
     private val viewModel: SkillsViewModel
@@ -30,7 +30,7 @@ class BottomSheetFragment(
             "_binding = null"
         }
 
-    private var tempRecSkill = RecyclerSkillFowViewModel(Skill())
+    private var tempRecSkill = RecyclerSkillForViewModel(Skill())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,13 +40,13 @@ class BottomSheetFragment(
 
 
         _binding = ListItemBottomSheetBinding.inflate(inflater, container, false)
-        if (recyclerSkillFowViewModel.skill.id != null) {
+        if (recyclerSkillForViewModel.skill.id != null) {
             binding.apply {
-                skillNameField.setText(recyclerSkillFowViewModel.skill.name)
-                skillDescriptionField.setText(recyclerSkillFowViewModel.skill.description)
+                skillNameField.setText(recyclerSkillForViewModel.skill.name)
+                skillDescriptionField.setText(recyclerSkillForViewModel.skill.description)
                 skillDateField.setText(
                     SimpleDateFormat("dd MMMM: HH:mm", Locale.US).format(
-                        recyclerSkillFowViewModel.skill.date
+                        recyclerSkillForViewModel.skill.date
                     )
                 )
             }
@@ -112,7 +112,7 @@ class BottomSheetFragment(
         }
 
         binding.saveSkillButton.setOnClickListener {
-            if (recyclerSkillFowViewModel.skill.id == null) {
+            if (recyclerSkillForViewModel.skill.id == null) {
                 tempRecSkill = tempRecSkill.copy(
                     skill = Skill(
                         id = UUID.randomUUID(),
@@ -126,7 +126,7 @@ class BottomSheetFragment(
             } else {
                 tempRecSkill = tempRecSkill.copy(
                     skill = Skill(
-                        id = recyclerSkillFowViewModel.skill.id,
+                        id = recyclerSkillForViewModel.skill.id,
                         name = binding.skillNameField.text.toString(),
                         description = binding.skillDescriptionField.text.toString(),
                         date = Date(tempRecSkill.skill.date.time)

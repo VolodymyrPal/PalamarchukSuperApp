@@ -47,16 +47,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
-import java.util.Date
+import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
+import java.util.UUID
 
 
 @Suppress("detekt.FunctionNaming", "detekt.UnusedParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetSkill(
-    modifier: Modifier = Modifier.imePadding(),
-    onEvent: (SkillsChangeConst) -> Unit = {},
+    modifier: Modifier = Modifier,
+    onEvent: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismiss: () -> Unit,
 ) {

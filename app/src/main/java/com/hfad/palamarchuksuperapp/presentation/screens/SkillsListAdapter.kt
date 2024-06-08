@@ -24,11 +24,11 @@ class SkillsListAdapter(
     private val viewModel: SkillsViewModel,
     private val fragmentManager: FragmentManager
 ) :
-    ListAdapter<RecyclerSkillFowViewModel, SkillsListAdapter.SkillHolder>(SkillDiffItemCallback()) {
+    ListAdapter<RecyclerSkillForViewModel, SkillsListAdapter.SkillHolder>(SkillDiffItemCallback()) {
 
     private val asyncListDiffer = AsyncListDiffer(this, SkillDiffItemCallback())
 
-    fun setDate(skillList: List<RecyclerSkillFowViewModel>) {
+    fun setDate(skillList: List<RecyclerSkillForViewModel>) {
         asyncListDiffer.submitList(skillList)
     }
 
@@ -53,9 +53,10 @@ class SkillsListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private val startedHeight = binding.skillCard.layoutParams.height
 
-        fun bind(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
-            binding.materialCheckBox.isChecked = recyclerSkillFowViewModel.chosen
-            binding.skillTitle.text = recyclerSkillFowViewModel.skill.name.uppercase(Locale.getDefault())
+        fun bind(recyclerSkillForViewModel: RecyclerSkillForViewModel) {
+            binding.materialCheckBox.isChecked = recyclerSkillForViewModel.chosen
+            binding.skillTitle.text =
+                recyclerSkillForViewModel.skill.name.uppercase(Locale.getDefault())
             binding.skillDate.text =
                 SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(recyclerSkillFowViewModel.skill.date)
             binding.moreButton.setOnClickListener {
@@ -66,7 +67,10 @@ class SkillsListAdapter(
 
                         R.id.menu_option_edit -> {
                             val bottomSheetFragment =
-                                BottomSheetFragment(recyclerSkillFowViewModel, viewModel = myViewModel)
+                                BottomSheetFragment(
+                                    recyclerSkillForViewModel,
+                                    viewModel = myViewModel
+                                )
                             bottomSheetFragment.show(parentFragmentManager, "BSDialogFragment")
 
                             Toast.makeText(
@@ -77,7 +81,7 @@ class SkillsListAdapter(
                         }
 
                         R.id.menu_option_delete -> {
-                            myViewModel.deleteSkill(recyclerSkillFowViewModel)
+                            myViewModel.deleteSkill(recyclerSkillForViewModel)
                             Toast.makeText(
                                 this.binding.root.context,
                                 "Clicked delete",
@@ -86,7 +90,7 @@ class SkillsListAdapter(
                         }
 
                         R.id.menu_item_moveUp -> {
-                            myViewModel.moveToFirstPosition(recyclerSkillFowViewModel)
+                            myViewModel.moveToFirstPosition(recyclerSkillForViewModel)
                             Toast.makeText(
                                 this.binding.root.context,
                                 "Clicked moving Up",
@@ -100,10 +104,16 @@ class SkillsListAdapter(
             }
 
             fun onCheckboxClicked() {
-                recyclerSkillFowViewModel.chosen = !recyclerSkillFowViewModel.chosen
-                if (recyclerSkillFowViewModel.chosen) myViewModel.updateSkill(recyclerSkillFowViewModel,SkillsChangeConst.ChooseSkill)
-                else myViewModel.updateSkill(recyclerSkillFowViewModel, SkillsChangeConst.NotChooseSkill)
-                binding.materialCheckBox.isChecked = recyclerSkillFowViewModel.chosen
+                recyclerSkillForViewModel.chosen = !recyclerSkillForViewModel.chosen
+                if (recyclerSkillForViewModel.chosen) myViewModel.updateSkillOrAdd(
+                    recyclerSkillForViewModel,
+                    SkillsChangeConst.ChooseSkill
+                )
+                else myViewModel.updateSkillOrAdd(
+                    recyclerSkillForViewModel,
+                    SkillsChangeConst.NotChooseSkill
+                )
+                binding.materialCheckBox.isChecked = recyclerSkillForViewModel.chosen
             }
 
             binding.cardSkill.setOnClickListener {
@@ -141,11 +151,11 @@ class SkillsListAdapter(
 //            }
 
             binding.expandDetails.setOnClickListener {
-                expandOrHide(recyclerSkillFowViewModel)
+                expandOrHide(recyclerSkillForViewModel)
             }
 
-            binding.skillDescription.text = recyclerSkillFowViewModel.skill.description
-            binding.materialCheckBox.isChecked = recyclerSkillFowViewModel.chosen
+            binding.skillDescription.text = recyclerSkillForViewModel.skill.description
+            binding.materialCheckBox.isChecked = recyclerSkillForViewModel.chosen
 
 
 //            binding.expandDetails.post {
@@ -161,11 +171,11 @@ class SkillsListAdapter(
         }
 
 
-        private fun expandOrHide(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
+        private fun expandOrHide(recyclerSkillForViewModel: RecyclerSkillForViewModel) {
 
-            if (!recyclerSkillFowViewModel.isExpanded) {
+            if (!recyclerSkillForViewModel.isExpanded) {
                 binding.skillDescription.maxLines = Int.MAX_VALUE
-                binding.skillDescription.text = recyclerSkillFowViewModel.skill.description
+                binding.skillDescription.text = recyclerSkillForViewModel.skill.description
 
                 val layoutParamsDescription = binding.skillDescription.layoutParams
                 layoutParamsDescription.height = LayoutParams.MATCH_PARENT
@@ -176,7 +186,7 @@ class SkillsListAdapter(
                 binding.skillCard.layoutParams = layoutParamsCard
 
                 binding.expandDetails.text = "<< Hide"
-                recyclerSkillFowViewModel.isExpanded = true
+                recyclerSkillForViewModel.isExpanded = true
 
             } else {
 //                binding.skillDescription.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(100))
@@ -192,16 +202,22 @@ class SkillsListAdapter(
                 binding.skillCard.layoutParams = layoutParamsCard
 
                 binding.expandDetails.text = "Details >>"
-                recyclerSkillFowViewModel.isExpanded = false
+                recyclerSkillForViewModel.isExpanded = false
             }
         }
     }
 
-    class SkillDiffItemCallback : DiffUtil.ItemCallback<RecyclerSkillFowViewModel>() {
-        override fun areItemsTheSame(oldItem: RecyclerSkillFowViewModel, newItem: RecyclerSkillFowViewModel): Boolean =
+    class SkillDiffItemCallback : DiffUtil.ItemCallback<RecyclerSkillForViewModel>() {
+        override fun areItemsTheSame(
+            oldItem: RecyclerSkillForViewModel,
+            newItem: RecyclerSkillForViewModel,
+        ): Boolean =
             oldItem == newItem
 
-        override fun areContentsTheSame(oldItem: RecyclerSkillFowViewModel, newItem: RecyclerSkillFowViewModel): Boolean =
+        override fun areContentsTheSame(
+            oldItem: RecyclerSkillForViewModel,
+            newItem: RecyclerSkillForViewModel,
+        ): Boolean =
             oldItem.skill.description == newItem.skill.description
     }
 }

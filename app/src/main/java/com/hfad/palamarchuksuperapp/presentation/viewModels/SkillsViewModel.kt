@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.Skill
-import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +19,7 @@ class SkillsViewModel : ViewModel() {
     lateinit var myRepository: SkillsRepositoryImpl
 
     private val one =
-        RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(
             Skill(
                 name = "Compose",
                 description = "One, Two, Three",
@@ -27,8 +27,8 @@ class SkillsViewModel : ViewModel() {
             )
         )
     private val two =
-        RecyclerSkillFowViewModel(Skill(name = "XML", description = "One, Two, Three", id = UUID.randomUUID()))
-    private val three = RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(Skill(name = "XML", description = "One, Two, Three", id = UUID.randomUUID()))
+    private val three = RecyclerSkillForViewModel(
         Skill(
             name = "Recycler View",
             description = "Paging, DiffUtil, Adapter",
@@ -36,7 +36,7 @@ class SkillsViewModel : ViewModel() {
         )
     )
     private val four =
-        RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(
             Skill(
                 name = "Retrofit",
                 description = "One, Two, Three",
@@ -44,23 +44,24 @@ class SkillsViewModel : ViewModel() {
             )
         )
     private val five =
-        RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(
             Skill(
                 name = "Async",
                 description = "One, Two, Three",
                 id = UUID.randomUUID()
             )
         )
-    private val six = RecyclerSkillFowViewModel(
+    private val six = RecyclerSkillForViewModel(
         Skill(
             name = "Dependency injections",
-            description = "Multi-module architecture, Component Dependencies, Multibindings, Components, Scope, Injections" +
+            description = "Multi-module architecture, Component Dependencies, Multibindings, " +
+                    "Components, Scope, Injections" +
                     " Libraries: Dagger 2, Hilt, ---Kodein, ---Koin",
             id = UUID.randomUUID()
         )
     )
     private val seven =
-        RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(
             Skill(
                 name = "RxJava",
                 description = "One, Two, Three",
@@ -68,15 +69,16 @@ class SkillsViewModel : ViewModel() {
             )
         )
     private val eight =
-        RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(
             Skill(
                 name = "To learn",
-                description = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, REST API!!!, JSON!, PUSH NOTIFICATIONS!!!, ",
+                description = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, " +
+                        "REST API!!!, JSON!, PUSH NOTIFICATIONS!!!, ",
                 id = UUID.randomUUID()
             )
         )
     private val nine =
-        RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(
             Skill(
                 name = "Recycler View",
                 description = "One, Two, Three",
@@ -84,23 +86,15 @@ class SkillsViewModel : ViewModel() {
             )
         )
     private val ten =
-        RecyclerSkillFowViewModel(Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID()))
-    private val eleven = RecyclerSkillFowViewModel(
+        RecyclerSkillForViewModel(Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID()))
+    private val eleven = RecyclerSkillForViewModel(
         Skill(
             name = "Work with Image",
             description = "FileProvider,Coil",
             id = UUID.randomUUID()
         )
     )
-    private val twelve = RecyclerSkillFowViewModel(
-        Skill(
-            name = "Work with Image",
-            description = "FileProvider,Coil",
-            id = UUID.randomUUID()
-        )
-    )
-
-    private val thirteen = RecyclerSkillFowViewModel(
+    private val twelve = RecyclerSkillForViewModel(
         Skill(
             name = "Work with Image",
             description = "FileProvider,Coil",
@@ -108,8 +102,16 @@ class SkillsViewModel : ViewModel() {
         )
     )
 
+    private val thirteen = RecyclerSkillForViewModel(
+        Skill(
+            name = "Work with Image",
+            description = "FileProvider,Coil",
+            id = UUID.randomUUID()
+        )
+    )
 
-    private val dataListNewFlow = MutableStateFlow<MutableList<RecyclerSkillFowViewModel>>(
+
+    private val dataListNewFlow = MutableStateFlow<MutableList<RecyclerSkillForViewModel>>(
         mutableListOf(
             one,
             two,
@@ -126,7 +128,7 @@ class SkillsViewModel : ViewModel() {
             thirteen
         )
     )
-    val date: StateFlow<List<RecyclerSkillFowViewModel>> = this.dataListNewFlow.asStateFlow()
+    val date: StateFlow<List<RecyclerSkillForViewModel>> = this.dataListNewFlow.asStateFlow()
 
     fun getSkill(): List<Skill> {
         return date.value.map { it.skill }
@@ -135,7 +137,7 @@ class SkillsViewModel : ViewModel() {
     fun handleEvent(event: UiEvent) {
         when (event) {
             is UiEvent.EditItem -> {
-
+                updateSkillOrAdd(event.item, SkillsChangeConst.FullSkill)
                 Log.d("Skill: ", "Asked for editing ${date.value.size}")
             }
             is UiEvent.DeleteItem -> {
@@ -155,23 +157,22 @@ class SkillsViewModel : ViewModel() {
         }
     }
 
-    fun moveToFirstPosition(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
+    fun moveToFirstPosition(recyclerSkillForViewModel: RecyclerSkillForViewModel) {
         viewModelScope.launch {
             val newListNew = date.value.toMutableList()
-            newListNew.remove(recyclerSkillFowViewModel)
-            newListNew.add(0, recyclerSkillFowViewModel)
+            newListNew.remove(recyclerSkillForViewModel)
+            newListNew.add(0, recyclerSkillForViewModel)
             dataListNewFlow.value = newListNew
         }
     }
 
-    fun deleteSkill(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
+    fun deleteSkill(recyclerSkillForViewModel: RecyclerSkillForViewModel) {
         viewModelScope.launch {
-            dataListNewFlow.update { it ->
-                val index = it.indexOf(recyclerSkillFowViewModel)
-                val newList = it.toMutableList()
-                Log.d("My index is:", "$index")
+            dataListNewFlow.update { recyclerSkillList ->
+                val index = recyclerSkillList.indexOf(recyclerSkillForViewModel)
+                val newList = recyclerSkillList.toMutableList()
                 if (index != -1) {
-                    newList.remove(recyclerSkillFowViewModel)
+                    newList.remove(recyclerSkillForViewModel)
                 }
                 newList.removeIf {
                     it.chosen
@@ -185,17 +186,17 @@ class SkillsViewModel : ViewModel() {
         viewModelScope.launch {
             dataListNewFlow.update { currentList ->
                 val newList = currentList.toMutableList()
-                newList.add(RecyclerSkillFowViewModel(skill))
+                newList.add(RecyclerSkillForViewModel(skill))
                 newList
             }
         }
     }
 
-    fun changeVisible(recyclerSkillFowViewModel: RecyclerSkillFowViewModel) {
+    fun changeVisible(recyclerSkillForViewModel: RecyclerSkillForViewModel) {
         viewModelScope.launch {
             dataListNewFlow.update { currentList ->
                 val newList = currentList.toMutableList()
-                newList.indexOf(recyclerSkillFowViewModel).let {
+                newList.indexOf(recyclerSkillForViewModel).let {
                     newList[it] = newList[it].copy(isVisible = !newList[it].isVisible)
                 }
                 newList
@@ -203,17 +204,17 @@ class SkillsViewModel : ViewModel() {
         }
     }
 
-    fun updateSkill(recyclerSkillFowViewModel: RecyclerSkillFowViewModel, skillName: String, skillDescription: String) {
+    fun updateSkillOrAdd(recyclerSkillForViewModel: RecyclerSkillForViewModel, skillName: String, skillDescription: String) {
         viewModelScope.launch {
             dataListNewFlow.update { currentList ->
                 val newList = currentList.toMutableList()
-                newList.indexOf(recyclerSkillFowViewModel).let {
+                newList.indexOf(recyclerSkillForViewModel).let {
                     if (it != -1) {
-                        newList[it] = RecyclerSkillFowViewModel(
+                        newList[it] = RecyclerSkillForViewModel(
                             skill = Skill(
                                 name = skillName,
                                 description = skillDescription,
-                                id = recyclerSkillFowViewModel.skill.id
+                                id = recyclerSkillForViewModel.skill.id
                             )
                         )
                     } else {
@@ -225,13 +226,13 @@ class SkillsViewModel : ViewModel() {
         }
     }
 
-    fun updateSkill(recyclerSkillFowViewModel: RecyclerSkillFowViewModel, changeConst: SkillsChangeConst) {
+    fun updateSkillOrAdd(recyclerSkillForViewModel: RecyclerSkillForViewModel, changeConst: SkillsChangeConst) {
         viewModelScope.launch {
             when (changeConst) {
                 SkillsChangeConst.ChooseSkill -> {
                     dataListNewFlow.update {
                         val newList = it.toMutableList()
-                        newList.indexOf(recyclerSkillFowViewModel).let {
+                        newList.indexOf(recyclerSkillForViewModel).let {
                             Log.d("Was called:", "$it")
                             newList[it] = newList[it].copy(chosen = true)
                         }
@@ -242,7 +243,7 @@ class SkillsViewModel : ViewModel() {
 
                 SkillsChangeConst.NotChooseSkill -> {
                     val newListNew = date.value.toMutableList()
-                    newListNew.indexOf(recyclerSkillFowViewModel).let {
+                    newListNew.indexOf(recyclerSkillForViewModel).let {
                         newListNew[it] = newListNew[it].copy(chosen = false)
                     }
                     dataListNewFlow.value = newListNew
@@ -251,9 +252,14 @@ class SkillsViewModel : ViewModel() {
                 SkillsChangeConst.FullSkill -> {
                     dataListNewFlow.update { myListFlow ->
                         val newList = myListFlow.toMutableList()
-                        val skillToChange = newList.find { it.skill.id == recyclerSkillFowViewModel.skill.id }
-                        newList.indexOf(skillToChange)?.let {
-                            newList[it] = newList[it].copy(skill = recyclerSkillFowViewModel.skill)
+                        val skillToChange = newList.find { it.skill.id == recyclerSkillForViewModel.skill.id }
+                        if (skillToChange == null) {
+                            newList.add(recyclerSkillForViewModel)
+                        } else {
+                            newList.indexOf(skillToChange).let {
+                                newList[it] =
+                                    newList[it].copy(skill = recyclerSkillForViewModel.skill)
+                            }
                         }
                         newList
                     }
@@ -270,9 +276,9 @@ sealed class SkillsChangeConst {
 }
 
 sealed class UiEvent {
-    data class EditItem(val item: RecyclerSkillFowViewModel) : UiEvent()
-    data class DeleteItem(val item: RecyclerSkillFowViewModel) : UiEvent()
-    data class MoveItemUp(val item: RecyclerSkillFowViewModel) : UiEvent()
-    data class ChangeVisible(val item: RecyclerSkillFowViewModel) : UiEvent()
-    data class AddItem(val item: RecyclerSkillFowViewModel) : UiEvent()
+    data class EditItem(val item: RecyclerSkillForViewModel) : UiEvent()
+    data class DeleteItem(val item: RecyclerSkillForViewModel) : UiEvent()
+    data class MoveItemUp(val item: RecyclerSkillForViewModel) : UiEvent()
+    data class ChangeVisible(val item: RecyclerSkillForViewModel) : UiEvent()
+    data class AddItem(val item: RecyclerSkillForViewModel) : UiEvent()
 }
