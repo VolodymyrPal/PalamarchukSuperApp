@@ -132,7 +132,7 @@ class BottomSheetFragment(
                         date = Date(tempRecSkill.skill.date.time)
                     )
                 )
-                viewModel.updateSkill(tempRecSkill, SkillsChangeConst.FullSkill)
+                viewModel.updateSkillOrAdd(tempRecSkill, SkillsChangeConst.FullSkill)
                 this.dismiss()
             }
         }

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
-import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import java.text.SimpleDateFormat
@@ -58,7 +58,7 @@ class SkillsListAdapter(
             binding.skillTitle.text =
                 recyclerSkillForViewModel.skill.name.uppercase(Locale.getDefault())
             binding.skillDate.text =
-                SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(recyclerSkillFowViewModel.skill.date)
+                SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(recyclerSkillForViewModel.skill.date)
             binding.moreButton.setOnClickListener {
                 val popupMenu = PopupMenu(binding.root.context, binding.moreButton)
                 popupMenu.inflate(R.menu.skill_recycler_menu)
