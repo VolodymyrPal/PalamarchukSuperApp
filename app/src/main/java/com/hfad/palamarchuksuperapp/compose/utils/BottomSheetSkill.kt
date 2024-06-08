@@ -5,15 +5,10 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -41,7 +36,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.takeOrElse
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
@@ -52,77 +46,100 @@ import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewMode
 import java.util.UUID
 
 
-@Suppress("detekt.FunctionNaming", "detekt.UnusedParameter")
-@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("detekt.FunctionNaming", "detekt.UnusedParameter", "detekt.LongMethod")
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun BottomSheetSkill(
     modifier: Modifier = Modifier,
     onEvent: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismiss: () -> Unit,
+    recyclerSkillForViewModel: RecyclerSkillForViewModel = RecyclerSkillForViewModel(Skill()),
 ) {
-    val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
-
-
-    Log.d("KeyboadrHeight: ", "${keyboardHeight}")
     ModalBottomSheet(
-        modifier = Modifier.wrapContentSize(),
+        modifier = modifier,
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primaryContainer
+        contentColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
-
-        Surface(modifier = Modifier, color = MaterialTheme.colorScheme.primaryContainer) {
+        Surface(
+            modifier = Modifier.navigationBarsPadding(),
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier,
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var textName by remember { mutableStateOf("") }
+                var textName by remember {
+                    mutableStateOf(
+                        recyclerSkillForViewModel.skill.name
+                    )
+                }
                 OutlinedHintText(
                     modifier = Modifier.fillMaxWidth(),
                     value = textName,
-                    onValueChange = { textName = it
-                        Log.d("KeyboadrHeight: ", "${keyboardHeight}")
+                    onValueChange = {
+                        textName = it
                     },
-                    label = { Text(text = "Skill Name") },
+                    label = "Skill Name",
                     placeholder = "Skill Description",
-                    hintText = "Jetpack Compose"
+                    hintText = "Jetpack Compose",
+                    singleLine = true,
+                    maxLines = 1
                 )
 
-                var textDescription by remember { mutableStateOf("") }
+                var textDescription by remember {
+                    mutableStateOf(
+                        recyclerSkillForViewModel.skill.description
+                    )
+                }
                 OutlinedHintText(
                     modifier = Modifier.fillMaxWidth(),
                     value = textDescription,
-                    onValueChange = { textDescription = it
-                        Log.d("KeyboadrHeight: ", "${keyboardHeight}")
+                    onValueChange = {
+                        textDescription = it
                     },
                     hintText = "My hint",
-                    label = { Text(text = "State, composition, theme, etc.") },
+                    label = "State, composition, theme, etc.",
                     placeholder = "Description",
+                    maxLines = 3,
+                    singleLine = true
                 )
 
-                var textDate by remember { mutableStateOf(Date()) }
+                val textDate by remember {
+                    mutableStateOf(
+                        recyclerSkillForViewModel.skill.date
+                    )
+                }
                 OutlinedHintText(
                     modifier = Modifier.fillMaxWidth(),
                     value = textDate.toString(),
                     onValueChange = { },
                     hintText = "Date",
-                    label = { Text(text = "Date") },
+                    label = "Date",
                     placeholder = "Date"
                 )
 
-                Button(onClick = { /*TODO*/ },
-                    modifier = Modifier.wrapContentSize()
+                Button(
+                    modifier = Modifier.wrapContentSize(),
+                    onClick = {
+                        onEvent(
+                            recyclerSkillForViewModel.copy(
+                                skill = recyclerSkillForViewModel.skill.copy(
+                                    id = recyclerSkillForViewModel.skill.id ?: UUID.randomUUID(),
+                                    name = textName,
+                                    description = textDescription,
+                                    date = textDate
+                                )
+                            )
+                        )
+                        onDismiss()
+                    },
                 ) {
                     Text(text = "Save")
                 }
-
-                Spacer(modifier = Modifier.size(50.dp))
-                Spacer(modifier = Modifier.size(50.dp))
-                Spacer(modifier = Modifier.size(50.dp))
-
             }
         }
     }
@@ -152,7 +169,7 @@ fun OutlinedHintText(
     enabled: Boolean = true,
     readOnly: Boolean = false,
     textStyle: TextStyle = LocalTextStyle.current,
-    label: @Composable (() -> Unit)? = null,
+    label: String = "",
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
@@ -207,11 +224,18 @@ fun OutlinedHintText(
                     value = value,
                     visualTransformation = visualTransformation,
                     innerTextField = innerTextField,
-                    label = label,
+                    label = {
+                        Text(
+                            text = label,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                            maxLines = 1,
+                            minLines = 1,
+                        )
+                    },
                     placeholder = {
                         if (focusable) Text(
                             text = hintText,
-                            color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.2f)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                     },
                     leadingIcon = leadingIcon,

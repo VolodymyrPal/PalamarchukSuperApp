@@ -28,7 +28,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -40,13 +39,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -75,14 +70,15 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.compose.utils.BottomSheetSkill
 import com.hfad.palamarchuksuperapp.domain.models.Skill
-import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillFowViewModel
+import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.UiEvent
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SkillScreen(
@@ -91,6 +87,10 @@ fun SkillScreen(
 ) {
     val viewModel = SkillsViewModel()
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    val onSheetSaveButton: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit = {
+        viewModel.updateSkillOrAdd(it, SkillsChangeConst.FullSkill)
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -117,7 +117,10 @@ fun SkillScreen(
 
         if (showBottomSheet) {
             BottomSheetSkill(
-                onDismiss = { showBottomSheet = false },
+                onDismiss = {
+                    showBottomSheet = false
+                },
+                onEvent = { onSheetSaveButton(it) }
             )
         }
 
@@ -147,7 +150,8 @@ fun SkillScreen(
                     ) {
                         ListItemSkill(
                             item = item,
-                            onEvent = { uiEvent -> viewModel.handleEvent(event = uiEvent) }
+                            onEvent = { uiEvent -> viewModel.handleEvent(event = uiEvent) },
+                            onSheetSaveButton = onSheetSaveButton
                         )
                     }
                 }
@@ -165,7 +169,9 @@ fun SkillScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
 fun ListItemSkill(
     modifier: Modifier = Modifier,
     item: RecyclerSkillForViewModel,
@@ -174,7 +180,19 @@ fun ListItemSkill(
 ) {
     var isVisible by remember { mutableStateOf(false) }
     var isExpanded by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
+    if (showBottomSheet) {
+        BottomSheetSkill(
+            onDismiss = {
+                showBottomSheet = false
+            },
+            recyclerSkillForViewModel = item,
+            onEvent = {
+                onSheetSaveButton(it)
+            }
+        )
+    }
 
     Card(
         modifier = if (isExpanded) {
@@ -279,11 +297,10 @@ fun ListItemSkill(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                         onEdit = {
-                            onEvent.invoke(UiEvent.ChangeVisible(item))
-                            //onEvent(UiEvent.EditItem(item))
+                            showBottomSheet = true
                         },
                         onDelete = {
-                            onEvent(UiEvent.ChangeVisible(item))
+                            onEvent.invoke(UiEvent.DeleteItem(item))
                             // onEvent(UiEvent.DeleteItem(item))
                         },
                         onMoveUp = { onEvent(UiEvent.MoveItemUp(item)) },
@@ -334,6 +351,7 @@ fun ListItemSkill(
     }
 }
 
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
 @Composable
 fun MyDropDownMenus(
     expanded: Boolean,
@@ -363,6 +381,14 @@ fun MyDropDownMenus(
                     }
                 )
 
+                DropdownMenuItem(
+                    text = { Text("Delete") },
+                    onClick = {
+                        onDelete()
+                        onDismissRequest()
+                    }
+                )
+
                 HorizontalDivider()
                 DropdownMenuItem(
                     text = { Text("Move UP") },
@@ -376,6 +402,7 @@ fun MyDropDownMenus(
     }
 }
 
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
 @Composable
 @Preview
 fun ListItemSkillPreview() {
@@ -387,11 +414,15 @@ fun ListItemSkillPreview() {
                 date = Date()
             )
         ),
-        onEvent = {}
+        onEvent = {
+            SkillsViewModel()
+        },
+        onSheetSaveButton = {}
     )
     println("true".toBooleanStrictOrNull())
 }
 
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
 @Composable
 @Preview
 fun SkillScreenPreview() {
