@@ -1,13 +1,12 @@
 package com.hfad.palamarchuksuperapp.compose.utils
 
-import android.util.Log
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicTextField
@@ -31,13 +30,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,7 +53,9 @@ import java.util.UUID
 
 
 @Suppress("detekt.FunctionNaming", "detekt.UnusedParameter", "detekt.LongMethod")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
+    ExperimentalComposeUiApi::class
+)
 @Composable
 fun BottomSheetSkill(
     modifier: Modifier = Modifier,
@@ -56,15 +64,22 @@ fun BottomSheetSkill(
     onDismiss: () -> Unit,
     recyclerSkillForViewModel: RecyclerSkillForViewModel = RecyclerSkillForViewModel(Skill()),
 ) {
+
+
+    val localFocusManager = LocalFocusManager.current
+    val focusRequesterName = remember { FocusRequester() }
+    val focusRequesterDescription = remember { FocusRequester() }
+    val focusRequesterDate = remember { FocusRequester() }
+
     ModalBottomSheet(
-        modifier = modifier,
+        modifier = modifier.wrapContentSize().focusRequester(focusRequesterName),
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
         Surface(
-            modifier = Modifier.navigationBarsPadding(),
+            modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.primaryContainer
         ) {
             Column(
@@ -77,8 +92,11 @@ fun BottomSheetSkill(
                         recyclerSkillForViewModel.skill.name
                     )
                 }
+
+
+
                 OutlinedHintText(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterName),
                     value = textName,
                     onValueChange = {
                         textName = it
@@ -86,8 +104,14 @@ fun BottomSheetSkill(
                     label = "Skill Name",
                     placeholder = "Skill Description",
                     hintText = "Jetpack Compose",
-                    singleLine = true,
-                    maxLines = 1
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusRequesterDescription.requestFocus()
+                            //localFocusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
                 )
 
                 var textDescription by remember {
@@ -96,7 +120,7 @@ fun BottomSheetSkill(
                     )
                 }
                 OutlinedHintText(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterDescription),
                     value = textDescription,
                     onValueChange = {
                         textDescription = it
@@ -104,8 +128,12 @@ fun BottomSheetSkill(
                     hintText = "My hint",
                     label = "State, composition, theme, etc.",
                     placeholder = "Description",
-                    maxLines = 3,
-                    singleLine = true
+                    maxLines = 6,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            localFocusManager.moveFocus(FocusDirection.Exit)
+                    })
                 )
 
                 val textDate by remember {
@@ -258,7 +286,6 @@ fun OutlinedHintText(
                         )
                     }
                 )
-
             }
         )
     }
