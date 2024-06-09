@@ -148,7 +148,7 @@ fun SkillScreen(
                             animationSpec = TweenSpec(100, 100, LinearEasing)
                         )
                     ) {
-                        ListItemSkill(
+                        ItemListSkill(
                             item = item,
                             onEvent = { uiEvent -> viewModel.handleEvent(event = uiEvent) },
                             onSheetSaveButton = onSheetSaveButton
@@ -172,13 +172,12 @@ fun SkillScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
-fun ListItemSkill(
+fun ItemListSkill(
     modifier: Modifier = Modifier,
     item: RecyclerSkillForViewModel,
     onEvent: (UiEvent) -> Unit,
     onSheetSaveButton: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit,
 ) {
-    var isVisible by remember { mutableStateOf(false) }
     var isExpanded by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
 
@@ -195,15 +194,15 @@ fun ListItemSkill(
     }
 
     Card(
-        modifier = if (isExpanded) {
+        modifier = if (!isExpanded) {
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
-                .wrapContentHeight()
         } else {
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
+                .wrapContentHeight()
         },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -219,7 +218,7 @@ fun ListItemSkill(
         ) {
             val (name, description, date, menu, choose, expand) = createRefs()
 
-
+            var isVisible by remember { mutableStateOf(false) }
 
             Text(modifier = modifier
                 .constrainAs(name) {
@@ -318,8 +317,6 @@ fun ListItemSkill(
                 checked = false
             )
 
-
-
             Box(
                 modifier = Modifier
                     .constrainAs(expand) {
@@ -327,7 +324,7 @@ fun ListItemSkill(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .clickable {
+                    .clickable(enabled = isVisible) {
                         isExpanded = !isExpanded
                     }
             ) {
@@ -335,14 +332,15 @@ fun ListItemSkill(
                     style = TextStyle(
                         fontSize = 10.sp,
                         fontStyle = FontStyle.Italic,
-                        color = if (isVisible) MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                            alpha = 0.5f
-                        ) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                        color = if (!isVisible) MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             alpha = 0f
+
+                        ) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = 0.5f
                         )
                     ),
                     modifier = Modifier.animateContentSize(),
-                    text = if (isVisible) "Details..." else ("<< Hide"),
+                    text = if (!isExpanded) "Details >>" else ("<< Hide"),
 //                        enabled = !isVisible
 //                                text = if (!isVisible) "Details..." else ("<< Hide"),
                 )
@@ -406,7 +404,7 @@ fun MyDropDownMenus(
 @Composable
 @Preview
 fun ListItemSkillPreview() {
-    ListItemSkill(
+    ItemListSkill(
         item = RecyclerSkillForViewModel(
             skill = Skill(
                 name = "MySkill",
