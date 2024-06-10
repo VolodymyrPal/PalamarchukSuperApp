@@ -148,7 +148,6 @@ class SkillsViewModel : ViewModel() {
             }
             is UiEvent.DeleteItem -> {
                 deleteSkill(event.item)
-                Log.d("Skill: ", "Asked for deleting ${date.value.size}")
             }
             is UiEvent.MoveItemUp -> {
                 moveToFirstPosition(event.item)
@@ -156,6 +155,12 @@ class SkillsViewModel : ViewModel() {
             }
             is UiEvent.AddItem -> {
                 addSkill(skill = event.item.skill)
+            }
+
+            is UiEvent.GetSkills -> {
+                viewModelScope.launch {
+                    fetchSkills()
+                }
             }
         }
     }
@@ -207,25 +212,18 @@ class SkillsViewModel : ViewModel() {
         }
     }
 
-    fun updateSkillOrAdd(recyclerSkillForViewModel: RecyclerSkillForViewModel, skillName: String, skillDescription: String) {
-        viewModelScope.launch {
-            dataListNewFlow.update { currentList ->
-                val newList = currentList.toMutableList()
-                newList.indexOf(recyclerSkillForViewModel).let {
-                    if (it != -1) {
-                        newList[it] = RecyclerSkillForViewModel(
-                            skill = Skill(
-                                name = skillName,
-                                description = skillDescription,
-                                id = recyclerSkillForViewModel.skill.id
-                            )
-                        )
-                    } else {
-                        throw Exception("Skill not found")
-                    }
-                }
-                newList
+    suspend fun fetchSkills() {
+
+        _state.update { it.copy(loading = true) }
+
+        try {
+            val skills = myRepository.getSkillsFromDB()
+            _state.update {
+                it.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
             }
+        } catch (e: Exception) {
+            _state.value =
+                SkillViewState(loading = false, error = e.message ?: "Error fetching skills")
         }
     }
 
@@ -242,14 +240,6 @@ class SkillsViewModel : ViewModel() {
                         newList
                     }
 
-                }
-
-                SkillsChangeConst.NotChooseSkill -> {
-                    val newListNew = date.value.toMutableList()
-                    newListNew.indexOf(recyclerSkillForViewModel).let {
-                        newListNew[it] = newListNew[it].copy(chosen = false)
-                    }
-                    dataListNewFlow.value = newListNew
                 }
 
                 SkillsChangeConst.FullSkill -> {
@@ -273,8 +263,7 @@ class SkillsViewModel : ViewModel() {
 }
 
 sealed class SkillsChangeConst {
-    object ChooseSkill : SkillsChangeConst()
-    object NotChooseSkill : SkillsChangeConst()
+    object ChooseOrNotSkill : SkillsChangeConst()
     object FullSkill : SkillsChangeConst()
 }
 
@@ -285,3 +274,9 @@ sealed class UiEvent {
     data class AddItem(val item: SkillDomainRW) : UiEvent()
     object GetSkills : UiEvent()
 }
+
+data class SkillViewState(
+    var loading: Boolean = false,
+    val skills: List<SkillDomainRW> = emptyList(),
+    val error: String? = null,
+)
