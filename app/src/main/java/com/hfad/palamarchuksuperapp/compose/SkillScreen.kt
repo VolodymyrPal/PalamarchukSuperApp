@@ -181,11 +181,17 @@ fun ItemListSkill(
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
+                .clickable {
+                    viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                }
         } else {
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .clickable {
+                    viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                }
         },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -241,8 +247,10 @@ fun ItemListSkill(
                     overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     onTextLayout = {
-                        if (it.hasVisualOverflow) {
+                        if (it.hasVisualOverflow || isExpanded) {
                             isVisible = true
+                        } else {
+                            isVisible = false
                         }
                     })
 
@@ -301,8 +309,10 @@ fun ItemListSkill(
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                 },
-                onCheckedChange = { Log.d("Skill Screen", "Button mor clicked") },
-                checked = false
+                onCheckedChange = {
+                    viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                },
+                checked = item.chosen
             )
 
             Box(
@@ -375,7 +385,8 @@ fun MyDropDownMenus(
                     }
                 )
 
-                HorizontalDivider()
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
+
                 DropdownMenuItem(
                     text = { Text("Move UP") },
                     onClick = { /* Handle send feedback! */
@@ -403,7 +414,6 @@ fun ListItemSkillPreview() {
         onEvent = {
             SkillsViewModel()
         },
-        onSheetSaveButton = {}
     )
     println("true".toBooleanStrictOrNull())
 }
