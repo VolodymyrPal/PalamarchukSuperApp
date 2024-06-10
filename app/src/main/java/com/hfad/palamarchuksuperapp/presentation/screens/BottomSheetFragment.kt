@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
-import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
+import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import java.text.SimpleDateFormat
@@ -18,10 +18,10 @@ import java.util.Locale
 import java.util.UUID
 
 class BottomSheetFragment(
-    private val recyclerSkillForViewModel: RecyclerSkillForViewModel = RecyclerSkillForViewModel(
+    private val skillDomainRW: SkillDomainRW = SkillDomainRW(
         Skill()
     ),
-    private val viewModel: SkillsViewModel
+    private var viewModel: SkillsViewModel = SkillsViewModel()
 ) : BottomSheetDialogFragment() {
 
     private var _binding: ListItemBottomSheetBinding? = null
@@ -30,7 +30,7 @@ class BottomSheetFragment(
             "_binding = null"
         }
 
-    private var tempRecSkill = RecyclerSkillForViewModel(Skill())
+    private var tempRecSkill = SkillDomainRW(Skill())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,13 +40,13 @@ class BottomSheetFragment(
 
 
         _binding = ListItemBottomSheetBinding.inflate(inflater, container, false)
-        if (recyclerSkillForViewModel.skill.id != null) {
+        if (skillDomainRW.skill.id != null) {
             binding.apply {
-                skillNameField.setText(recyclerSkillForViewModel.skill.name)
-                skillDescriptionField.setText(recyclerSkillForViewModel.skill.description)
+                skillNameField.setText(skillDomainRW.skill.name)
+                skillDescriptionField.setText(skillDomainRW.skill.description)
                 skillDateField.setText(
                     SimpleDateFormat("dd MMMM: HH:mm", Locale.US).format(
-                        recyclerSkillForViewModel.skill.date
+                        skillDomainRW.skill.date
                     )
                 )
             }

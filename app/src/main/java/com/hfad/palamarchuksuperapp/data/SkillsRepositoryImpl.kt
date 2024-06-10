@@ -8,7 +8,7 @@ class SkillsRepositoryImpl @Inject constructor(
     //private val skillsDataBase: SkillDataBase
 ) : SkillRepository {
 
-    override fun getSkill(): List<Skill> {
+    override fun getSkillsFromDB(): List<Skill> {
         return emptyList()
     }
 

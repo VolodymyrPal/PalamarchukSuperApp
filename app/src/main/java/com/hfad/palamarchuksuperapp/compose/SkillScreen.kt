@@ -70,7 +70,8 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.compose.utils.BottomSheetSkill
 import com.hfad.palamarchuksuperapp.domain.models.Skill
-import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
+import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.UiEvent
@@ -135,8 +136,8 @@ fun SkillScreen(
 
             LazyColumn {
                 items(
-                    items = SkillList,
-                    key = { item: RecyclerSkillForViewModel -> item.skill.id.toString() }
+                    items = skillList,
+                    key = { item: SkillDomainRW -> item.skill.id.toString() }
                 ) { item ->
                     AnimatedVisibility(
                         modifier = Modifier.animateItemPlacement(),
@@ -174,9 +175,9 @@ fun SkillScreen(
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
 fun ItemListSkill(
     modifier: Modifier = Modifier,
-    item: RecyclerSkillForViewModel,
+    item: SkillDomainRW,
     onEvent: (UiEvent) -> Unit,
-    onSheetSaveButton: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit,
+    viewModel: SkillsViewModel = SkillsViewModel(),
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -405,7 +406,7 @@ fun MyDropDownMenus(
 @Preview
 fun ListItemSkillPreview() {
     ItemListSkill(
-        item = RecyclerSkillForViewModel(
+        item = SkillDomainRW(
             skill = Skill(
                 name = "MySkill",
                 description = "Some good skills, that i know",

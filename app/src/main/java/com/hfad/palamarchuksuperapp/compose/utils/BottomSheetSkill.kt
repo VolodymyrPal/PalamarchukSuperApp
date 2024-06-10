@@ -48,7 +48,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.domain.models.Skill
-import com.hfad.palamarchuksuperapp.presentation.common.RecyclerSkillForViewModel
+import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import java.util.UUID
 
 
@@ -59,10 +59,10 @@ import java.util.UUID
 @Composable
 fun BottomSheetSkill(
     modifier: Modifier = Modifier,
-    onEvent: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit = {},
+    onEvent: (skillDomainRW: SkillDomainRW) -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismiss: () -> Unit,
-    recyclerSkillForViewModel: RecyclerSkillForViewModel = RecyclerSkillForViewModel(Skill()),
+    skillDomainRW: SkillDomainRW = SkillDomainRW(Skill()),
 ) {
 
 
@@ -89,7 +89,7 @@ fun BottomSheetSkill(
             ) {
                 var textName by remember {
                     mutableStateOf(
-                        recyclerSkillForViewModel.skill.name
+                        skillDomainRW.skill.name
                     )
                 }
 
@@ -116,7 +116,7 @@ fun BottomSheetSkill(
 
                 var textDescription by remember {
                     mutableStateOf(
-                        recyclerSkillForViewModel.skill.description
+                        skillDomainRW.skill.description
                     )
                 }
                 OutlinedHintText(
@@ -138,7 +138,7 @@ fun BottomSheetSkill(
 
                 val textDate by remember {
                     mutableStateOf(
-                        recyclerSkillForViewModel.skill.date
+                        skillDomainRW.skill.date
                     )
                 }
                 OutlinedHintText(
@@ -154,9 +154,9 @@ fun BottomSheetSkill(
                     modifier = Modifier.wrapContentSize(),
                     onClick = {
                         onEvent(
-                            recyclerSkillForViewModel.copy(
-                                skill = recyclerSkillForViewModel.skill.copy(
-                                    id = recyclerSkillForViewModel.skill.id ?: UUID.randomUUID(),
+                            skillDomainRW.copy(
+                                skill = skillDomainRW.skill.copy(
+                                    id = skillDomainRW.skill.id ?: UUID.randomUUID(),
                                     name = textName,
                                     description = textDescription,
                                     date = textDate
