@@ -112,29 +112,18 @@ class BottomSheetFragment(
         }
 
         binding.saveSkillButton.setOnClickListener {
-            if (recyclerSkillForViewModel.skill.id == null) {
-                tempRecSkill = tempRecSkill.copy(
-                    skill = Skill(
-                        id = UUID.randomUUID(),
-                        name = binding.skillNameField.text.toString(),
-                        description = binding.skillDescriptionField.text.toString(),
-                        date = Date(tempRecSkill.skill.date.time)
-                    )
+
+            tempRecSkill = tempRecSkill.copy(
+                skill = Skill(
+                    id = skillDomainRW.skill.id ?: UUID.randomUUID(),
+                    name = binding.skillNameField.text.toString(),
+                    description = binding.skillDescriptionField.text.toString(),
+                    date = Date(tempRecSkill.skill.date.time)
                 )
-                viewModel.addSkill(tempRecSkill.skill)
-                this.dismiss()
-            } else {
-                tempRecSkill = tempRecSkill.copy(
-                    skill = Skill(
-                        id = recyclerSkillForViewModel.skill.id,
-                        name = binding.skillNameField.text.toString(),
-                        description = binding.skillDescriptionField.text.toString(),
-                        date = Date(tempRecSkill.skill.date.time)
-                    )
-                )
-                viewModel.updateSkillOrAdd(tempRecSkill, SkillsChangeConst.FullSkill)
-                this.dismiss()
-            }
+            )
+
+            viewModel.updateSkillOrAdd(tempRecSkill, SkillsChangeConst.FullSkill)
+            this.dismiss()
         }
         val view = binding.root
         return view
