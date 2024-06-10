@@ -79,18 +79,16 @@ import java.util.Date
 import java.util.Locale
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SkillScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController?,
 ) {
     val viewModel = SkillsViewModel()
-    var showBottomSheet by remember { mutableStateOf(false) }
 
-    val onSheetSaveButton: (recyclerSkillForViewModel: RecyclerSkillForViewModel) -> Unit = {
-        viewModel.updateSkillOrAdd(it, SkillsChangeConst.FullSkill)
-    }
+    val fragmentManager = (LocalContext.current as FragmentActivity).supportFragmentManager
+
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -103,7 +101,10 @@ fun SkillScreen(
                 modifier = Modifier,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 onClick = {
-                    showBottomSheet = true
+                    val bottomSheetFragment = BottomSheetFragment(
+                        viewModel = viewModel
+                    )
+                    bottomSheetFragment.show(fragmentManager, "BSDialogFragment")
                 },
                 content = {
                     Icon(
@@ -115,23 +116,13 @@ fun SkillScreen(
         }
     ) { paddingValues ->
 
-        if (showBottomSheet) {
-            BottomSheetSkill(
-                onDismiss = {
-                    showBottomSheet = false
-                },
-                onEvent = { onSheetSaveButton(it) }
-            )
-        }
-
-
         Surface(
             color = Color.Transparent, modifier = modifier
                 .fillMaxSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
 
         ) {
-            val SkillList by viewModel.date.collectAsState(initial = emptyList())
+            val skillList by viewModel.skillsList.collectAsStateWithLifecycle()
 
             LazyColumn {
                 items(
@@ -151,7 +142,7 @@ fun SkillScreen(
                         ItemListSkill(
                             item = item,
                             onEvent = { uiEvent -> viewModel.handleEvent(event = uiEvent) },
-                            onSheetSaveButton = onSheetSaveButton
+                            viewModel = viewModel
                         )
                     }
                 }
@@ -169,9 +160,14 @@ fun SkillScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
+@Suppress(
+    "detekt.FunctionNaming",
+    "detekt.MaxLineLength",
+    "detekt.LongMethod",
+    "detekt.LongParameterList",
+    "detekt.DestructuringDeclarationWithTooManyEntries"
+)
 fun ItemListSkill(
     modifier: Modifier = Modifier,
     item: SkillDomainRW,
@@ -179,19 +175,6 @@ fun ItemListSkill(
     viewModel: SkillsViewModel = SkillsViewModel(),
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    var showBottomSheet by remember { mutableStateOf(false) }
-
-    if (showBottomSheet) {
-        BottomSheetSkill(
-            onDismiss = {
-                showBottomSheet = false
-            },
-            recyclerSkillForViewModel = item,
-            onEvent = {
-                onSheetSaveButton(it)
-            }
-        )
-    }
 
     Card(
         modifier = if (!isExpanded) {
@@ -276,6 +259,7 @@ fun ItemListSkill(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             var expanded by remember { mutableStateOf(false) }
+            val fragmentManager = (LocalContext.current as FragmentActivity).supportFragmentManager
 
             IconButton(
                 modifier = modifier
@@ -296,7 +280,11 @@ fun ItemListSkill(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                         onEdit = {
-                            showBottomSheet = true
+                            val bottomSheetFragment = BottomSheetFragment(
+                                viewModel = viewModel,
+                                skillDomainRW = item
+                            )
+                            bottomSheetFragment.show(fragmentManager, "BSDialogFragment")
                         },
                         onDelete = {
                             onEvent.invoke(UiEvent.DeleteItem(item))
