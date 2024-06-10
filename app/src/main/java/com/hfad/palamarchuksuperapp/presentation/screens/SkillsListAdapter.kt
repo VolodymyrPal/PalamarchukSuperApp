@@ -103,16 +103,8 @@ class SkillsListAdapter(
             }
 
             fun onCheckboxClicked() {
-                recyclerSkillForViewModel.chosen = !recyclerSkillForViewModel.chosen
-                if (recyclerSkillForViewModel.chosen) myViewModel.updateSkillOrAdd(
-                    recyclerSkillForViewModel,
-                    SkillsChangeConst.ChooseSkill
-                )
-                else myViewModel.updateSkillOrAdd(
-                    recyclerSkillForViewModel,
-                    SkillsChangeConst.NotChooseSkill
-                )
-                binding.materialCheckBox.isChecked = recyclerSkillForViewModel.chosen
+                skill.chosen = !skill.chosen
+                binding.materialCheckBox.isChecked = skill.chosen
             }
 
             binding.cardSkill.setOnClickListener {
