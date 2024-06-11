@@ -42,6 +42,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,7 +67,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
@@ -125,37 +126,53 @@ fun SkillScreen(
                 .padding(bottom = paddingValues.calculateBottomPadding())
 
         ) {
-            val skillList by viewModel.skillsList.collectAsStateWithLifecycle()
+            val state by viewModel.state.collectAsState()
+            LaunchedEffect(key1 = viewModel) {
+                viewModel.handleEvent(UiEvent.GetSkills)
+            }
+
+            when {
+                state.loading -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center),
                             color = MaterialTheme.colorScheme.error
                         )
-
-            LazyColumn {
-                items(
-                    items = skillList,
-                    key = { item: SkillDomainRW -> item.skill.id.toString() }
-                ) { item ->
-                    AnimatedVisibility(
-                        modifier = Modifier.animateItemPlacement(),
-                        visible = item.isVisible,
-                        exit = fadeOut(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        ),
-                        enter = fadeIn(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        )
-                    ) {
-                        ItemListSkill(
-                            item = item,
-                            onEvent = { uiEvent -> viewModel.handleEvent(event = uiEvent) },
-                            viewModel = viewModel
-                        )
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.size(72.dp))
+
+                state.error != null -> {
+                    Text(text = "Error: ${state.error}", color = Color.Red)
+                }
+
+                else -> {
+                    LazyColumn {
+                        items(
+                            items = state.skills,
+                            key = { item: SkillDomainRW -> item.skill.id.toString() }
+                        ) { item ->
+                            AnimatedVisibility(
+                                modifier = Modifier.animateItemPlacement(),
+                                visible = item.isVisible,
+                                exit = fadeOut(
+                                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                                ),
+                                enter = fadeIn(
+                                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                                )
+                            ) {
+                                ItemListSkill(
+                                    item = item,
+                                    onEvent = { uiEvent -> viewModel.handleEvent(event = uiEvent) },
+                                    viewModel = viewModel
+                                )
+                            }
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.size(72.dp))
+                        }
+                    }
                 }
             }
             Column(
@@ -241,8 +258,8 @@ fun ItemListSkill(
                     top.linkTo(name.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(menu.start)
-                    width = Dimension.fillToConstraints
                     bottom.linkTo(date.top)
+                    width = Dimension.fillToConstraints
                 }
                 .wrapContentWidth()
 
@@ -420,7 +437,6 @@ fun ListItemSkillPreview() {
             )
         ),
         onEvent = {
-            SkillsViewModel()
         },
     )
     println("true".toBooleanStrictOrNull())
