@@ -39,8 +39,9 @@ class SkillsFragment: Fragment() {
         binding.skillsRecyclerView.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.skillsList.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
-                adapter.setData(viewModel.skillsList.value)
+            viewModel.fetchSkills()
+            viewModel.state.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
+                adapter.setData(viewModel.state.value.skills)
             }
         }
 
