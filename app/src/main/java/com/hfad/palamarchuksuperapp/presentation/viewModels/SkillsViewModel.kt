@@ -36,21 +36,19 @@ class SkillsViewModel @AssistedInject constructor(
 
 
     fun getSkill(): List<Skill> {
-        return skillsList.value.map { it.skill }
+        return _state.value.skills.map { it.skill }
     }
 
     fun handleEvent(event: UiEvent) {
         when (event) {
             is UiEvent.EditItem -> {
                 updateSkillOrAdd(event.item, SkillsChangeConst.FullSkill)
-                Log.d("Skill: ", "Asked for editing ${skillsList.value.size}")
             }
             is UiEvent.DeleteItem -> {
                 deleteSkill(event.item)
             }
             is UiEvent.MoveItemUp -> {
                 moveToFirstPosition(event.item)
-                Log.d("Skill: ", "Asked for movingUp ${skillsList.value.size}")
             }
             is UiEvent.AddItem -> {
                 addSkill(skill = event.item.skill)
@@ -66,47 +64,49 @@ class SkillsViewModel @AssistedInject constructor(
 
     fun moveToFirstPosition(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            val newListNew = skillsList.value.toMutableList()
-            newListNew.remove(skillDomainRW)
-            newListNew.add(0, skillDomainRW)
-            _skillsList.value = newListNew
+            _state.update { myState ->
+                val newList = myState.skills.toMutableList()
+                newList.remove(skillDomainRW)
+                newList.add(0, skillDomainRW)
+                myState.copy(skills = newList)
+            }
         }
     }
 
     fun deleteSkill(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            _skillsList.update { recyclerSkillList ->
-                val index = recyclerSkillList.indexOf(skillDomainRW)
-                val newList = recyclerSkillList.toMutableList()
+            _state.update { myState ->
+                val index = myState.skills.indexOf(skillDomainRW)
+                val newList = myState.skills.toMutableList()
                 if (index != -1) {
                     newList.remove(skillDomainRW)
                 }
                 newList.removeIf {
                     it.chosen
                 }
-                newList
+                myState.copy(skills = newList)
             }
         }
     }
 
     fun addSkill(skill: Skill) {
         viewModelScope.launch {
-            _skillsList.update { currentList ->
-                val newList = currentList.toMutableList()
+            _state.update { myState ->
+                val newList = myState.skills.toMutableList()
                 newList.add(SkillDomainRW(skill))
-                newList
+                myState.copy(skills = newList)
             }
         }
     }
 
     fun changeVisible(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            _skillsList.update { currentList ->
-                val newList = currentList.toMutableList()
+            _state.update { myState ->
+                val newList = myState.skills.toMutableList()
                 newList.indexOf(skillDomainRW).let {
                     newList[it] = newList[it].copy(isVisible = !newList[it].isVisible)
                 }
-                newList
+                myState.copy(skills = newList)
             }
         }
     }
@@ -116,7 +116,8 @@ class SkillsViewModel @AssistedInject constructor(
         _state.update { it.copy(loading = true) }
 
         try {
-            val skills = myRepository.getSkillsFromDB()
+            val skills = repository.getSkillsFromDB()
+            delay(1000)
             _state.update {
                 it.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
             }
@@ -130,20 +131,20 @@ class SkillsViewModel @AssistedInject constructor(
         viewModelScope.launch {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
-                    _skillsList.update {
-                        val newList = it.toMutableList()
+                    _state.update { myState ->
+                        val newList = myState.skills.toMutableList()
                         newList.indexOf(skillDomainRW).let {
                             Log.d("Was called:", "$it")
                             newList[it] = newList[it].copy(chosen = !skillDomainRW.chosen)
                         }
-                        newList
+                        myState.copy(skills = newList)
                     }
 
                 }
 
                 SkillsChangeConst.FullSkill -> {
-                    _skillsList.update { myListFlow ->
-                        val newList = myListFlow.toMutableList()
+                    _state.update { myState ->
+                        val newList = myState.skills.toMutableList()
                         val skillToChange = newList.find { it.skill.id == skillDomainRW.skill.id }
                         if (skillToChange == null) {
                             newList.add(skillDomainRW)
@@ -153,7 +154,7 @@ class SkillsViewModel @AssistedInject constructor(
                                     newList[it].copy(skill = skillDomainRW.skill)
                             }
                         }
-                        newList
+                        myState.copy(skills = newList)
                     }
                 }
             }
