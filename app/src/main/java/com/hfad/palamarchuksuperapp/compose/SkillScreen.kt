@@ -67,7 +67,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
+import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
@@ -85,7 +87,7 @@ fun SkillScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController?,
 ) {
-    val viewModel = SkillsViewModel()
+    val viewModel: SkillsViewModel = LocalContext.current.appComponent.skillsViewModel()
 
     val fragmentManager = (LocalContext.current as FragmentActivity).supportFragmentManager
 
@@ -172,7 +174,7 @@ fun ItemListSkill(
     modifier: Modifier = Modifier,
     item: SkillDomainRW,
     onEvent: (UiEvent) -> Unit,
-    viewModel: SkillsViewModel = SkillsViewModel(),
+    viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImpl()),
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 

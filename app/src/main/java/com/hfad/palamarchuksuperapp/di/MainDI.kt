@@ -5,11 +5,16 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
+import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
+import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.presentation.screens.MainActivity
 import com.hfad.palamarchuksuperapp.presentation.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.presentation.screens.SkillsFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel_Factory
+import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -24,6 +29,7 @@ interface AppComponent {
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)
     fun inject(mainScreenFragment: MainScreenFragment)
+    fun skillsViewModel () : SkillsViewModel
 
     @Component.Builder
     interface Builder {
@@ -50,9 +56,13 @@ object AppModule  {
 
     @Provides
     fun provideSkillsViewModel(): SkillsViewModel {
-        return SkillsViewModel()
+        return SkillsViewModel(skillRepositoryImpl())
     }
 
+    @Provides
+    fun skillRepositoryImpl () : SkillRepository {
+        return SkillsRepositoryImpl ()
+    }
 }
 
 @Module
@@ -63,4 +73,10 @@ object RepositoryModule {
         return PreferencesRepository.get()
     }
 
+}
+
+@Module
+abstract class ViewModelFactoryModule {
+    @Binds
+    internal abstract fun bindViewModelFactory(factory: SkillsViewModel_Factory): ViewModelProvider.Factory
 }

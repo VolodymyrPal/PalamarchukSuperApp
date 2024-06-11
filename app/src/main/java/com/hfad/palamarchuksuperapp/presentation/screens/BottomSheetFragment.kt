@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
@@ -21,7 +22,7 @@ class BottomSheetFragment(
     private val skillDomainRW: SkillDomainRW = SkillDomainRW(
         Skill()
     ),
-    private var viewModel: SkillsViewModel = SkillsViewModel()
+    private var viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImpl())
 ) : BottomSheetDialogFragment() {
 
     private var _binding: ListItemBottomSheetBinding? = null

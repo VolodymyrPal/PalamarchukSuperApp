@@ -2,135 +2,34 @@ package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.common.SkillToSkillDomain
+import dagger.MapKey
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.internal.Provider
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
-class SkillsViewModel : ViewModel() {
-    @Inject
-    lateinit var myRepository: SkillsRepositoryImpl
+class SkillsViewModel @AssistedInject constructor(
+    @Assisted val repository: SkillRepository) : ViewModel() {
+    // @Inject lateinit var myRepository: SkillRepository
 
-    private val one =
-        SkillDomainRW(
-            Skill(
-                name = "Compose",
-                description = "One, Two, Three",
-                id = UUID.randomUUID()
-            )
-        )
-    private val two =
-        SkillDomainRW(Skill(name = "XML", description = "One, Two, Three", id = UUID.randomUUID()))
-    private val three = SkillDomainRW(
-        Skill(
-            name = "Recycler View",
-            description = "Paging, DiffUtil, Adapter",
-            id = UUID.randomUUID()
-        )
-    )
-    private val four =
-        SkillDomainRW(
-            Skill(
-                name = "Retrofit",
-                description = "One, Two, Three",
-                id = UUID.randomUUID()
-            )
-        )
-    private val five =
-        SkillDomainRW(
-            Skill(
-                name = "Async",
-                description = "One, Two, Three",
-                id = UUID.randomUUID()
-            )
-        )
-    private val six = SkillDomainRW(
-        Skill(
-            name = "Dependency injections",
-            description = "Multi-module architecture, Component Dependencies, Multibindings, " +
-                    "Components, Scope, Injections" +
-                    " Libraries: Dagger 2, Hilt, ---Kodein, ---Koin",
-            id = UUID.randomUUID()
-        )
-    )
-    private val seven =
-        SkillDomainRW(
-            Skill(
-                name = "RxJava",
-                description = "One, Two, Three",
-                id = UUID.randomUUID()
-            )
-        )
-    private val eight =
-        SkillDomainRW(
-            Skill(
-                name = "To learn",
-                description = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, " +
-                        "RESTful API!!!, JSON!, PUSH NOTIFICATIONS!!!, ",
-                id = UUID.randomUUID()
-            )
-        )
-    private val nine =
-        SkillDomainRW(
-            Skill(
-                name = "Recycler View",
-                description = "One, Two, Three",
-                id = UUID.randomUUID()
-            )
-        )
-    private val ten =
-        SkillDomainRW(Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID()))
-    private val eleven = SkillDomainRW(
-        Skill(
-            name = "Work with Image",
-            description = "FileProvider,Coil",
-            id = UUID.randomUUID()
-        )
-    )
-    private val twelve = SkillDomainRW(
-        Skill(
-            name = "Work with Image",
-            description = "FileProvider,Coil",
-            id = UUID.randomUUID()
-        )
-    )
-
-    private val thirteen = SkillDomainRW(
-        Skill(
-            name = "Work with Image",
-            description = "FileProvider,Coil",
-            id = UUID.randomUUID()
-        )
-    )
-
-
-    private val _skillsList = MutableStateFlow<MutableList<SkillDomainRW>>(
-        mutableListOf(
-            one,
-            two,
-            three,
-            four,
-            five,
-            six,
-            seven,
-            eight,
-            nine,
-            ten,
-            eleven,
-            twelve,
-            thirteen
-        )
-    )
-    val skillsList: StateFlow<List<SkillDomainRW>> = this._skillsList.asStateFlow()
-
+    @AssistedFactory
+    interface Factory {
+        fun create(repository: SkillRepository): SkillsViewModel
+    }
 
     private val _state = MutableStateFlow(SkillViewState())
     val state: StateFlow<SkillViewState> = _state.asStateFlow()
@@ -280,3 +179,26 @@ data class SkillViewState(
     val skills: List<SkillDomainRW> = emptyList(),
     val error: String? = null,
 )
+
+class DaggerViewModelFactory
+@Inject constructor(
+    private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
+) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val creator = creators[modelClass] ?:
+        creators.asIterable().firstOrNull { modelClass.isAssignableFrom(it.key) }?.value
+        ?: throw IllegalArgumentException("unknown model class " + modelClass)
+
+        return try {
+            creator.get() as T
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+
+    }
+}
+
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+@MapKey
+internal annotation class ViewModelKey(val value: KClass<out ViewModel>)
