@@ -30,6 +30,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -125,6 +126,11 @@ fun SkillScreen(
 
         ) {
             val skillList by viewModel.skillsList.collectAsStateWithLifecycle()
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = MaterialTheme.colorScheme.error
+                        )
 
             LazyColumn {
                 items(
