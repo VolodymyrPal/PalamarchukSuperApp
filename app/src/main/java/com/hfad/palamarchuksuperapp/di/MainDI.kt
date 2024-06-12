@@ -23,7 +23,6 @@ interface AppComponent {
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)
     fun inject(mainScreenFragment: MainScreenFragment)
-    fun skillsViewModel () : SkillsViewModel
 
     @Component.Builder
     interface Builder {
@@ -33,8 +32,8 @@ interface AppComponent {
 }
 
 
-@Module (includes = [RepositoryModule::class])
-object AppModule  {
+@Module(includes = [RepositoryModule::class])
+object AppModule {
 
     @Provides
     fun getVibrator(context: Context): Vibrator {
@@ -47,16 +46,6 @@ object AppModule  {
             return context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
         }
     }
-
-    @Provides
-    fun provideSkillsViewModel(): SkillsViewModel {
-        return SkillsViewModel(skillRepositoryImpl())
-    }
-
-    @Provides
-    fun skillRepositoryImpl () : SkillRepository {
-        return SkillsRepositoryImpl ()
-    }
 }
 
 @Module
@@ -67,10 +56,8 @@ object RepositoryModule {
         return PreferencesRepository.get()
     }
 
-}
-
-@Module
-abstract class ViewModelFactoryModule {
-    @Binds
-    internal abstract fun bindViewModelFactory(factory: SkillsViewModel_Factory): ViewModelProvider.Factory
+    @Provides
+    fun provideSkillRepository(): SkillRepository {
+        return SkillsRepositoryImpl()
+    }
 }

@@ -452,3 +452,9 @@ fun SkillScreenPreview() {
     SkillScreen(navController = null)
 }
 
+@Composable
+inline fun <reified VM : ViewModel> daggerViewModel(factory: ViewModelProvider.Factory): VM {
+    val context = LocalContext.current
+    return ViewModelProvider(context as ViewModelStoreOwner, factory)[VM::class.java]
+}
+
