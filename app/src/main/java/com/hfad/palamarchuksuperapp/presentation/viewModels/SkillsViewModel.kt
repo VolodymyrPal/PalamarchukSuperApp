@@ -22,13 +22,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
-class SkillsViewModel @AssistedInject constructor(
-    @Assisted val repository: SkillRepository) : ViewModel() {
-    // @Inject lateinit var myRepository: SkillRepository
+class SkillsViewModel (private val repository: SkillRepository) : ViewModel() {
 
-    @AssistedFactory
-    interface Factory {
-        fun create(repository: SkillRepository): SkillsViewModel
+    class Factory (
+        private val repository: SkillRepository
+    ): ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            require(modelClass == SkillsViewModel::class.java)
+            return SkillsViewModel(repository) as T
+        }
     }
 
     private val _state = MutableStateFlow(SkillViewState())
@@ -180,26 +182,3 @@ data class SkillViewState(
     val skills: List<SkillDomainRW> = emptyList(),
     val error: String? = null,
 )
-
-class DaggerViewModelFactory
-@Inject constructor(
-    private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val creator = creators[modelClass] ?:
-        creators.asIterable().firstOrNull { modelClass.isAssignableFrom(it.key) }?.value
-        ?: throw IllegalArgumentException("unknown model class " + modelClass)
-
-        return try {
-            creator.get() as T
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
-
-    }
-}
-
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-@MapKey
-internal annotation class ViewModelKey(val value: KClass<out ViewModel>)
