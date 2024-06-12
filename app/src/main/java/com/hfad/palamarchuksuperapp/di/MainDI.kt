@@ -1,25 +1,19 @@
-
 import android.content.Context
 import android.os.Build
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.presentation.screens.MainActivity
 import com.hfad.palamarchuksuperapp.presentation.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.presentation.screens.SkillsFragment
-import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
-import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel_Factory
-import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-
 import javax.inject.Singleton
 
 @Singleton
