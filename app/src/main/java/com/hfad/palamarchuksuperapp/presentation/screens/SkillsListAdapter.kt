@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
@@ -21,7 +22,7 @@ import java.util.Locale
 
 class SkillsListAdapter(
     private val viewModel: SkillsViewModel,
-    private val fragmentManager: FragmentManager
+    private val fragmentManager: FragmentManager,
 ) :
     ListAdapter<SkillDomainRW, SkillsListAdapter.SkillHolder>(SkillDiffItemCallback()) {
 
@@ -48,9 +49,10 @@ class SkillsListAdapter(
     class SkillHolder(
         private val binding: ListItemSkillsBinding,
         private val myViewModel: SkillsViewModel,
-        private val parentFragmentManager: FragmentManager
+        private val parentFragmentManager: FragmentManager,
     ) : RecyclerView.ViewHolder(binding.root) {
         private val startedHeight = binding.skillCard.layoutParams.height
+        val vibe = this.binding.root.context.appComponent.appVibrator()
 
         fun bind(skill: SkillDomainRW) {
             binding.materialCheckBox.isChecked = skill.chosen
@@ -63,8 +65,8 @@ class SkillsListAdapter(
                 popupMenu.inflate(R.menu.skill_recycler_menu)
                 popupMenu.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
-
                         R.id.menu_option_edit -> {
+                            vibe.standardClickVibration()
                             val bottomSheetFragment =
                                 BottomSheetFragment(
                                     skill,
@@ -80,6 +82,7 @@ class SkillsListAdapter(
                         }
 
                         R.id.menu_option_delete -> {
+                            vibe.standardClickVibration()
                             myViewModel.deleteSkill(skill)
                             Toast.makeText(
                                 this.binding.root.context,
@@ -89,6 +92,7 @@ class SkillsListAdapter(
                         }
 
                         R.id.menu_item_moveUp -> {
+                            vibe.standardClickVibration()
                             myViewModel.moveToFirstPosition(skill)
                             Toast.makeText(
                                 this.binding.root.context,
@@ -103,6 +107,7 @@ class SkillsListAdapter(
             }
 
             fun onCheckboxClicked() {
+                vibe.standardClickVibration()
                 skill.chosen = !skill.chosen
                 binding.materialCheckBox.isChecked = skill.chosen
             }
@@ -142,6 +147,7 @@ class SkillsListAdapter(
 //            }
 
             binding.expandDetails.setOnClickListener {
+                vibe.standardClickVibration()
                 expandOrHide(skill)
             }
 
