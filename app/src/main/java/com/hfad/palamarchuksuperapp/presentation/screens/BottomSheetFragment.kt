@@ -37,95 +37,82 @@ class BottomSheetFragment(
         savedInstanceState: Bundle?,
     ): View {
 
-
         _binding = ListItemBottomSheetBinding.inflate(inflater, container, false)
-        if (skillDomainRW.skill.id != null) {
-            binding.apply {
-                skillNameField.setText(skillDomainRW.skill.name)
-                skillDescriptionField.setText(skillDomainRW.skill.description)
-                skillDateField.setText(
-                    SimpleDateFormat("dd MMMM: HH:mm", Locale.US).format(
-                        skillDomainRW.skill.date
-                    )
+        binding.apply {
+            skillNameField.setText(skillDomainRW.skill.name)
+            skillDescriptionField.setText(skillDomainRW.skill.description)
+            skillDateField.setText(
+                SimpleDateFormat("dd MMMM: HH:mm", Locale.US).format(
+                    skillDomainRW.skill.date
                 )
+            )
+            skillDateField.inputType = EditorInfo.TYPE_NULL
+            skillDateField.keyListener = null
+            skillDateField.setOnFocusChangeListener { v, hasFocus ->
+                if (hasFocus) {
+                    showDatePicker { selectedDate ->
+                        skillDomainRW =
+                            skillDomainRW.copy(
+                                skill = skillDomainRW.skill.copy(
+                                    date = Date(
+                                        selectedDate
+                                    )
+                                )
+                            )
+                        binding.skillDateField.setText(
+                            SimpleDateFormat(
+                                "dd MMMM yyyy: HH:mm",
+                                Locale.US
+                            ).format(Date(selectedDate))
+                        )
+                    }
+                }
             }
-        }
-        binding.skillDateField.inputType = EditorInfo.TYPE_NULL
-        binding.skillDateField.keyListener = null
-        binding.skillDateField.setText(SimpleDateFormat("dd MMMM: HH:mm", Locale.US).format(Date()))
 
-
-
-        binding.skillDateField.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                val picker = MaterialDatePicker.Builder.datePicker()
-                    .setTitleText("Select date")
-                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                    .build()
-                picker.show(parentFragmentManager, picker.toString())
-                picker.addOnPositiveButtonClickListener {
-                    tempRecSkill = tempRecSkill.copy(skill = Skill(date = Date(it)))
+            skillDateField.setOnClickListener {
+                showDatePicker { selectedDate ->
+                    skillDomainRW =
+                        skillDomainRW.copy(
+                            skill = skillDomainRW.skill.copy(
+                                date = Date(
+                                    selectedDate
+                                )
+                            )
+                        )
                     binding.skillDateField.setText(
                         SimpleDateFormat(
                             "dd MMMM yyyy: HH:mm",
                             Locale.US
-                        ).format(Date(it))
+                        ).format(Date(selectedDate))
                     )
                 }
             }
-        }
-
-        binding.skillDateField.setOnClickListener {
-            val picker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-            picker.show(parentFragmentManager, picker.toString())
-            picker.addOnPositiveButtonClickListener {
-                tempRecSkill = tempRecSkill.copy(skill = Skill(date = Date(it)))
-                binding.skillDateField.setText(
-                    SimpleDateFormat(
-                        "dd MMMM yyyy: HH:mm",
-                        Locale.US
-                    ).format(Date(it))
+            saveSkillButton.setOnClickListener {
+                skillDomainRW = skillDomainRW.copy(
+                    skillDomainRW.skill.copy(
+                        id = skillDomainRW.skill.id ?: UUID.randomUUID(),
+                        name = binding.skillNameField.text.toString(),
+                        description = binding.skillDescriptionField.text.toString()
+                    )
                 )
+                viewModel.updateSkillOrAdd(skillDomainRW, SkillsChangeConst.FullSkill)
+                this@BottomSheetFragment.dismiss()
             }
         }
 
-
-        binding.saveSkillButton.setOnClickListener {
-            val picker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
-            picker.show(parentFragmentManager, picker.toString())
-            picker.addOnPositiveButtonClickListener {
-                tempRecSkill = tempRecSkill.copy(skill = Skill(date = Date(it)))
-                binding.skillDateField.setText(
-                    SimpleDateFormat(
-                        "dd MMMM yyyy: HH:mm",
-                        Locale.US
-                    ).format(Date(it))
-                )
-            }
-        }
-
-        binding.saveSkillButton.setOnClickListener {
-
-            tempRecSkill = tempRecSkill.copy(
-                skill = Skill(
-                    id = skillDomainRW.skill.id ?: UUID.randomUUID(),
-                    name = binding.skillNameField.text.toString(),
-                    description = binding.skillDescriptionField.text.toString(),
-                    date = Date(tempRecSkill.skill.date.time)
-                )
-            )
-
-            viewModel.updateSkillOrAdd(tempRecSkill, SkillsChangeConst.FullSkill)
-            this.dismiss()
-        }
         val view = binding.root
         return view
+    }
+
+    private fun showDatePicker(onDateSelected: (Long) -> Unit) {
+        val picker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select date")
+            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .build()
+        picker.show(parentFragmentManager, picker.toString())
+        picker.addOnPositiveButtonClickListener {
+            onDateSelected(it)
+        }
     }
 
     override fun onDestroyView() {
