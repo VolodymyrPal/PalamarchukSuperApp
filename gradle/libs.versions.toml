@@ -50,6 +50,7 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 coil-compose = {group = "io.coil-kt", name = "coil-compose", version ="2.6.0"}
 coil = {group = "io.coil-kt", name = "coil", version ="2.6.0"}
 zelory-compressor = { group ="id.zelory", name = "compressor", version = "3.0.1" }
+compose-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version ="1.0.0-beta01"}
 
 
 [plugins]
