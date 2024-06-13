@@ -19,10 +19,10 @@ import java.util.Locale
 import java.util.UUID
 
 class BottomSheetFragment(
-    private val skillDomainRW: SkillDomainRW = SkillDomainRW(
+    private var skillDomainRW: SkillDomainRW = SkillDomainRW(
         Skill()
     ),
-    private var viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImpl())
+    private var viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImpl()),
 ) : BottomSheetDialogFragment() {
 
     private var _binding: ListItemBottomSheetBinding? = null
@@ -31,12 +31,10 @@ class BottomSheetFragment(
             "_binding = null"
         }
 
-    private var tempRecSkill = SkillDomainRW(Skill())
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
 
 
