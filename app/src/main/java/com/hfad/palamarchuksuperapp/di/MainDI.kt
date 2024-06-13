@@ -1,10 +1,7 @@
 import android.content.Context
-import android.os.Build
-import android.os.Vibrator
-import android.os.VibratorManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
+import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.presentation.screens.MainActivity
@@ -23,6 +20,7 @@ interface AppComponent {
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)
     fun inject(mainScreenFragment: MainScreenFragment)
+    fun appVibrator(): AppVibrator
 
     @Component.Builder
     interface Builder {
@@ -32,20 +30,14 @@ interface AppComponent {
 }
 
 
-@Module(includes = [RepositoryModule::class])
+@Module(includes = [RepositoryModule::class, ModelsModule::class])
 object AppModule {
 
-    @Provides
-    fun getVibrator(context: Context): Vibrator {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            return vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            return context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
-        }
-    }
+}
+
+@Module
+object ModelsModule {
+
 }
 
 @Module
