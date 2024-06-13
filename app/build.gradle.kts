@@ -91,4 +91,6 @@ dependencies {
     implementation (libs.coil.compose)
 
     implementation (libs.zelory.compressor)
+
+    implementation(libs.compose.tracing)
 }
