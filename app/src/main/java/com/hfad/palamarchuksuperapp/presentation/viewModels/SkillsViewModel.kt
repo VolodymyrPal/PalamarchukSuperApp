@@ -31,7 +31,7 @@ class SkillsViewModel (private val repository: SkillRepository) : ViewModel() {
 
 
     fun getSkill(): List<Skill> {
-        return _state.value.skills.map { it.skill }
+        return _state.value.skills.map { SkillDomainToSkill.map(it) }
     }
 
     fun handleEvent(event: UiEvent) {
