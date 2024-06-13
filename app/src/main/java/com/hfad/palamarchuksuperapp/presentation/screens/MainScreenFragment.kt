@@ -1,11 +1,7 @@
 package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +14,7 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.databinding.MainScreenFragmentBinding
+import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
@@ -30,10 +27,9 @@ class MainScreenFragment : Fragment() {
     private var _binding: MainScreenFragmentBinding? = null
     private val binding get() = _binding!!
 
-
     @Inject lateinit var preferencesRepository: PreferencesRepository
-    @Inject lateinit var appImages : AppImages
-    @Inject lateinit var vibe: Vibrator
+    @Inject lateinit var appImages: AppImages
+    @Inject lateinit var vibe: AppVibrator
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -42,7 +38,7 @@ class MainScreenFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
 
         _binding = MainScreenFragmentBinding.inflate(inflater, container, false)
@@ -50,44 +46,40 @@ class MainScreenFragment : Fragment() {
 
         updatePhoto()
 
-        fun onClickVibro() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibe.vibrate(VibrationEffect.createOneShot(2, 60))
-            } else {
-                vibe.vibrate(1)
-            }
-        }
-
         binding.dayNightButton.setOnClickListener {
-            onClickVibro()
+            vibe.standardClickVibration()
             lifecycleScope.launch {
                 ChangeDayNightModeUseCase()()
             }
         }
 
         binding.composeButton.setOnClickListener {
-            onClickVibro()
-            SwitchToActivityUseCase()(oldActivity = requireActivity(), key = ActivityKey.ActivityCompose)
+            vibe.standardClickVibration()
+            SwitchToActivityUseCase()(
+                oldActivity = requireActivity(),
+                key = ActivityKey.ActivityCompose
+            )
         }
 
         binding.let {
             it.skillButton1.setOnClickListener {
                 findNavController().navigate(MainScreenFragmentDirections.toSkillsFragment())
-                onClickVibro()
+                vibe.standardClickVibration()
             }
-            it.skillButton2.setOnClickListener { onClickVibro() }
-            it.skillButton3.setOnClickListener { onClickVibro() }
-            it.skillButton4.setOnClickListener { onClickVibro() }
+            it.skillButton2.setOnClickListener { vibe.standardClickVibration() }
+            it.skillButton3.setOnClickListener { vibe.standardClickVibration() }
+            it.skillButton4.setOnClickListener { vibe.standardClickVibration() }
         }
 
         return view
     }
 
 
-    fun updatePhoto() {
-        binding.imageView.load (appImages.mainImage.mainPhoto) {
+    private fun updatePhoto() {
+        binding.imageView.load(appImages.mainImage.mainPhoto) {
             placeholder(R.drawable.lion_jpg_21)
-        this.error(R.drawable.lion_jpg_21)}
+            this.error(R.drawable.lion_jpg_21)
+        }
     }
 
     override fun onResume() {
@@ -98,11 +90,5 @@ class MainScreenFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        Log.d("MainScreenFragment", "DESTROYED")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("MainScreenFragment", "ON PAUSE")
     }
 }
