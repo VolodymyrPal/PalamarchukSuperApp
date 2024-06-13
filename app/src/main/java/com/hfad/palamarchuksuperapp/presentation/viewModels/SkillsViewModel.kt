@@ -7,11 +7,15 @@ import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainToSkill
 import com.hfad.palamarchuksuperapp.presentation.common.SkillToSkillDomain
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -175,3 +179,61 @@ data class SkillViewState(
     val skills: List<SkillDomainRW> = emptyList(),
     val error: String? = null,
 )
+
+sealed class RepoResult<out T> {
+    data object Processing : RepoResult<Nothing>()
+
+    data class Success<out T>(
+        val data: T,
+    ) : RepoResult<T>()
+
+    data object Empty : RepoResult<Nothing>()
+
+    data class Failure(
+        val error: Throwable,
+    ) : RepoResult<Nothing>()
+}
+
+abstract class UiStateViewModel<T>(
+    initial: RepoResult<T> = RepoResult.Processing,
+) : ViewModel() {
+    private val _uiState: MutableStateFlow<RepoResult<T>> =
+        MutableStateFlow(initial)
+    val uiState: StateFlow<RepoResult<T>> =
+        _uiState.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = initial,
+        )
+    protected fun emitState(
+        emitProcessing: Boolean,
+        block: suspend (current: RepoResult<T>) -> RepoResult<T>,
+    ): Job =
+        viewModelScope.launch {
+            val current = _uiState.value
+            if (emitProcessing) {
+                emitProcessing()
+            }
+            _uiState.emit(block.invoke(current))
+        }
+    protected suspend fun emitState(value: RepoResult<T>) {
+        _uiState.emit(value)
+    }
+    protected suspend fun emitState(value: T?) {
+        if (value == null) {
+            emitEmpty()
+        } else {
+            _uiState.emit(RepoResult.Success(value))
+        }
+    }
+    protected suspend fun emitEmpty() {
+        _uiState.emit(RepoResult.Empty)
+    }
+    protected suspend fun emitProcessing() {
+        _uiState.emit(RepoResult.Processing)
+    }
+
+    protected suspend fun emitFailure(e: Throwable) {
+        _uiState.emit(RepoResult.Failure(e))
+    }
+}
