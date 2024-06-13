@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
+import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 class SkillsFragment: Fragment() {
@@ -24,6 +26,8 @@ class SkillsFragment: Fragment() {
             "_binding = null"
         }
     private val viewModel: SkillsViewModel by viewModels { SkillsViewModel.Factory(SkillsRepositoryImpl()) }
+
+    @Inject lateinit var vibe: AppVibrator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +50,7 @@ class SkillsFragment: Fragment() {
         }
 
         binding.floatingActionButton.setOnClickListener {
+            vibe.standardClickVibration()
             val bottomSheetFragment = BottomSheetFragment(viewModel = viewModel)
             bottomSheetFragment.show(parentFragmentManager, "BSDialogFragment")
         }
