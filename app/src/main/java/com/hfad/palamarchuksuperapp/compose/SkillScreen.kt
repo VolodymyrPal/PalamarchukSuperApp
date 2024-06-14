@@ -70,8 +70,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.hfad.palamarchuksuperapp.AppApplication
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
@@ -92,8 +92,10 @@ fun SkillScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController?,
 ) {
-    val viewModel: SkillsViewModel = viewModel(factory = SkillsViewModel.Factory(SkillsRepositoryImpl()))
-
+    //val viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImpl())
+    val viewModelFactory: ViewModelProvider.Factory =
+        (LocalContext.current.applicationContext as AppApplication).appComponent.skillsViewModelFactory()
+    val viewModel = daggerViewModel<SkillsViewModel>(factory = viewModelFactory)
     val fragmentManager = (LocalContext.current as FragmentActivity).supportFragmentManager
 
 
