@@ -29,6 +29,10 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
     private val _state = MutableStateFlow(SkillViewState())
     val state: StateFlow<SkillViewState> = _state.asStateFlow()
 
+    public override fun onCleared() {
+        super.onCleared()
+    }
+
 
     fun getSkill(): List<Skill> {
         return _state.value.skills.map { SkillDomainToSkill.map(it) }
