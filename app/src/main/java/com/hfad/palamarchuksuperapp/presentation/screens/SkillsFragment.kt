@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
+import com.hfad.palamarchuksuperapp.di.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import kotlinx.coroutines.launch
@@ -23,7 +25,10 @@ class SkillsFragment: Fragment() {
         get() = checkNotNull(_binding) {
             "_binding = null"
         }
-    private val viewModel: SkillsViewModel by viewModels { SkillsViewModel.Factory(SkillsRepositoryImpl()) }
+    @Inject lateinit var skillsViewModelFactory: GenericViewModelFactory<SkillsViewModel>
+    private val viewModel by lazy {
+        ViewModelProvider(this, skillsViewModelFactory)[SkillsViewModel::class.java]
+    }
 
     @Inject lateinit var vibe: AppVibrator
 
