@@ -1,9 +1,11 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
@@ -18,17 +20,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SkillsViewModel (private val repository: SkillRepository) : ViewModel() {
+class SkillsViewModel @Inject constructor(private val repository: SkillRepository) : ViewModel() {
 
-    class Factory (
-        private val repository: SkillRepository
-    ): ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            require(modelClass == SkillsViewModel::class.java)
-            return SkillsViewModel(repository) as T
-        }
-    }
+
 
     private val _state = MutableStateFlow(SkillViewState())
     val state: StateFlow<SkillViewState> = _state.asStateFlow()
