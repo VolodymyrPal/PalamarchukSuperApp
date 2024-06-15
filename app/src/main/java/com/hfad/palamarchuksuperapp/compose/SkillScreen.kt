@@ -79,6 +79,7 @@ import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.UiEvent
+import com.hfad.palamarchuksuperapp.presentation.viewModels.daggerViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -156,7 +157,7 @@ fun SkillScreen(
                             key = { item: SkillDomainRW -> item.skill.id.toString() }
                         ) { item ->
                             AnimatedVisibility(
-                                modifier = Modifier.animateItemPlacement(),
+                                modifier = Modifier.animateItem(),
                                 visible = item.isVisible,
                                 exit = fadeOut(
                                     animationSpec = TweenSpec(100, 100, LinearEasing)
@@ -373,7 +374,7 @@ fun ItemListSkill(
     }
 }
 
-@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList", "detekt.UnusedParameter")
 @Composable
 fun MyDropDownMenus(
     expanded: Boolean,
