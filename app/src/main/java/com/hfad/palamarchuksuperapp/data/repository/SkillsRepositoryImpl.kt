@@ -1,6 +1,6 @@
-package com.hfad.palamarchuksuperapp.data
+package com.hfad.palamarchuksuperapp.data.repository
 
-import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import java.util.UUID
 import javax.inject.Inject

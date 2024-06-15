@@ -75,8 +75,8 @@ import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.AppApplication
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
-import com.hfad.palamarchuksuperapp.data.SkillsRepositoryImpl
-import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
+import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
@@ -330,7 +330,6 @@ fun ItemListSkill(
                         },
                         onDelete = {
                             onEvent.invoke(UiEvent.DeleteItem(item))
-                            // onEvent(UiEvent.DeleteItem(item))
                         },
                         onMoveUp = { onEvent(UiEvent.MoveItemUp(item)) },
 
@@ -373,8 +372,6 @@ fun ItemListSkill(
                     ),
                     modifier = Modifier.animateContentSize(),
                     text = if (!isExpanded) "Details >>" else ("<< Hide"),
-//                        enabled = !isVisible
-//                                text = if (!isVisible) "Details..." else ("<< Hide"),
                 )
             }
         }

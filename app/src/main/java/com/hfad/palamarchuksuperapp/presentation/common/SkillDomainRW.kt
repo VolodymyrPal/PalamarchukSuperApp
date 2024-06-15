@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.presentation.common
 
-import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.data.entities.Skill
 
 data class SkillDomainRW(
     val skill: Skill,
