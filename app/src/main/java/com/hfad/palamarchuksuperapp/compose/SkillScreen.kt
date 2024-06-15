@@ -7,7 +7,6 @@ import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,9 +67,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.AppApplication
 import com.hfad.palamarchuksuperapp.R
@@ -87,13 +84,11 @@ import java.util.Date
 import java.util.Locale
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SkillScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController?,
 ) {
-    //val viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImpl())
     val viewModelFactory: ViewModelProvider.Factory =
         (LocalContext.current.applicationContext as AppApplication).appComponent.skillsViewModelFactory()
     val viewModel = daggerViewModel<SkillsViewModel>(factory = viewModelFactory)
@@ -453,11 +448,5 @@ fun ListItemSkillPreview() {
 @Preview
 fun SkillScreenPreview() {
     SkillScreen(navController = null)
-}
-
-@Composable
-inline fun <reified VM : ViewModel> daggerViewModel(factory: ViewModelProvider.Factory): VM {
-    val context = LocalContext.current
-    return ViewModelProvider(context as ViewModelStoreOwner, factory)[VM::class.java]
 }
 

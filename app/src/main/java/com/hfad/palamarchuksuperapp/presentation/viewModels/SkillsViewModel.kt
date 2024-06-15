@@ -237,3 +237,9 @@ abstract class UiStateViewModel<T>(
         _uiState.emit(RepoResult.Failure(e))
     }
 }
+
+@Composable
+inline fun <reified VM : ViewModel> daggerViewModel(factory: ViewModelProvider.Factory): VM {
+    val owner = LocalViewModelStoreOwner.current
+    return ViewModelProvider(owner!!, factory)[VM::class.java]
+}

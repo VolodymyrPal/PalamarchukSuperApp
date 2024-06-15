@@ -68,8 +68,8 @@ class SkillsRepositoryImpl @Inject constructor(
 
         val ten = Skill(name = "Project Pattern", description = "MVVM", id = UUID.randomUUID())
         val eleven = Skill(
-            name = "Work with Image",
-            description = "FileProvider,Coil",
+            name = "Compose",
+            description = "Composition tracing",
             id = UUID.randomUUID()
         )
 
