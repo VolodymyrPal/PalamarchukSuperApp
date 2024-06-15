@@ -83,12 +83,12 @@ fun MainScreenConstraint(
             contentColor = MaterialTheme.colorScheme.onBackground
         )
         val context = LocalContext.current
-        val timestap = remember { mutableLongStateOf(System.currentTimeMillis()) }
+        val timestamp = remember { mutableLongStateOf(System.currentTimeMillis()) }
         val mainPhoto = AppImages.MainImage(context).mainPhoto
         val fileObserver = object : FileObserver(mainPhoto.parentFile?.path) {
             override fun onEvent(event: Int, path: String?) {
                 if (event == MOVED_TO) {
-                    timestap.longValue = System.currentTimeMillis()
+                    timestamp.longValue = System.currentTimeMillis()
                 }
             }
         }
@@ -190,7 +190,7 @@ fun MainScreenConstraint(
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
                                 .data(mainPhoto)
-                                .setParameter(key = "timestamp", value = timestap.longValue, null)
+                                .setParameter(key = "timestamp", value = timestamp.longValue, null)
                                 .crossfade(true)
                                 .error(R.drawable.lion_jpg_21)
                                 .build(),
@@ -209,7 +209,7 @@ fun MainScreenConstraint(
                         top.linkTo(userImage.bottom, margin = 16.dp)
                         centerHorizontallyTo(userImage)
                     },
-                    action = { navController.navigate(ScreenRoute.Skills.route) }
+                    action = { navController.navigate(SkillScreen) }
                 )
                 ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
                     start.linkTo(parent.start, margin = 32.dp)

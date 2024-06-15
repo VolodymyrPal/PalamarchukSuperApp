@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.safeargsKotlin)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -93,4 +94,6 @@ dependencies {
     implementation (libs.zelory.compressor)
 
     implementation(libs.compose.tracing)
+
+    implementation(libs.kotlinx.serialization.json)
 }
