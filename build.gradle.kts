@@ -4,4 +4,5 @@
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
     alias(libs.plugins.safeargsKotlin) apply false
     alias(libs.plugins.kotlin.kapt) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }

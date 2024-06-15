@@ -55,10 +55,14 @@ zelory-compressor = { group ="id.zelory", name = "compressor", version = "3.0.1"
 compose-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version ="1.0.0-beta01"}
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+room = { module = "androidx.room:room-runtime", name = "room-runtime", version.ref = "room_version" }
+room-ktx = { module = "androidx.room:room-ktx", name = "room-ktx", version.ref = "room_version" }
+room-annotation = { module = "androidx.room:room-compiler", name = "room-compiler", version.ref = "room_version" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 safeargsKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "nav_version"}
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}

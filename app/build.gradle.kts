@@ -96,4 +96,9 @@ dependencies {
     implementation(libs.compose.tracing)
 
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.room)
+    implementation(libs.room.ktx)
+    annotationProcessor(libs.room.annotation)
+    kapt(libs.room.annotation)
+
 }
