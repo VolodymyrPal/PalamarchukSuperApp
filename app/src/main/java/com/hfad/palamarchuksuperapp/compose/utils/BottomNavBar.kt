@@ -32,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.compose.MainScreenConstraint
+import com.hfad.palamarchuksuperapp.compose.Settings
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
 import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
@@ -76,7 +78,7 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
         onClick = { onClickVibro()
-            navController?.navigate(ScreenRoute.Home.route)
+            navController?.navigate(MainScreenConstraint)
         }
     )
     val cameraTab = TabBarItem(
@@ -94,7 +96,7 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
         badgeAmount = 10,
         onClick = { onClickVibro()
-            navController?.navigate(ScreenRoute.Settings.route)
+            navController?.navigate(Settings)
             }
     )
 
