@@ -53,9 +53,8 @@ fun MainContent() {
 
     AppTheme {
 
-        NavHost(navController = navController, startDestination = ScreenRoute.Home.route) {
-
-            composable(ScreenRoute.Home.route,
+        NavHost(navController = navController, startDestination = MainScreenConstraint) {
+            composable<MainScreenConstraint> {
 //                enterTransition = {
 //                    when (ScreenRoute.Home.route) {
 //                        "home" ->
@@ -100,7 +99,6 @@ fun MainContent() {
 //                        else -> null
 //                    }
 //                }
-            ) {
                 AnimatedVisibility(
                     visible = true,
                     enter = slideInHorizontally() + expandHorizontally(expandFrom = Alignment.End)
@@ -109,12 +107,12 @@ fun MainContent() {
                             + shrinkHorizontally() + fadeOut(),
                 ) {
                     MainScreenConstraint(
-                        actionSkillsButton = remember { { navController.navigate("skills") } },
+                        actionSkillsButton = remember { { navController.navigate(Settings) } },
                         navController = navController
                     )
                 }
             }
-            composable(ScreenRoute.Skills.route,
+            composable<SkillScreen> {
 //                enterTransition = {
 //                    scaleIntoContainer()
 //                },
@@ -127,25 +125,24 @@ fun MainContent() {
 //                popExitTransition = {
 //                    scaleOutOfContainer()
 //                }
-                )
-            {
                 SkillScreen(
                     navController = navController
                 )
             }
-            composable(ScreenRoute.Settings.route,
-                enterTransition = {
-                    scaleIntoContainer()
-                },
-                exitTransition = {
-                    scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS)
-                },
-                popEnterTransition = {
-                    scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS)
-                },
-                popExitTransition = {
-                    scaleOutOfContainer()
-                } ) {
+            composable<Settings>
+//                enterTransition = {
+//                    scaleIntoContainer()
+//                },
+//                exitTransition = {
+//                    scaleOutOfContainer(direction = ScaleTransitionDirection.INWARDS)
+//                },
+//                popEnterTransition = {
+//                    scaleIntoContainer(direction = ScaleTransitionDirection.OUTWARDS)
+//                },
+//                popExitTransition = {
+//                    scaleOutOfContainer()
+//                }
+             {
                 Text(text = "Settings")
             }
         }
@@ -161,3 +158,12 @@ fun MainContentPreview () {
 enum class ScaleTransitionDirection {
     INWARDS, OUTWARDS
 }
+
+@Serializable
+object Settings
+
+@Serializable
+object SkillScreen
+
+@Serializable
+object MainScreenConstraint
