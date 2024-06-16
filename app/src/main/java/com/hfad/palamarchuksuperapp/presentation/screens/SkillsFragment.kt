@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
@@ -19,22 +20,24 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class SkillsFragment: Fragment() {
+class SkillsFragment : Fragment() {
     private var _binding: FragmentSkillsBinding? = null
     private val binding
         get() = checkNotNull(_binding) {
             "_binding = null"
         }
-    @Inject lateinit var skillsViewModelFactory: GenericViewModelFactory<SkillsViewModel>
+    @Inject
+    lateinit var skillsViewModelFactory: GenericViewModelFactory<SkillsViewModel>
     private val viewModel by lazy {
         ViewModelProvider(this, skillsViewModelFactory)[SkillsViewModel::class.java]
     }
 
-    @Inject lateinit var vibe: AppVibrator
+    @Inject
+    lateinit var vibe: AppVibrator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSkillsBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -46,10 +49,16 @@ class SkillsFragment: Fragment() {
         binding.skillsRecyclerView.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.fetchSkills()
-            viewModel.state.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
-                adapter.setData(viewModel.state.value.skills)
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.fetchSkills()
             }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
+                .collect {
+                    adapter.setData(it.skills)
+                }
         }
 
         binding.floatingActionButton.setOnClickListener {
@@ -57,7 +66,6 @@ class SkillsFragment: Fragment() {
             val bottomSheetFragment = BottomSheetFragment(viewModel = viewModel)
             bottomSheetFragment.show(parentFragmentManager, "BSDialogFragment")
         }
-
         return view
     }
 
