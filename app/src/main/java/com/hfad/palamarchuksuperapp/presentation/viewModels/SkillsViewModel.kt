@@ -25,8 +25,7 @@ import javax.inject.Inject
 class SkillsViewModel @Inject constructor(private val repository: SkillRepository) : ViewModel() {
 
 
-
-    private val _state = MutableStateFlow(SkillViewState())
+    private val _state = MutableStateFlow(SkillViewState(loading = true))
     val state: StateFlow<SkillViewState> = _state.asStateFlow()
 
     public override fun onCleared() {
@@ -43,12 +42,15 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
             is UiEvent.EditItem -> {
                 updateSkillOrAdd(event.item, SkillsChangeConst.FullSkill)
             }
+
             is UiEvent.DeleteItem -> {
                 deleteSkill(event.item)
             }
+
             is UiEvent.MoveItemUp -> {
                 moveToFirstPosition(event.item)
             }
+
             is UiEvent.AddItem -> {
                 addSkill(skill = event.item.skill)
             }
@@ -111,18 +113,18 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
     }
 
     suspend fun fetchSkills() {
-
-        _state.update { it.copy(loading = true) }
-
-        try {
-            val skills = repository.getSkillsFromDB()
-            delay(1000)
-            _state.update {
-                it.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
+        if (state.value.skills.isEmpty()) {
+            _state.update { it.copy(loading = true) }
+            try {
+                val skills = repository.getSkillsFromDB()
+                delay(1000)
+                _state.update {
+                    it.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
+                }
+            } catch (e: Exception) {
+                _state.value =
+                    SkillViewState(loading = false, error = e.message ?: "Error fetching skills")
             }
-        } catch (e: Exception) {
-            _state.value =
-                SkillViewState(loading = false, error = e.message ?: "Error fetching skills")
         }
     }
 
@@ -205,6 +207,7 @@ abstract class UiStateViewModel<T>(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = initial,
         )
+
     protected fun emitState(
         emitProcessing: Boolean,
         block: suspend (current: RepoResult<T>) -> RepoResult<T>,
@@ -216,9 +219,11 @@ abstract class UiStateViewModel<T>(
             }
             _uiState.emit(block.invoke(current))
         }
+
     protected suspend fun emitState(value: RepoResult<T>) {
         _uiState.emit(value)
     }
+
     protected suspend fun emitState(value: T?) {
         if (value == null) {
             emitEmpty()
@@ -226,9 +231,11 @@ abstract class UiStateViewModel<T>(
             _uiState.emit(RepoResult.Success(value))
         }
     }
+
     protected suspend fun emitEmpty() {
         _uiState.emit(RepoResult.Empty)
     }
+
     protected suspend fun emitProcessing() {
         _uiState.emit(RepoResult.Processing)
     }
