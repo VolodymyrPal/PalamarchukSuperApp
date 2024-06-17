@@ -8,11 +8,9 @@ import java.util.UUID
 
 @Entity(tableName = "mySkillsDB")
 data class Skill(
-    @PrimaryKey(autoGenerate = true) val numbering: Int = 0,
-    @ColumnInfo (name = "uniqID") val id: UUID? = null,
-    @ColumnInfo (name = "skillName") val name: String = "",
-    @ColumnInfo (name = "skillDescription") val description: String = "",
-    @ColumnInfo (name = "skillDateStudied") val date: Date = Date(),
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo (name = "uuid") val uuid: UUID? = null,
+    @ColumnInfo (name = "name") val name: String = "",
+    @ColumnInfo (name = "description") val description: String = "",
+    @ColumnInfo (name = "studiedDate") val date: Date = Date(),
 )

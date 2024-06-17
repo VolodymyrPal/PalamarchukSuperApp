@@ -2,7 +2,7 @@ import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
-import com.hfad.palamarchuksuperapp.di.GenericViewModelFactory
+import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
