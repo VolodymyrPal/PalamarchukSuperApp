@@ -13,7 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
-import com.hfad.palamarchuksuperapp.di.GenericViewModelFactory
+import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import kotlinx.coroutines.launch
