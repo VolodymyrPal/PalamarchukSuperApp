@@ -13,4 +13,6 @@ data class Skill(
     @ColumnInfo (name = "skillName") val name: String = "",
     @ColumnInfo (name = "skillDescription") val description: String = "",
     @ColumnInfo (name = "skillDateStudied") val date: Date = Date(),
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo (name = "uuid") val uuid: UUID? = null,
 )

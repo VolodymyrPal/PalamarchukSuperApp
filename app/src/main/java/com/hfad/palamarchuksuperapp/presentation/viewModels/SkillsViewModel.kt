@@ -118,8 +118,8 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
             try {
                 val skills = repository.getSkillsFromDB()
                 delay(1000)
-                _state.update {
-                    it.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
+                _state.update { state ->
+                    state.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
                 }
             } catch (e: Exception) {
                 _state.value =
@@ -146,7 +146,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                 SkillsChangeConst.FullSkill -> {
                     _state.update { myState ->
                         val newList = myState.skills.toMutableList()
-                        val skillToChange = newList.find { it.skill.id == skillDomainRW.skill.id }
+                        val skillToChange = newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
                         if (skillToChange == null) {
                             newList.add(skillDomainRW)
                         } else {

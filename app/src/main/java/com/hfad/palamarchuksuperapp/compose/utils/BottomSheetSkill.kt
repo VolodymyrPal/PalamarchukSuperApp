@@ -155,7 +155,7 @@ fun BottomSheetSkill(
                         onEvent(
                             skillDomainRW.copy(
                                 skill = skillDomainRW.skill.copy(
-                                    id = skillDomainRW.skill.id ?: UUID.randomUUID(),
+                                    uuid = skillDomainRW.skill.uuid ?: UUID.randomUUID(),
                                     name = textName,
                                     description = textDescription,
                                     date = textDate

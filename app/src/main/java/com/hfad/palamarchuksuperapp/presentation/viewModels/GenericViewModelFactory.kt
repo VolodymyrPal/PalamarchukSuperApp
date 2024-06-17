@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.di
+package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
