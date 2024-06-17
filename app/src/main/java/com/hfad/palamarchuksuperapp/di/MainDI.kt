@@ -1,6 +1,9 @@
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
+import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
+import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
@@ -35,7 +38,7 @@ interface AppComponent {
 }
 
 
-@Module(includes = [RepositoryModule::class, ModelsModule::class])
+@Module(includes = [DatabaseModule::class, ModelsModule::class])
 object AppModule {
 
 }
@@ -49,15 +52,26 @@ object ModelsModule {
 }
 
 @Module
-object RepositoryModule {
+object DatabaseModule {
 
     @Provides
     fun provideSkillsRepository(): PreferencesRepository {
         return PreferencesRepository.get()
     }
 
+    @Singleton
     @Provides
-    fun provideSkillRepository(): SkillRepository {
-        return SkillsRepositoryImpl()
+    fun provideCountryDB(context: Context): SkillsDatabase {
+        return Room.databaseBuilder(context, SkillsDatabase::class.java, "mySkillsDB").build()
+    }
+
+    @Provides
+    fun provideSkillsDao(skillsDatabase: SkillsDatabase): SkillsDao {
+        return skillsDatabase.skillsDao()
+    }
+
+    @Provides
+    fun provideSkillRepository(skillsDao: SkillsDao): SkillRepository {
+        return SkillsRepositoryImpl(skillsDao = skillsDao)
     }
 }
