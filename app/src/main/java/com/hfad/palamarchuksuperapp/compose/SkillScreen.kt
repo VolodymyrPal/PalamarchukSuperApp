@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.compose
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -69,11 +70,11 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
-import com.hfad.palamarchuksuperapp.AppApplication
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
-import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.entities.Skill
+import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImplDummy
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
@@ -89,11 +90,11 @@ import java.util.Locale
 fun SkillScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController?,
+    context: Context = LocalContext.current,
+    viewModelFactory: ViewModelProvider.Factory = context.appComponent.skillsViewModelFactory(),
+    viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(factory = viewModelFactory)
 ) {
-    val viewModelFactory: ViewModelProvider.Factory =
-        (LocalContext.current.applicationContext as AppApplication).appComponent.skillsViewModelFactory()
-    val viewModel = daggerViewModel<SkillsViewModel>(factory = viewModelFactory)
-    val fragmentManager = (LocalContext.current as FragmentActivity).supportFragmentManager
+
     DisposableEffect(key1 = Unit) {
         onDispose {
             viewModel.onCleared()
@@ -113,7 +114,7 @@ fun SkillScreen(
                     val bottomSheetFragment = BottomSheetFragment(
                         viewModel = viewModel
                     )
-                    bottomSheetFragment.show(fragmentManager, "BSDialogFragment")
+                    bottomSheetFragment.show((context as FragmentActivity).supportFragmentManager, "BSDialogFragment")
                 },
                 content = {
                     Icon(
@@ -154,7 +155,7 @@ fun SkillScreen(
                     LazyColumn {
                         items(
                             items = state.skills,
-                            key = { item: SkillDomainRW -> item.skill.id.toString() }
+                            key = { item: SkillDomainRW -> item.skill.uuid.toString() }
                         ) { item ->
                             AnimatedVisibility(
                                 modifier = Modifier.animateItem(),
@@ -202,7 +203,7 @@ fun ItemListSkill(
     modifier: Modifier = Modifier,
     item: SkillDomainRW,
     onEvent: (UiEvent) -> Unit,
-    viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImpl()),
+    viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImplDummy()),
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -297,7 +298,7 @@ fun ItemListSkill(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             var expanded by remember { mutableStateOf(false) }
-            val fragmentManager = (LocalContext.current as FragmentActivity).supportFragmentManager
+
 
             IconButton(
                 modifier = modifier
@@ -322,7 +323,7 @@ fun ItemListSkill(
                                 viewModel = viewModel,
                                 skillDomainRW = item
                             )
-                            bottomSheetFragment.show(fragmentManager, "BSDialogFragment")
+                            bottomSheetFragment.show((LocalContext as FragmentActivity).supportFragmentManager, "BSDialogFragment")
                         },
                         onDelete = {
                             onEvent.invoke(UiEvent.DeleteItem(item))
@@ -450,4 +451,3 @@ fun ListItemSkillPreview() {
 fun SkillScreenPreview() {
     SkillScreen(navController = null)
 }
-
