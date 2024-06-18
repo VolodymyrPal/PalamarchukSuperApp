@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SkillsViewModel @Inject constructor(private val repository: SkillRepository) : ViewModel() {
+class SkillsViewModel @Inject constructor(private val repository: SkillRepository) : UiStateViewModel<List<SkillDomainRW>>() {
 
 
     private val _state = MutableStateFlow(SkillViewState(loading = true))
