@@ -104,7 +104,8 @@ fun SkillScreen(
                     val bottomSheetFragment = BottomSheetFragment(
                         viewModel = viewModel
                     )
-                    bottomSheetFragment.show((context as FragmentActivity).supportFragmentManager, "BSDialogFragment")
+                    bottomSheetFragment.show(
+                        (LocalContext as FragmentActivity).supportFragmentManager, "BSDialogFragment")
                 },
                 content = {
                     Icon(
@@ -191,7 +192,7 @@ fun ItemListSkill(
     modifier: Modifier = Modifier,
     item: SkillDomainRW,
     onEvent: (UiEvent) -> Unit,
-    viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImplDummy()),
+    viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -437,5 +438,8 @@ fun ListItemSkillPreview() {
 @Composable
 @Preview
 fun SkillScreenPreview() {
-    SkillScreen(navController = null)
+    SkillScreen(
+        navController = null,
+        viewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
+    )
 }
