@@ -96,17 +96,22 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
     }
 
     suspend fun fetchSkills() {
-        if (state.value.skills.isEmpty()) {
+        if (
+            !(uiState.value is RepoResult.Empty || uiState.value is RepoResult.Processing)
+//            state.value.skills.isEmpty()
+            ) {
             _state.update { it.copy(loading = true) }
             try {
                 val skills = repository.getSkillsFromDB()
                 delay(1000)
                 _state.update { state ->
+                    emitState(RepoResult.Success(data = skills.map { SkillToSkillDomain.map(it) }))
                     state.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
                 }
             } catch (e: Exception) {
                 _state.value =
                     SkillViewState(loading = false, error = e.message ?: "Error fetching skills")
+                emitFailure(e)
             }
         }
     }
