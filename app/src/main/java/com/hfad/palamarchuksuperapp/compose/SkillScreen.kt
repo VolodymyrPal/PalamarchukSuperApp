@@ -87,16 +87,9 @@ import java.util.Locale
 fun SkillScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController?,
-    context: Context = LocalContext.current,
-    viewModelFactory: ViewModelProvider.Factory = context.appComponent.skillsViewModelFactory(),
-    viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(factory = viewModelFactory)
+    viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
+        factory = LocalContext.current.appComponent.viewModelFactory())
 ) {
-
-    DisposableEffect(key1 = Unit) {
-        onDispose {
-            viewModel.onCleared()
-        }
-    }
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
@@ -130,9 +123,7 @@ fun SkillScreen(
 
         ) {
             val state by viewModel.state.collectAsState()
-            LaunchedEffect(key1 = viewModel) {
-                viewModel.handleEvent(UiEvent.GetSkills)
-            }
+            viewModel.handleEvent(UiEvent.GetSkills)
 
             when {
                 state.loading -> {
