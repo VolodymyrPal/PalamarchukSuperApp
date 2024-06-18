@@ -103,7 +103,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
             _state.update { it.copy(loading = true) }
             try {
                 val skills = repository.getSkillsFromDB()
-                delay(1000)
+
                 _state.update { state ->
                     emitState(RepoResult.Success(data = skills.map { SkillToSkillDomain.map(it) }))
                     state.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
@@ -235,6 +235,7 @@ abstract class UiStateViewModel<T> : ViewModel() {
 
 @Composable
 inline fun <reified VM : ViewModel> daggerViewModel(factory: ViewModelProvider.Factory): VM {
-    val owner = LocalViewModelStoreOwner.current
-    return ViewModelProvider(owner!!, factory)[VM::class.java]
+    val owner = LocalViewModelStoreOwner.current?: error(
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner")
+    return ViewModelProvider(owner, factory)[VM::class.java]
 }
