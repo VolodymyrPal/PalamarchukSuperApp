@@ -28,7 +28,7 @@ interface AppComponent {
     fun inject(fragmentActivity: SkillsFragment)
     fun inject(mainScreenFragment: MainScreenFragment)
     fun appVibrator(): AppVibrator
-    fun skillsViewModelFactory(): ViewModelProvider.Factory
+    fun viewModelFactory(): ViewModelProvider.Factory
 
     @Component.Builder
     interface Builder {

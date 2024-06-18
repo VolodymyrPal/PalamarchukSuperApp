@@ -35,7 +35,7 @@ class SkillsRepositoryImpl @Inject constructor(
     override suspend fun addSkill(skill: Skill) = skillsDao.addSkill(skill)
 }
 
-class SkillsRepositoryImplDummy : SkillRepository {
+class SkillsRepositoryImplForPreview : SkillRepository {
     override fun getSkillsFromDB(): List<Skill> {
         val one = Skill(name = "some skills", description = "One, Two, Three", uuid = UUID.randomUUID())
         val two = Skill(name = "XML", description = "One, Two, Three", uuid = UUID.randomUUID())

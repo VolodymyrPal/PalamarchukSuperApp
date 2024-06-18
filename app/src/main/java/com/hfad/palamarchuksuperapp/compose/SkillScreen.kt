@@ -42,8 +42,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,13 +66,12 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.data.entities.Skill
-import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImplDummy
+import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImplForPreview
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
