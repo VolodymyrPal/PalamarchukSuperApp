@@ -184,16 +184,16 @@ sealed class RepoResult<out T> {
     ) : RepoResult<Nothing>()
 }
 
-abstract class UiStateViewModel<T>(
-    initial: RepoResult<T> = RepoResult.Processing,
-) : ViewModel() {
+abstract class UiStateViewModel<T> : ViewModel() {
+
     private val _uiState: MutableStateFlow<RepoResult<T>> =
-        MutableStateFlow(initial)
+        MutableStateFlow(RepoResult.Processing)
+
     val uiState: StateFlow<RepoResult<T>> =
         _uiState.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = initial,
+            initialValue = RepoResult.Processing
         )
 
     protected fun emitState(
