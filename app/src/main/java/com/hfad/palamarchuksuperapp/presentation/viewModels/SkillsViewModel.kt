@@ -205,31 +205,31 @@ abstract class UiStateViewModel<T> : ViewModel() {
             if (emitProcessing) {
                 emitProcessing()
             }
-            _uiState.emit(block.invoke(current))
+            _uiState.update { block.invoke(current) }
         }
 
     protected suspend fun emitState(value: RepoResult<T>) {
-        _uiState.emit(value)
+        _uiState.update { value }
     }
 
     protected suspend fun emitState(value: T?) {
         if (value == null) {
             emitEmpty()
         } else {
-            _uiState.emit(RepoResult.Success(value))
+            _uiState.update { RepoResult.Success(value) }
         }
     }
 
     protected suspend fun emitEmpty() {
-        _uiState.emit(RepoResult.Empty)
+        _uiState.update { RepoResult.Empty }
     }
 
     protected suspend fun emitProcessing() {
-        _uiState.emit(RepoResult.Processing)
+        _uiState.update { RepoResult.Processing }
     }
 
     protected suspend fun emitFailure(e: Throwable) {
-        _uiState.emit(RepoResult.Failure(e))
+        _uiState.update { RepoResult.Failure(e) }
     }
 }
 
