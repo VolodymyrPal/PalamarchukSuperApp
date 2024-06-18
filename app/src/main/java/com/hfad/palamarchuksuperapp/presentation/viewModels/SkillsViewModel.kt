@@ -95,18 +95,6 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         }
     }
 
-    fun changeVisible(skillDomainRW: SkillDomainRW) {
-        viewModelScope.launch {
-            _state.update { myState ->
-                val newList = myState.skills.toMutableList()
-                newList.indexOf(skillDomainRW).let {
-                    newList[it] = newList[it].copy(isVisible = !newList[it].isVisible)
-                }
-                myState.copy(skills = newList)
-            }
-        }
-    }
-
     suspend fun fetchSkills() {
         if (state.value.skills.isEmpty()) {
             _state.update { it.copy(loading = true) }
