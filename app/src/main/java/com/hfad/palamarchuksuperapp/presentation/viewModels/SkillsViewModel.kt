@@ -21,37 +21,22 @@ import javax.inject.Inject
 
 class SkillsViewModel @Inject constructor(private val repository: SkillRepository) : UiStateViewModel<List<SkillDomainRW>>() {
 
-
-    private val _state = MutableStateFlow(SkillViewState(loading = true))
-    val state: StateFlow<SkillViewState> = _state.asStateFlow()
-
-
-    fun getSkill(): List<Skill> {
-        return _state.value.skills.map { SkillDomainToSkill.map(it) }
-    }
-
     fun handleEvent(event: UiEvent) {
         when (event) {
             is UiEvent.EditItem -> {
                 updateSkillOrAdd(event.item, SkillsChangeConst.FullSkill)
             }
-
             is UiEvent.DeleteItem -> {
                 deleteSkill(event.item)
             }
-
             is UiEvent.MoveItemUp -> {
                 moveToFirstPosition(event.item)
             }
-
             is UiEvent.AddItem -> {
                 addSkill(skill = event.item.skill)
             }
-
             is UiEvent.GetSkills -> {
-                viewModelScope.launch {
-                    fetchSkills()
-                }
+                fetchSkills()
             }
         }
     }
