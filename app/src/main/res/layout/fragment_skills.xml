@@ -9,6 +9,19 @@
     android:orientation="vertical"
     tools:context=".presentation.screens.SkillsFragment">
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBarCalories"
+        style="@style/Widget.Material3.CircularProgressIndicator.Medium"
+        app:showAnimationBehavior="outward"
+        app:hideAnimationBehavior="inward"
+        android:indeterminate="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/skills_recycler_view"
         android:layout_width="match_parent"
