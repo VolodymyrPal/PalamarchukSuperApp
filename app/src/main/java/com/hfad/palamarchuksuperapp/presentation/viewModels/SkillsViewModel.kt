@@ -48,6 +48,21 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                 newList.remove(skillDomainRW)
                 newList.add(0, skillDomainRW)
                 myState.copy(skills = newList)
+
+    private fun funWithState(
+        onSuccess: suspend () -> Unit = {},
+        onFailure: suspend () -> Unit = {},
+        onEmpty: suspend () -> Unit = {},
+        onProcessing: suspend () -> Unit = {},
+        elseAction: suspend () -> Unit = {},
+    ) {
+        when (uiState.value) {
+            is RepoResult.Success -> viewModelScope.launch { onSuccess() }
+            is RepoResult.Failure -> viewModelScope.launch { onFailure() }
+            is RepoResult.Empty -> viewModelScope.launch { onEmpty() }
+            is RepoResult.Processing -> viewModelScope.launch { onProcessing() }
+            else -> {
+                viewModelScope.launch { elseAction() }
             }
         }
     }
