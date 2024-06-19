@@ -123,11 +123,10 @@ fun SkillScreen(
                 .padding(bottom = paddingValues.calculateBottomPadding())
 
         ) {
-            val state by viewModel.state.collectAsState()
+            val state by viewModel.uiState.collectAsState()
             viewModel.handleEvent(UiEvent.GetSkills)
-
-            when {
-                state.loading -> {
+            when (state) {
+                RepoResult.Processing -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center),
@@ -136,14 +135,23 @@ fun SkillScreen(
                     }
                 }
 
-                state.error != null -> {
-                    Text(text = "Error: ${state.error}", color = Color.Red)
+                RepoResult.Empty -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
 
-                else -> {
+                is RepoResult.Failure -> {
+                    Text(text = "Error: ${(state as RepoResult.Failure).error}", color = Color.Red)
+                }
+
+                is RepoResult.Success -> {
                     LazyColumn {
                         items(
-                            items = state.skills,
+                            items = (state as RepoResult.Success).data,
                             key = { item: SkillDomainRW -> item.skill.uuid.toString() }
                         ) { item ->
                             AnimatedVisibility(
