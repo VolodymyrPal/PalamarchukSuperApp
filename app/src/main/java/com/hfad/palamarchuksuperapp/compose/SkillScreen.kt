@@ -73,6 +73,7 @@ import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImplForPreview
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
+import com.hfad.palamarchuksuperapp.presentation.viewModels.RepoResult
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.UiEvent
@@ -266,10 +267,10 @@ fun ItemListSkill(
                     overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     onTextLayout = {
-                        if (it.hasVisualOverflow || isExpanded) {
-                            isVisible = true
+                        isVisible = if (it.hasVisualOverflow || isExpanded) {
+                            true
                         } else {
-                            isVisible = false
+                            false
                         }
                     })
 
