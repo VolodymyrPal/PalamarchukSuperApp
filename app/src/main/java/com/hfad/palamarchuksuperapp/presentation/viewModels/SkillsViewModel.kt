@@ -43,11 +43,12 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
 
     fun moveToFirstPosition(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            _state.update { myState ->
-                val newList = myState.skills.toMutableList()
-                newList.remove(skillDomainRW)
-                newList.add(0, skillDomainRW)
-                myState.copy(skills = newList)
+            val newList = (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
+            newList.remove(skillDomainRW)
+            newList.add(0, skillDomainRW)
+            emitState(newList)
+        }
+    }
 
     private fun funWithState(
         onSuccess: suspend () -> Unit = {},
@@ -69,70 +70,71 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
 
     fun deleteSkill(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            _state.update { myState ->
-                val index = myState.skills.indexOf(skillDomainRW)
-                val newList = myState.skills.toMutableList()
-                if (index != -1) {
-                    newList.remove(skillDomainRW)
+            funWithState(
+                onSuccess = {
+                    val index = (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.indexOf(
+                            skillDomainRW)
+                    val newList = (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
+                    if (index != -1) { newList.remove(skillDomainRW) }
+                    newList.removeIf { it.chosen }
+                    emitState(newList)
                 }
-                newList.removeIf {
-                    it.chosen
-                }
-                myState.copy(skills = newList)
-            }
+            )
         }
     }
 
-    fun addSkill(skill: Skill) {
+    private fun addSkill(skill: Skill) {
         viewModelScope.launch {
-            _state.update { myState ->
-                val newList = myState.skills.toMutableList()
+            funWithState (onSuccess =  {
+                val newList =
+                    (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
                 newList.add(SkillDomainRW(skill))
-                myState.copy(skills = newList)
-            }
+                emitState(newList)
+            })
         }
     }
 
-    suspend fun fetchSkills() {
-        if (
-            !(uiState.value is RepoResult.Empty || uiState.value is RepoResult.Processing)
-//            state.value.skills.isEmpty()
-            ) {
-            _state.update { it.copy(loading = true) }
-            try {
-                val skills = repository.getSkillsFromDB()
-
-                _state.update { state ->
-                    emitState(RepoResult.Success(data = skills.map { SkillToSkillDomain.map(it) }))
-                    state.copy(loading = false, skills = skills.map { SkillToSkillDomain.map(it) })
+    fun fetchSkills() {
+        funWithState(
+            onEmpty = {
+                emitState(emitProcessing = true) { current ->
+                    delay(4000)
+                    if (current is RepoResult.Failure) {
+                        return@emitState current
+                    }
+                    try {
+                        val skills = repository.getSkillsFromDB()
+                        return@emitState if (skills.isNotEmpty()) {
+                            RepoResult.Success(data = skills.map { SkillToSkillDomain.map(it) })
+                        } else RepoResult.Empty
+                    } catch (e: Exception) {
+                        RepoResult.Failure(e)
+                    }
                 }
-            } catch (e: Exception) {
-                _state.value =
-                    SkillViewState(loading = false, error = e.message ?: "Error fetching skills")
-                emitFailure(e)
             }
-        }
+        )
     }
 
     fun updateSkillOrAdd(skillDomainRW: SkillDomainRW, changeConst: SkillsChangeConst) {
         viewModelScope.launch {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
-                    _state.update { myState ->
-                        val newList = myState.skills.toMutableList()
+                    funWithState(onSuccess = {
+                        val newList =
+                            (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
                         newList.indexOf(skillDomainRW).let {
-                            Log.d("Was called:", "$it")
                             newList[it] = newList[it].copy(chosen = !skillDomainRW.chosen)
                         }
-                        myState.copy(skills = newList)
-                    }
-
+                        emitState(newList)
+                    })
                 }
 
                 SkillsChangeConst.FullSkill -> {
-                    _state.update { myState ->
-                        val newList = myState.skills.toMutableList()
-                        val skillToChange = newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
+                    funWithState( onSuccess = {
+                        val newList =
+                            (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
+                        val skillToChange =
+                            newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
                         if (skillToChange == null) {
                             newList.add(skillDomainRW)
                         } else {
@@ -141,8 +143,8 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                                     newList[it].copy(skill = skillDomainRW.skill)
                             }
                         }
-                        myState.copy(skills = newList)
-                    }
+                        emitState(newList)
+                    })
                 }
             }
         }
