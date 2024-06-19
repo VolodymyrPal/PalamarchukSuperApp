@@ -1,8 +1,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="960"
-    android:viewportHeight="960">
+    android:viewportHeight="960"
+    tools:keep="@drawable/darkmod_icon_sun_outlined">
   <path
       android:fillColor="#FF000000"
       android:pathData="M480.03,589q45.43,0 77.2,-31.8Q589,525.4 589,479.97t-31.8,-77.2Q525.4,371 479.97,371t-77.2,31.8Q371,434.6 371,480.03t31.8,77.2Q434.6,589 480.03,589ZM480,680q-83,0 -141.5,-58.5T280,480q0,-83 58.5,-141.5T480,280q83,0 141.5,58.5T680,480q0,83 -58.5,141.5T480,680ZM205.5,525.5h-171v-91h171v91ZM925.5,525.5h-171v-91h171v91ZM434.5,205.5v-171h91v171h-91ZM434.5,925.5v-171h91v171h-91ZM255.76,318.13 L147.35,213.48l64.41,-67.13 104.13,107.17 -60.13,64.61ZM748.24,813.65 L643.11,705.48L704,642.35l108.65,104.17 -64.41,67.13ZM642.35,256l104.17,-108.65 67.13,64.41 -107.17,104.13L642.35,256ZM146.35,748.24 L254.52,643.11L317.65,704 213.48,812.65l-67.13,-64.41ZM480,480Z"/>

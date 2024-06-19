@@ -35,7 +35,6 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.compose.MainScreenConstraint
 import com.hfad.palamarchuksuperapp.compose.Settings
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
-import com.hfad.palamarchuksuperapp.domain.models.ScreenRoute
 import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import kotlinx.coroutines.launch
 

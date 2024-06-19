@@ -35,7 +35,7 @@ class AppImages @Inject constructor(val context: Context) {
             )
         }
 
-        val tempUriForIntent: Uri by lazy {
+        private val tempUriForIntent: Uri by lazy {
             FileProvider.getUriForFile(
                 context, "${context.packageName}.provider",
                 tempImageFileForIntent

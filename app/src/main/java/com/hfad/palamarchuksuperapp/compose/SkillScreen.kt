@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.compose
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing

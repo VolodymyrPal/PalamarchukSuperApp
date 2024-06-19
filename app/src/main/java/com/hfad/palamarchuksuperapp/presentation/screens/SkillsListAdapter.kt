@@ -52,7 +52,7 @@ class SkillsListAdapter(
         private val parentFragmentManager: FragmentManager,
     ) : RecyclerView.ViewHolder(binding.root) {
         private val startedHeight = binding.skillCard.layoutParams.height
-        val vibe = this.binding.root.context.appComponent.appVibrator()
+        private val vibe = this.binding.root.context.appComponent.appVibrator()
 
         fun bind(skill: SkillDomainRW) {
             binding.materialCheckBox.isChecked = skill.chosen

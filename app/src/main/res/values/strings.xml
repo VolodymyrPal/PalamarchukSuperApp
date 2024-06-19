@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">PalamarchukSuperApp</string>
     <string name="bnav_home_title">Home</string>
     <string name="bnav_camera_title">Camera</string>

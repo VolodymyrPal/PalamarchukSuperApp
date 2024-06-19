@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,13 +8,12 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
-import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainToSkill
 import com.hfad.palamarchuksuperapp.presentation.common.SkillToSkillDomain
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch

@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.room)
     implementation(libs.room.ktx)
     annotationProcessor(libs.room.annotation)
+    //noinspection KaptUsageInsteadOfKsp
     kapt(libs.room.annotation)
 
 }

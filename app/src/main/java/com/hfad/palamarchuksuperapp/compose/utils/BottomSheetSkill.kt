@@ -52,7 +52,7 @@ import java.util.UUID
 
 
 @Suppress("detekt.FunctionNaming", "detekt.UnusedParameter", "detekt.LongMethod")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
+@OptIn(ExperimentalMaterial3Api::class,
     ExperimentalComposeUiApi::class
 )
 @Composable

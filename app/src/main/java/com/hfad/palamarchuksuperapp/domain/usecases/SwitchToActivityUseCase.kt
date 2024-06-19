@@ -1,3 +1,8 @@
+@file:Suppress("ConvertObjectToDataObject", "ConvertObjectToDataObject",
+    "ConvertObjectToDataObject", "ConvertObjectToDataObject", "ConvertObjectToDataObject",
+    "ConvertObjectToDataObject", "ConvertObjectToDataObject", "ConvertObjectToDataObject"
+)
+
 package com.hfad.palamarchuksuperapp.domain.usecases
 
 import android.app.Activity
@@ -24,6 +29,10 @@ class SwitchToActivityUseCase {
         }
     }
 }
+@Suppress("ConvertObjectToDataObject", "ConvertObjectToDataObject", "ConvertObjectToDataObject",
+    "ConvertObjectToDataObject", "ConvertObjectToDataObject", "ConvertObjectToDataObject",
+    "ConvertObjectToDataObject", "ConvertObjectToDataObject"
+)
 sealed class ActivityKey {
     object ActivityXML : ActivityKey()
     object ActivityCompose : ActivityKey()

@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     @Inject lateinit var mainImage: AppImages.MainImage
     @Inject lateinit var vibe: AppVibrator
