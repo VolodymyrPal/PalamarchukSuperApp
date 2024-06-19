@@ -164,12 +164,6 @@ sealed class UiEvent {
     object GetSkills : UiEvent()
 }
 
-data class SkillViewState(
-    var loading: Boolean = false,
-    val skills: List<SkillDomainRW> = emptyList(),
-    val error: String? = null,
-)
-
 sealed class RepoResult<out T> {
     data object Processing : RepoResult<Nothing>()
 
@@ -187,13 +181,13 @@ sealed class RepoResult<out T> {
 abstract class UiStateViewModel<T> : ViewModel() {
 
     private val _uiState: MutableStateFlow<RepoResult<T>> =
-        MutableStateFlow(RepoResult.Processing)
+        MutableStateFlow(RepoResult.Empty)
 
     val uiState: StateFlow<RepoResult<T>> =
         _uiState.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = RepoResult.Processing
+            initialValue = RepoResult.Empty
         )
 
     protected fun emitState(
@@ -205,10 +199,10 @@ abstract class UiStateViewModel<T> : ViewModel() {
             if (emitProcessing) {
                 emitProcessing()
             }
-            _uiState.update { block.invoke(current) }
+            _uiState.update { block(current) }
         }
 
-    protected suspend fun emitState(value: RepoResult<T>) {
+    protected fun emitState(value: RepoResult<T>) {
         _uiState.update { value }
     }
 
@@ -220,15 +214,15 @@ abstract class UiStateViewModel<T> : ViewModel() {
         }
     }
 
-    protected suspend fun emitEmpty() {
+    private fun emitEmpty() {
         _uiState.update { RepoResult.Empty }
     }
 
-    protected suspend fun emitProcessing() {
+    private fun emitProcessing() {
         _uiState.update { RepoResult.Processing }
     }
 
-    protected suspend fun emitFailure(e: Throwable) {
+    protected fun emitFailure(e: Throwable) {
         _uiState.update { RepoResult.Failure(e) }
     }
 }
