@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -15,6 +16,7 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
 import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
+import com.hfad.palamarchuksuperapp.presentation.viewModels.RepoResult
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,10 +57,26 @@ class SkillsFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED)
-                .collect {
-                    adapter.setData(it.skills)
+            viewModel.uiState.flowWithLifecycle(
+                viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED
+            ).collect {
+                when (it) {
+                    RepoResult.Empty -> {
+                        binding.progressBarCalories.visibility = View.GONE
+                    }
+                    RepoResult.Processing -> {
+                        binding.progressBarCalories.visibility = View.VISIBLE
+                    }
+                    is RepoResult.Failure -> {
+                        binding.progressBarCalories.visibility = View.GONE
+                        Toast.makeText(context, it.error.message, Toast.LENGTH_SHORT).show()
+                    }
+                    is RepoResult.Success -> {
+                        binding.progressBarCalories.visibility = View.GONE
+                        adapter.setData(it.data)
+                    }
                 }
+            }
         }
 
         binding.floatingActionButton.setOnClickListener {
