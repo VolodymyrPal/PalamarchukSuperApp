@@ -73,7 +73,7 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         })
 
     val homeTab = TabBarItem(
-        title = stringResource(id = ScreenRoute.Home.resourceId),
+        title = "Home",
         selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
         onClick = { onClickVibro()
@@ -81,7 +81,7 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         }
     )
     val cameraTab = TabBarItem(
-        title = stringResource(id = ScreenRoute.Skills.resourceId),
+        title = "Camera",
         selectedIcon = painterResource(id = R.drawable.bicon_camera_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_camera_outlined),
         onClick = {
