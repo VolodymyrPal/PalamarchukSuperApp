@@ -98,7 +98,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         funWithState(
             onEmpty = {
                 emitState(emitProcessing = true) { current ->
-                    delay(4000)
+                    delay(1000)
                     if (current is RepoResult.Failure) {
                         return@emitState current
                     }

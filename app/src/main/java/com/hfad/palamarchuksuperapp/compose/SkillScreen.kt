@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.compose
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -51,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -145,6 +147,7 @@ fun SkillScreen(
                 }
 
                 is RepoResult.Failure -> {
+                    Log.d("Error: ", "${(state as RepoResult.Failure).error}")
                     Text(text = "Error: ${(state as RepoResult.Failure).error}", color = Color.Red)
                 }
 
