@@ -62,7 +62,10 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideCountryDB(context: Context): SkillsDatabase {
-        return Room.databaseBuilder(context, SkillsDatabase::class.java, "mySkillsDB").build()
+        return Room.databaseBuilder(context, SkillsDatabase::class.java, "mySkillsDB")
+            .fallbackToDestructiveMigration()
+            .createFromAsset("databaseSkills.db")
+            .build()
     }
 
     @Provides
