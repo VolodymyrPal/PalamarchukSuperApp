@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.hfad.palamarchuksuperapp.data.database.DATABASE_NAME
 import java.util.Date
 import java.util.UUID
 

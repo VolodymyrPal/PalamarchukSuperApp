@@ -278,11 +278,7 @@ fun ItemListSkill(
                     overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     onTextLayout = {
-                        isVisible = if (it.hasVisualOverflow || isExpanded) {
-                            true
-                        } else {
-                            false
-                        }
+                        isVisible = it.hasVisualOverflow || isExpanded
                     })
 
             }

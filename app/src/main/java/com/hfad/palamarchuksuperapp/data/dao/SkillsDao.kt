@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.hfad.palamarchuksuperapp.data.database.DATABASE_NAME
 import com.hfad.palamarchuksuperapp.data.entities.Skill
 import kotlinx.coroutines.flow.Flow
 
