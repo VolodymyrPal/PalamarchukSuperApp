@@ -12,21 +12,7 @@ class SkillsRepositoryImpl @Inject constructor(
     private val skillsDao: SkillsDao
 ) : SkillRepository {
 
-    override suspend fun getSkillsFromDB(): List<Skill> {
-//        val one = Skill(name = "XML View", description = "Material design 3 patterns, views, view group, custom views", uuid = UUID.randomUUID())
-//        val two = Skill(name = "Activity, fragment", description = "Fragment navigation, Intent, Single Activity pattern, view binding", uuid = UUID.randomUUID())
-//        val three = Skill(name = "Recycler View", description = "Paging, DiffUtil, Adapter", uuid = UUID.randomUUID())
-//        val four = Skill(name = "Api Requests", description = "One, Two, Three", uuid = UUID.randomUUID())
-//        val five = Skill(name = "Async operations", description = "Coroutines, Live Data, Flow, RxJava", uuid = UUID.randomUUID())
-//        val six = Skill(name = "Dependency injections", description = "Multi-module architecture, Component Dependencies, Multibindings, Components, Scope, Injections" + " Libraries: Dagger 2, Hilt, ---Kodein, ---Koin", uuid = UUID.randomUUID())
-//        val seven = Skill(name = "RxJava", description = "One, Two, Three", uuid = UUID.randomUUID())
-//        val eight = Skill(name = "To learn", description = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, " + "RESTful API!!!, JSON!, PUSH NOTIFICATIONS!!!, ",uuid = UUID.randomUUID())
-//        val nine = Skill(name = "Recycler View", description = "One, Two, Three", uuid = UUID.randomUUID())
-//        val ten = Skill(name = "Project Pattern", description = "MVVM", uuid = UUID.randomUUID())
-//        val eleven = Skill(name = "Compose", description = "Composition tracing", uuid = UUID.randomUUID())
-//        val twelve = Skill(name = "Work with Image", description = "FileProvider,Coil", uuid = UUID.randomUUID())
-//        val thirteen = Skill(name = "Work with Image", description = "FileProvider,Coil", uuid = UUID.randomUUID())
-//        val _skillsList = listOf(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen)
+    override fun getSkillsFromDB(): Flow<List<Skill>> {
         val _skillsList = skillsDao.getAllSkillsFromDB()
         return _skillsList
     }
@@ -39,7 +25,7 @@ class SkillsRepositoryImpl @Inject constructor(
 }
 
 class SkillsRepositoryImplForPreview : SkillRepository {
-    override fun getSkillsFromDB(): List<Skill> {
+    override fun getSkillsFromDB(): Flow<List<Skill>> {
         val one = Skill(name = "some skills", description = "One, Two, Three", uuid = UUID.randomUUID())
         val two = Skill(name = "XML", description = "One, Two, Three", uuid = UUID.randomUUID())
         val three = Skill(name = "Recycler View", description = "Paging, DiffUtil, Adapter", uuid = UUID.randomUUID())
@@ -53,7 +39,7 @@ class SkillsRepositoryImplForPreview : SkillRepository {
         val eleven = Skill(name = "Compose", description = "Composition tracing", uuid = UUID.randomUUID())
         val twelve = Skill(name = "Work with Image", description = "FileProvider,Coil", uuid = UUID.randomUUID())
         val thirteen = Skill(name = "Work with Image", description = "FileProvider,Coil", uuid = UUID.randomUUID())
-        val _skillsList = listOf(one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen)
+        val _skillsList = MutableStateFlow(listOf( one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen))
         return _skillsList
     }
 
