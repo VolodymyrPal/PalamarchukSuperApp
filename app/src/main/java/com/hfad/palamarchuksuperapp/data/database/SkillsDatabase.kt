@@ -7,23 +7,10 @@ import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.entities.Converters
 import com.hfad.palamarchuksuperapp.data.entities.Skill
 
-@Database (entities = [Skill::class], version = 1)
+@Database(entities = [Skill::class], version = 1, exportSchema = true)
+@TypeConverters(Converters::class)
 abstract class SkillsDatabase : RoomDatabase() {
-    open abstract fun skillsDao(): SkillsDao
-    companion object {
-        @Volatile
-        private var INSTANCE: SkillsDatabase? = null
-
-        fun getMySkillsDatabase(context: Context): SkillsDatabase {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
-                    context = context,
-                    klass = SkillsDatabase::class.java,
-                    name = "mySkillsDB"
-                ).build().also { INSTANCE = it }
-            }
-        }
-    }
+    abstract fun skillsDao(): SkillsDao
 }
 const val DATABASE_NAME = "mydatabase"
 const val DATABASE_PROJECT_NAME = "myDatabaseRoom"
