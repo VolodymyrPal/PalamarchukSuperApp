@@ -12,9 +12,10 @@ import com.hfad.palamarchuksuperapp.presentation.common.SkillToSkillDomain
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -98,14 +99,15 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         funWithState(
             onEmpty = {
                 emitState(emitProcessing = true) { current ->
-                    delay(1000)
                     if (current is RepoResult.Failure) {
                         return@emitState current
                     }
                     try {
                         val skills = repository.getSkillsFromDB()
-                        return@emitState if (skills.isNotEmpty()) {
-                            RepoResult.Success(data = skills.map { SkillToSkillDomain.map(it) })
+                        delay(1000)
+                        return@emitState if (skills.first().isNotEmpty()) {
+                            RepoResult.Success(
+                                data = skills.first().map { SkillToSkillDomain.map(it) })
                         } else RepoResult.Empty
                     } catch (e: Exception) {
                         RepoResult.Failure(e)
