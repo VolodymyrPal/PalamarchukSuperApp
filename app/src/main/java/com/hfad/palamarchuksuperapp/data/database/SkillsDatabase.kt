@@ -25,3 +25,5 @@ abstract class SkillsDatabase : RoomDatabase() {
         }
     }
 }
+const val DATABASE_NAME = "mydatabase"
+const val DATABASE_PROJECT_NAME = "myDatabaseRoom"

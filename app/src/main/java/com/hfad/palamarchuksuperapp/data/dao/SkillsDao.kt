@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SkillsDao {
-    @Query("SELECT * FROM mySkillsDB")
-    suspend fun getAllSkillsFromDB(): Flow<List<Skill>>
+    @Query("SELECT * FROM $DATABASE_NAME")
+    fun getAllSkillsFromDB(): Flow<List<Skill>>
 
     @Insert
     suspend fun addSkill(skill: Skill)

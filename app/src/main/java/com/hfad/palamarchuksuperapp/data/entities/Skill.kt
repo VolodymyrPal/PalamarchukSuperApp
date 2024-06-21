@@ -9,7 +9,7 @@ import com.hfad.palamarchuksuperapp.data.database.DATABASE_NAME
 import java.util.Date
 import java.util.UUID
 
-@Entity(tableName = "mySkillsDB")
+@Entity(tableName = DATABASE_NAME)
 @TypeConverters (Converters::class)
 data class Skill(
     @PrimaryKey(autoGenerate = true)
