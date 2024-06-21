@@ -98,6 +98,7 @@ fun SkillScreen(
             BottomNavBar(navController = navController)
         },
         floatingActionButton = {
+            val context = LocalContext.current
             FloatingActionButton(
                 shape = RoundedCornerShape(33),
                 modifier = Modifier,
@@ -107,7 +108,7 @@ fun SkillScreen(
                         viewModel = viewModel
                     )
                     bottomSheetFragment.show(
-                        (LocalContext as FragmentActivity).supportFragmentManager, "BSDialogFragment")
+                        (context as FragmentActivity).supportFragmentManager, "BSDialogFragment")
                 },
                 content = {
                     Icon(
@@ -307,6 +308,7 @@ fun ItemListSkill(
                     expanded = true
                 },
                 content = {
+                    val context = LocalContext.current
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.more_button),
                         contentDescription = "More menu"
@@ -319,7 +321,7 @@ fun ItemListSkill(
                                 viewModel = viewModel,
                                 skillDomainRW = item
                             )
-                            bottomSheetFragment.show((LocalContext as FragmentActivity).supportFragmentManager, "BSDialogFragment")
+                            bottomSheetFragment.show((context as FragmentActivity).supportFragmentManager, "BSDialogFragment")
                         },
                         onDelete = {
                             onEvent.invoke(UiEvent.DeleteItem(item))
