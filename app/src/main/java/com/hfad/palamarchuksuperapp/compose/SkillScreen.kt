@@ -132,23 +132,16 @@ fun SkillScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
 
                 RepoResult.Empty -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
+                    Text(text = "Empty or Error. Please refresh by swipe!")
                 }
 
-                is RepoResult.Failure -> {
-                    Log.d("Error: ", "${(state as RepoResult.Failure).error}")
-                    Text(text = "Error: ${(state as RepoResult.Failure).error}", color = Color.Red)
+                is RepoResult.Error -> {
+                    Text(text = "Error: ${(state as RepoResult.Error).exception}", color = Color.Red)
                 }
 
                 is RepoResult.Success -> {
