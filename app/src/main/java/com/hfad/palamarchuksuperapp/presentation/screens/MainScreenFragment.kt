@@ -66,7 +66,9 @@ class MainScreenFragment : Fragment() {
                 findNavController().navigate(MainScreenFragmentDirections.toSkillsFragment())
                 vibe.standardClickVibration()
             }
-            it.skillButton2.setOnClickListener { vibe.standardClickVibration() }
+            it.skillButton2.setOnClickListener {
+                findNavController().navigate(MainScreenFragmentDirections.actionMainScreenFragmentToStoreFragment())
+                vibe.standardClickVibration() }
             it.skillButton3.setOnClickListener { vibe.standardClickVibration() }
             it.skillButton4.setOnClickListener { vibe.standardClickVibration() }
         }

@@ -13,10 +13,17 @@
         <action
             android:id="@+id/to_skills_fragment"
             app:destination="@id/skillsFragment" />
+        <action
+            android:id="@+id/action_mainScreenFragment_to_storeFragment"
+            app:destination="@id/storeFragment" />
     </fragment>
     <fragment
         android:id="@+id/skillsFragment"
         android:name="com.hfad.palamarchuksuperapp.presentation.screens.SkillsFragment"
         android:label="fragment_skills"
         tools:layout="@layout/fragment_skills" />
+    <fragment
+        android:id="@+id/storeFragment"
+        android:name="com.hfad.palamarchuksuperapp.presentation.screens.StoreFragment"
+        android:label="StoreFragment" />
 </navigation>
