@@ -63,15 +63,19 @@ class SkillsFragment : Fragment() {
                 when (it) {
                     RepoResult.Empty -> {
                         binding.progressBarCalories.visibility = View.GONE
+                        binding.errorEmptyText.isVisible = true
                     }
                     RepoResult.Processing -> {
+                        binding.errorEmptyText.isVisible = false
                         binding.progressBarCalories.visibility = View.VISIBLE
                     }
-                    is RepoResult.Failure -> {
+                    is RepoResult.Error -> {
                         binding.progressBarCalories.visibility = View.GONE
-                        Toast.makeText(context, it.error.message, Toast.LENGTH_SHORT).show()
+                        binding.errorEmptyText.text = it.exception.message
+                        binding.errorEmptyText.isVisible = true
                     }
                     is RepoResult.Success -> {
+                        binding.errorEmptyText.isVisible = false
                         binding.progressBarCalories.visibility = View.GONE
                         adapter.setData(it.data)
                     }
