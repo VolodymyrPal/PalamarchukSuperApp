@@ -7,4 +7,5 @@ interface SkillRepository {
     fun getSkillsFromDB(): Flow<List<Skill>>
     suspend fun deleteSkill(skill: Skill)
     suspend fun addSkill(skill: Skill)
+    suspend fun updateSkill(skill: Skill)
 }

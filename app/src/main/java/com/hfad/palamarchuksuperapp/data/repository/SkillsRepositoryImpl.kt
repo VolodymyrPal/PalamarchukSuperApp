@@ -22,6 +22,8 @@ class SkillsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addSkill(skill: Skill) = skillsDao.addSkill(skill)
+
+    override suspend fun updateSkill(skill: Skill) = skillsDao.updateSkill(skill)
 }
 
 class SkillsRepositoryImplForPreview : SkillRepository {
@@ -47,6 +49,10 @@ class SkillsRepositoryImplForPreview : SkillRepository {
     }
 
     override suspend fun addSkill(skill: Skill) {
+
+    }
+
+    override suspend fun updateSkill(skill: Skill) {
 
     }
 }
