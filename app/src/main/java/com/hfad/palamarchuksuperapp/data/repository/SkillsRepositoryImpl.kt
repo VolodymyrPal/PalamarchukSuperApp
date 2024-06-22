@@ -12,14 +12,10 @@ class SkillsRepositoryImpl @Inject constructor(
     private val skillsDao: SkillsDao
 ) : SkillRepository {
 
-    override fun getSkillsFromDB(): Flow<List<Skill>> {
-        val _skillsList = skillsDao.getAllSkillsFromDB()
-        return _skillsList
-    }
+    override fun getSkillsFromDB(): Flow<List<Skill>> = skillsDao.getAllSkillsFromDB()
 
-    override suspend fun deleteSkill(skill: Skill) {
-        skillsDao.deleteSkill(skill = skill)
-    }
+    override suspend fun deleteSkill(skill: Skill) = skillsDao.deleteSkill(skill = skill)
+
 
     override suspend fun addSkill(skill: Skill) = skillsDao.addSkill(skill)
 
