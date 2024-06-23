@@ -103,13 +103,15 @@ fun SkillScreen(
                 shape = RoundedCornerShape(33),
                 modifier = Modifier,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onClick = {
-                    val bottomSheetFragment = BottomSheetFragment(
-                        viewModel = viewModel
-                    )
-                    bottomSheetFragment.show(
-                        (context as FragmentActivity).supportFragmentManager, "BSDialogFragment"
-                    )
+                onClick = remember {
+                    {
+                        val bottomSheetFragment = BottomSheetFragment(
+                            viewModel = viewModel
+                        )
+                        bottomSheetFragment.show(
+                            (context as FragmentActivity).supportFragmentManager, "BSDialogFragment"
+                        )
+                    }
                 },
                 content = {
                     Icon(
@@ -166,7 +168,7 @@ fun SkillScreen(
                             ) {
                                 ItemListSkill(
                                     item = item,
-                                    onEvent = { uiEvent -> viewModel.handleEvent(event = uiEvent) },
+                                    onEvent = remember { { uiEvent -> viewModel.handleEvent(event = uiEvent) } },
                                     viewModel = viewModel
                                 )
                             }
@@ -321,22 +323,27 @@ fun ItemListSkill(
                     MyDropDownMenus(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        onEdit = {
-                            val bottomSheetFragment = BottomSheetFragment(
-                                viewModel = viewModel,
-                                skillDomainRW = item
-                            )
-                            bottomSheetFragment.show(
-                                (context as FragmentActivity).supportFragmentManager,
-                                "BSDialogFragment"
-                            )
+                        onEdit = remember(item.skill.uuid) {
+                            {
+                                val bottomSheetFragment = BottomSheetFragment(
+                                    viewModel = viewModel,
+                                    skillDomainRW = item
+                                )
+                                bottomSheetFragment.show(
+                                    (context as FragmentActivity).supportFragmentManager,
+                                    "BSDialogFragment"
+                                )
+                            }
                         },
-                        onDelete = {
-                            onEvent.invoke(UiEvent.DeleteItem(item))
+                        onDelete = remember {
+                            {
+                                onEvent.invoke(UiEvent.DeleteItem(item))
+                            }
                         },
-                        onMoveUp = { onEvent(UiEvent.MoveItemUp(item)) },
-
-                        )
+                        onMoveUp = remember {
+                            { onEvent(UiEvent.MoveItemUp(item)) }
+                        },
+                    )
                 })
 
             Checkbox(
