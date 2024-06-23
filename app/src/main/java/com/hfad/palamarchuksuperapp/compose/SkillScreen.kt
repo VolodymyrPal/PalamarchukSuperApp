@@ -89,7 +89,8 @@ fun SkillScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController?,
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
-        factory = LocalContext.current.appComponent.viewModelFactory())
+        factory = LocalContext.current.appComponent.viewModelFactory()
+    ),
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -107,7 +108,8 @@ fun SkillScreen(
                         viewModel = viewModel
                     )
                     bottomSheetFragment.show(
-                        (context as FragmentActivity).supportFragmentManager, "BSDialogFragment")
+                        (context as FragmentActivity).supportFragmentManager, "BSDialogFragment"
+                    )
                 },
                 content = {
                     Icon(
@@ -118,7 +120,6 @@ fun SkillScreen(
             )
         }
     ) { paddingValues ->
-
         Surface(
             color = Color.Transparent, modifier = modifier
                 .fillMaxSize()
@@ -141,7 +142,10 @@ fun SkillScreen(
                 }
 
                 is RepoResult.Error -> {
-                    Text(text = "Error: ${(state as RepoResult.Error).exception}", color = Color.Red)
+                    Text(
+                        text = "Error: ${(state as RepoResult.Error).exception}",
+                        color = Color.Red
+                    )
                 }
 
                 is RepoResult.Success -> {
@@ -205,17 +209,22 @@ fun ItemListSkill(
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
-                .clickable {
-                    viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                .then(remember {
+                    Modifier.clickable {
+                        viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                    }
                 }
+                )
         } else {
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clickable {
-                    viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
-                }
+                .then(remember {
+                    Modifier.clickable {
+                        viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                    }
+                })
         },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -270,8 +279,10 @@ fun ItemListSkill(
                     maxLines = if (!isExpanded) 2 else Int.MAX_VALUE,
                     overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    onTextLayout = {
-                        isVisible = it.hasVisualOverflow || isExpanded
+                    onTextLayout = remember(isExpanded) {
+                        { textLayoutResult ->
+                            isVisible = textLayoutResult.hasVisualOverflow || isExpanded
+                        }
                     })
 
             }
@@ -296,8 +307,10 @@ fun ItemListSkill(
                         end.linkTo(parent.end)
                     }
                     .wrapContentSize(),
-                onClick = {
-                    expanded = true
+                onClick = remember {
+                    {
+                        expanded = true
+                    }
                 },
                 content = {
                     val context = LocalContext.current
@@ -313,7 +326,10 @@ fun ItemListSkill(
                                 viewModel = viewModel,
                                 skillDomainRW = item
                             )
-                            bottomSheetFragment.show((context as FragmentActivity).supportFragmentManager, "BSDialogFragment")
+                            bottomSheetFragment.show(
+                                (context as FragmentActivity).supportFragmentManager,
+                                "BSDialogFragment"
+                            )
                         },
                         onDelete = {
                             onEvent.invoke(UiEvent.DeleteItem(item))
@@ -329,8 +345,10 @@ fun ItemListSkill(
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                 },
-                onCheckedChange = {
-                    viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                onCheckedChange = remember(item.skill.uuid) {
+                    {
+                        viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                    }
                 },
                 checked = item.chosen
             )
@@ -342,9 +360,9 @@ fun ItemListSkill(
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .clickable(enabled = isVisible) {
-                        isExpanded = !isExpanded
-                    }
+                    .then(remember(isVisible) {
+                        Modifier.clickable { isExpanded = !isExpanded }
+                    })
             ) {
                 BasicText(
                     style = TextStyle(
@@ -365,7 +383,12 @@ fun ItemListSkill(
     }
 }
 
-@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList", "detekt.UnusedParameter")
+@Suppress(
+    "detekt.FunctionNaming",
+    "detekt.LongMethod",
+    "detekt.LongParameterList",
+    "detekt.UnusedParameter"
+)
 @Composable
 fun MyDropDownMenus(
     expanded: Boolean,
@@ -389,17 +412,21 @@ fun MyDropDownMenus(
             ) {
                 DropdownMenuItem(
                     text = { Text("Edit") },
-                    onClick = { /* Handle refresh! */
-                        onEdit()
-                        onDismissRequest()
+                    onClick = remember {
+                        {
+                            onEdit()
+                            onDismissRequest()
+                        }
                     }
                 )
 
                 DropdownMenuItem(
                     text = { Text("Delete") },
-                    onClick = {
-                        onDelete()
-                        onDismissRequest()
+                    onClick = remember {
+                        {
+                            onDelete()
+                            onDismissRequest()
+                        }
                     }
                 )
 
@@ -407,9 +434,11 @@ fun MyDropDownMenus(
 
                 DropdownMenuItem(
                     text = { Text("Move UP") },
-                    onClick = { /* Handle send feedback! */
-                        onMoveUp()
-                        onDismissRequest()
+                    onClick = remember {
+                        { /* Handle send feedback! */
+                            onMoveUp()
+                            onDismissRequest()
+                        }
                     }
                 )
             }
