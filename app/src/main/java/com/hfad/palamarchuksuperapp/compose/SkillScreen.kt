@@ -211,7 +211,7 @@ fun ItemListSkill(
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
-                .then(remember {
+                .then(remember (item) {
                     Modifier.clickable {
                         viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
                     }
@@ -222,7 +222,7 @@ fun ItemListSkill(
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .then(remember {
+                .then(remember (item) {
                     Modifier.clickable {
                         viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
                     }
@@ -323,7 +323,7 @@ fun ItemListSkill(
                     MyDropDownMenus(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        onEdit = remember(item.skill.uuid) {
+                        onEdit = remember(item) {
                             {
                                 val bottomSheetFragment = BottomSheetFragment(
                                     viewModel = viewModel,
@@ -335,12 +335,12 @@ fun ItemListSkill(
                                 )
                             }
                         },
-                        onDelete = remember {
+                        onDelete = remember (item) {
                             {
                                 onEvent.invoke(UiEvent.DeleteItem(item))
                             }
                         },
-                        onMoveUp = remember {
+                        onMoveUp = remember (item) {
                             { onEvent(UiEvent.MoveItemUp(item)) }
                         },
                     )
@@ -352,7 +352,7 @@ fun ItemListSkill(
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                 },
-                onCheckedChange = remember(item.skill.uuid) {
+                onCheckedChange = remember(item) {
                     {
                         viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
                     }
@@ -442,7 +442,7 @@ fun MyDropDownMenus(
                 DropdownMenuItem(
                     text = { Text("Move UP") },
                     onClick = remember {
-                        { /* Handle send feedback! */
+                        {
                             onMoveUp()
                             onDismissRequest()
                         }
