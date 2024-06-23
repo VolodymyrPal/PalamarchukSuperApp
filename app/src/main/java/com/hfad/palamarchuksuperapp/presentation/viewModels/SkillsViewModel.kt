@@ -147,9 +147,10 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         viewModelScope.launch {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
-                    funWithState(onSuccess = {
+                    funWithState(
+                        onSuccess = {
                             val newList =
-                                (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
+                                (uiState.value as RepoResult.Success).data.toMutableList()
                             newList.indexOf(skillDomainRW).let {
                                 newList[it] = newList[it].copy(chosen = !skillDomainRW.chosen)
                             }
@@ -166,13 +167,14 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                                 newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
                             if (skillToChange == null) {
                                 newList.add(skillDomainRW)
+                                repository.addSkill(skill = skillDomainRW.skill)
                             } else {
                                 newList.indexOf(skillToChange).let {
+                                    repository.updateSkill(skill = skillDomainRW.skill)
                                     newList[it] =
                                         newList[it].copy(skill = skillDomainRW.skill)
                                 }
                             }
-                            repository.addSkill(skill = skillDomainRW.skill)
                             emitState(newList)
                         },
                         onEmpty = {
