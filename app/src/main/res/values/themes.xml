@@ -64,6 +64,17 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="RoundedHalfImageStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">25%</item>
+    </style>
+
+    <style name="RoundedQuarterImageStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12%</item>
+    </style>
+
+
     <style name="PopupMenu" parent="@style/Widget.Material3.PopupMenu">
         <item name="android:popupBackground">@drawable/custom_popup_background</item>
         <item name="android:popupElevation">5dp</item>
