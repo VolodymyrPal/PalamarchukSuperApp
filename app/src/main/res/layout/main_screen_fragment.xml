@@ -18,8 +18,6 @@
         tools:context=".presentation.screens.MainActivity">
 
 
-
-
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/day_night_button"
             android:layout_width="wrap_content"
@@ -67,7 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+            app:shapeAppearanceOverlay="@style/RoundedFullImageStyle"
             app:strokeWidth="1dp"
             tools:srcCompat="@tools:sample/avatars" />
 
