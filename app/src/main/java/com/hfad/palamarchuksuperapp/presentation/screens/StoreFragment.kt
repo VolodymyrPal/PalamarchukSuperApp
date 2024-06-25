@@ -25,14 +25,25 @@ class StoreFragment : Fragment() {
         get() = checkNotNull(_binding) {
             "_binding = null"
         }
+
+    @Inject
+    lateinit var storeViewModelFactory: GenericViewModelFactory<StoreViewModel>
+    private val viewModel by lazy {
+        ViewModelProvider(this, storeViewModelFactory)[StoreViewModel::class.java]
+    }
+
+    @Inject
+    lateinit var vibe: AppVibrator
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        this.context?.appComponent?.inject(this)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
