@@ -20,7 +20,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SkillsViewModel @Inject constructor(private val repository: SkillRepository) : UiStateViewModel<List<SkillDomainRW>>() {
+class SkillsViewModel @Inject constructor(private val repository: SkillRepository)
+    : UiStateViewModel<List<SkillDomainRW>>() {
 
     fun handleEvent(event: UiEvent) {
         when (event) {

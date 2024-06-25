@@ -6,13 +6,16 @@ import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
+import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPreview
 import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
+import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.presentation.screens.MainActivity
 import com.hfad.palamarchuksuperapp.presentation.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.presentation.screens.SkillsFragment
+import com.hfad.palamarchuksuperapp.presentation.screens.StoreFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import dagger.BindsInstance
 import dagger.Component
