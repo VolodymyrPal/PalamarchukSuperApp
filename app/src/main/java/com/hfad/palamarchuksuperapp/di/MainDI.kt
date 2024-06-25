@@ -33,6 +33,7 @@ interface AppComponent {
     fun inject(mainScreenFragment: MainScreenFragment)
     fun appVibrator(): AppVibrator
     fun viewModelFactory(): ViewModelProvider.Factory
+    fun inject(storeFragment: StoreFragment)
 
     @Component.Builder
     interface Builder {
@@ -42,7 +43,7 @@ interface AppComponent {
 }
 
 
-@Module(includes = [DatabaseModule::class, ModelsModule::class])
+@Module(includes = [DatabaseModule::class, ModelsModule::class, NetworkModule::class])
 object AppModule {
 
 }
@@ -52,6 +53,14 @@ object ModelsModule {
     @Provides
     fun provideSkillsViewModelFactory(provider: Provider<SkillsViewModel>): ViewModelProvider.Factory {
         return GenericViewModelFactory(provider)
+    }
+}
+
+@Module
+object NetworkModule {
+    @Provides
+    fun StoreRepository(): StoreRepository {
+        return StoreRepositoryImplForPreview()
     }
 }
 
