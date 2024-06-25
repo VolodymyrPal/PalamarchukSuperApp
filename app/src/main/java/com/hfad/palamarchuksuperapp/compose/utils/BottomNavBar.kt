@@ -75,7 +75,7 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
         onClick = { onClickVibro()
-            navController?.navigate(MainScreenConstraint)
+            navController?.navigate(Routes.MainScreenConstraint)
         }
     )
     val cameraTab = TabBarItem(
@@ -93,7 +93,7 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
         badgeAmount = 10,
         onClick = { onClickVibro()
-            navController?.navigate(Settings)
+            navController?.navigate(Routes.Settings)
             }
     )
 

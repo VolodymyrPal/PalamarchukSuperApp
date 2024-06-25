@@ -209,7 +209,7 @@ fun MainScreenConstraint(
                         top.linkTo(userImage.bottom, margin = 16.dp)
                         centerHorizontallyTo(userImage)
                     },
-                    action = { navController.navigate(SkillScreen) }
+                    action = { navController.navigate(Routes.SkillScreen) }
                 )
                 ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
                     start.linkTo(parent.start, margin = 32.dp)

@@ -53,8 +53,8 @@ fun MainContent() {
 
     AppTheme {
 
-        NavHost(navController = navController, startDestination = MainScreenConstraint) {
-            composable<MainScreenConstraint> {
+        NavHost(navController = navController, startDestination = Routes.MainScreenConstraint) {
+            composable<Routes.MainScreenConstraint> {
 //                enterTransition = {
 //                    when (ScreenRoute.Home.route) {
 //                        "home" ->
@@ -107,12 +107,12 @@ fun MainContent() {
                             + shrinkHorizontally() + fadeOut(),
                 ) {
                     MainScreenConstraint(
-                        actionSkillsButton = remember { { navController.navigate(Settings) } },
+                        actionSkillsButton = remember { { navController.navigate(Routes.Settings) } },
                         navController = navController
                     )
                 }
             }
-            composable<SkillScreen> {
+            composable<Routes.SkillScreen> {
 //                enterTransition = {
 //                    scaleIntoContainer()
 //                },
@@ -126,10 +126,11 @@ fun MainContent() {
 //                    scaleOutOfContainer()
 //                }
                 SkillScreen(
+
                     navController = navController
                 )
             }
-            composable<Settings>
+            composable<Routes.Settings>
 //                enterTransition = {
 //                    scaleIntoContainer()
 //                },
@@ -160,10 +161,13 @@ enum class ScaleTransitionDirection {
 }
 
 @Serializable
-object Settings
+sealed class Routes {
+    @Serializable
+    object Settings
 
-@Serializable
-object SkillScreen
+    @Serializable
+    object SkillScreen
 
-@Serializable
-object MainScreenConstraint
+    @Serializable
+    object MainScreenConstraint
+}

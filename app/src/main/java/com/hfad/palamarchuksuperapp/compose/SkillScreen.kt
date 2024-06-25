@@ -211,7 +211,7 @@ fun ItemListSkill(
             Modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
-                .then(remember (item) {
+                .then(remember(item) {
                     Modifier.clickable {
                         viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
                     }
@@ -222,7 +222,7 @@ fun ItemListSkill(
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .then(remember (item) {
+                .then(remember(item) {
                     Modifier.clickable {
                         viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
                     }
