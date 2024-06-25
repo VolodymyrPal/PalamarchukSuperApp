@@ -46,6 +46,27 @@ class StoreFragment : Fragment() {
     ): View {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        val adapter = StoreListAdapter(viewModel, parentFragmentManager)
+        binding.section1RecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.section1RecyclerView.adapter = adapter
+
+        viewModel.fetchProducts()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiState.flowWithLifecycle(
+                viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED
+            ).collect {
+                when (it) {
+                    is RepoResult.Success -> {
+                        adapter.setData(it.data)
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+
         return view
     }
 
