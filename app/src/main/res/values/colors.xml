@@ -1,5 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="my_gray" tools:keep="@color/my_gray">#888888</color>
+    <color name="my_royal" tools:keep="@color/my_royal">#F3E6FD</color>
     <color name="md_theme_primary">#68548E</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#EBDDFF</color>
