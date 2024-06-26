@@ -14,7 +14,10 @@ import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
 
-class StoreListAdapter(private val viewModel: StoreViewModel, private val fragmentManager: FragmentManager) :
+class StoreListAdapter(
+    private val viewModel: StoreViewModel,
+    private val fragmentManager: FragmentManager,
+) :
     ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductDiffItemCallback()) {
 
     private val asyncListDiffer = AsyncListDiffer(this, ProductDiffItemCallback())
@@ -38,12 +41,40 @@ class StoreListAdapter(private val viewModel: StoreViewModel, private val fragme
 
     class ProductHolder(
         private val binding: ListItemProductBinding,
-        private val viiewModel: StoreViewModel,
+        private val viewModel: StoreViewModel,
         private val parentFragmentManager: FragmentManager,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: ProductDomainRW) {
-
+        fun bind(productDomainRW: ProductDomainRW) {
+            binding.quantity.text = productDomainRW.product.title
+            var quantity = 0
+            binding.quantityPlus.setOnClickListener {
+                quantity++
+                binding.quantity.text = "$quantity+" + ""
+                binding.quantityPlusCard.visibility = View.VISIBLE
+                binding.quantityMinusCard.visibility = View.VISIBLE
+                binding.quantity.visibility = View.VISIBLE
+                binding.quantity
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.quantityPlusCard.visibility = View.INVISIBLE
+                    binding.quantityMinusCard.visibility = View.INVISIBLE
+                    if (quantity > 0) binding.quantity.visibility =
+                        View.VISIBLE else binding.quantity.visibility = View.INVISIBLE
+                }, 2000)
+            }
+            binding.quantityMinus.setOnClickListener {
+                if (quantity > 0) quantity--
+                binding.quantity.text = if (quantity > 0) "${quantity}+" + "" else "$quantity"
+                binding.quantityPlusCard.visibility = View.VISIBLE
+                binding.quantityMinusCard.visibility = View.VISIBLE
+                binding.quantity.visibility = View.VISIBLE
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.quantityPlusCard.visibility = View.INVISIBLE
+                    binding.quantityMinusCard.visibility = View.INVISIBLE
+                    if (quantity > 0) binding.quantity.visibility =
+                        View.VISIBLE else binding.quantity.visibility = View.INVISIBLE
+                }, 2000)
+            }
         }
     }
 
