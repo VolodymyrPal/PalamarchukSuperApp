@@ -20,23 +20,27 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SkillsViewModel @Inject constructor(private val repository: SkillRepository)
-    : UiStateViewModel<List<SkillDomainRW>>() {
+class SkillsViewModel @Inject constructor(private val repository: SkillRepository) :
+    UiStateViewModel<List<SkillDomainRW>>() {
 
     fun handleEvent(event: UiEvent) {
         when (event) {
             is UiEvent.EditItem -> {
                 updateSkillOrAdd(event.item, SkillsChangeConst.FullSkill)
             }
+
             is UiEvent.DeleteItem -> {
                 deleteSkill(event.item)
             }
+
             is UiEvent.MoveItemUp -> {
                 moveToFirstPosition(event.item)
             }
+
             is UiEvent.AddItem -> {
                 addSkill(skill = event.item.skill)
             }
+
             is UiEvent.GetSkills -> {
                 fetchSkills()
             }
@@ -45,7 +49,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
 
     fun moveToFirstPosition(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            funWithState (
+            funWithState(
                 onSuccess = {
                     val newList = (uiState.value as RepoResult.Success).data.toMutableList()
                     newList.remove(skillDomainRW)
@@ -83,7 +87,8 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                         val newList = (uiState.value as RepoResult.Success).data.toMutableList()
                         newList.filter { it.chosen }.forEach {
                             repository.deleteSkill(it.skill)
-                            newList.remove(it) }
+                            newList.remove(it)
+                        }
                         emitState(newList)
                     }
                 )
@@ -95,18 +100,18 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
 
     private fun addSkill(skill: Skill) {
         viewModelScope.launch {
-            funWithState (
-                onSuccess =  {
-                val newList =
-                    (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
-                newList.add(SkillDomainRW(skill))
-                emitState(newList)
-            },
+            funWithState(
+                onSuccess = {
+                    val newList =
+                        (uiState.value as RepoResult.Success<List<SkillDomainRW>>).data.toMutableList()
+                    newList.add(SkillDomainRW(skill))
+                    emitState(newList)
+                },
                 onFailure = {
 
                 },
                 onEmpty = {
-                    val newList = MutableList(1){SkillDomainRW(skill)}
+                    val newList = MutableList(1) { SkillDomainRW(skill) }
                     emitState(newList)
                 },
                 onProcessing = {
@@ -268,7 +273,8 @@ abstract class UiStateViewModel<T> : ViewModel() {
 
 @Composable
 inline fun <reified VM : ViewModel> daggerViewModel(factory: ViewModelProvider.Factory): VM {
-    val owner = LocalViewModelStoreOwner.current?: error(
-        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner")
+    val owner = LocalViewModelStoreOwner.current ?: error(
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    )
     return ViewModelProvider(owner, factory)[VM::class.java]
 }
