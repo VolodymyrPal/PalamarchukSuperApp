@@ -2,12 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/product_card"
     android:layout_width="150dp"
     android:layout_height="200dp"
-    android:layout_margin="4dp"
     android:background="@android:color/transparent"
-    >
+    android:backgroundTint="@android:color/transparent">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/itemImage"
@@ -20,6 +18,59 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/RoundedQuarterImageStyle" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/quantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.95"
+        android:text="28+"
+        android:visibility="invisible"
+        android:textColor="@color/design_default_color_on_secondary"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/materialTextView4"
+        app:layout_constraintEnd_toEndOf="@+id/itemImage"
+        app:layout_constraintStart_toStartOf="@+id/itemImage"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/quantity_minus_card"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:alpha="0.75"
+        android:visibility="invisible"
+        android:backgroundTint="@color/my_royal"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/materialTextView4"
+        app:layout_constraintEnd_toStartOf="@+id/quantity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/single_line_outlined" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/quantity_plus_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.75"
+        android:visibility="invisible"
+
+        android:backgroundTint="@color/my_royal"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/materialTextView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/quantity"
+        app:layout_constraintTop_toTopOf="parent" >
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/add_fab_button" />
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/nameProduct"
@@ -59,8 +110,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="500+ sold"
-        android:textSize="9sp"
         android:textColor="@color/my_gray"
+        android:textSize="9sp"
         android:textStyle="italic"
         app:layout_constraintStart_toEndOf="@+id/cardRating"
         app:layout_constraintTop_toBottomOf="@+id/nameProduct" />
@@ -68,8 +119,8 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/price_doted"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="20dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/materialTextView4"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -79,18 +130,19 @@
         app:strokeWidth="0dp">
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="30dp"
-            android:layout_height="20dp"
-            android:src="@drawable/single_line_outlined"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/single_line_outlined" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="500$"
-            android:textSize="14sp"
-            android:textStyle="italic"
             android:textColor="@android:color/darker_gray"
-            />
+            android:textSize="14sp"
+            android:textStyle="italic" />
+
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.textview.MaterialTextView
@@ -98,8 +150,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="250 $"
-        android:textStyle="bold"
         android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/materialTextView4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.25"
@@ -122,6 +174,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.50666666" />
+        app:layout_constraintGuide_percent="0.5" />
+
+    <Button
+        android:id="@+id/quantity_plus"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        android:focusable="true"
+        android:clickable="true"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/quantity_minus"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        android:focusable="true"
+        android:clickable="true"
+        android:alpha="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
