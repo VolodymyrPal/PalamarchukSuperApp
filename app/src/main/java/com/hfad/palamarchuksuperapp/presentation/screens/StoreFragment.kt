@@ -66,19 +66,56 @@ class StoreFragment : Fragment() {
             viewModel.effect.flowWithLifecycle(
                 viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED
             ).collect {
-                when (it) {
-                    is RepoResult.Success -> {
-                        adapter.setData(it.data)
-                    }
-                    else -> {}
-                }
-            }
                 handleEffect(it)
             }
 
         }
 
         return view
+    }
+
+
+    private fun handleState(state: State<List<ProductDomainRW>>, adapter: StoreListAdapter) {
+        when (state) {
+            is State.Empty -> {
+                Log.d("HANDLE STATE: ", "$state")
+                Toast.makeText(requireContext(), "Empty", Toast.LENGTH_SHORT).show()
+            }
+
+            is State.Error -> {
+                Log.d("HANDLE STATE: ", "$state")
+                Toast.makeText(requireContext(), state.exception.message, Toast.LENGTH_SHORT).show()
+            }
+
+            is State.Processing -> {
+                Log.d("HANDLE STATE: ", "$state")
+
+                Toast.makeText(requireContext(), "Processing", Toast.LENGTH_SHORT).show()
+            }
+
+            is State.Success -> {
+                Log.d("HANDLE STATE: ", "$state")
+                lifecycleScope.launch {
+                    adapter.setData(state.data)
+                }
+            }
+        }
+    }
+
+    private fun handleEffect(effect: StoreViewModel.Effect) {
+        when (effect) {
+            is StoreViewModel.Effect.OnBackPressed -> {
+                requireActivity().onBackPressed()
+            }
+
+            is StoreViewModel.Effect.ShowToast -> {
+                Toast.makeText(requireContext(), effect.message, Toast.LENGTH_SHORT).show()
+            }
+
+            is StoreViewModel.Effect.Vibration -> {
+                vibe.standardClickVibration()
+            }
+        }
     }
 
     override fun onDestroyView() {
