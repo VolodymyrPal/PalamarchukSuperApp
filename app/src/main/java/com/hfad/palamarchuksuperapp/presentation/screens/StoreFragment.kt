@@ -52,14 +52,19 @@ class StoreFragment : Fragment() {
         val view = binding.root
 
         val adapter = StoreListAdapter(viewModel, parentFragmentManager)
-        binding.section1RecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.section1RecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.section1RecyclerView.adapter = adapter
-
-        viewModel.fetchProducts()
+        viewModel.event(StoreViewModel.Event.FetchSkills)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.flowWithLifecycle(
-                viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED
+            viewModel.uiState.collectLatest {
+                handleState(it, adapter)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.effect.flowWithLifecycle(
+                viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED
             ).collect {
                 when (it) {
                     is RepoResult.Success -> {
@@ -68,8 +73,10 @@ class StoreFragment : Fragment() {
                     else -> {}
                 }
             }
-        }
+                handleEffect(it)
+            }
 
+        }
 
         return view
     }
