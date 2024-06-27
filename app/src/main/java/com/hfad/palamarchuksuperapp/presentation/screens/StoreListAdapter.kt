@@ -46,34 +46,34 @@ class StoreListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(productDomainRW: ProductDomainRW) {
-            binding.quantity.text = productDomainRW.product.title
-            var quantity = 0
-            binding.quantityPlus.setOnClickListener {
-                quantity++
-                binding.quantity.text = "$quantity+" + ""
-                binding.quantityPlusCard.visibility = View.VISIBLE
-                binding.quantityMinusCard.visibility = View.VISIBLE
-                binding.quantity.visibility = View.VISIBLE
-                binding.quantity
-                Handler(Looper.getMainLooper()).postDelayed({
-                    binding.quantityPlusCard.visibility = View.INVISIBLE
-                    binding.quantityMinusCard.visibility = View.INVISIBLE
-                    if (quantity > 0) binding.quantity.visibility =
-                        View.VISIBLE else binding.quantity.visibility = View.INVISIBLE
-                }, 2000)
-            }
-            binding.quantityMinus.setOnClickListener {
-                if (quantity > 0) quantity--
-                binding.quantity.text = if (quantity > 0) "${quantity}+" + "" else "$quantity"
-                binding.quantityPlusCard.visibility = View.VISIBLE
-                binding.quantityMinusCard.visibility = View.VISIBLE
-                binding.quantity.visibility = View.VISIBLE
-                Handler(Looper.getMainLooper()).postDelayed({
-                    binding.quantityPlusCard.visibility = View.INVISIBLE
-                    binding.quantityMinusCard.visibility = View.INVISIBLE
-                    if (quantity > 0) binding.quantity.visibility =
-                        View.VISIBLE else binding.quantity.visibility = View.INVISIBLE
-                }, 2000)
+
+            binding.apply {
+                productName.text = "${productDomainRW.product.title}"
+                productPrice.text = "${productDomainRW.product.price.toString()}$"
+                productPriceDiscounted.text = "${(productDomainRW.product.price * 0.5)}$"
+                quantity.text = productDomainRW.quantity.toString()
+                productImage.load(productDomainRW.product.images.urls.getOrNull(0)) {
+                    placeholder(R.drawable.lion_jpg_21)
+                    this.error(R.drawable.lion_jpg_21)
+                }
+
+                quantityPlusCard.visibility = View.VISIBLE
+                quantityMinusCard.visibility = View.VISIBLE
+                quantity.visibility = View.VISIBLE
+
+                quantityPlus.setOnClickListener {
+                    viewModel.event(event = StoreViewModel.Event.AddProduct(product = productDomainRW))
+                    quantity.text = productDomainRW.quantity.toString()
+                    quantityPlusCard.visibility = View.VISIBLE
+                    quantityMinusCard.visibility = View.VISIBLE
+                    quantity.visibility = View.VISIBLE
+                }
+                quantityMinus.setOnClickListener {
+                    quantityPlusCard.visibility = View.VISIBLE
+                    quantityMinusCard.visibility = View.VISIBLE
+                    quantity.text = ""
+                    quantity.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -83,13 +83,12 @@ class StoreListAdapter(
         override fun areItemsTheSame(
             oldItem: ProductDomainRW,
             newItem: ProductDomainRW,
-        ): Boolean =
-            oldItem == newItem
+        ): Boolean = oldItem == newItem
 
         override fun areContentsTheSame(
             oldItem: ProductDomainRW,
             newItem: ProductDomainRW,
         ): Boolean =
-            oldItem.product.title == newItem.product.title
+            oldItem.product.id == newItem.product.id
     }
 }
