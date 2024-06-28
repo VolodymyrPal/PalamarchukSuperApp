@@ -9,16 +9,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
-import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.presentation.viewModels.State
 import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -58,24 +59,24 @@ class StoreFragment : Fragment() {
         viewModel.event(StoreViewModel.Event.FetchSkills)
 
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collectLatest {
-                handleState(it, adapter)
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.uiState.collectLatest { state ->
+                        handleState(state, adapter)
+                    }
+                }
+                launch {
+                    viewModel.effect.collect { effect ->
+                        handleEffect(effect)
+                    }
+                }
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.effect.flowWithLifecycle(
-                viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED
-            ).collect {
-                handleEffect(it)
-            }
-
-        }
-
         return view
     }
 
 
-    private fun handleState(state: State<List<ProductDomainRW>>, adapter: StoreListAdapter) {
+    private fun handleState(state: State<Flow<List<Product>>>, adapter: StoreListAdapter) {
         when (state) {
             is State.Empty -> {
                 Log.d("HANDLE STATE: ", "$state")
@@ -84,7 +85,11 @@ class StoreFragment : Fragment() {
 
             is State.Error -> {
                 Log.d("HANDLE STATE: ", "$state")
-                Toast.makeText(requireContext(), state.exception.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    state.exception.message,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             is State.Processing -> {
@@ -96,7 +101,7 @@ class StoreFragment : Fragment() {
             is State.Success -> {
                 Log.d("HANDLE STATE: ", "$state")
                 lifecycleScope.launch {
-                    adapter.setData(state.data)
+                    adapter.submitData(state.data)
                 }
             }
         }
