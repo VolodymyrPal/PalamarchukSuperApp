@@ -3,8 +3,11 @@ package com.hfad.palamarchuksuperapp.data.repository
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
+import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.presentation.common.toDomainRW
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import java.util.UUID
 import javax.inject.Inject
 
@@ -12,18 +15,23 @@ class SkillsRepositoryImpl @Inject constructor(
     private val skillsDao: SkillsDao
 ) : SkillRepository {
 
-    override fun getSkillsFromDB(): Flow<List<Skill>> = skillsDao.getAllSkillsFromDB()
+    override fun getSkillsFromDB(): Flow<List<SkillDomainRW>> {
+        return skillsDao.getAllSkillsFromDB().map {
+            skillsList -> skillsList.map { skill->
+                skill.toDomainRW() }
+        }
+    }
 
-    override suspend fun deleteSkill(skill: Skill) = skillsDao.deleteSkill(skill = skill)
+    override suspend fun deleteSkill(skill: SkillDomainRW) = skillsDao.deleteSkill(skill = skill.skill)
 
 
-    override suspend fun addSkill(skill: Skill) = skillsDao.addSkill(skill)
+    override suspend fun addSkill(skill: SkillDomainRW) = skillsDao.addSkill(skill.skill)
 
-    override suspend fun updateSkill(skill: Skill) = skillsDao.updateSkill(skill)
+    override suspend fun updateSkill(skill: SkillDomainRW) = skillsDao.updateSkill(skill.skill)
 }
 
 class SkillsRepositoryImplForPreview : SkillRepository {
-    override fun getSkillsFromDB(): Flow<List<Skill>> {
+    override fun getSkillsFromDB(): Flow<List<SkillDomainRW>> {
         val one = Skill(name = "some skills", description = "One, Two, Three", uuid = UUID.randomUUID())
         val two = Skill(name = "XML", description = "One, Two, Three", uuid = UUID.randomUUID())
         val three = Skill(name = "Recycler View", description = "Paging, DiffUtil, Adapter", uuid = UUID.randomUUID())
@@ -38,17 +46,17 @@ class SkillsRepositoryImplForPreview : SkillRepository {
         val twelve = Skill(name = "Work with Image", description = "FileProvider,Coil", uuid = UUID.randomUUID())
         val thirteen = Skill(name = "Work with Image", description = "FileProvider,Coil", uuid = UUID.randomUUID())
         val _skillsList = MutableStateFlow(listOf( one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen))
-        return _skillsList
+        return _skillsList.map { it.map { it.toDomainRW() } }
     }
 
-    override suspend fun deleteSkill(skill: Skill) {
+    override suspend fun deleteSkill(skill: SkillDomainRW) {
     }
 
-    override suspend fun addSkill(skill: Skill) {
+    override suspend fun addSkill(skill: SkillDomainRW) {
 
     }
 
-    override suspend fun updateSkill(skill: Skill) {
+    override suspend fun updateSkill(skill: SkillDomainRW) {
 
     }
 }
