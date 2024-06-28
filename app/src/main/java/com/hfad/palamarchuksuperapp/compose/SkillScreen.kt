@@ -42,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,11 +75,12 @@ import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImplForPreview
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
-import com.hfad.palamarchuksuperapp.presentation.viewModels.RepoResult
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.State
 import com.hfad.palamarchuksuperapp.presentation.viewModels.UiEvent
 import com.hfad.palamarchuksuperapp.presentation.viewModels.daggerViewModel
+import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -129,9 +131,9 @@ fun SkillScreen(
 
         ) {
             val state by viewModel.uiState.collectAsState()
-            viewModel.handleEvent(UiEvent.GetSkills)
+            viewModel.fetchSkills()
             when (state) {
-                RepoResult.Processing -> {
+                State.Processing -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
                             modifier = Modifier.align(Alignment.Center),
@@ -139,21 +141,31 @@ fun SkillScreen(
                     }
                 }
 
-                RepoResult.Empty -> {
+                State.Empty -> {
                     Text(text = "Empty or Error. Please refresh by swipe!")
                 }
 
-                is RepoResult.Error -> {
+
+                is State.Error -> {
                     Text(
-                        text = "Error: ${(state as RepoResult.Error).exception}",
+                        text = "Error: ${(state as State.Error).exception}",
                         color = Color.Red
                     )
                 }
 
-                is RepoResult.Success -> {
+
+                is State.Success -> {
+                    var item:  List<SkillDomainRW> by remember {
+                        mutableStateOf(emptyList())
+                    }
+                    LaunchedEffect(key1 = Unit) {
+                        (state as State.Success<Flow<List<SkillDomainRW>>>).data.collect {
+                            item = it
+                        }
+                    }
                     LazyColumn {
                         items(
-                            items = (state as RepoResult.Success).data,
+                            items = item,
                             key = { item: SkillDomainRW -> item.skill.uuid.toString() }
                         ) { item ->
                             AnimatedVisibility(
@@ -168,7 +180,7 @@ fun SkillScreen(
                             ) {
                                 ItemListSkill(
                                     item = item,
-                                    onEvent = remember { { uiEvent -> viewModel.handleEvent(event = uiEvent) } },
+                                    onEvent = {}, //remember { { uiEvent -> viewModel.handleEvent(event = uiEvent) } },
                                     viewModel = viewModel
                                 )
                             }
@@ -335,12 +347,12 @@ fun ItemListSkill(
                                 )
                             }
                         },
-                        onDelete = remember (item) {
+                        onDelete = remember(item) {
                             {
                                 onEvent.invoke(UiEvent.DeleteItem(item))
                             }
                         },
-                        onMoveUp = remember (item) {
+                        onMoveUp = remember(item) {
                             { onEvent(UiEvent.MoveItemUp(item)) }
                         },
                     )
