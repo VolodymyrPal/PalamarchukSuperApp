@@ -77,21 +77,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
+        android:gravity="center"
+        android:layout_gravity="center"
         android:maxLines="1"
         android:text="BEATUTIFULL LION FOR CHICKS"
         android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/product_image"
+        app:layout_constraintStart_toStartOf="@+id/product_image"
         app:layout_constraintTop_toBottomOf="@+id/product_image" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:padding="4dp"
         app:cardBackgroundColor="@android:color/transparent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/product_image"
         app:layout_constraintTop_toBottomOf="@+id/product_name"
         app:strokeWidth="0dp">
 
@@ -114,43 +118,39 @@
         android:textColor="@color/my_gray"
         android:textSize="9sp"
         android:textStyle="italic"
+        android:gravity="center"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/cardRating"
         app:layout_constraintStart_toEndOf="@+id/cardRating"
-        app:layout_constraintTop_toBottomOf="@+id/product_name" />
+        app:layout_constraintTop_toTopOf="@+id/cardRating" />
 
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/price_doted"
-        android:layout_width="40dp"
-        android:layout_height="20dp"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/product_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="500$"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:layout_gravity="center"
         app:cardBackgroundColor="@android:color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/materialTextView4"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintHorizontal_bias="0.75"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/cardRating"
         app:layout_constraintTop_toBottomOf="@+id/cardRating"
         app:strokeWidth="0dp">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:src="@drawable/single_line_outlined" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/product_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="500$"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="14sp"
-            android:textStyle="italic" />
-
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.textview.MaterialTextView>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/product_price_discounted"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="start"
+        android:layout_gravity="center"
         android:text="250$"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -164,19 +164,20 @@
         android:id="@+id/materialTextView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SAVE 50% ONLY TODAY"
+        android:text="SAVE 50% TODAY"
         android:textColor="@color/md_theme_error"
-        android:textSize="11sp"
+        android:textSize="8sp"
+        android:layout_gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@+id/product_image"
+        app:layout_constraintStart_toStartOf="@+id/product_image" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.35" />
 
     <Button
         android:id="@+id/quantity_plus"
@@ -186,6 +187,8 @@
         android:focusable="true"
         android:clickable="true"
         android:alpha="0"
+        android:gravity="center"
+        android:layout_gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
