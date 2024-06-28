@@ -1,7 +1,9 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -14,4 +16,12 @@ class GenericViewModelFactory<T1 : ViewModel> @Inject constructor(
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
+}
+
+@Composable
+inline fun <reified VM : ViewModel> daggerViewModel(factory: ViewModelProvider.Factory): VM {
+    val owner = LocalViewModelStoreOwner.current ?: error(
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    )
+    return ViewModelProvider(owner, factory)[VM::class.java]
 }
