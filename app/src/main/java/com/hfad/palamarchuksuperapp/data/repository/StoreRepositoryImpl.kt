@@ -39,46 +39,51 @@ class StoreRepositoryImplForPreview : StoreRepository {
             ), images = ProductImages(urls = listOf())
         )
         val two = Product(
-            id = 8777, title = "vivendo", price = 3570, category = ProductCategory(
-                id = 5173,
+            id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
+                id = 2222,
                 name = "Dave Franks",
                 image = "quo"
             ), images = ProductImages(urls = listOf())
         )
 
         val three = Product(
-            id = 8777, title = "vivendo", price = 3570, category = ProductCategory(
-                id = 5173,
+            id = 8772, title = "vivendo", price = 110, category = ProductCategory(
+                id = 3333,
                 name = "Dave Franks",
                 image = "quo"
             ), images = ProductImages(urls = listOf())
         )
 
         val four = Product(
-            id = 8777, title = "vivendo", price = 3570, category = ProductCategory(
-                id = 5173,
-                name = "Dave Franks",
-                image = "quo"
+            id = 9727, title = "viris", price = 5347, category = ProductCategory(
+                id = 6016,
+                name = "Jay Berger",
+                image = "leo"
             ), images = ProductImages(urls = listOf())
+
         )
 
         val five = Product(
-            id = 8777, title = "vivendo", price = 3570, category = ProductCategory(
-                id = 5173,
-                name = "Dave Franks",
-                image = "quo"
+            id = 3490, title = "meliore", price = 4427, category = ProductCategory(
+                id = 8213,
+                name = "Truman Welch",
+                image = "scelerisque"
             ), images = ProductImages(urls = listOf())
+
         )
         val productList = MutableStateFlow(listOf(one, two, three, four, five))
 
         return productList
     }
+
     override suspend fun deleteProduct(product: Product) {
         TODO("Not yet implemented")
     }
+
     override suspend fun addProduct(product: Product) {
         TODO("Not yet implemented")
     }
+
     override suspend fun updateProduct(product: Product) {
         TODO("Not yet implemented")
     }
