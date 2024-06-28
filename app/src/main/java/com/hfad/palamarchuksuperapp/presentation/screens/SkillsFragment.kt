@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,8 +15,8 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
 import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
-import com.hfad.palamarchuksuperapp.presentation.viewModels.RepoResult
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.State
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +27,7 @@ class SkillsFragment : Fragment() {
         get() = checkNotNull(_binding) {
             "_binding = null"
         }
+
     @Inject
     lateinit var skillsViewModelFactory: GenericViewModelFactory<SkillsViewModel>
     private val viewModel by lazy {
@@ -52,32 +52,34 @@ class SkillsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.fetchSkills()
-            }
-        }
+                launch { viewModel.fetchSkills() }
+                launch {
+                    viewModel.uiState.collect {
+                        when (it) {
+                            State.Empty -> {
+                                binding.progressBarCalories.visibility = View.GONE
+                                binding.errorEmptyText.isVisible = true
+                            }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.flowWithLifecycle(
-                viewLifecycleOwner.lifecycle, Lifecycle.State.RESUMED
-            ).collect {
-                when (it) {
-                    RepoResult.Empty -> {
-                        binding.progressBarCalories.visibility = View.GONE
-                        binding.errorEmptyText.isVisible = true
-                    }
-                    RepoResult.Processing -> {
-                        binding.errorEmptyText.isVisible = false
-                        binding.progressBarCalories.visibility = View.VISIBLE
-                    }
-                    is RepoResult.Error -> {
-                        binding.progressBarCalories.visibility = View.GONE
-                        binding.errorEmptyText.text = it.exception.message
-                        binding.errorEmptyText.isVisible = true
-                    }
-                    is RepoResult.Success -> {
-                        binding.errorEmptyText.isVisible = false
-                        binding.progressBarCalories.visibility = View.GONE
-                        adapter.setData(it.data)
+                            State.Processing -> {
+                                binding.errorEmptyText.isVisible = false
+                                binding.progressBarCalories.visibility = View.VISIBLE
+                            }
+
+                            is State.Error -> {
+                                binding.progressBarCalories.visibility = View.GONE
+                                binding.errorEmptyText.text = it.exception.message
+                                binding.errorEmptyText.isVisible = true
+                            }
+
+                            is State.Success -> {
+                                binding.errorEmptyText.isVisible = false
+                                binding.progressBarCalories.visibility = View.GONE
+                                lifecycleScope.launch {
+                                    adapter.submitData(it.data)
+                                }
+                            }
+                        }
                     }
                 }
             }
