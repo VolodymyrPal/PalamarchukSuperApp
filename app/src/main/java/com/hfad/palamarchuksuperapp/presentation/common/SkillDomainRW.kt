@@ -9,6 +9,13 @@ data class SkillDomainRW(
     var isVisible: Boolean = true
 )
 
+fun Skill.toDomainRW() = SkillDomainRW(
+    skill = this,
+    chosen = false,
+    isExpanded = false,
+    isVisible = true
+)
+
 interface Mapper<in From, out To> {
     fun map(from: From): To
 }
