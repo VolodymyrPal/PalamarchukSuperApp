@@ -1,16 +1,17 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
-import com.hfad.palamarchuksuperapp.presentation.common.ProductToProductDomainRW
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
-) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
+) : GenericViewModel<Flow<List<Product>>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     sealed class Event : BaseEvent() {
         object FetchSkills : Event()
@@ -29,12 +30,13 @@ class StoreViewModel @Inject constructor(
         when (event) {
             is Event.FetchSkills -> {
                 emitState(emitProcessing = true) { current ->
+                    emitState(State.Processing)
                     if (current is State.Error) {
                         return@emitState current
                     }
                     try {
-                        val skills = repository.fetchProducts().first().map { ProductToProductDomainRW.map(it) }
-                        return@emitState if (skills.isNotEmpty()) {
+                        val skills = repository.fetchProducts()
+                        return@emitState if (skills.first().isNotEmpty()) {
                             State.Success(data = skills)
                         } else State.Empty
                     } catch (e: Exception) {
