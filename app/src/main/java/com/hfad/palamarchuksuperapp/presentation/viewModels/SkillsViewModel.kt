@@ -2,20 +2,20 @@ package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
-import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.presentation.common.toDomainRW
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SkillsViewModel @Inject constructor(private val repository: SkillRepository) :
-    GenericViewModel<Flow<List<SkillDomainRW>>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
+    GenericViewModel<List<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
     sealed class Event : BaseEvent() {
         object GetSkills : Event()
-        data class moveToFirstPosition(val item: SkillDomainRW) : Event()
+        data class MoveToFirstPosition(val item: SkillDomainRW) : Event()
         data class EditItem(val item: SkillDomainRW) : Event()
         data class DeleteItem(val item: SkillDomainRW) : Event()
         data class AddItem(val item: SkillDomainRW) : Event()
@@ -33,7 +33,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                 fetchSkills()
             }
 
-            is Event.moveToFirstPosition -> {
+            is Event.MoveToFirstPosition -> {
                 moveToFirstPosition(event.item)
             }
 
@@ -55,28 +55,14 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         viewModelScope.launch {
             funWithState(
                 onSuccess = {
-                    val currentSkills = (uiState.first() as State.Success).data.first()
-                    currentSkills.forEach {
-                        if (it == skillDomainRW) {
-                            repository.updateSkill(
-                                skill = skillDomainRW.copy(
-                                    skill = skillDomainRW.skill.copy(id = 1)
-                                )
-                            )
-                        } else {
-                            repository.updateSkill(
-                                skill = skillDomainRW.copy(
-                                    skill = skillDomainRW.skill.copy(id = it.skill.id + 1)
-                                )
-                            )
-                        }
-                    }
-                    emitState(uiState.value)
+                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                    newSkills.remove(skillDomainRW)
+                    newSkills.add(0, skillDomainRW)
+                    emitState(newSkills)
                 }
             )
         }
     }
-
 
     fun deleteSkill(skillDomainRW: SkillDomainRW) {
         skillDomainRW.chosen = true
@@ -84,8 +70,12 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
             try {
                 funWithState(
                     onSuccess = {
-                        repository.deleteSkill(skillDomainRW)
-                        emitState(uiState.value)
+                        val newList = (uiState.value as State.Success).data.toMutableList()
+                        newList.filter { it.chosen }.forEach {
+                            repository.deleteSkill(it)
+                            newList.remove(it)
+                        }
+                        emitState(newList)
                     }
                 )
             } catch (e: Exception) {
@@ -94,18 +84,20 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         }
     }
 
-    private fun addSkill(skill: SkillDomainRW) {
+    private fun addSkill(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
             funWithState(
                 onSuccess = {
-                    repository.addSkill(skill)
-                    emitState(uiState.value)
+                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                    newSkills.add(skillDomainRW)
+                    emitState(newSkills)
+                    repository.addSkill(skillDomainRW)
                 },
                 onFailure = {
 
                 },
                 onEmpty = {
-                    repository.addSkill(skill)
+                    repository.addSkill(skillDomainRW)
                     emitState(uiState.value)
                 },
                 onProcessing = {
@@ -126,11 +118,13 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                         return@emitState current
                     }
                     try {
-                        val skills = repository.getSkillsFromDB()
+                        val skills = repository.getSkillsFromDB().map { skills ->
+                            skills.map { it.toDomainRW() }
+                        }
                         delay(1000)
                         return@emitState if (skills.first().isNotEmpty()) {
                             State.Success(
-                                data = skills
+                                data = skills.first()
                             )
                         } else State.Empty
                     } catch (e: Exception) {
@@ -147,16 +141,33 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                 SkillsChangeConst.ChooseOrNotSkill -> {
                     funWithState(
                         onSuccess = {
-                            repository.updateSkill(skillDomainRW.copy(chosen = !skillDomainRW.chosen))
-                            emitState(uiState.value)
-                        })
+                            val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                            newSkills.indexOf(skillDomainRW).let {
+                                newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
+                                emitState(newSkills)
+                            }
+                        }
+                    )
                 }
 
                 SkillsChangeConst.FullSkill -> {
                     funWithState(
                         onSuccess = {
-                            repository.updateSkill(skill = skillDomainRW)
-                            emitState(uiState.value)
+                            val newList =
+                                (uiState.value as State.Success).data.toMutableList()
+                            val skillToChange =
+                                newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
+                            if (skillToChange == null) {
+                                newList.add(skillDomainRW)
+                                repository.addSkill(skill = skillDomainRW)
+                            } else {
+                                newList.indexOf(skillToChange).let {
+                                    repository.updateSkill(skill = skillDomainRW)
+                                    newList[it] =
+                                        newList[it].copy(skill = skillDomainRW.skill)
+                                }
+                            }
+                            emitState(newList)
                         },
                         onEmpty = {
                             repository.addSkill(skill = skillDomainRW)
@@ -194,26 +205,4 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
 sealed class SkillsChangeConst {
     object ChooseOrNotSkill : SkillsChangeConst()
     object FullSkill : SkillsChangeConst()
-}
-
-sealed class UiEvent {
-    data class EditItem(val item: SkillDomainRW) : UiEvent()
-    data class DeleteItem(val item: SkillDomainRW) : UiEvent()
-    data class MoveItemUp(val item: SkillDomainRW) : UiEvent()
-    data class AddItem(val item: SkillDomainRW) : UiEvent()
-    object GetSkills : UiEvent()
-}
-
-sealed interface RepoResult<out T> {
-    data object Processing : RepoResult<Nothing>
-
-    data class Success<out T>(
-        val data: T,
-    ) : RepoResult<T>
-
-    data object Empty : RepoResult<Nothing>
-
-    data class Error(
-        val exception: Throwable,
-    ) : RepoResult<Nothing>
 }
