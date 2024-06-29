@@ -38,9 +38,9 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
             if (emitProcessing) {
                 emitProcessing()
             }
-            _uiState.update { val a = block(current)
-                Log.d("UI state: ", "$a")
-            a}
+            _uiState.update {
+                block(current)
+            }
         }
 
     protected fun emitState(value: State<T>) {
@@ -84,4 +84,3 @@ sealed interface State<out T> {
 sealed class BaseEvent
 
 sealed class BaseEffect
-
