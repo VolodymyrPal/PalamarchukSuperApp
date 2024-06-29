@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
