@@ -179,7 +179,7 @@ fun SkillScreen(
 fun ItemListSkill(
     modifier: Modifier = Modifier,
     item: SkillDomainRW,
-    onEvent: (UiEvent) -> Unit,
+    onEvent: (SkillsViewModel.Event) -> Unit,
     viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -315,11 +315,11 @@ fun ItemListSkill(
                         },
                         onDelete = remember(item) {
                             {
-                                onEvent.invoke(UiEvent.DeleteItem(item))
+                                onEvent.invoke(SkillsViewModel.Event.DeleteItem(item))
                             }
                         },
                         onMoveUp = remember(item) {
-                            { onEvent(UiEvent.MoveItemUp(item)) }
+                            { onEvent(SkillsViewModel.Event.MoveToFirstPosition(item)) }
                         },
                     )
                 })
@@ -330,10 +330,11 @@ fun ItemListSkill(
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                 },
-                onCheckedChange = remember(item) {
-                    {
-                        viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
-                    }
+                onCheckedChange = {
+                    viewModel.updateSkillOrAdd(
+                        item,
+                        SkillsChangeConst.ChooseOrNotSkill
+                    )
                 },
                 checked = item.chosen
             )
