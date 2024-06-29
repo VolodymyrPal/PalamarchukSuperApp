@@ -13,13 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
+import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.presentation.viewModels.State
 import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -76,7 +75,7 @@ class StoreFragment : Fragment() {
     }
 
 
-    private fun handleState(state: State<Flow<List<Product>>>, adapter: StoreListAdapter) {
+    private fun handleState(state: State<List<ProductDomainRW>>, adapter: StoreListAdapter) {
         when (state) {
             is State.Empty -> {
                 Log.d("HANDLE STATE: ", "$state")
@@ -101,7 +100,7 @@ class StoreFragment : Fragment() {
             is State.Success -> {
                 Log.d("HANDLE STATE: ", "$state")
                 lifecycleScope.launch {
-                    adapter.submitData(state.data)
+                    adapter.setData(state.data)
                 }
             }
         }
