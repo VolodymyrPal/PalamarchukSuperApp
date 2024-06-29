@@ -13,3 +13,7 @@ object ProductToProductDomainRW : Mapper<Product, ProductDomainRW> {
         product = from,
     )
 }
+
+fun Product.toProductDomainRW() = ProductDomainRW(
+    product = this,
+)
