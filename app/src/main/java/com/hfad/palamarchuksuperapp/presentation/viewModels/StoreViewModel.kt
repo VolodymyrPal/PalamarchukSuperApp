@@ -1,17 +1,17 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
-import kotlinx.coroutines.flow.Flow
+import com.hfad.palamarchuksuperapp.presentation.common.toProductDomainRW
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
-) : GenericViewModel<Flow<List<Product>>, StoreViewModel.Event, StoreViewModel.Effect>() {
+) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     sealed class Event : BaseEvent() {
         object FetchSkills : Event()
