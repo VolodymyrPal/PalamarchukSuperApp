@@ -35,9 +35,12 @@ class StoreViewModel @Inject constructor(
                         return@emitState current
                     }
                     try {
-                        val skills = repository.fetchProducts()
+                        val skills = repository.fetchProducts().map { products ->
+                            products.map { it.toProductDomainRW() }
+                        }
+
                         return@emitState if (skills.first().isNotEmpty()) {
-                            State.Success(data = skills)
+                            State.Success(data = skills.first())
                         } else State.Empty
                     } catch (e: Exception) {
                         State.Error(e)
