@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintProperties.WRAP_CONTENT
 import androidx.constraintlayout.widget.Constraints.LayoutParams
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,12 +17,6 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -30,29 +25,12 @@ class SkillsListAdapter(
     private val fragmentManager: FragmentManager,
 ) : ListAdapter<SkillDomainRW, SkillsListAdapter.SkillHolder>(SkillDiffItemCallback()) {
 
-    private var products = emptyList<SkillDomainRW>()
-    private val adapterScope = CoroutineScope(Dispatchers.Main)
 
-    fun submitData(productFlow: Flow<List<SkillDomainRW>>) {
-        adapterScope.launch {
-            productFlow.collectLatest { newProducts ->
-                withContext(Dispatchers.Default) {
-                    val diffResult =
-                        DiffUtil.calculateDiff(SkillDiffCallback(products, newProducts))
-                    withContext(Dispatchers.Main) {
-                        products = newProducts
-                        diffResult.dispatchUpdatesTo(this@SkillsListAdapter)
-                    }
-                }
-            }
-        }
+    private val asyncListDiffer = AsyncListDiffer(this, SkillDiffItemCallback())
+
+    fun setData(skillList: List<SkillDomainRW>) {
+        asyncListDiffer.submitList(skillList)
     }
-
-//    //private val asyncListDiffer = AsyncListDiffer(this, SkillDiffItemCallback())
-//
-//    fun setData(skillList: List<SkillDomainRW>) {
-//        asyncListDiffer.submitList(skillList)
-//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SkillHolder {
         val binding =
@@ -60,10 +38,10 @@ class SkillsListAdapter(
         return SkillHolder(binding, viewModel, fragmentManager)
     }
 
-    override fun getItemCount(): Int = products.size
+    override fun getItemCount(): Int = asyncListDiffer.currentList.size
 
     override fun onBindViewHolder(holder: SkillHolder, position: Int) {
-        val skill = products[position]
+        val skill = asyncListDiffer.currentList[position]
         holder.bind(skill)
     }
 
