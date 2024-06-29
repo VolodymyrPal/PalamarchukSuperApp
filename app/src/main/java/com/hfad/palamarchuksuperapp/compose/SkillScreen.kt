@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.compose
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -42,7 +41,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -78,9 +76,7 @@ import com.hfad.palamarchuksuperapp.presentation.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.State
-import com.hfad.palamarchuksuperapp.presentation.viewModels.UiEvent
 import com.hfad.palamarchuksuperapp.presentation.viewModels.daggerViewModel
-import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -155,49 +151,19 @@ fun SkillScreen(
 
 
                 is State.Success -> {
-                    var item:  List<SkillDomainRW> by remember {
-                        mutableStateOf(emptyList())
-                    }
-                    LaunchedEffect(key1 = Unit) {
-                        (state as State.Success<Flow<List<SkillDomainRW>>>).data.collect {
-                            item = it
-                        }
-                    }
-                    LazyColumn {
-                        items(
-                            items = item,
-                            key = { item: SkillDomainRW -> item.skill.uuid.toString() }
-                        ) { item ->
-                            AnimatedVisibility(
-                                modifier = Modifier.animateItem(),
-                                visible = item.isVisible,
-                                exit = fadeOut(
-                                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                                ),
-                                enter = fadeIn(
-                                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                                )
-                            ) {
-                                ItemListSkill(
-                                    item = item,
-                                    onEvent = {}, //remember { { uiEvent -> viewModel.handleEvent(event = uiEvent) } },
-                                    viewModel = viewModel
-                                )
-                            }
-                        }
-
-                        item {
-                            Spacer(modifier = Modifier.size(72.dp))
-                        }
-                    }
+                    LazyList(
+                        modifier = Modifier.fillMaxSize(),
+                        item = (state as State.Success<List<SkillDomainRW>>).data,
+                        viewModel = viewModel
+                    )
                 }
             }
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.End
-            ) {
-            }
+        }
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.End
+        ) {
         }
     }
 }
@@ -491,4 +457,39 @@ fun SkillScreenPreview() {
         navController = null,
         viewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
     )
+}
+
+@Composable
+fun LazyList(
+    modifier: Modifier = Modifier,
+    item: List<SkillDomainRW>,
+    viewModel: SkillsViewModel,
+) {
+    LazyColumn {
+        items(
+            items = item,
+            key = { item: SkillDomainRW -> item.skill.uuid.toString() }
+        ) { item ->
+            AnimatedVisibility(
+                modifier = Modifier.animateItem(),
+                visible = item.isVisible,
+                exit = fadeOut(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                ),
+                enter = fadeIn(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                )
+            ) {
+                ItemListSkill(
+                    item = item,
+                    onEvent = remember { { event -> viewModel.event(event) } },
+                    viewModel = viewModel
+                )
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.size(72.dp))
+        }
+    }
 }
