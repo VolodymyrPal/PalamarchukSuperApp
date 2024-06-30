@@ -29,33 +29,18 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-                emitState(emitProcessing = true) { current ->
-                    emitState(State.Processing)
-                    if (current is State.Error) {
-                        return@emitState current
-                    }
-                    try {
-                        val skills = repository.fetchProducts().map { products ->
-                            products.map { it.toProductDomainRW() }
-                        }
-
-                        return@emitState if (skills.first().isNotEmpty()) {
-                            State.Success(data = skills.first())
-                        } else State.Empty
-                    } catch (e: Exception) {
-                        State.Error(e)
-                    }
-                }
+                fetchProducts()
             }
 
 
             is Event.OnRefresh -> {
-
+                fetchProducts()
             }
 
             is Event.ShowToast -> {
 
             }
+
             is Event.AddProduct -> {
                 viewModelScope.launch {
 
@@ -64,9 +49,25 @@ class StoreViewModel @Inject constructor(
         }
     }
 
-    fun fetchProducts() {
+    private fun fetchProducts() {
         viewModelScope.launch {
+            emitState(emitProcessing = true) { current ->
+                emitState(State.Processing)
+                if (current is State.Error) {
+                    return@emitState current
+                }
+                try {
+                    val skills = repository.fetchProducts().map { products ->
+                        products.map { it.toProductDomainRW() }
+                    }
 
+                    return@emitState if (skills.first().isNotEmpty()) {
+                        State.Success(data = skills.first())
+                    } else State.Empty
+                } catch (e: Exception) {
+                    State.Error(e)
+                }
+            }
         }
     }
 }
