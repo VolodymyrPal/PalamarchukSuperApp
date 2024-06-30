@@ -41,7 +41,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
         val two = Product(
             id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
                 id = 2222,
-                name = "Dave Franks",
+                name = "Tigers",
                 image = "quo"
             ), images = ProductImages(urls = listOf())
         )
@@ -49,7 +49,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
         val three = Product(
             id = 8772, title = "vivendo", price = 110, category = ProductCategory(
                 id = 3333,
-                name = "Dave Franks",
+                name = "Tigers",
                 image = "quo"
             ), images = ProductImages(urls = listOf())
         )
