@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
@@ -51,17 +52,28 @@ class StoreFragment : Fragment() {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val adapter = StoreListAdapter(viewModel, parentFragmentManager)
+        val adapter = StoreTypeOneListAdapter(viewModel, parentFragmentManager)
         binding.section1RecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.section1RecyclerView.adapter = adapter
+
+        val adapter2 = StoreTypeOneListAdapter(viewModel, parentFragmentManager)
+        binding.section2RecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        binding.section2RecyclerView.adapter = adapter2
+
+        val adapter3 = StoreTypeOneListAdapter(viewModel, parentFragmentManager)
+        binding.section3RecyclerView.layoutManager =
+            GridLayoutManager(context, 3 , LinearLayoutManager.VERTICAL, false)
+        binding.section3RecyclerView.adapter = adapter3
+
         viewModel.event(StoreViewModel.Event.FetchSkills)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.uiState.collectLatest { state ->
-                        handleState(state, adapter)
+                        handleState(state, adapter, adapter2, adapter3)
                     }
                 }
                 launch {
@@ -75,7 +87,7 @@ class StoreFragment : Fragment() {
     }
 
 
-    private fun handleState(state: State<List<ProductDomainRW>>, adapter: StoreListAdapter) {
+    private fun handleState(state: State<List<ProductDomainRW>>, adapter1: StoreTypeOneListAdapter, adapter2: StoreTypeOneListAdapter, adapter3: StoreTypeOneListAdapter) {
         when (state) {
             is State.Empty -> {
                 Log.d("HANDLE STATE: ", "$state")
@@ -100,7 +112,9 @@ class StoreFragment : Fragment() {
             is State.Success -> {
                 Log.d("HANDLE STATE: ", "$state")
                 lifecycleScope.launch {
-                    adapter.setData(state.data)
+                    adapter1.setData(state.data.filter { it.product.category.name == "Tigers" })
+                    adapter2.setData(state.data)
+                    adapter3.setData(state.data)
                 }
             }
         }
