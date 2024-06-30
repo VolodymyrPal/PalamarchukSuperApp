@@ -52,17 +52,17 @@ class StoreFragment : Fragment() {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val adapter = StoreTypeOneListAdapter(viewModel, parentFragmentManager)
+        val adapter = StoreListAdapter(viewModel, parentFragmentManager)
         binding.section1RecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.section1RecyclerView.adapter = adapter
 
-        val adapter2 = StoreTypeOneListAdapter(viewModel, parentFragmentManager)
+        val adapter2 = StoreListAdapter(viewModel, parentFragmentManager)
         binding.section2RecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.section2RecyclerView.adapter = adapter2
 
-        val adapter3 = StoreTypeOneListAdapter(viewModel, parentFragmentManager)
+        val adapter3 = StoreListAdapter(viewModel, parentFragmentManager)
         binding.section3RecyclerView.layoutManager =
             GridLayoutManager(context, 3 , LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
@@ -87,7 +87,7 @@ class StoreFragment : Fragment() {
     }
 
 
-    private fun handleState(state: State<List<ProductDomainRW>>, adapter1: StoreTypeOneListAdapter, adapter2: StoreTypeOneListAdapter, adapter3: StoreTypeOneListAdapter) {
+    private fun handleState(state: State<List<ProductDomainRW>>, adapter1: StoreListAdapter, adapter2: StoreListAdapter, adapter3: StoreListAdapter) {
         when (state) {
             is State.Empty -> {
                 Log.d("HANDLE STATE: ", "$state")
