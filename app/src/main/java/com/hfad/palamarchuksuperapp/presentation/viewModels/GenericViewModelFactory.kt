@@ -7,14 +7,16 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import javax.inject.Inject
 import javax.inject.Provider
 
-class GenericViewModelFactory<T1 : ViewModel> @Inject constructor(
-    private val provider: Provider<T1>,
+class GenericViewModelFactory @Inject constructor(
+    private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(provider.get()::class.java)) {
-            return provider.get() as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        val creator = creators[modelClass] ?: creators.entries.firstOrNull {
+            modelClass.isAssignableFrom(it.key)
+        }?.value ?: throw IllegalArgumentException("Unknown model class $modelClass")
+
+        @Suppress("UNCHECKED_CAST")
+        return creator.get() as T
     }
 }
 
