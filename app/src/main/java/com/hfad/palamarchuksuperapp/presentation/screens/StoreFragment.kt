@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,9 +17,9 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
-import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.presentation.viewModels.State
 import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,10 +32,8 @@ class StoreFragment : Fragment() {
         }
 
     @Inject
-    lateinit var storeViewModelFactory: GenericViewModelFactory<StoreViewModel>
-    private val viewModel by lazy {
-        ViewModelProvider(this, storeViewModelFactory)[StoreViewModel::class.java]
-    }
+    lateinit var genericViewModelFactory: GenericViewModelFactory
+    private val viewModel: StoreViewModel by viewModels { genericViewModelFactory }
 
     @Inject
     lateinit var vibe: AppVibrator
