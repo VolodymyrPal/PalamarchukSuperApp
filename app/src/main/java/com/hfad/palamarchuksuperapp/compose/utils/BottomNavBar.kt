@@ -29,15 +29,15 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.compose.Navigation
 import com.hfad.palamarchuksuperapp.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import kotlinx.coroutines.launch
 
 @Composable
-fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.current, navController: NavController?) {
+fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.current, navController: Navigation?) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
             LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
