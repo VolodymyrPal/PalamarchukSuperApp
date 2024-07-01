@@ -53,8 +53,6 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
@@ -68,7 +66,7 @@ import kotlinx.coroutines.runBlocking
 fun MainScreenConstraint(
     modifier: Modifier = Modifier,
     actionSkillsButton: () -> Unit = {},
-    navController: NavHostController = rememberNavController()
+    navController: Navigation?,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -209,13 +207,15 @@ fun MainScreenConstraint(
                         top.linkTo(userImage.bottom, margin = 16.dp)
                         centerHorizontallyTo(userImage)
                     },
-                    action = { navController.navigate(Routes.SkillScreen) }
+                    action = { navController?.navigate(Routes.SkillScreen) }
                 )
                 ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
                     start.linkTo(parent.start, margin = 32.dp)
                     top.linkTo(skills.bottom)
                     bottom.linkTo(fourthProgram.top)
-                })
+                },
+                    action = { navController?.navigate(Routes.StoreScreen) }
+                )
                 ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
                     end.linkTo(parent.end, margin = 32.dp)
                     top.linkTo(skills.bottom)
@@ -295,5 +295,5 @@ fun ButtonToNavConstraint(modifier: Modifier, action: () -> Unit = {}) {
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun MainScreenConstraintPreview() {
-    MainScreenConstraint()
+    MainScreenConstraint(navController = null)
 }
