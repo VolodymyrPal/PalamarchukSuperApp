@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,10 +29,8 @@ class SkillsFragment : Fragment() {
         }
 
     @Inject
-    lateinit var skillsViewModelFactory: GenericViewModelFactory<SkillsViewModel>
-    private val viewModel by lazy {
-        ViewModelProvider(this, skillsViewModelFactory)[SkillsViewModel::class.java]
-    }
+    lateinit var genericViewModelFactory: GenericViewModelFactory
+    private val viewModel: SkillsViewModel by viewModels { genericViewModelFactory }
 
     @Inject
     lateinit var vibe: AppVibrator
