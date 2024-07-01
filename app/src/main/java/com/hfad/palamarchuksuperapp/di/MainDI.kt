@@ -1,5 +1,6 @@
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
@@ -7,7 +8,6 @@ import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPreview
-import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
@@ -17,12 +17,17 @@ import com.hfad.palamarchuksuperapp.presentation.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.presentation.screens.SkillsFragment
 import com.hfad.palamarchuksuperapp.presentation.screens.StoreFragment
 import com.hfad.palamarchuksuperapp.presentation.viewModels.SkillsViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.GenericViewModelFactory
+import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
+import dagger.MapKey
 import dagger.Module
 import dagger.Provides
-import javax.inject.Provider
+import dagger.multibindings.IntoMap
 import javax.inject.Singleton
+import kotlin.reflect.KClass
 
 @Singleton
 @Component(modules = [AppModule::class])
@@ -49,11 +54,20 @@ object AppModule {
 }
 
 @Module
-object ModelsModule {
-    @Provides
-    fun provideSkillsViewModelFactory(provider: Provider<SkillsViewModel>): ViewModelProvider.Factory {
-        return GenericViewModelFactory(provider)
-    }
+abstract class ModelsModule {
+
+    @Binds
+    abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SkillsViewModel::class)
+    abstract fun bindSkillsViewModel(viewModel: SkillsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(StoreViewModel::class)
+    abstract fun bindStoreViewModel(viewModel: StoreViewModel): ViewModel
 }
 
 @Module
@@ -95,3 +109,8 @@ object DatabaseModule {
         return SkillsRepositoryImpl(skillsDao = skillsDao)
     }
 }
+
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+@Retention(AnnotationRetention.RUNTIME)
+@MapKey
+annotation class ViewModelKey(val value: KClass<out ViewModel>)
