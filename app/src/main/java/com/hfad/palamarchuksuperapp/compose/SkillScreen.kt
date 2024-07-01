@@ -65,7 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
@@ -85,7 +84,7 @@ import java.util.Locale
 @Composable
 fun SkillScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController?,
+    navController: Navigation?,
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
