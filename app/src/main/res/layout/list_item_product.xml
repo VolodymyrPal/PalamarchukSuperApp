@@ -111,7 +111,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/materialTextView3"
+        android:id="@+id/solds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="500+ sold"
@@ -158,7 +158,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/materialTextView3" />
+        app:layout_constraintTop_toBottomOf="@+id/solds" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/materialTextView4"
