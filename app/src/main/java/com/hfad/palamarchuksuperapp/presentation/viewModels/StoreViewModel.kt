@@ -12,7 +12,10 @@ import javax.inject.Inject
 class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
-
+    lateinit var testData: List<Product>
+    init {
+        viewModelScope.launch { testData = repository.fetchProductsTest().first()  }
+    }
     sealed class Event : BaseEvent() {
         object FetchSkills : Event()
         object OnRefresh : Event()
@@ -20,7 +23,7 @@ class StoreViewModel @Inject constructor(
         data class AddProduct(val product: ProductDomainRW, val quantity: Int = 1) : Event()
     }
 
-    sealed class Effect: BaseEffect() {
+    sealed class Effect : BaseEffect() {
         object OnBackPressed : Effect()
         data class ShowToast(val message: String) : Effect()
         object Vibration : Effect()
