@@ -113,6 +113,7 @@ fun StoreScreen(
 
         ) {
             val state by viewModel.uiState.collectAsState()
+            viewModel.event(StoreViewModel.Event.FetchSkills)
             when (state) {
                 State.Processing -> {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -174,10 +175,12 @@ fun StoreLazyCard(
         verticalArrangement = Arrangement.Top,
     ) {
         Text(text = "Lions")
-        LazyColumn {
+        LazyRow {
             items(
-                items = (productList as State.Success<List<ProductDomainRW>>).data,
-                key = { item: ProductDomainRW -> item.product.id }
+                items = viewModel.testData,
+//                items = (productList as State.Success<List<ProductDomainRW>>).data,
+//                key = { item: ProductDomainRW -> item.product.id},
+                key = { item: Product -> item.id } // TODO test rep
             ) { item ->
                 AnimatedVisibility(
                     modifier = Modifier.animateItem(),
@@ -190,7 +193,8 @@ fun StoreLazyCard(
                     )
                 ) {
                     ItemListProduct(
-                        item = item,
+//                        item = item,
+                        item = item.toProductDomainRW(), // TODO test rep
                         onEvent = remember { { event -> viewModel.event(event) } },
                         viewModel = viewModel
                     )
