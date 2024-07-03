@@ -68,7 +68,7 @@ val md_theme_dark_surfaceTint = Color(0xFFD3BBFF)
 val md_theme_dark_outlineVariant = Color(0xFF49454E)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-
+val md_theme_my_royal = Color(0xFFF3E6FD)
 
 
 
