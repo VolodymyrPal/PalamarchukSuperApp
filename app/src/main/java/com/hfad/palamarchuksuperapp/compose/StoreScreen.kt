@@ -123,8 +123,8 @@ fun StoreScreen(
         }
     ) { paddingValues ->
         Surface(
-            color = Color.Transparent, modifier = modifier
-                .fillMaxSize()
+            color = md_theme_my_royal,
+            modifier = modifier
                 .padding(bottom = paddingValues.calculateBottomPadding())
 
         ) {
@@ -154,16 +154,11 @@ fun StoreScreen(
 
                 is State.Success -> {
                     StoreScreenContent(
+                        modifier = Modifier,
                         viewModel = viewModel,
                     )
                 }
             }
-        }
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End
-        ) {
         }
     }
 }
