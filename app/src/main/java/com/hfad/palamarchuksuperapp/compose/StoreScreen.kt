@@ -168,10 +168,31 @@ fun StoreScreenContent(
     modifier: Modifier = Modifier,
     viewModel: StoreViewModel,
 ) {
-    Column {
-        StoreLazyCard(
-            viewModel = viewModel
-        )
+    LazyColumn(
+        modifier = modifier
+            .background(color = md_theme_my_royal),
+        flingBehavior = ScrollableDefaults.flingBehavior()
+    )
+    {
+        item {
+            StoreLazyCard(
+                modifier = Modifier,
+                viewModel = viewModel
+            )
+        }
+        item {
+            StoreLazyCard(
+                modifier = Modifier,
+                viewModel = viewModel
+            )
+        }
+        item {
+            StoreLazyCard(
+                modifier = Modifier,
+                horizontal = false,
+                viewModel = viewModel
+            )
+        }
     }
 }
 
