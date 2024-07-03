@@ -261,24 +261,28 @@ fun StoreLazyCard(
                         items = viewModel.testData,
 //                items = (productList as State.Success<List<ProductDomainRW>>).data,
 //                key = { item: ProductDomainRW -> item.product.id},
-                key = { item: Product -> item.id } // TODO test rep
-            ) { item ->
-                AnimatedVisibility(
-                    modifier = Modifier.animateItem(),
-                    visible = true,
-                    exit = fadeOut(
-                        animationSpec = TweenSpec(100, 100, LinearEasing)
-                    ),
-                    enter = fadeIn(
-                        animationSpec = TweenSpec(100, 100, LinearEasing)
-                    )
-                ) {
-                    ItemListProduct(
+                        key = { item: Product -> item.id } // TODO test rep
+                    ) { item ->
+                        AnimatedVisibility(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                            visible = true,
+                            exit = fadeOut(
+                                animationSpec = TweenSpec(100, 100, LinearEasing)
+                            ),
+                            enter = fadeIn(
+                                animationSpec = TweenSpec(100, 100, LinearEasing)
+                            )
+                        ) {
+                            ItemListProduct(
 //                        item = item,
-                        item = item.toProductDomainRW(), // TODO test rep
-                        onEvent = remember { { event -> viewModel.event(event) } },
-                        viewModel = viewModel
-                    )
+                                item = item.toProductDomainRW(), // TODO test rep
+                                onEvent = remember { { event -> viewModel.event(event) } },
+                                viewModel = viewModel
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -289,181 +293,210 @@ fun StoreLazyCard(
 fun ItemListProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
-    onEvent: (StoreViewModel.Event) -> Unit,
+    onEvent: (StoreViewModel.Event) -> Unit = {},
     viewModel: StoreViewModel = StoreViewModel(repository = StoreRepositoryImplForPreview()),
 ) {
-    Card(
-        modifier =
-        Modifier
-            .size(150.dp, 200.dp)
-            .then(remember(item) {
-                Modifier.clickable {
-
-                }
-            }),
-
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        border = BorderStroke(width = 0.1.dp, color = Color.Gray)
-
+//    Card(
+//        modifier =
+//        modifier
+//            .size(150.dp, 200.dp)
+//            .then(remember(item) {
+//                Modifier.clickable {
+//
+//                }
+//            }),
+//
+//        colors = CardDefaults.cardColors(
+//            containerColor = Color.Transparent
+//        ),
+//
+//        ) {
+    ConstraintLayout(modifier = Modifier
+        .padding(4.dp)
     ) {
-        ConstraintLayout (modifier = Modifier.fillMaxSize()) {
-            val (image, quantityMinus, quantity, quantityPlus, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
+        val (image, quantityMinus, quantity, quantityPlus, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
+        var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
+        var isVisible by remember { mutableStateOf(false) }
 
-            Image(
-                painter = painterResource(id = R.drawable.lion_jpg_21),
-                contentDescription = "Product Image",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .size(120.dp, 120.dp)
-                    .clip(RoundedCornerShape(percent = 12))
-                    .constrainAs(image) {
-                        top.linkTo(parent.top, 10.dp)
-                        end.linkTo(parent.end)
-                        start.linkTo(parent.start)
-                    }
-            )
+        var job by remember { mutableStateOf<Job?>(null) }
 
-            IconButton(
-                onClick = { /* Handle minus */ },
-                modifier = Modifier
-                    .size(35.dp)
-                    .alpha(0.45f)
-                    .background(
-                        color = MaterialTheme.colorScheme.secondary,
-                        shape = CircleShape
-                    )
-                    .constrainAs(quantityMinus) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(quantity.start)
-                    }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Decrease Quantity"
+        LaunchedEffect(quantityToBuy) {
+            job?.cancelAndJoin()
+            job = launch {
+                delay(2000)
+                isVisible = false
+            }
+        }
+
+
+
+        Image(
+            painter = painterResource(id = R.drawable.lion_jpg_21),
+            contentDescription = "Product Image",
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .size(120.dp, 120.dp)
+                .clip(RoundedCornerShape(percent = 12))
+                .constrainAs(image) {
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
+                }
+                .then(Modifier.clickable {
+                    isVisible = true
+                    quantityToBuy++
+                })
+        )
+
+        IconButton(
+            onClick = {
+                isVisible = true
+                if (quantityToBuy > 0) quantityToBuy--
+            },
+            modifier = Modifier
+                .size(35.dp)
+                .alpha(if (isVisible) 0.65f else 0f)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape
                 )
-            }
-
-            Text(
-                text = "28+",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSecondary,
-                modifier = Modifier
-                    .alpha(0.55f)
-                    .constrainAs(quantity) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )
-
-            IconButton(
-                onClick = { /* Handle plus */ },
-                modifier = Modifier
-                    .size(35.dp)
-                    .alpha(0.55f)
-                    .background(
-                        color = MaterialTheme.colorScheme.secondary,
-                        shape = CircleShape
-                    )
-                    .constrainAs(quantityPlus) {
-                        start.linkTo(quantity.end)
-                        end.linkTo(parent.end)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Increase Quantity")
-            }
-
-            Text(
-                text = "BEATUTIFULL LION FOR CHICKS",
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.constrainAs(name) {
-                    top.linkTo(image.bottom, 2.dp)
+                .constrainAs(quantityMinus) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
+                    end.linkTo(quantity.start)
                 }
-            )
 
-            val rating by remember { mutableStateOf(5f) }
-            StarRatingBar (
-                maxStars = 5,
-                rating = rating,
-                onRatingChanged = { rating ->
-                    // Handle rating change
-                },
-                modifier = Modifier.constrainAs(ratingBar) {
-                    start.linkTo(parent.start)
-                    end.linkTo(sold.start)
-                    top.linkTo(name.bottom)
-                }
-            )
-
-            Text(
-                text = "500+ sold",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontStyle = FontStyle.Italic,
-                    color = Color.Gray
-                ),
-                modifier = Modifier.constrainAs(sold) {
-                    top.linkTo(name.bottom)
-                    end.linkTo(parent.end)
-                    start.linkTo(ratingBar.end)
-                }
-            )
-
-            Text(
-                text = "500$",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color.DarkGray,
-                    fontStyle = FontStyle.Italic
-                ),
-                modifier = Modifier.constrainAs(price) {
-                    top.linkTo(sold.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(discountedPrice.start)
-                },
-                textDecoration = TextDecoration.LineThrough
-            )
-
-            Text(
-                text = "250$",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.constrainAs(discountedPrice) {
-                    top.linkTo(sold.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(saveText.top)
-                }
-            )
-
-            Text(
-                text = "SAVE 50% TODAY",
-                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.error),
-                modifier = Modifier.constrainAs(saveText) {
-                    bottom.linkTo(parent.bottom, 4.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Decrease Quantity"
             )
         }
+
+        Text(
+            text = "$quantityToBuy",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSecondary,
+            modifier = Modifier
+                .alpha(if (quantityToBuy > 0 || isVisible) 1f else 0f)
+                .constrainAs(quantity) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
+
+        IconButton(
+            onClick = {
+                isVisible = true
+                quantityToBuy++
+            },
+            modifier = Modifier
+                .size(35.dp)
+                .alpha(if (isVisible) 0.65f else 0f)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape
+                )
+                .constrainAs(quantityPlus) {
+                    start.linkTo(quantity.end)
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Increase Quantity")
+        }
+
+        Text(
+            text = item.product.title.uppercase(),
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.constrainAs(name) {
+                top.linkTo(image.bottom, 2.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        var rating by remember { mutableStateOf(5f) }
+        StarRatingBar(
+            maxStars = 5,
+            rating = rating,
+            onRatingChanged = { ratingChange ->
+                rating = ratingChange
+            },
+            modifier = Modifier.constrainAs(ratingBar) {
+                start.linkTo(parent.start)
+                end.linkTo(sold.start)
+                top.linkTo(name.bottom)
+            }
+        )
+
+        Text(
+            text = "500...",
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontStyle = FontStyle.Italic,
+                color = Color.Gray
+            ),
+            modifier = Modifier.constrainAs(sold) {
+                top.linkTo(name.bottom)
+                end.linkTo(parent.end)
+                start.linkTo(ratingBar.end)
+            }
+        )
+
+        Text(
+            text = "${item.product.price}$",
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = Color.DarkGray,
+                fontStyle = FontStyle.Italic
+            ),
+            modifier = Modifier.constrainAs(price) {
+                top.linkTo(discountedPrice.top)
+                bottom.linkTo(discountedPrice.bottom)
+                end.linkTo(discountedPrice.start)
+            },
+            textDecoration = TextDecoration.LineThrough
+        )
+
+        Text(
+            text = "${item.product.price / 2}$",
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.constrainAs(discountedPrice) {
+                top.linkTo(ratingBar.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(saveText.top)
+            }.then(Modifier.clickable {
+                isVisible = true
+                quantityToBuy++
+            })
+
+        )
+
+        Text(
+            text = "SAVE 50% TODAY",
+            style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.error),
+            modifier = Modifier.constrainAs(saveText) {
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        )
     }
 }
 
 @Composable
 fun StarRatingBar(
+    modifier: Modifier = Modifier,
     maxStars: Int = 5,
     rating: Float,
     onRatingChanged: (Float) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current.density
     val starSize = (5f * density).dp
@@ -488,7 +521,8 @@ fun StarRatingBar(
                             onRatingChanged(i.toFloat())
                         }
                     )
-                    .width(starSize).height(starSize)
+                    .width(starSize)
+                    .height(starSize)
             )
 
             if (i < maxStars) {
@@ -496,6 +530,24 @@ fun StarRatingBar(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun ItemListProductPreview() {
+    ItemListProduct(
+        modifier = Modifier.background(color = Color.White),
+        item = ProductDomainRW(
+            Product(
+                id = 6717, title = "eripuit", price = 5869, category = ProductCategory(
+                    id = 3226,
+                    name = "Errol Clemons",
+                    image = "legere"
+                ), images = ProductImages(urls = listOf())
+            )
+        ),
+        onEvent = {}
+    )
 }
 
 @Composable
