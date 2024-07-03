@@ -199,6 +199,7 @@ fun StoreScreenContent(
 @Composable
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
+    horizontal: Boolean = true,
     viewModel: StoreViewModel = StoreViewModel(repository = StoreRepositoryImplForPreview()),
 ) {
     val productList by viewModel.uiState.collectAsState()
@@ -206,10 +207,58 @@ fun StoreLazyCard(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
     ) {
-        Text(text = "Lions")
-        LazyRow {
-            items(
-                items = viewModel.testData,
+        Card(
+            modifier = Modifier
+                .padding(4.dp)
+                .fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(5.dp)
+        ) {
+            Text(
+                modifier = Modifier.padding(start = 8.dp, top = 8.dp),
+                text = "Lions",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp
+            )
+            if (!horizontal) {
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(500.dp),
+                    columns = GridCells.Adaptive(minSize = 130.dp),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    items(
+                        items = viewModel.testData.map { it.toProductDomainRW() },
+//                items = (productList as State.Success<List<ProductDomainRW>>).data,
+//                key = { item: ProductDomainRW -> item.product.id},
+                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
+                    ) { item ->
+                        AnimatedVisibility(
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                            visible = true,
+                            exit = fadeOut(
+                                animationSpec = TweenSpec(100, 100, LinearEasing)
+                            ),
+                            enter = fadeIn(
+                                animationSpec = TweenSpec(100, 100, LinearEasing)
+                            )
+                        ) {
+                            ItemListProduct(
+//                        item = item,
+                                item = item, // TODO test rep
+                                onEvent = remember { { event -> viewModel.event(event) } },
+                                viewModel = viewModel
+                            )
+                        }
+                    }
+                }
+            } else {
+                LazyRow {
+                    items(
+                        items = viewModel.testData,
 //                items = (productList as State.Success<List<ProductDomainRW>>).data,
 //                key = { item: ProductDomainRW -> item.product.id},
                 key = { item: Product -> item.id } // TODO test rep
