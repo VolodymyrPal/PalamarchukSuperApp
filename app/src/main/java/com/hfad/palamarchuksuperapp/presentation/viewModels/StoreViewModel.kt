@@ -13,10 +13,8 @@ import javax.inject.Inject
 class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
-    lateinit var testData: List<Product>
-    init {
-        viewModelScope.launch { testData = repository.fetchProductsTest().first()  }
-    }
+    lateinit var testData: List<Product> //TODO
+    init { viewModelScope.launch { testData = repository.fetchProductsTest().first()  } }  //TODO
     sealed class Event : BaseEvent() {
         object FetchSkills : Event()
         object OnRefresh : Event()
