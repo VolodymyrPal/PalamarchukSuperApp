@@ -7,12 +7,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,27 +27,31 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,15 +60,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -80,7 +86,6 @@ import com.hfad.palamarchuksuperapp.data.entities.ProductCategory
 import com.hfad.palamarchuksuperapp.data.entities.ProductImages
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPreview
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
-import com.hfad.palamarchuksuperapp.presentation.common.toProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.State
 import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.presentation.viewModels.daggerViewModel
@@ -89,6 +94,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
@@ -224,8 +230,8 @@ fun StoreLazyCard(
                 LazyVerticalGrid(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp),
-                    columns = GridCells.Adaptive(minSize = 130.dp),
+                        .height((productList.data.size / 3 * HEIGHT_ITEM + HEIGHT_ITEM + 20).dp),
+                    columns = GridCells.Adaptive(minSize = HEIGHT_ITEM.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     items(
@@ -296,23 +302,10 @@ fun ItemListProduct(
     onEvent: (StoreViewModel.Event) -> Unit = {},
     viewModel: StoreViewModel = StoreViewModel(repository = StoreRepositoryImplForPreview()),
 ) {
-//    Card(
-//        modifier =
-//        modifier
-//            .size(150.dp, 200.dp)
-//            .then(remember(item) {
-//                Modifier.clickable {
-//
-//                }
-//            }),
-//
-//        colors = CardDefaults.cardColors(
-//            containerColor = Color.Transparent
-//        ),
-//
-//        ) {
-    ConstraintLayout(modifier = Modifier
-        .padding(4.dp)
+
+    ConstraintLayout(
+        modifier = Modifier
+            .size(150.dp, HEIGHT_ITEM.dp)
     ) {
         val (image, quantityMinus, quantity, quantityPlus, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
         var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
@@ -354,12 +347,7 @@ fun ItemListProduct(
                 if (quantityToBuy > 0) quantityToBuy--
             },
             modifier = Modifier
-                .size(35.dp)
-                .alpha(if (isVisible) 0.65f else 0f)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = CircleShape
-                )
+                .size(50.dp, HEIGHT_ITEM.dp)
                 .constrainAs(quantityMinus) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -394,12 +382,7 @@ fun ItemListProduct(
                 quantityToBuy++
             },
             modifier = Modifier
-                .size(35.dp)
-                .alpha(if (isVisible) 0.65f else 0f)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = CircleShape
-                )
+                .size(85.dp, HEIGHT_ITEM.dp)
                 .constrainAs(quantityPlus) {
                     start.linkTo(quantity.end)
                     end.linkTo(parent.end)
@@ -567,3 +550,5 @@ fun StoreScreenPreview() {
         viewModel = StoreViewModel(repository = StoreRepositoryImplForPreview())
     )
 }
+
+const val HEIGHT_ITEM = 200
