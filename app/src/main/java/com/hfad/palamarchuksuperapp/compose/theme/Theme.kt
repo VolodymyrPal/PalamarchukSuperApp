@@ -5,11 +5,13 @@ import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import com.hfad.palamarchuksuperapp.compose.theme.shapes
 import com.hfad.palamarchuksuperapp.compose.theme.typography
 
@@ -82,7 +84,7 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun AppTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colors = if (!useDarkTheme) {
         LightColors
@@ -93,16 +95,22 @@ fun AppTheme(
     MaterialTheme(
         colorScheme = colors,
         typography = typography,
-        shapes = shapes
-    ) {
-        CompositionLocalProvider(
-          LocalRippleTheme provides RippleCustomTheme,
+        shapes = shapes,
+
+        ) {
+        ProvideTextStyle(
+            value = TextStyle(color = colors.onPrimaryContainer),
             content = content
         )
+        CompositionLocalProvider(
+            LocalRippleTheme provides RippleCustomTheme,
+            content = content
+        )
+
     }
 }
 
-private object RippleCustomTheme: RippleTheme {
+private object RippleCustomTheme : RippleTheme {
     @Composable
     override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
 
