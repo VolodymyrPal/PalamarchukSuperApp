@@ -33,8 +33,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -56,8 +56,7 @@
                     android:orientation="vertical"
                     android:padding="8dp"
                     android:paddingStart="8dp"
-                    android:paddingEnd="0dp"
-                    >
+                    android:paddingEnd="0dp">
 
                     <TextView
                         android:id="@+id/section_1_title"
@@ -92,7 +91,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="0dp">
 
                     <TextView
                         android:id="@+id/section_2_title"
@@ -107,6 +108,7 @@
                         android:id="@+id/section_2_recyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
                         android:scrollbars="horizontal" />
 
                 </LinearLayout>
@@ -126,7 +128,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="0dp">
 
                     <TextView
                         android:id="@+id/section_3_title"
@@ -141,6 +145,7 @@
                         android:id="@+id/section_3_recyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
                         android:scrollbars="horizontal" />
 
                 </LinearLayout>
