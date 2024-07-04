@@ -113,7 +113,51 @@ class StoreRepositoryImplForPreview : StoreRepository {
             ), images = ProductImages(urls = listOf())
 
         )
-        val productList = MutableStateFlow(listOf(one, two, three, four, five))
+        val six = Product(
+            id = 7820, title = "quem", price = 1640, category = ProductCategory(
+                id = 1628,
+                name = "Christi Glover",
+                image = "taciti"
+            ), images = ProductImages(urls = listOf())
+
+        )
+        val seven = Product(
+            id = 5049, title = "petentium", price = 5247, category = ProductCategory(
+                id = 5868,
+                name = "Belinda Carroll",
+                image = "sea"
+            ), images = ProductImages(urls = listOf())
+
+        )
+
+        val eight = Product(
+            id = 8710, title = "ne", price = 1622, category = ProductCategory(
+                id = 5070,
+                name = "Tomas Osborn",
+                image = "scripta"
+            ), images = ProductImages(urls = listOf())
+
+        )
+
+        val nine = Product(
+            id = 5423, title = "pretium", price = 8339, category = ProductCategory(
+                id = 4317,
+                name = "Saundra Valdez",
+                image = "magnis"
+            ), images = ProductImages(urls = listOf())
+
+
+        )
+
+        val ten = Product(
+            id = 7184, title = "definitiones", price = 7724, category = ProductCategory(
+                id = 5407,
+                name = "Michele Le",
+                image = "senectus"
+            ), images = ProductImages(urls = listOf())
+
+        )
+        val productList = MutableStateFlow(listOf(one, two, three, four, five, six, seven, eight, nine, ten))
 
         return productList
     }
@@ -171,7 +215,51 @@ class StoreRepositoryImplForPreview : StoreRepository {
             ), images = ProductImages(urls = listOf())
 
         )
-        val productList = MutableStateFlow(listOf(one, two, three, four, five))
+        val six = Product(
+            id = 7820, title = "quem", price = 1640, category = ProductCategory(
+                id = 1628,
+                name = "Christi Glover",
+                image = "taciti"
+            ), images = ProductImages(urls = listOf())
+
+        )
+        val seven = Product(
+            id = 5049, title = "petentium", price = 5247, category = ProductCategory(
+                id = 5868,
+                name = "Belinda Carroll",
+                image = "sea"
+            ), images = ProductImages(urls = listOf())
+
+        )
+
+        val eight = Product(
+            id = 8710, title = "ne", price = 1622, category = ProductCategory(
+                id = 5070,
+                name = "Tomas Osborn",
+                image = "scripta"
+            ), images = ProductImages(urls = listOf())
+
+        )
+
+        val nine = Product(
+            id = 5423, title = "pretium", price = 8339, category = ProductCategory(
+                id = 4317,
+                name = "Saundra Valdez",
+                image = "magnis"
+            ), images = ProductImages(urls = listOf())
+
+
+        )
+
+        val ten = Product(
+            id = 7184, title = "definitiones", price = 7724, category = ProductCategory(
+                id = 5407,
+                name = "Michele Le",
+                image = "senectus"
+            ), images = ProductImages(urls = listOf())
+
+        )
+        val productList = MutableStateFlow(listOf(one, two, three, four, five, six, seven, eight, nine, ten))
 
         return productList
     }
