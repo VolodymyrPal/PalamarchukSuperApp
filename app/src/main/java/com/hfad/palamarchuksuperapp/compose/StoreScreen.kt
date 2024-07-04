@@ -160,7 +160,7 @@ fun StoreScreen(
                 },
                 content = {
                     Icon(
-                        painter = painterResource(id = R.drawable.add_fab_button),
+                        painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
                         "Floating action button."
                     )
                 }
@@ -170,11 +170,13 @@ fun StoreScreen(
         Surface(
             color = md_theme_my_royal,
             modifier = modifier
-                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(
+                    bottom = paddingValues.calculateBottomPadding(),
+                    top = paddingValues.calculateTopPadding()
+                )
 
         ) {
             val state by viewModel.uiState.collectAsState()
-            viewModel.event(StoreViewModel.Event.FetchSkills)
             when (state) {
                 State.Processing -> {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -247,7 +249,8 @@ fun StoreLazyCard(
     horizontal: Boolean = true,
     viewModel: StoreViewModel = StoreViewModel(repository = StoreRepositoryImplForPreview()),
 ) {
-    val productList by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsState()
+    val productList = state as State.Success
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
@@ -263,7 +266,7 @@ fun StoreLazyCard(
                 modifier = Modifier.padding(start = 8.dp, top = 8.dp),
                 text = "Lions",
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp
+                fontSize = 24.sp,
             )
             if (!horizontal) {
                 LazyVerticalGrid(
@@ -274,15 +277,42 @@ fun StoreLazyCard(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     items(
-                        items = viewModel.testData.map { it.toProductDomainRW() },
-//                items = (productList as State.Success<List<ProductDomainRW>>).data,
-//                key = { item: ProductDomainRW -> item.product.id},
-                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
+//                        items = viewModel.testData.map { it.toProductDomainRW() },
+//                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
+                        items = productList.data,
+                        key = { item: ProductDomainRW -> item.product.id },
                     ) { item ->
                         AnimatedVisibility(
                             modifier = Modifier
                                 .animateItem()
                                 .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                            visible = true,
+                            exit = fadeOut(
+                                animationSpec = TweenSpec(100, 100, LinearEasing)
+                            ),
+                            enter = fadeIn(
+                                animationSpec = TweenSpec(100, 100, LinearEasing)
+                            )
+                        ) {
+                            ItemListProduct(
+                                item = item,
+                                onEvent = remember(item) { { event -> viewModel.event(event) } },
+                                viewModel = viewModel
+                            )
+                        }
+                    }
+                }
+            } else {
+                LazyRow {
+                    items(
+                        //items = viewModel.testData,
+                        items = productList.data,
+                        key = { item: ProductDomainRW -> item.product.id },
+//                        key = { item: Product -> item.id } // TODO test rep
+                    ) { item ->
+                        AnimatedVisibility(
+                            modifier = Modifier
+                                .animateItem(),
                             visible = true,
                             exit = fadeOut(
                                 animationSpec = TweenSpec(100, 100, LinearEasing)
@@ -294,36 +324,7 @@ fun StoreLazyCard(
                             ItemListProduct(
 //                        item = item,
                                 item = item, // TODO test rep
-                                onEvent = remember { { event -> viewModel.event(event) } },
-                                viewModel = viewModel
-                            )
-                        }
-                    }
-                }
-            } else {
-                LazyRow {
-                    items(
-                        items = viewModel.testData,
-//                items = (productList as State.Success<List<ProductDomainRW>>).data,
-//                key = { item: ProductDomainRW -> item.product.id},
-                        key = { item: Product -> item.id } // TODO test rep
-                    ) { item ->
-                        AnimatedVisibility(
-                            modifier = Modifier
-                                .animateItem()
-                                .padding(0.dp, 0.dp, 10.dp, 10.dp),
-                            visible = true,
-                            exit = fadeOut(
-                                animationSpec = TweenSpec(100, 100, LinearEasing)
-                            ),
-                            enter = fadeIn(
-                                animationSpec = TweenSpec(100, 100, LinearEasing)
-                            )
-                        ) {
-                            ItemListProduct(
-//                        item = item,
-                                item = item.toProductDomainRW(), // TODO test rep
-                                onEvent = remember { { event -> viewModel.event(event) } },
+                                onEvent = remember(item) { { event -> viewModel.event(event) } },
                                 viewModel = viewModel
                             )
                         }
@@ -347,20 +348,17 @@ fun ItemListProduct(
             .size(150.dp, HEIGHT_ITEM.dp)
     ) {
         val (image, quantityMinus, quantity, quantityPlus, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
-        var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
         var isVisible by remember { mutableStateOf(false) }
 
         var job by remember { mutableStateOf<Job?>(null) }
 
-        LaunchedEffect(quantityToBuy) {
+        LaunchedEffect(item.quantity) {
             job?.cancelAndJoin()
             job = launch {
                 delay(2000)
                 isVisible = false
             }
         }
-
-
 
         Image(
             painter = painterResource(id = R.drawable.lion_jpg_21),
@@ -374,39 +372,43 @@ fun ItemListProduct(
                     end.linkTo(parent.end)
                     start.linkTo(parent.start)
                 }
-                .then(Modifier.clickable {
-                    isVisible = true
-                    quantityToBuy++
-                })
         )
 
         IconButton(
             onClick = {
                 isVisible = true
-                if (quantityToBuy > 0) quantityToBuy--
+                if (item.quantity > 0) viewModel.event(
+                    StoreViewModel.Event.AddItemToBasket(
+                        item,
+                        -1
+                    )
+                )
             },
             modifier = Modifier
                 .size(50.dp, HEIGHT_ITEM.dp)
+                .alpha(if (isVisible) 0.95f else 0f)
                 .constrainAs(quantityMinus) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
-                    end.linkTo(quantity.start)
+                    end.linkTo(quantity.end)
                 }
 
         ) {
             Icon(
+                modifier = Modifier.size(40.dp),
                 imageVector = Icons.Default.Delete,
                 contentDescription = "Decrease Quantity"
             )
         }
 
         Text(
-            text = "$quantityToBuy",
+            text = "${item.quantity}",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSecondary,
+            fontSize = TextUnit(32f, TextUnitType.Sp),
             modifier = Modifier
-                .alpha(if (quantityToBuy > 0 || isVisible) 1f else 0f)
+                .alpha(if (item.quantity > 0 || isVisible) 1f else 0f)
                 .constrainAs(quantity) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -418,23 +420,30 @@ fun ItemListProduct(
         IconButton(
             onClick = {
                 isVisible = true
-                quantityToBuy++
+                viewModel.event(StoreViewModel.Event.AddItemToBasket(item, 1))
             },
             modifier = Modifier
                 .size(85.dp, HEIGHT_ITEM.dp)
+                .alpha(if (isVisible) 0.95f else 0f)
                 .constrainAs(quantityPlus) {
-                    start.linkTo(quantity.end)
+                    start.linkTo(quantity.start)
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 }
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Increase Quantity")
+            Icon(
+                modifier = Modifier.size(40.dp),
+                imageVector = Icons.Default.Add,
+                contentDescription = "Increase Quantity"
+            )
         }
 
         Text(
             text = item.product.title.uppercase(),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            fontSize = TextUnit(12f, TextUnitType.Sp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.constrainAs(name) {
@@ -456,11 +465,12 @@ fun ItemListProduct(
                 start.linkTo(parent.start)
                 end.linkTo(sold.start)
                 top.linkTo(name.bottom)
+                bottom.linkTo(sold.bottom)
             }
         )
 
         Text(
-            text = "500...",
+            text = "500... sold",
             style = MaterialTheme.typography.labelSmall.copy(
                 fontStyle = FontStyle.Italic,
                 color = Color.Gray
@@ -476,7 +486,8 @@ fun ItemListProduct(
             text = "${item.product.price}$",
             style = MaterialTheme.typography.bodySmall.copy(
                 color = Color.DarkGray,
-                fontStyle = FontStyle.Italic
+                fontStyle = FontStyle.Italic,
+                fontSize = TextUnit(8f, TextUnitType.Sp)
             ),
             modifier = Modifier.constrainAs(price) {
                 top.linkTo(discountedPrice.top)
@@ -489,16 +500,14 @@ fun ItemListProduct(
         Text(
             text = "${item.product.price / 2}$",
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.constrainAs(discountedPrice) {
-                top.linkTo(ratingBar.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(saveText.top)
-            }.then(Modifier.clickable {
-                isVisible = true
-                quantityToBuy++
-            })
-
+            fontSize = TextUnit(18f, TextUnitType.Sp),
+            modifier = Modifier
+                .constrainAs(discountedPrice) {
+                    top.linkTo(ratingBar.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(saveText.top)
+                }
         )
 
         Text(
@@ -521,8 +530,8 @@ fun StarRatingBar(
     onRatingChanged: (Float) -> Unit,
 ) {
     val density = LocalDensity.current.density
-    val starSize = (5f * density).dp
-    val starSpacing = (0.05f * density).dp
+    val starSize = (8f * density).dp
+    val starSpacing = (0.01f * density).dp
 
     Row(
         modifier = modifier.selectableGroup(),
