@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.presentation.common
 
 import com.hfad.palamarchuksuperapp.data.entities.Product
 
-class ProductDomainRW (
+data class ProductDomainRW (
     val product: Product,
     val quantity: Int = 0,
     val liked: Boolean = false,
