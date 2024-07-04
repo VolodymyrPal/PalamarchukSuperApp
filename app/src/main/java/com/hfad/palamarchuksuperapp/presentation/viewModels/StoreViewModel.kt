@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
@@ -14,12 +15,17 @@ class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
     lateinit var testData: List<Product> //TODO
-    init { viewModelScope.launch { testData = repository.fetchProductsTest().first()  } }  //TODO
+
+    init {
+        viewModelScope.launch { testData = repository.fetchProductsTest().first() }
+    }  //TODO
+
     sealed class Event : BaseEvent() {
         object FetchSkills : Event()
         object OnRefresh : Event()
         data class ShowToast(val message: String) : Event()
         data class AddProduct(val product: ProductDomainRW, val quantity: Int = 1) : Event()
+        data class AddItemToBasket(val product: ProductDomainRW, val quantity: Int = 1) : Event()
     }
 
     sealed class Effect : BaseEffect() {
@@ -46,6 +52,18 @@ class StoreViewModel @Inject constructor(
             is Event.AddProduct -> {
                 viewModelScope.launch {
 
+                }
+            }
+
+            is Event.AddItemToBasket -> {
+                viewModelScope.launch {
+                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                    newSkills.indexOf(event.product).let {
+                        newSkills[it] =
+                            newSkills[it].copy(quantity = newSkills[it].quantity + event.quantity)
+                        Log.d("TAG", "event: ${newSkills[it].quantity}")
+                        emitState(newSkills)
+                    }
                 }
             }
         }
