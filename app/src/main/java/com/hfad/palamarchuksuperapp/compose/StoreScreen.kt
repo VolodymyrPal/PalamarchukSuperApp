@@ -352,10 +352,14 @@ fun ItemListProduct(
         modifier = Modifier
             .size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)
     ) {
-        val (image, quantityMinus, quantity, quantityPlus, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
+        val (image, quantityMinusButton, quantityMinusField, quantityPlusField, quantity, quantityPlusButton, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
         var isVisible by remember { mutableStateOf(false) }
 
         var job by remember { mutableStateOf<Job?>(null) }
+
+        var isPressed by remember { mutableStateOf(false) }
+        var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
+        val scope = rememberCoroutineScope()
 
         LaunchedEffect(item.quantity) {
             job?.cancelAndJoin()
