@@ -451,12 +451,12 @@ fun ItemListProduct(
 
 
         Text(
-            text = "${item.quantity}",
+            text = "quantityToBuy",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSecondary,
             fontSize = TextUnit(32f, TextUnitType.Sp),
             modifier = Modifier
-                .alpha(if (item.quantity > 0 || isVisible) 1f else 0f)
+                .alpha(if (item.quantity > 0 || (isVisible || isPressed)) 0.95f else 0f)
                 .constrainAs(quantity) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
