@@ -465,11 +465,60 @@ fun ItemListProduct(
                 }
         )
 
-        IconButton(
-            onClick = {
-                isVisible = true
-                viewModel.event(StoreViewModel.Event.AddItemToBasket(item, 1))
-            },
+
+        Box(modifier = Modifier
+            .size(85.dp, HEIGHT_ITEM.dp)
+            .alpha(0f)
+            .constrainAs(quantityPlusField) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+            }
+            .pointerInput(item) {
+                detectTapGestures(
+                    onPress = {
+                        if (quantityToBuy >= 0) quantityToBuy++
+                        isPressed = true
+                        isVisible = true
+                        job = scope.launch {
+                            delay(1000)
+                            isVisible = true
+                            while (isPressed) {
+                                if (quantityToBuy >= 0) quantityToBuy++
+                                delay(5)
+                            }
+                        }
+                        try {
+                            awaitRelease()
+                            job?.cancel()
+                            viewModel.event(
+                                StoreViewModel.Event.SetItemToBasket(
+                                    item,
+                                    quantityToBuy
+                                )
+                            )
+                            isPressed = false
+                            isVisible = true
+                        } catch (e: CancellationException) {
+                            job?.cancel()
+                            viewModel.event(
+                                StoreViewModel.Event.SetItemToBasket(
+                                    item,
+                                    quantityToBuy
+                                )
+                            )
+                            isPressed = false
+                            isVisible = true
+                        } catch (e: Exception) {
+                            job?.cancel()
+                            Log.d("Store screen exception: ", "event: ${e.message}")
+                            isPressed = false
+                            isVisible = true
+                        }
+                    }
+                )
+            }
+        )
             modifier = Modifier
                 .size(85.dp, HEIGHT_ITEM.dp)
                 .alpha(if (isVisible) 0.95f else 0f)
