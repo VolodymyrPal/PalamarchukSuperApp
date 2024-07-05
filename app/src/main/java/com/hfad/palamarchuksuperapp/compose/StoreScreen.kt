@@ -519,22 +519,21 @@ fun ItemListProduct(
                 )
             }
         )
+
+        Icon(
             modifier = Modifier
-                .size(85.dp, HEIGHT_ITEM.dp)
-                .alpha(if (isVisible) 0.95f else 0f)
-                .constrainAs(quantityPlus) {
-                    start.linkTo(quantity.start)
+                .size(40.dp)
+                .alpha(if (isVisible || isPressed) 0.95f else 0f)
+                .constrainAs(quantityPlusButton) {
+                    start.linkTo(quantity.end)
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                }
-        ) {
-            Icon(
-                modifier = Modifier.size(40.dp),
-                imageVector = Icons.Default.Add,
-                contentDescription = "Increase Quantity"
-            )
-        }
+                },
+            imageVector = Icons.Default.Add,
+            contentDescription = "Increase Quantity"
+        )
+
 
         Text(
             text = item.product.title.uppercase(),
