@@ -350,7 +350,7 @@ fun ItemListProduct(
 
     ConstraintLayout(
         modifier = Modifier
-            .size(150.dp, HEIGHT_ITEM.dp)
+            .size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)
     ) {
         val (image, quantityMinus, quantity, quantityPlus, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
         var isVisible by remember { mutableStateOf(false) }
