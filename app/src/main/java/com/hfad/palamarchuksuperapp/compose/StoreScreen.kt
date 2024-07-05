@@ -278,7 +278,7 @@ fun StoreLazyCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height((productList.data.size / 3 * HEIGHT_ITEM + HEIGHT_ITEM + 20).dp),
-                    columns = GridCells.Adaptive(minSize = HEIGHT_ITEM.dp),
+                    columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     items(
@@ -605,3 +605,4 @@ fun StoreScreenPreview() {
 }
 
 const val HEIGHT_ITEM = 200
+const val WIDTH_ITEM = 150
