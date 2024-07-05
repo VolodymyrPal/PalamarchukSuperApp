@@ -25,7 +25,7 @@ class StoreViewModel @Inject constructor(
         object OnRefresh : Event()
         data class ShowToast(val message: String) : Event()
         data class AddProduct(val product: ProductDomainRW, val quantity: Int = 1) : Event()
-        data class AddItemToBasket(val product: ProductDomainRW, val quantity: Int = 1) : Event()
+        data class SetItemToBasket(val product: ProductDomainRW, val quantity: Int = 1) : Event()
     }
 
     sealed class Effect : BaseEffect() {
@@ -55,14 +55,14 @@ class StoreViewModel @Inject constructor(
                 }
             }
 
-            is Event.AddItemToBasket -> {
-                viewModelScope.launch {
-                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
-                    newSkills.indexOf(event.product).let {
-                        newSkills[it] =
-                            newSkills[it].copy(quantity = newSkills[it].quantity + event.quantity)
-                        Log.d("TAG", "event: ${newSkills[it].quantity}")
-                        emitState(newSkills)
+            is Event.SetItemToBasket -> {
+                try {
+                    viewModelScope.launch {
+                        val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                        newSkills.indexOf(event.product).let {
+                            newSkills[it] = newSkills[it].copy(quantity = event.quantity)
+                            emitState(newSkills)
+                        }
                     }
                 }
             }
