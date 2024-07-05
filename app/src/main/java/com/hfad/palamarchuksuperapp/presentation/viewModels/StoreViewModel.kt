@@ -64,6 +64,8 @@ class StoreViewModel @Inject constructor(
                             emitState(newSkills)
                         }
                     }
+                } catch (e: Exception) {
+                    Log.d("Exception in SetItemToBasket", "event: ${e.message}")
                 }
             }
         }
