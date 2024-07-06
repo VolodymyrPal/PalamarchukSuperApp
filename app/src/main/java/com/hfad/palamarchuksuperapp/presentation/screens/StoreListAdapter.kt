@@ -37,7 +37,15 @@ class StoreListAdapter(
         holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = asyncListDiffer.currentList.size
+    override fun onBindViewHolder(holder: ProductHolder, position: Int, payloads: List<Any>) {
+        val item = getItem(position)
+        if (payloads.isEmpty() || payloads[0] !is Bundle) {
+            holder.bind(item)
+        } else {
+            val bundle = payloads[0] as Bundle
+            holder.updateQuantity(bundle)
+        }
+    }
 
     class ProductHolder(
         private val binding: ListItemProductBinding,
@@ -45,13 +53,19 @@ class StoreListAdapter(
         private val parentFragmentManager: FragmentManager,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(productDomainRW: ProductDomainRW) {
+        fun updateQuantity(bundle: Bundle) {
+            val quantity = bundle.getInt(PAYLOAD_QUANTITY)
+            binding.quantity.text = quantity.toString()
+        }
+
+        fun bind(product: ProductDomainRW) {
             binding.apply {
-                productName.text = "${productDomainRW.product.title}"
-                productPrice.text = "${productDomainRW.product.price.toString()}$"
-                productPriceDiscounted.text = "${(productDomainRW.product.price * 0.5)}$"
-                quantity.text = productDomainRW.quantity.toString()
-                productImage.load(productDomainRW.product.images.urls.getOrNull(0)) {
+                productName.text = "${product.product.title}"
+                productPrice.text = "${product.product.price}$"
+                productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
+                quantity.text = product.quantity.toString()
+
+                productImage.load(product.product.images.urls.getOrNull(0)) {
                     placeholder(R.drawable.lion_jpg_21)
                     this.error(R.drawable.lion_jpg_21)
                 }
@@ -61,13 +75,24 @@ class StoreListAdapter(
                 quantity.visibility = View.VISIBLE
 
                 quantityPlus.setOnClickListener {
-                    viewModel.event(event = StoreViewModel.Event.AddProduct(product = productDomainRW))
-                    quantity.text = productDomainRW.quantity.toString()
+                    viewModel.event(
+                        event = StoreViewModel.Event.AddProduct(
+                            product = product,
+                            quantity = 1
+                        )
+                    )
                     quantityPlusCard.visibility = View.VISIBLE
                     quantityMinusCard.visibility = View.VISIBLE
                     quantity.visibility = View.VISIBLE
                 }
+
                 quantityMinus.setOnClickListener {
+                    viewModel.event(
+                        event = StoreViewModel.Event.AddProduct(
+                            product = product,
+                            quantity = -1
+                        )
+                    )
                     quantityPlusCard.visibility = View.VISIBLE
                     quantityMinusCard.visibility = View.VISIBLE
                     quantity.text = ""
@@ -83,12 +108,31 @@ class StoreListAdapter(
         override fun areItemsTheSame(
             oldItem: ProductDomainRW,
             newItem: ProductDomainRW,
-        ): Boolean = oldItem == newItem
+        ): Boolean = oldItem.product.id == newItem.product.id
 
         override fun areContentsTheSame(
             oldItem: ProductDomainRW,
             newItem: ProductDomainRW,
-        ): Boolean =
-            oldItem.product.id == newItem.product.id
+        ): Boolean {
+            return oldItem.quantity == newItem.quantity
+        }
+
+        override fun getChangePayload(oldItem: ProductDomainRW, newItem: ProductDomainRW): Any? {
+            Log.d("Was called: ", "${oldItem.product.id}")
+            if (oldItem.product.id == newItem.product.id) {
+                return if (oldItem.quantity == newItem.quantity) {
+                    super.getChangePayload(oldItem, newItem)
+                } else {
+                    val diff = Bundle()
+                    diff.putInt(PAYLOAD_QUANTITY, newItem.quantity)
+                    diff
+                }
+            }
+            return super.getChangePayload(oldItem, newItem)
+        }
+    }
+
+    companion object {
+        private const val PAYLOAD_QUANTITY = "payload_quantity"
     }
 }
