@@ -6,7 +6,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -157,21 +156,24 @@ fun StoreScreen(
             BottomNavBar(navController = navController)
         },
         floatingActionButton = {
+            val myBasket by viewModel.basketList.collectAsState()
 
             FloatingActionButton(
                 shape = RoundedCornerShape(33),
                 modifier = Modifier,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onClick = remember {
-                    {
-
-                    }
+                onClick = {
                 },
                 content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
-                        "Floating action button."
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
+                            "Floating action button."
+                        )
+                        if (myBasket.isNotEmpty()) {
+                            Text(text = myBasket.sumOf { it.quantity }.toString())
+                        }
+                    }
                 }
             )
         }
@@ -423,12 +425,6 @@ fun ItemListProduct(
                                 isVisible = true
                             } catch (e: CancellationException) {
                                 Log.d("E: ", "event: ${e.message}")
-                                viewModel.event(
-                                    StoreViewModel.Event.SetItemToBasket(
-                                        item,
-                                        quantityToBuy
-                                    )
-                                )
                                 isPressed = false
                                 isVisible = true
                             }
@@ -436,7 +432,6 @@ fun ItemListProduct(
                     )
                 }
         )
-
         Icon(
             modifier = Modifier
                 .size(40.dp)
