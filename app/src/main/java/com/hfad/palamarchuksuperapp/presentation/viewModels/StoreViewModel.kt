@@ -6,8 +6,11 @@ import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.common.toProductDomainRW
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,8 +20,38 @@ class StoreViewModel @Inject constructor(
     lateinit var testData: List<Product> //TODO
 
     init {
-        viewModelScope.launch { testData = repository.fetchProductsTest().first() }
-    }  //TODO
+        viewModelScope.launch {
+            launch {
+                testData = repository.fetchProductsTest().first()               //TODO
+            }
+
+            launch {
+                uiState.collect { state ->
+                    when (state) {
+                        is State.Success -> {
+                            updateBasketList(state)
+                        }
+
+                        else -> {
+                            // do nothing
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateBasketList(state: State.Success<List<ProductDomainRW>>) {
+        val updatedBasketList = state.data.filter { it.quantity > 0 }
+        _basketList.value = updatedBasketList
+    }
+
+    private val _basketList = MutableStateFlow<List<ProductDomainRW>>(emptyList())
+    val basketList = _basketList.stateIn(
+        initialValue = emptyList(),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000)
+    )
 
     sealed class Event : BaseEvent() {
         object FetchSkills : Event()
@@ -50,8 +83,20 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                viewModelScope.launch {
-
+                try {
+                    viewModelScope.launch {
+                        val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                        val product = newSkills.find { it.product.id == event.product.product.id }
+                        Log.d("Product quantity: ", "event: ${product?.quantity}")
+                        newSkills.indexOf(product).let {
+                            newSkills[it] = newSkills[it].copy(
+                                quantity = if (it>0) {it+event.quantity} else 0
+                            )
+                            emitState(newSkills)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.d("Exception in SetItemToBasket", "event: ${e.message}")
                 }
             }
 
@@ -59,7 +104,8 @@ class StoreViewModel @Inject constructor(
                 try {
                     viewModelScope.launch {
                         val newSkills = (uiState.first() as State.Success).data.toMutableList()
-                        newSkills.indexOf(event.product).let {
+                        val product = newSkills.find { it.product.id == event.product.product.id }
+                        newSkills.indexOf(product).let {
                             newSkills[it] = newSkills[it].copy(quantity = event.quantity)
                             emitState(newSkills)
                         }
