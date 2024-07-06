@@ -37,7 +37,11 @@ import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import kotlinx.coroutines.launch
 
 @Composable
-fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.current, navController: Navigation?) {
+fun BottomNavBar(
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    navController: Navigation?,
+) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
             LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -74,7 +78,8 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         title = "Home",
         selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
-        onClick = { onClickVibro()
+        onClick = {
+            onClickVibro()
             navController?.navigate(Routes.MainScreenConstraint)
         }
     )
@@ -92,13 +97,13 @@ fun BottomNavBar(modifier: Modifier = Modifier, context: Context = LocalContext.
         selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
         badgeAmount = 10,
-        onClick = { onClickVibro()
+        onClick = {
+            onClickVibro()
             navController?.navigate(Routes.Settings)
-            }
+        }
     )
 
     val tabBarItems = listOf(homeTab, cameraTab, settingsTab)
-
     NavigationBar(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -138,7 +143,7 @@ fun TabBarIconView(
     selectedIcon: Painter,
     unselectedIcon: Painter,
     title: String,
-    badgeAmount: Int?
+    badgeAmount: Int?,
 ) {
 
     BadgedBox(badge = {
@@ -169,5 +174,5 @@ fun MyNavBarPreviewElement() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MyNavBarPreviewApp() {
-    Scaffold(bottomBar = {  }) {}
+    Scaffold(bottomBar = { }) {}
 }
