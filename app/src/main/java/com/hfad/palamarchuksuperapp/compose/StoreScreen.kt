@@ -450,7 +450,7 @@ fun ItemListProduct(
                     start.linkTo(parent.start)
                     end.linkTo(quantity.start)
                 },
-            imageVector = Icons.Default.Delete,
+            imageVector = ImageVector.vectorResource(id = R.drawable.single_line_outlined),
             contentDescription = "Decrease Quantity"
 
         )
