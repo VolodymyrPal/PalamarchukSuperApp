@@ -72,6 +72,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/add_fab_button" />
+
+        <Button
+            android:id="@+id/quantity_plus_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:visibility="visible" />
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.textview.MaterialTextView
@@ -184,21 +195,6 @@
         app:layout_constraintGuide_percent="0.35" />
 
     <Button
-        android:id="@+id/quantity_plus"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:alpha="0"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/quantity_minus"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -209,6 +205,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/quantity_plus"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha="0"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
