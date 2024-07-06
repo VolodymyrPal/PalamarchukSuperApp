@@ -399,16 +399,24 @@ fun ItemListProduct(
                 }
                 .pointerInput(item) {
                     detectTapGestures(
-                        onPress = {
+                        onTap = {
                             if (quantityToBuy > 0) quantityToBuy--
+                            if (!isPressed) viewModel.event(
+                                StoreViewModel.Event.SetItemToBasket(
+                                    item,
+                                    quantityToBuy
+                                )
+                            )
+                        },
+                        onPress = {
                             isPressed = true
                             isVisible = true
                             job = scope.launch {
-                                delay(1000)
+                                delay(500)
                                 while (isPressed) {
                                     Log.d("Doing smthng", "event:")
                                     if (quantityToBuy > 0) quantityToBuy--
-                                    delay(5)
+                                    delay(20)
                                 }
                             }
                             try {
@@ -449,7 +457,7 @@ fun ItemListProduct(
 
 
         Text(
-            text = "quantityToBuy",
+            text = "$quantityToBuy",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSecondary,
             fontSize = TextUnit(32f, TextUnitType.Sp),
@@ -472,16 +480,24 @@ fun ItemListProduct(
             }
             .pointerInput(item) {
                 detectTapGestures(
-                    onPress = {
+                    onTap = {
                         if (quantityToBuy >= 0) quantityToBuy++
+                        if (!isPressed) viewModel.event(
+                            StoreViewModel.Event.SetItemToBasket(
+                                item,
+                                item.quantity
+                            )
+                        )
+                    },
+                    onPress = {
                         isPressed = true
                         isVisible = true
                         job = scope.launch {
-                            delay(1000)
+                            delay(500)
                             isVisible = true
                             while (isPressed) {
                                 if (quantityToBuy >= 0) quantityToBuy++
-                                delay(5)
+                                delay(20)
                             }
                         }
                         try {
