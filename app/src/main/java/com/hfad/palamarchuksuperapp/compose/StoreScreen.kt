@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -64,12 +65,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -464,8 +467,6 @@ fun ItemListProduct(
                     end.linkTo(parent.end)
                 }
         )
-
-
         Box(modifier = Modifier
             .size(85.dp, HEIGHT_ITEM.dp)
             .alpha(0f)
@@ -501,12 +502,6 @@ fun ItemListProduct(
                             isVisible = true
                         } catch (e: CancellationException) {
                             job?.cancel()
-                            viewModel.event(
-                                StoreViewModel.Event.SetItemToBasket(
-                                    item,
-                                    quantityToBuy
-                                )
-                            )
                             isPressed = false
                             isVisible = true
                         } catch (e: Exception) {
