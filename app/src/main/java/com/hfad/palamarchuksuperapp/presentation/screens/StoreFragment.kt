@@ -62,7 +62,7 @@ class StoreFragment : Fragment() {
 
         val adapter3 = StoreListAdapter(viewModel, parentFragmentManager)
         binding.section3RecyclerView.layoutManager =
-            GridLayoutManager(context, 3 , LinearLayoutManager.VERTICAL, false)
+            GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
 
         viewModel.event(StoreViewModel.Event.FetchSkills)
@@ -85,7 +85,12 @@ class StoreFragment : Fragment() {
     }
 
 
-    private fun handleState(state: State<List<ProductDomainRW>>, adapter1: StoreListAdapter, adapter2: StoreListAdapter, adapter3: StoreListAdapter) {
+    private fun handleState(
+        state: State<List<ProductDomainRW>>,
+        adapter1: StoreListAdapter,
+        adapter2: StoreListAdapter,
+        adapter3: StoreListAdapter,
+    ) {
         when (state) {
             is State.Empty -> {
                 Log.d("HANDLE STATE: ", "$state")
