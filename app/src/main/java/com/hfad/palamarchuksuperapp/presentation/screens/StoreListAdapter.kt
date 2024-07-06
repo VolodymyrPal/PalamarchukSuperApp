@@ -1,11 +1,12 @@
 package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.graphics.Paint
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -19,12 +20,10 @@ import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
 class StoreListAdapter(
     private val viewModel: StoreViewModel,
     private val fragmentManager: FragmentManager,
-) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder> (ProductDiffItemCallback()) {
-
-    private val asyncListDiffer = AsyncListDiffer(this, ProductDiffItemCallback())
+) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductDiffItemCallback()) {
 
     fun setData(productList: List<ProductDomainRW>) {
-        asyncListDiffer.submitList(productList)
+        submitList(productList)
     }
 
 
@@ -35,7 +34,7 @@ class StoreListAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductHolder, position: Int) {
-        holder.bind(asyncListDiffer.currentList[position])
+        holder.bind(getItem(position))
     }
 
     override fun getItemCount(): Int = asyncListDiffer.currentList.size
