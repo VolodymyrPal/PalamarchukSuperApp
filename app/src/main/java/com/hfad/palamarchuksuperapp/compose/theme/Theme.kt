@@ -99,7 +99,7 @@ fun AppTheme(
 
         ) {
         ProvideTextStyle(
-            value = TextStyle(color = colors.onPrimaryContainer),
+            value = TextStyle(color = Color.Black),
             content = content
         )
         CompositionLocalProvider(
