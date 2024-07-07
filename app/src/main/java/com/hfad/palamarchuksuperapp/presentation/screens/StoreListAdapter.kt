@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,9 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class StoreListAdapter(
@@ -118,7 +122,6 @@ class StoreListAdapter(
         }
 
         override fun getChangePayload(oldItem: ProductDomainRW, newItem: ProductDomainRW): Any? {
-            Log.d("Was called: ", "${oldItem.product.id}")
             if (oldItem.product.id == newItem.product.id) {
                 return if (oldItem.quantity == newItem.quantity) {
                     super.getChangePayload(oldItem, newItem)
