@@ -83,20 +83,18 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                try {
-                    viewModelScope.launch {
-                        val newSkills = (uiState.first() as State.Success).data.toMutableList()
-                        val product = newSkills.find { it.product.id == event.product.product.id }
-                        Log.d("Product quantity: ", "event: ${product?.quantity}")
-                        newSkills.indexOf(product).let {
-                            newSkills[it] = newSkills[it].copy(
-                                quantity = if (it>0) {it+event.quantity} else 0
-                            )
-                            emitState(newSkills)
+                viewModelScope.launch {
+                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                    val skill = newSkills.find { it.product.id == event.product.product.id }
+                    newSkills.indexOf(skill).let {
+                        var newQuantity = 0
+                        if (newSkills[it].quantity + event.quantity >= 0) {
+                            newQuantity = newSkills[it].quantity + event.quantity
                         }
+                        newSkills[it] =
+                            newSkills[it].copy(quantity = newQuantity)
+                        emitState(newSkills)
                     }
-                } catch (e: Exception) {
-                    Log.d("Exception in SetItemToBasket", "event: ${e.message}")
                 }
             }
 
