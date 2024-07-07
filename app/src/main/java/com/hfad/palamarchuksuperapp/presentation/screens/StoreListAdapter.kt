@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.presentation.screens
 
 import android.graphics.Paint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,7 +56,22 @@ class StoreListAdapter(
         private val parentFragmentManager: FragmentManager,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun updateQuantity(bundle: Bundle) {
+        private var timerJob: Job? = null
+
+        private fun onClick() {
+            timerJob?.cancel()
+            timerJob = viewModel.viewModelScope.launch {
+                binding.quantityPlusCard.alpha = 1f
+                binding.quantityMinusCard.alpha = 1f
+                binding.quantity.alpha = 1f
+                delay(2000)
+                binding.quantityPlusCard.alpha = 0f
+                binding.quantityMinusCard.alpha = 0f
+                binding.quantity.alpha = 0f
+            }
+        }
+
+        fun updateQuantity(bundle: Bundle, product: ProductDomainRW) {
             val quantity = bundle.getInt(PAYLOAD_QUANTITY)
             binding.quantity.text = quantity.toString()
             binding.quantityPlus.setOnClickListener {
@@ -67,6 +81,7 @@ class StoreListAdapter(
                         quantity = 1
                     )
                 )
+                onClick()
             }
             binding.quantityMinus.setOnClickListener {
                 viewModel.event(
@@ -75,6 +90,7 @@ class StoreListAdapter(
                         quantity = -1
                     )
                 )
+                onClick()
             }
         }
 
@@ -84,6 +100,10 @@ class StoreListAdapter(
                 productPrice.text = "${product.product.price}$"
                 productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
                 quantity.text = product.quantity.toString()
+
+                binding.quantityPlusCard.alpha = 0f
+                binding.quantityMinusCard.alpha = 0f
+                binding.quantity.alpha = 0f
 
                 productImage.load(product.product.images.urls.getOrNull(0)) {
                     placeholder(R.drawable.lion_jpg_21)
@@ -101,6 +121,7 @@ class StoreListAdapter(
                             quantity = 1
                         )
                     )
+                    onClick()
                     quantityPlusCard.visibility = View.VISIBLE
                     quantityMinusCard.visibility = View.VISIBLE
                     quantity.visibility = View.VISIBLE
@@ -113,6 +134,7 @@ class StoreListAdapter(
                             quantity = -1
                         )
                     )
+                    onClick()
                     quantityPlusCard.visibility = View.VISIBLE
                     quantityMinusCard.visibility = View.VISIBLE
                     quantity.text = ""
