@@ -47,7 +47,7 @@ class StoreListAdapter(
             holder.bind(item)
         } else {
             val bundle = payloads[0] as Bundle
-            holder.updateQuantity(bundle)
+            holder.updateQuantity(bundle, item)
         }
     }
 
@@ -60,6 +60,22 @@ class StoreListAdapter(
         fun updateQuantity(bundle: Bundle) {
             val quantity = bundle.getInt(PAYLOAD_QUANTITY)
             binding.quantity.text = quantity.toString()
+            binding.quantityPlus.setOnClickListener {
+                viewModel.event(
+                    event = StoreViewModel.Event.AddProduct(
+                        product = product,
+                        quantity = 1
+                    )
+                )
+            }
+            binding.quantityMinus.setOnClickListener {
+                viewModel.event(
+                    event = StoreViewModel.Event.AddProduct(
+                        product = product,
+                        quantity = -1
+                    )
+                )
+            }
         }
 
         fun bind(product: ProductDomainRW) {
