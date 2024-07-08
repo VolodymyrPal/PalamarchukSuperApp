@@ -123,31 +123,61 @@ class StoreListAdapter(
                 quantityMinusCard.visibility = View.VISIBLE
                 quantity.visibility = View.VISIBLE
 
-                quantityPlus.setOnClickListener {
+                quantityPlus.setOnLongClickListener {
                     viewModel.event(
-                        event = StoreViewModel.Event.AddProduct(
+                        event = StoreViewModel.Event.SetItemToBasket(
                             product = product,
                             quantity = 1
                         )
                     )
-                    onClick()
-                    quantityPlusCard.visibility = View.VISIBLE
-                    quantityMinusCard.visibility = View.VISIBLE
-                    quantity.visibility = View.VISIBLE
+                    false
                 }
 
-                quantityMinus.setOnClickListener {
-                    viewModel.event(
-                        event = StoreViewModel.Event.AddProduct(
-                            product = product,
-                            quantity = -1
-                        )
-                    )
-                    onClick()
-                    quantityPlusCard.visibility = View.VISIBLE
-                    quantityMinusCard.visibility = View.VISIBLE
-                    quantity.text = ""
-                    quantity.visibility = View.VISIBLE
+                var timerJob: Job? = null
+
+                quantityPlus.setOnTouchListener { v, event ->
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            timerJob = viewModel.viewModelScope.launch {
+                                delay(500)
+                                onClick()
+                                while (true) {
+                                    delay(20)
+                                    viewModel.event(
+                                        event = StoreViewModel.Event.AddProduct(
+                                            product = product,
+                                            quantity = 1
+                                        )
+                                    )
+                                }
+                            }
+                            true
+                        }
+
+                        MotionEvent.ACTION_UP -> {
+                            timerJob?.cancel()
+                            if (event.downTime - event.eventTime < ViewConfiguration.getLongPressTimeout()) {
+                                viewModel.event(
+                                    event = StoreViewModel.Event.AddProduct(
+                                        product = product,
+                                        quantity = 1
+                                    )
+                                )
+                            }
+                            true
+                        }
+
+                        MotionEvent.ACTION_MOVE -> {
+                            true
+                        }
+
+                        else -> {
+                            timerJob?.cancel()
+                            v.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED)
+                            Log.d("MotionEvent", "$event")
+                            false
+                        }
+                    }
                 }
                 productPrice.paintFlags =
                     productPriceDiscounted.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
