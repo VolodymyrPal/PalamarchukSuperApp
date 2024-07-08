@@ -62,7 +62,7 @@ class StoreFragment : Fragment() {
 
         val adapter3 = StoreListAdapter(viewModel, parentFragmentManager)
         binding.section3RecyclerView.layoutManager =
-            GridLayoutManager(context, 3, LinearLayoutManager.VERTICAL, false)
+            GridLayoutManager(context, 2, LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
 
         viewModel.event(StoreViewModel.Event.FetchSkills)
