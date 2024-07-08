@@ -1,10 +1,15 @@
 package com.hfad.palamarchuksuperapp.presentation.screens
 
+import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityEvent
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
@@ -67,7 +72,11 @@ class StoreListAdapter(
                 delay(2000)
                 binding.quantityPlusCard.alpha = 0f
                 binding.quantityMinusCard.alpha = 0f
-                binding.quantity.alpha = 0f
+                if (binding.quantity.text == "0") {
+                    binding.quantity.alpha = 0f
+                } else {
+                    binding.quantity.alpha = 1f
+                }
             }
         }
 
@@ -81,7 +90,6 @@ class StoreListAdapter(
                         quantity = 1
                     )
                 )
-                onClick()
             }
             binding.quantityMinus.setOnClickListener {
                 viewModel.event(
@@ -90,10 +98,11 @@ class StoreListAdapter(
                         quantity = -1
                     )
                 )
-                onClick()
             }
+            onClick()
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         fun bind(product: ProductDomainRW) {
             binding.apply {
                 productName.text = "${product.product.title}"
