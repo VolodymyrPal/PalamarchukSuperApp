@@ -217,17 +217,4 @@ class SkillsListAdapter(
         ): Boolean =
             oldItem.skill.description == newItem.skill.description
     }
-
-    private class SkillDiffCallback(
-        private val oldList: List<SkillDomainRW>,
-        private val newList: List<SkillDomainRW>,
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize() = oldList.size
-        override fun getNewListSize() = newList.size
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition].skill.id == newList[newItemPosition].skill.id
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldList[oldItemPosition] == newList[newItemPosition]
-    }
 }
