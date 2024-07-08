@@ -619,7 +619,8 @@ fun ItemListProduct(
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-            }
+            },
+            fontSize = TextUnit(8f, TextUnitType.Sp)
         )
     }
 }
@@ -651,7 +652,7 @@ fun StarRatingBar(
                     .selectable(
                         selected = isSelected,
                         onClick = {
-                            onRatingChanged(i.toFloat())
+
                         }
                     )
                     .width(starSize)
