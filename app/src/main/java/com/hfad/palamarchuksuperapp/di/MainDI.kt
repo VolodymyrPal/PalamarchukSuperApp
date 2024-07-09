@@ -6,8 +6,10 @@ import androidx.room.Room
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
+import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPreview
+import com.hfad.palamarchuksuperapp.data.services.PlatziApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
@@ -76,6 +78,10 @@ object NetworkModule {
     fun StoreRepository(): StoreRepository {
         return StoreRepositoryImplForPreview()
     }
+    @Provides
+    fun PlatziApiImpl(): PlatziApi {
+        return ProductRepository()
+    }
 }
 
 @Module
@@ -88,7 +94,7 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun provideCountryDB(context: Context): SkillsDatabase {
+    fun provideSkillDB(context: Context): SkillsDatabase {
         return Room.databaseBuilder(
             context = context.applicationContext,
             klass = SkillsDatabase::class.java,
