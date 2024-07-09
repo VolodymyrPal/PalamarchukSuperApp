@@ -5,8 +5,9 @@ data class Product(
     val id: Int = 0,
     val title: String = "",
     val price: Int = 0,
-    val category: ProductCategory = ProductCategory() ,
-    val images: ProductImages = ProductImages(),
+    val description: String = "",
+    val category: ProductCategory = ProductCategory(),
+    val images: List<String> = emptyList(),
 )
 
 data class ProductCategory (
