@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.presentation.viewModels
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.Product
+import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.common.toProductDomainRW
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
+    val apiRepository: ProductRepository
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
     lateinit var testData: List<Product> //TODO
 
