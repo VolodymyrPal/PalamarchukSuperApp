@@ -145,14 +145,14 @@
                     android:layout_weight="0.9"
                     android:adjustViewBounds="true"
                     android:scaleType="fitXY"
-                    android:src="@drawable/skills_image" />
+                    android:src="@drawable/store_image" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"
                     android:gravity="center"
-                    android:text="S K I L L S"
+                    android:text="S T O R E"
                     android:textColor="?attr/colorOnPrimaryContainer"
                     android:textStyle="bold"
                     app:fontFamily="sans-serif-medium" />

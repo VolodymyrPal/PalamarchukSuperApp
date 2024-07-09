@@ -207,14 +207,17 @@ fun MainScreenConstraint(
                         top.linkTo(userImage.bottom, margin = 16.dp)
                         centerHorizontallyTo(userImage)
                     },
-                    action = { navController?.navigate(Routes.SkillScreen) }
+                    action = { navController?.navigate(Routes.SkillScreen) },
+                    text = "S K I L L S"
                 )
                 ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
                     start.linkTo(parent.start, margin = 32.dp)
                     top.linkTo(skills.bottom)
                     bottom.linkTo(fourthProgram.top)
                 },
-                    action = { navController?.navigate(Routes.StoreScreen) }
+                    action = { navController?.navigate(Routes.StoreScreen) },
+                    imagePath = R.drawable.store_image,
+                    text = "S T O R E"
                 )
                 ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
                     end.linkTo(parent.end, margin = 32.dp)
@@ -232,7 +235,12 @@ fun MainScreenConstraint(
 }
 
 @Composable
-fun ButtonToNavConstraint(modifier: Modifier, action: () -> Unit = {}) {
+fun ButtonToNavConstraint(
+    modifier: Modifier,
+    action: () -> Unit = {},
+    imagePath: Int = R.drawable.skills_image,
+    text: String = "S K I L L S"
+) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
             LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
@@ -270,20 +278,21 @@ fun ButtonToNavConstraint(modifier: Modifier, action: () -> Unit = {}) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current).data(imagePath).build(),
                 modifier = Modifier
                     .padding(start = 5.dp, end = 5.dp, top = 5.dp)
                     .weight(0.9f),
                 contentScale = ContentScale.FillBounds,
-                imageVector = ImageVector.vectorResource(id = R.drawable.skills_image),
-                contentDescription = "Skills"
+                //imageVector = imageVector,
+                contentDescription = text
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.25f),
                 textAlign = TextAlign.Center,
-                text = "S K I L L S",
+                text = text,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif
             )
