@@ -30,14 +30,14 @@ class StoreRepositoryImpl : StoreRepository {
                 id = 8971,
                 name = "Troy Mays",
                 image = "ligula"
-            ), images = ProductImages(urls = listOf())
+            ), images =  emptyList() //ProductImages(urls = listOf())
         )
         val two = Product(
             id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
                 id = 2222,
                 name = "Tigers",
                 image = "quo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList() // ProductImages(urls = listOf())
         )
 
         val three = Product(
@@ -45,7 +45,7 @@ class StoreRepositoryImpl : StoreRepository {
                 id = 3333,
                 name = "Tigers",
                 image = "quo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()// ProductImages(urls = listOf())
         )
 
         val four = Product(
@@ -53,7 +53,7 @@ class StoreRepositoryImpl : StoreRepository {
                 id = 6016,
                 name = "Jay Berger",
                 image = "leo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
 
@@ -62,7 +62,7 @@ class StoreRepositoryImpl : StoreRepository {
                 id = 8213,
                 name = "Truman Welch",
                 image = "scelerisque"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
         val productList = MutableStateFlow(listOf(one, two, three, four, five))
@@ -78,14 +78,14 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 8971,
                 name = "Troy Mays",
                 image = "ligula"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
         )
         val two = Product(
             id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
                 id = 2222,
                 name = "Tigers",
                 image = "quo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
         )
 
         val three = Product(
@@ -93,7 +93,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 3333,
                 name = "Tigers",
                 image = "quo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
         )
 
         val four = Product(
@@ -101,7 +101,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 6016,
                 name = "Jay Berger",
                 image = "leo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
 
@@ -110,7 +110,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 8213,
                 name = "Truman Welch",
                 image = "scelerisque"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
         val six = Product(
@@ -118,7 +118,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 1628,
                 name = "Christi Glover",
                 image = "taciti"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
         val seven = Product(
@@ -126,7 +126,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 5868,
                 name = "Belinda Carroll",
                 image = "sea"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
 
@@ -135,7 +135,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 5070,
                 name = "Tomas Osborn",
                 image = "scripta"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
 
@@ -144,7 +144,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 4317,
                 name = "Saundra Valdez",
                 image = "magnis"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
 
         )
@@ -154,7 +154,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 5407,
                 name = "Michele Le",
                 image = "senectus"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
         val productList = MutableStateFlow(listOf(one, two, three, four, five, six, seven, eight, nine, ten))
@@ -180,14 +180,14 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 8971,
                 name = "Troy Mays",
                 image = "ligula"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
         )
         val two = Product(
             id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
                 id = 2222,
                 name = "Tigers",
                 image = "quo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
         )
 
         val three = Product(
@@ -195,7 +195,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 3333,
                 name = "Tigers",
                 image = "quo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
         )
 
         val four = Product(
@@ -203,7 +203,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 6016,
                 name = "Jay Berger",
                 image = "leo"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
 
@@ -212,7 +212,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 8213,
                 name = "Truman Welch",
                 image = "scelerisque"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
         val six = Product(
@@ -220,7 +220,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 1628,
                 name = "Christi Glover",
                 image = "taciti"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
         val seven = Product(
@@ -228,7 +228,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 5868,
                 name = "Belinda Carroll",
                 image = "sea"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
 
@@ -237,7 +237,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 5070,
                 name = "Tomas Osborn",
                 image = "scripta"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
 
@@ -246,7 +246,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 4317,
                 name = "Saundra Valdez",
                 image = "magnis"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
 
         )
@@ -256,7 +256,7 @@ class StoreRepositoryImplForPreview : StoreRepository {
                 id = 5407,
                 name = "Michele Le",
                 image = "senectus"
-            ), images = ProductImages(urls = listOf())
+            ), images = emptyList()//ProductImages(urls = listOf())
 
         )
         val productList = MutableStateFlow(listOf(one, two, three, four, five, six, seven, eight, nine, ten))
