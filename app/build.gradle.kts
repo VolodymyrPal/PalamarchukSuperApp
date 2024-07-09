@@ -100,4 +100,7 @@ dependencies {
     //noinspection KaptUsageInsteadOfKsp
     kapt(libs.room.annotation)
 
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
 }
