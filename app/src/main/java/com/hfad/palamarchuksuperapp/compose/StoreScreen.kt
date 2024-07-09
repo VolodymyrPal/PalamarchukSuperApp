@@ -90,7 +90,7 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.data.entities.ProductCategory
-import com.hfad.palamarchuksuperapp.data.entities.ProductImages
+import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPreview
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.State
@@ -258,8 +258,12 @@ fun StoreScreenContent(
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
     horizontal: Boolean = true,
-    viewModel: StoreViewModel = StoreViewModel(repository = StoreRepositoryImplForPreview()),
-) {
+    viewModel: StoreViewModel = StoreViewModel(
+        repository = StoreRepositoryImplForPreview(),
+        apiRepository = ProductRepository()
+    ),
+
+    ) {
     val state by viewModel.uiState.collectAsState()
     val productList = state as State.Success
     Column(
@@ -351,7 +355,10 @@ fun ItemListProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
-    viewModel: StoreViewModel = StoreViewModel(repository = StoreRepositoryImplForPreview()),
+    viewModel: StoreViewModel = StoreViewModel(
+        repository = StoreRepositoryImplForPreview(),
+        apiRepository = ProductRepository()
+    ),
 ) {
 
     ConstraintLayout(
@@ -573,7 +580,7 @@ fun ItemListProduct(
         )
 
         Text(
-            text = "500... sold",
+            text = "500...",
             style = MaterialTheme.typography.labelSmall.copy(
                 fontStyle = FontStyle.Italic,
                 color = Color.Gray
@@ -678,7 +685,7 @@ fun ItemListProductPreview() {
                     id = 3226,
                     name = "Errol Clemons",
                     image = "legere"
-                ), images = ProductImages(urls = listOf())
+                ), images = emptyList() // ProductImages(urls = listOf())
             )
         ),
         onEvent = {}
@@ -689,7 +696,10 @@ fun ItemListProductPreview() {
 @Preview
 fun StoreLazyListForPreview(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel = StoreViewModel(repository = StoreRepositoryImplForPreview()),
+    viewModel: StoreViewModel = StoreViewModel(
+        repository = StoreRepositoryImplForPreview(),
+        apiRepository = ProductRepository()
+    ),
 ) {
     StoreLazyCard(viewModel = viewModel)
 }
@@ -699,7 +709,10 @@ fun StoreLazyListForPreview(
 fun StoreScreenPreview() {
     StoreScreen(
         navController = null,
-        viewModel = StoreViewModel(repository = StoreRepositoryImplForPreview())
+        viewModel = StoreViewModel(
+            repository = StoreRepositoryImplForPreview(),
+            apiRepository = ProductRepository()
+        )
     )
 }
 
