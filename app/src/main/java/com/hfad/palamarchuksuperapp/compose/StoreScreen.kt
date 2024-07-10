@@ -107,13 +107,17 @@ import kotlinx.coroutines.launch
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: Navigation?,
-    viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(
-        factory = LocalContext.current.appComponent.viewModelFactory()
-    ),
+    viewModel: StoreViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory =
+    LocalContext.current.appComponent.viewModelFactory()),
+
+//        daggerViewModel<StoreViewModel>(
+//        factory = LocalContext.current.appComponent.viewModelFactory()
+//    ),
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     // enterAlwaysScrollBehavior(rememberTopAppBarState())
+    Log.d("TAG: ", "WWWWWWWWWWWWWWWWWWWWWWWW")
     viewModel.event(StoreViewModel.Event.FetchSkills)
     Scaffold(
         modifier = modifier
