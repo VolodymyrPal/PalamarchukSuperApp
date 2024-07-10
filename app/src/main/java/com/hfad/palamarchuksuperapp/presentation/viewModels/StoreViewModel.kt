@@ -24,7 +24,10 @@ class StoreViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             launch {
-                testData = repository.fetchProductsTest().first()               //TODO
+                // testData = repository.fetchProductsTest().first()               //TODO
+                testData = apiRepository.fetchProducts().map { products ->
+                    products.toProductDomainRW()
+                }
             }
 
             launch {
