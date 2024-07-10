@@ -123,19 +123,23 @@ class StoreViewModel @Inject constructor(
     private fun fetchProducts() {
         viewModelScope.launch {
             emitState(emitProcessing = true) { current ->
-                emitState(State.Processing)
-                if (current is State.Error) {
-                    return@emitState current
-                }
                 try {
-                    val skills = repository.fetchProducts().map { products ->
-                        products.map { it.toProductDomainRW() }
+                    Log.d("VM emitState: ", "Processing emit")
+                    emitState(State.Processing)
+                    Log.d("VM emitState: ", "asking for data")
+                    val products = withContext(Dispatchers.IO) {
+                        apiRepository.fetchProducts()
                     }
+                    val skills = products.map { it.toProductDomainRW() }
+                    Log.d("VM emitState data: ", "$skills")
+                    return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
 
-                    return@emitState if (skills.first().isNotEmpty()) {
-                        State.Success(data = skills.first())
-                    } else State.Empty
+//                    else {
+//                        Log.d("VM emitState: ", "Empty emit")
+//                        State.Empty
+//                    }
                 } catch (e: Exception) {
+                    Log.d("Eror in fetchProducts", "event: ${e.message}")
                     State.Error(e)
                 }
             }
