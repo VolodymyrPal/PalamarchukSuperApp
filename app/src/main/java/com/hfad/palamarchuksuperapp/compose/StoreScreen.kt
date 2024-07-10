@@ -386,8 +386,13 @@ fun ItemListProduct(
             }
         }
 
-        Image(
-            painter = painterResource(id = R.drawable.lion_jpg_21),
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(item.product.images.getOrNull(0))
+                .crossfade(true)
+                .error(R.drawable.lion_jpg_21)
+                .placeholder(R.drawable.lion_jpg_21)
+                .build(),
             contentDescription = "Product Image",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
