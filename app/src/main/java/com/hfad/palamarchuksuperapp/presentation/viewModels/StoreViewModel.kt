@@ -22,24 +22,17 @@ class StoreViewModel @Inject constructor(
     lateinit var testData: List<ProductDomainRW> //TODO
 
     init {
+        event(Event.FetchSkills)
+
         viewModelScope.launch {
-            launch {
-                // testData = repository.fetchProductsTest().first()               //TODO
-                testData = apiRepository.fetchProducts().map { products ->
-                    products.toProductDomainRW()
-                }
-            }
+            uiState.collect { state ->
+                when (state) {
+                    is State.Success -> {
+                        updateBasketList(state)
+                    }
 
-            launch {
-                uiState.collect { state ->
-                    when (state) {
-                        is State.Success -> {
-                            updateBasketList(state)
-                        }
-
-                        else -> {
-                            // do nothing
-                        }
+                    else -> {
+                        // do nothing
                     }
                 }
             }
