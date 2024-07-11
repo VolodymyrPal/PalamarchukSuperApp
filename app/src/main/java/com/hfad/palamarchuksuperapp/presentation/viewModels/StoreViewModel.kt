@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.presentation.viewModels
 
 import android.util.Log
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
@@ -9,6 +10,7 @@ import com.hfad.palamarchuksuperapp.presentation.common.toProductDomainRW
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -20,7 +22,11 @@ class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
     val apiRepository: ProductRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
-    lateinit var testData: List<ProductDomainRW> //TODO
+
+    private val _myUiState: MutableStateFlow<State<List<ProductDomainRW>>> =
+        MutableStateFlow(State.Processing)
+    val myUiState = _myUiState.asStateFlow()
+
 
     init {
         event(Event.FetchSkills)
