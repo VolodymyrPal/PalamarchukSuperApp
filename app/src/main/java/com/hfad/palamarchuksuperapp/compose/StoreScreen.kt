@@ -64,7 +64,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -96,11 +95,13 @@ import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPrevie
 import com.hfad.palamarchuksuperapp.presentation.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.presentation.viewModels.State
 import com.hfad.palamarchuksuperapp.presentation.viewModels.StoreViewModel
+import com.hfad.palamarchuksuperapp.presentation.viewModels.daggerViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
