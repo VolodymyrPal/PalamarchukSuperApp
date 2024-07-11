@@ -144,7 +144,7 @@ fun StoreScreen(
                         )
                     }
                 },
-                scrollBehavior = scrollBehavior
+               scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
             )
 
         },
@@ -253,13 +253,10 @@ fun StoreScreenContent(
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
     horizontal: Boolean = true,
-    viewModel: StoreViewModel = StoreViewModel(
-        repository = StoreRepositoryImplForPreview(),
-        apiRepository = ProductRepository()
-    ),
+    viewModel: StoreViewModel?,
 
     ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel?.uiState!!.collectAsState()
     val productList = state as State.Success
     Column(
         modifier = modifier,
@@ -306,7 +303,7 @@ fun StoreLazyCard(
                         ) {
                             ItemListProduct(
                                 item = item,
-                                onEvent = remember(item) { { event -> viewModel.event(event) } },
+                                onEvent = remember(item) { { event -> viewModel?.event(event) } },
                                 viewModel = viewModel
                             )
                         }
@@ -315,10 +312,8 @@ fun StoreLazyCard(
             } else {
                 LazyRow {
                     items(
-                        //items = viewModel.testData,
                         items = productList.data,
                         key = { item: ProductDomainRW -> item.product.id },
-//                        key = { item: Product -> item.id } // TODO test rep
                     ) { item ->
                         AnimatedVisibility(
                             modifier = Modifier
@@ -334,7 +329,7 @@ fun StoreLazyCard(
                             ItemListProduct(
 //                        item = item,
                                 item = item, // TODO test rep
-                                onEvent = remember(item) { { event -> viewModel.event(event) } },
+                                onEvent = remember(item) { { event -> viewModel?.event(event) } },
                                 viewModel = viewModel
                             )
                         }
@@ -350,10 +345,7 @@ fun ItemListProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
-    viewModel: StoreViewModel = StoreViewModel(
-        repository = StoreRepositoryImplForPreview(),
-        apiRepository = ProductRepository()
-    ),
+    viewModel: StoreViewModel?,
 ) {
 
     ConstraintLayout(
@@ -381,7 +373,7 @@ fun ItemListProduct(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(item.product.images.getOrNull(0))
                 .crossfade(true)
-                .error(R.drawable.lion_jpg_21)
+                .error(R.drawable.custom_popup_background)
                 .placeholder(R.drawable.lion_jpg_21)
                 .build(),
             contentDescription = "Product Image",
@@ -409,7 +401,7 @@ fun ItemListProduct(
                     detectTapGestures(
                         onTap = {
                             if (quantityToBuy > 0) quantityToBuy--
-                            if (!isPressed) viewModel.event(
+                            if (!isPressed) viewModel?.event(
                                 StoreViewModel.Event.SetItemToBasket(
                                     item,
                                     quantityToBuy
@@ -431,7 +423,7 @@ fun ItemListProduct(
                                 awaitRelease()
                                 job?.cancel()
                                 Log.d("TAG", "event: awaitReleased")
-                                viewModel.event(
+                                viewModel?.event(
                                     StoreViewModel.Event.SetItemToBasket(
                                         item,
                                         quantityToBuy
@@ -490,7 +482,7 @@ fun ItemListProduct(
                 detectTapGestures(
                     onTap = {
                         if (quantityToBuy >= 0) quantityToBuy++
-                        if (!isPressed) viewModel.event(
+                        if (!isPressed) viewModel?.event(
                             StoreViewModel.Event.SetItemToBasket(
                                 item,
                                 item.quantity
@@ -511,7 +503,7 @@ fun ItemListProduct(
                         try {
                             awaitRelease()
                             job?.cancel()
-                            viewModel.event(
+                            viewModel?.event(
                                 StoreViewModel.Event.SetItemToBasket(
                                     item,
                                     quantityToBuy
@@ -687,6 +679,10 @@ fun ItemListProductPreview() {
                     image = "legere"
                 ), images = emptyList() // ProductImages(urls = listOf())
             )
+        ),
+        viewModel = StoreViewModel(
+            repository = StoreRepositoryImplForPreview(),
+            apiRepository = ProductRepository()
         ),
         onEvent = {}
     )
