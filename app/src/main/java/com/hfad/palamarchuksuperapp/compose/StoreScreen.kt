@@ -108,22 +108,12 @@ import java.util.Date
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: Navigation?,
-    viewModel: StoreViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory =
-    LocalContext.current.appComponent.viewModelFactory()),
-
-//        daggerViewModel<StoreViewModel>(
-//        factory = LocalContext.current.appComponent.viewModelFactory()
-//    ),
+    viewModel: StoreViewModel = daggerViewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    // enterAlwaysScrollBehavior(rememberTopAppBarState())
-    Log.d("TAG: ", "WWWWWWWWWWWWWWWWWWWWWWWW")
-    viewModel.event(StoreViewModel.Event.FetchSkills)
     Scaffold(
         modifier = modifier
             .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        ,
         topBar = {
             MediumTopAppBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
