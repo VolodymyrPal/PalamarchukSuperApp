@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@Stable
 class StoreViewModel @Inject constructor(
     val repository: StoreRepository,
     val apiRepository: ProductRepository,
@@ -114,27 +115,20 @@ class StoreViewModel @Inject constructor(
     }
 
     private fun fetchProducts() {
-        viewModelScope.launch {
-            emitState(emitProcessing = true) { current ->
-                try {
-                    Log.d("VM emitState: ", "Processing emit")
-                    emitState(State.Processing)
-                    Log.d("VM emitState: ", "asking for data")
-                    val products = withContext(Dispatchers.IO) {
-                        apiRepository.fetchProducts()
-                    }
-                    val skills = products.map { it.toProductDomainRW() }
-                    Log.d("VM emitState data: ", "$skills")
-                    return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
-
-//                    else {
-//                        Log.d("VM emitState: ", "Empty emit")
-//                        State.Empty
-//                    }
-                } catch (e: Exception) {
-                    Log.d("Eror in fetchProducts", "event: ${e.message}")
-                    State.Error(e)
+        emitState(emitProcessing = true) { current ->
+            try {
+                emitState(State.Processing)
+                val products = withContext(Dispatchers.IO) {
+                    apiRepository.fetchProducts()
                 }
+                val skills = products.map { it.toProductDomainRW() }
+                Log.d("VM emitState: ", "$skills")
+                Log.d("VM emitState data: ", "$skills")
+                return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
+
+            } catch (e: Exception) {
+                Log.d("Eror in fetchProducts", "event: ${e.message}")
+                State.Error(e)
             }
         }
     }
