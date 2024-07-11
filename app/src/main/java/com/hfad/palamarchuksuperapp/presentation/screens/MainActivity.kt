@@ -26,10 +26,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var vibe: AppVibrator
 
-    @Inject
-    lateinit var platziApi: PlatziApi
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -37,11 +33,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         applicationContext.appComponent.inject(this)
-
-        lifecycleScope.launch {
-            val response = platziApi.fetchProducts()
-            Log.d("My API: ", "$response")
-        }
 
         val badge = binding.bottomNavigation.getOrCreateBadge(R.id.bnav_settings)
         badge.isVisible = true
