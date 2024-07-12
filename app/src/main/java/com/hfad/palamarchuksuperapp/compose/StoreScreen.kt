@@ -106,12 +106,13 @@ import kotlinx.coroutines.launch
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: Navigation?,
-    viewModel: StoreViewModel = daggerViewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
+    viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
+    //daggerViewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
+    //val viewModel: StoreViewModel by viewModel()
     Scaffold(
         modifier = modifier
-            .fillMaxSize()
-        ,
+            .fillMaxSize(),
         topBar = {
             MediumTopAppBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -142,7 +143,9 @@ fun StoreScreen(
                         )
                     }
                 },
-               scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+                scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+                    rememberTopAppBarState()
+                )
             )
 
         },
@@ -165,7 +168,7 @@ fun StoreScreen(
                             "Floating action button."
                         )
                         if (myBasket.isNotEmpty()) {
-                            Text(text = myBasket.sumOf { it.quantity }.toString())
+                            Text(text = viewModel.basketList.value.sumOf { it.quantity }.toString())
                         }
                     }
                 }
@@ -181,6 +184,7 @@ fun StoreScreen(
 
         ) {
             val state by viewModel.uiState.collectAsState()
+
             when (state) {
                 State.Processing -> {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -284,7 +288,7 @@ fun StoreLazyCard(
                     items(
 //                        items = viewModel.testData.map { it.toProductDomainRW() },
 //                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
-                        items = productList.data,
+                        items = productList.data.subList(0, 10),
                         key = { item: ProductDomainRW -> item.product.id },
                     ) { item ->
                         AnimatedVisibility(
@@ -310,7 +314,7 @@ fun StoreLazyCard(
             } else {
                 LazyRow {
                     items(
-                        items = productList.data,
+                        items = productList.data.subList(0, 10),
                         key = { item: ProductDomainRW -> item.product.id },
                     ) { item ->
                         AnimatedVisibility(
@@ -369,7 +373,7 @@ fun ItemListProduct(
 
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(item.product.images.getOrNull(0))
+                .data(item.product.category.image)
                 .crossfade(true)
                 .error(R.drawable.custom_popup_background)
                 .placeholder(R.drawable.lion_jpg_21)
