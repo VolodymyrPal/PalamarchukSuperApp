@@ -58,7 +58,7 @@ class StoreViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5_000)
     )
 
-    sealed class Event : BaseEvent() {
+    sealed class Event : BaseEvent {
         object FetchSkills : Event()
         object OnRefresh : Event()
         data class ShowToast(val message: String) : Event()
@@ -66,7 +66,7 @@ class StoreViewModel @Inject constructor(
         data class SetItemToBasket(val product: ProductDomainRW, val quantity: Int = 1) : Event()
     }
 
-    sealed class Effect : BaseEffect() {
+    sealed class Effect : BaseEffect {
         object OnBackPressed : Effect()
         data class ShowToast(val message: String) : Effect()
         object Vibration : Effect()
@@ -128,7 +128,6 @@ class StoreViewModel @Inject constructor(
                     apiRepository.fetchProducts()
                 }
                 val skills = products.map { it.toProductDomainRW() }
-                Log.d("VM emitState: ", "$skills")
                 Log.d("VM emitState data: ", "$skills")
                 return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
 

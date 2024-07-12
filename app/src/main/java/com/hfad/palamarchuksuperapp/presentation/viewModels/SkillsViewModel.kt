@@ -13,7 +13,7 @@ import javax.inject.Inject
 class SkillsViewModel @Inject constructor(private val repository: SkillRepository) :
     GenericViewModel<List<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
-    sealed class Event : BaseEvent() {
+    sealed class Event : BaseEvent {
         object GetSkills : Event()
         data class MoveToFirstPosition(val item: SkillDomainRW) : Event()
         data class EditItem(val item: SkillDomainRW) : Event()
@@ -21,7 +21,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         data class AddItem(val item: SkillDomainRW) : Event()
     }
 
-    sealed class Effect : BaseEffect() {
+    sealed class Effect : BaseEffect {
         object OnBackPressed : Effect()
         data class ShowToast(val message: String) : Effect()
         object Vibration : Effect()
@@ -202,7 +202,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
     }
 }
 
-sealed class SkillsChangeConst {
-    object ChooseOrNotSkill : SkillsChangeConst()
-    object FullSkill : SkillsChangeConst()
+sealed interface SkillsChangeConst {
+    object ChooseOrNotSkill : SkillsChangeConst
+    object FullSkill : SkillsChangeConst
 }
