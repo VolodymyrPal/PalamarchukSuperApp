@@ -33,7 +33,7 @@ class SwitchToActivityUseCase {
     "ConvertObjectToDataObject", "ConvertObjectToDataObject", "ConvertObjectToDataObject",
     "ConvertObjectToDataObject", "ConvertObjectToDataObject"
 )
-sealed class ActivityKey {
-    object ActivityXML : ActivityKey()
-    object ActivityCompose : ActivityKey()
+sealed interface ActivityKey {
+    object ActivityXML : ActivityKey
+    object ActivityCompose : ActivityKey
 }
