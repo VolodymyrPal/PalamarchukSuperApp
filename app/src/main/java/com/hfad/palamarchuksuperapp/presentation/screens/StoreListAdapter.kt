@@ -114,7 +114,9 @@ class StoreListAdapter(
                 binding.quantityMinusCard.alpha = 0f
                 binding.quantity.alpha = 0f
 
-                productImage.load(product.product.images.getOrNull(0)) {
+                productImage.load(product.product.category.image?: "") {
+                    size(50)
+                    crossfade(true)
                     placeholder(R.drawable.lion_jpg_21)
                     this.error(R.drawable.lion_jpg_21)
                 }
