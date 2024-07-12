@@ -65,7 +65,7 @@ class StoreFragment : Fragment() {
             GridLayoutManager(context, 2, LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
 
-        viewModel.event(StoreViewModel.Event.FetchSkills)
+        //  viewModel.event(StoreViewModel.Event.FetchSkills)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -114,11 +114,9 @@ class StoreFragment : Fragment() {
 
             is State.Success -> {
                 Log.d("HANDLE STATE: ", "$state")
-                lifecycleScope.launch {
-                    adapter1.setData(state.data.filter { it.product.category.name == "Tigers" })
-                    adapter2.setData(state.data)
-                    adapter3.setData(state.data)
-                }
+                adapter1.setData(state.data.filter { it.product.category.name == "Tigers" })
+                adapter2.setData(state.data)
+                adapter3.setData(state.data)
             }
         }
     }
