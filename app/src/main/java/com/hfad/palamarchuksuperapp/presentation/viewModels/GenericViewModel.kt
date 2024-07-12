@@ -76,10 +76,10 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
 sealed interface State<out T> {
     object Processing : State<Nothing>
     data class Success<out T>(val data: T) : State<T>
-    object Empty : State<Nothing>
     data class Error(val exception: Throwable) : State<Nothing>
+    object Empty : State<Nothing>
 }
 
-sealed class BaseEvent
+sealed interface BaseEvent
 
-sealed class BaseEffect
+sealed interface BaseEffect
