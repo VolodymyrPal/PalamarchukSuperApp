@@ -92,16 +92,16 @@ interface Navigation {
 }
 
 @Serializable
-sealed class Routes {
+sealed interface Routes {
     @Serializable
-    object Settings : Routes()
+    object Settings : Routes
 
     @Serializable
-    object SkillScreen : Routes()
+    object SkillScreen : Routes
 
     @Serializable
-    object MainScreenConstraint : Routes()
+    object MainScreenConstraint : Routes
 
     @Serializable
-    object StoreScreen : Routes()
+    object StoreScreen : Routes
 }
