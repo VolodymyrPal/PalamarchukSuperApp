@@ -221,7 +221,7 @@ fun ButtonToNavConstraint(
     modifier: Modifier,
     action: () -> Unit = {},
     imagePath: Int = R.drawable.skills_image,
-    text: String = "S K I L L S"
+    text: String = "S K I L L S",
 ) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
@@ -343,3 +343,178 @@ fun TopRowMainScreenPreview(
 fun MainScreenConstraintPreview() {
     MainScreenRow(navController = null)
 }
+
+
+// Old implementing of MainScreen but with constraint layout
+//@Composable
+//fun MainScreenConstraint(
+//    modifier: Modifier = Modifier,
+//    actionSkillsButton: () -> Unit = {},
+//    navController: Navigation?,
+//) {
+//    Scaffold(
+//        modifier = modifier.fillMaxSize(),
+//        bottomBar = {
+//            BottomNavBar(
+//                navController = navController,
+//            )
+//        }
+//    ) { paddingValues ->
+//        val buttonColor = ButtonDefaults.elevatedButtonColors(
+//            containerColor = MaterialTheme.colorScheme.primaryContainer,
+//            contentColor = MaterialTheme.colorScheme.onBackground
+//        )
+//        val context = LocalContext.current
+//        val timestamp = remember { mutableLongStateOf(System.currentTimeMillis()) }
+//        val mainPhoto = AppImages.MainImage(context).mainPhoto
+//        val fileObserver = object : FileObserver(mainPhoto.parentFile?.path) {
+//            override fun onEvent(event: Int, path: String?) {
+//                if (event == MOVED_TO) {
+//                    timestamp.longValue = System.currentTimeMillis()
+//                }
+//            }
+//        }
+//
+//        DisposableEffect(LocalLifecycleOwner.current) {
+//            fileObserver.startWatching()
+//            onDispose {
+//                fileObserver.stopWatching()
+//            }
+//        }
+//
+//
+//
+//        Surface(
+//            color = Color.Transparent, modifier = modifier
+//                .wrapContentSize()
+//                .padding(bottom = paddingValues.calculateBottomPadding())
+//
+//        ) {
+//            ConstraintLayout {
+//                val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                    val vibratorManager =
+//                        LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+//                    vibratorManager.defaultVibrator
+//                } else {
+//                    @Suppress("DEPRECATION")
+//                    LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+//                }
+//
+//                @Suppress("DEPRECATION")
+//                fun onClickVibro() {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                        vibe.vibrate(VibrationEffect.createOneShot(2, 60))
+//                    } else {
+//                        vibe.vibrate(1)
+//                    }
+//                }
+//
+//                val (topRow, userImage, skills, secondProgram, thirdProgram, fourthProgram) = createRefs()
+//                Row(
+//                    modifier = modifier
+//                        .constrainAs(topRow) {
+//                            top.linkTo(parent.top)
+//                        }
+//                        .fillMaxWidth()
+//                        .padding(16.dp),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Button(
+//                        modifier = modifier,
+//                        colors = buttonColor,
+//                        elevation = ButtonDefaults.buttonElevation(
+//                            defaultElevation = 5.dp,
+//                        ),
+//                        onClick = {
+//                            onClickVibro()
+//                            SwitchToActivityUseCase()(
+//                                context as Activity,
+//                                key = ActivityKey.ActivityXML
+//                            )
+//                        }
+//                    ) {
+//                        Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
+//                    }
+//
+//                    FloatingActionButton(
+//                        modifier = modifier,
+//                        onClick = {
+//                            runBlocking { ChangeDayNightModeUseCase()() }
+//                            onClickVibro()
+//                        },
+//                        shape = CircleShape,
+//                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
+//                            defaultElevation = 5.dp,
+//                            pressedElevation = 30.dp
+//                        ),
+//                        interactionSource = remember { MutableInteractionSource() }
+//                    ) {
+//                        Icon(
+//                            imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
+//                            "Night mode",
+//                            modifier = modifier.size(24.dp)
+//                        )
+//                    }
+//                }
+//                Box(
+//                    modifier = Modifier.constrainAs(userImage) {
+//                        top.linkTo(parent.top, margin = 72.dp)
+//                        centerHorizontallyTo(parent)
+//                    }
+//                ) {
+//                    Card(
+//                        elevation = CardDefaults.elevatedCardElevation(10.dp),
+//                        modifier = modifier
+//                            .size(320.dp),
+//                        shape = CircleShape
+//                    ) {
+//
+//                        AsyncImage(
+//                            model = ImageRequest.Builder(LocalContext.current)
+//                                .data(mainPhoto)
+//                                .setParameter(key = "timestamp", value = timestamp.longValue, null)
+//                                .crossfade(true)
+//                                .error(R.drawable.lion_jpg_21)
+//                                .build(),
+//                            contentDescription = "Users photo",
+//                            contentScale = ContentScale.Crop,
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .clip(CircleShape),
+//                        )
+//                    }
+//                }
+//
+//
+//                ButtonToNavConstraint(
+//                    modifier = modifier.constrainAs(skills) {
+//                        top.linkTo(userImage.bottom, margin = 16.dp)
+//                        centerHorizontallyTo(userImage)
+//                    },
+//                    action = { navController?.navigate(Routes.SkillScreen) },
+//                    text = "S K I L L S"
+//                )
+//                ButtonToNavConstraint(
+//                    modifier.constrainAs(secondProgram) {
+//                        start.linkTo(parent.start, margin = 32.dp)
+//                        top.linkTo(skills.bottom)
+//                        bottom.linkTo(fourthProgram.top)
+//                    },
+//                    action = { navController?.navigate(Routes.StoreScreen) },
+//                    imagePath = R.drawable.store_image,
+//                    text = "S T O R E"
+//                )
+//                ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
+//                    end.linkTo(parent.end, margin = 32.dp)
+//                    top.linkTo(skills.bottom)
+//                    bottom.linkTo(fourthProgram.top)
+//                })
+//                ButtonToNavConstraint(modifier.constrainAs(fourthProgram) {
+//                    start.linkTo(parent.start)
+//                    end.linkTo(parent.end)
+//                    bottom.linkTo(parent.bottom, margin = 16.dp)
+//                })
+//            }
+//        }
+//    }
+//}
