@@ -180,17 +180,17 @@ fun ItemListSkill(
 
     Card(
         modifier = if (!isExpanded) {
-            Modifier
+            modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
+                .wrapContentHeight()
                 .then(remember(item) {
                     Modifier.clickable {
                         viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
                     }
-                }
-                )
+                })
         } else {
-            Modifier
+            modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -206,89 +206,62 @@ fun ItemListSkill(
         border = BorderStroke(width = 0.5.dp, color = Color.Gray)
 
     ) {
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Start)
-                .animateContentSize()
+        var isVisible by remember { mutableStateOf(false) }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            val (name, description, date, menu, choose, expand) = createRefs()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
 
-            var isVisible by remember { mutableStateOf(false) }
+            ) {
+                Column(
+                    Modifier.weight(0.9f)
+                ) {
 
-            Text(modifier = modifier
-                .constrainAs(name) {
-                    end.linkTo(parent.end)
-                    start.linkTo(parent.start)
-                }
-                .padding(
-                    paddingValues = PaddingValues(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        text = item.skill.name,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Serif,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                ),
-                text = item.skill.name,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(description) {
-                    top.linkTo(name.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(menu.start)
-                    bottom.linkTo(date.top)
-                    width = Dimension.fillToConstraints
-                }
-                .wrapContentWidth()
-
-                .padding(start = 6.dp, end = 6.dp),
-                contentAlignment = Alignment.TopStart) {
-                Text(
-                    modifier = modifier.fillMaxWidth(),
-                    text = item.skill.description,
-                    maxLines = if (!isExpanded) 2 else Int.MAX_VALUE,
-                    overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    onTextLayout = remember(isExpanded) {
-                        { textLayoutResult ->
-                            isVisible = textLayoutResult.hasVisualOverflow || isExpanded
-                        }
-                    })
-
-            }
-            Text(modifier = modifier
-                .constrainAs(date) {
-                    bottom.linkTo(parent.bottom)
-                }
-                .padding(start = 2.dp),
-                text = SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(item.skill.date),
-                fontStyle = FontStyle.Italic,
-                fontSize = 11.sp,
-                textAlign = TextAlign.Right,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            var expanded by remember { mutableStateOf(false) }
-
-
-            IconButton(
-                modifier = modifier
-                    .constrainAs(menu) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 6.dp, end = 6.dp),
+                        contentAlignment = Alignment.TopStart
+                    ) {
+                        Text(
+                            modifier = Modifier,
+                            text = item.skill.description,
+                            maxLines = if (!isExpanded) 2 else Int.MAX_VALUE,
+                            overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            onTextLayout = remember(isExpanded) {
+                                { textLayoutResult ->
+                                    isVisible =
+                                        textLayoutResult.hasVisualOverflow || isExpanded
+                                }
+                            }
+                        )
                     }
-                    .wrapContentSize(),
-                onClick = remember {
-                    {
-                        expanded = true
-                    }
-                },
-                content = {
+                }
+
+                Column(
+                    modifier = Modifier.wrapContentHeight(),
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    var expanded by remember { mutableStateOf(false) }
                     val context = LocalContext.current
+
                     Icon(
+                        modifier = Modifier.clickable {
+                            expanded = true
+                        },
                         imageVector = ImageVector.vectorResource(id = R.drawable.more_button),
                         contentDescription = "More menu"
                     )
@@ -309,37 +282,54 @@ fun ItemListSkill(
                         },
                         onDelete = remember(item) {
                             {
-                                onEvent.invoke(SkillsViewModel.Event.DeleteItem(item))
+                                onEvent.invoke(
+                                    SkillsViewModel.Event.DeleteItem(
+                                        item
+                                    )
+                                )
                             }
                         },
                         onMoveUp = remember(item) {
-                            { onEvent(SkillsViewModel.Event.MoveToFirstPosition(item)) }
+                            {
+                                onEvent(
+                                    SkillsViewModel.Event.MoveToFirstPosition(
+                                        item
+                                    )
+                                )
+                            }
                         },
                     )
-                })
 
-            Checkbox(
-                modifier = modifier.constrainAs(choose) {
-                    top.linkTo(menu.bottom)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                },
-                onCheckedChange = {
-                    viewModel.updateSkillOrAdd(
-                        item,
-                        SkillsChangeConst.ChooseOrNotSkill
+                    Checkbox(
+                        modifier = modifier,
+                        onCheckedChange = {
+                            viewModel.updateSkillOrAdd(
+                                item,
+                                SkillsChangeConst.ChooseOrNotSkill
+                            )
+                        },
+                        checked = item.chosen
                     )
-                },
-                checked = item.chosen
+                }
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                modifier = modifier
+                    .padding(start = 2.dp),
+                text = SimpleDateFormat(
+                    "dd MMMM yyyy: HH:mm",
+                    Locale.US
+                ).format(item.skill.date),
+                fontStyle = FontStyle.Italic,
+                fontSize = 11.sp,
+                textAlign = TextAlign.Right,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
             Box(
                 modifier = Modifier
-                    .constrainAs(expand) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
                     .then(remember(isVisible) {
                         Modifier.clickable { isExpanded = !isExpanded }
                     })
@@ -358,10 +348,12 @@ fun ItemListSkill(
                     modifier = Modifier.animateContentSize(),
                     text = if (!isExpanded) "Details >>" else ("<< Hide"),
                 )
+
             }
         }
     }
 }
+
 
 @Suppress(
     "detekt.FunctionNaming",
