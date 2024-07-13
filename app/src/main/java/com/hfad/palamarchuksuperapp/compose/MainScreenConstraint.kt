@@ -63,7 +63,7 @@ import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.runBlocking
 
 @Composable
-fun MainScreenConstraint(
+fun MainScreenRow(
     modifier: Modifier = Modifier,
     actionSkillsButton: () -> Unit = {},
     navController: Navigation?,
@@ -83,11 +83,28 @@ fun MainScreenConstraint(
         val context = LocalContext.current
         val timestamp = remember { mutableLongStateOf(System.currentTimeMillis()) }
         val mainPhoto = AppImages.MainImage(context).mainPhoto
-        val fileObserver = object : FileObserver(mainPhoto.parentFile?.path) {
+        val fileObserver = object : FileObserver(mainPhoto.parentFile?.path, ALL_EVENTS) {
             override fun onEvent(event: Int, path: String?) {
                 if (event == MOVED_TO) {
                     timestamp.longValue = System.currentTimeMillis()
                 }
+            }
+        }
+        val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+        }
+
+        @Suppress("DEPRECATION")
+        fun onClickVibro() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibe.vibrate(VibrationEffect.createOneShot(2, 60))
+            } else {
+                vibe.vibrate(1)
             }
         }
 
@@ -99,85 +116,37 @@ fun MainScreenConstraint(
         }
 
 
-
         Surface(
             color = Color.Transparent, modifier = modifier
                 .wrapContentSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
 
         ) {
-            ConstraintLayout {
-                val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val vibratorManager =
-                        LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                    vibratorManager.defaultVibrator
-                } else {
-                    @Suppress("DEPRECATION")
-                    LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
-                }
-
-                @Suppress("DEPRECATION")
-                fun onClickVibro() {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vibe.vibrate(VibrationEffect.createOneShot(2, 60))
-                    } else {
-                        vibe.vibrate(1)
-                    }
-                }
-
-                val (topRow, userImage, skills, secondProgram, thirdProgram, fourthProgram) = createRefs()
-                Row(
-                    modifier = modifier
-                        .constrainAs(topRow) {
-                            top.linkTo(parent.top)
-                        }
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Button(
-                        modifier = modifier,
-                        colors = buttonColor,
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 5.dp,
-                        ),
-                        onClick = {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                item {
+                    TopRowMainScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp, 16.dp, 16.dp, 0.dp),
+                        actionForNight = {
                             onClickVibro()
                             SwitchToActivityUseCase()(
                                 context as Activity,
                                 key = ActivityKey.ActivityXML
                             )
-                        }
-                    ) {
-                        Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
-                    }
-
-                    FloatingActionButton(
-                        modifier = modifier,
-                        onClick = {
+                        },
+                        actionForView = {
                             runBlocking { ChangeDayNightModeUseCase()() }
                             onClickVibro()
                         },
-                        shape = CircleShape,
-                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
-                            defaultElevation = 5.dp,
-                            pressedElevation = 30.dp
-                        ),
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
-                            "Night mode",
-                            modifier = modifier.size(24.dp)
-                        )
-                    }
+                        buttonColor = buttonColor
+                    )
                 }
-                Box(
-                    modifier = Modifier.constrainAs(userImage) {
-                        top.linkTo(parent.top, margin = 72.dp)
-                        centerHorizontallyTo(parent)
-                    }
-                ) {
+                item {
                     Card(
                         elevation = CardDefaults.elevatedCardElevation(10.dp),
                         modifier = modifier
@@ -200,35 +169,48 @@ fun MainScreenConstraint(
                         )
                     }
                 }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .padding(32.dp, 16.dp, 32.dp, 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier) {
+                            ButtonToNavConstraint(
+                                modifier = Modifier,
+                                action = { navController?.navigate(Routes.StoreScreen) },
+                                imagePath = R.drawable.store_image,
+                                text = "S T O R E"
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.fillParentMaxHeight(fraction = 0.39f),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ButtonToNavConstraint(
+                                modifier = Modifier,
+                                action = { navController?.navigate(Routes.SkillScreen) },
+                                text = "S K I L L S"
+                            )
 
-
-                ButtonToNavConstraint(
-                    modifier = modifier.constrainAs(skills) {
-                        top.linkTo(userImage.bottom, margin = 16.dp)
-                        centerHorizontallyTo(userImage)
-                    },
-                    action = { navController?.navigate(Routes.SkillScreen) },
-                    text = "S K I L L S"
-                )
-                ButtonToNavConstraint(modifier.constrainAs(secondProgram) {
-                    start.linkTo(parent.start, margin = 32.dp)
-                    top.linkTo(skills.bottom)
-                    bottom.linkTo(fourthProgram.top)
-                },
-                    action = { navController?.navigate(Routes.StoreScreen) },
-                    imagePath = R.drawable.store_image,
-                    text = "S T O R E"
-                )
-                ButtonToNavConstraint(modifier.constrainAs(thirdProgram) {
-                    end.linkTo(parent.end, margin = 32.dp)
-                    top.linkTo(skills.bottom)
-                    bottom.linkTo(fourthProgram.top)
-                })
-                ButtonToNavConstraint(modifier.constrainAs(fourthProgram) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                })
+                            ButtonToNavConstraint(
+                                modifier = Modifier,
+                                action = { navController?.navigate(Routes.Settings) },
+                                text = "S K I L L S"
+                            )
+                        }
+                        Column(modifier = Modifier) {
+                            ButtonToNavConstraint(
+                                modifier = Modifier,
+                                action = { navController?.navigate(Routes.Settings) },
+                                text = "S K I L L S"
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -265,7 +247,7 @@ fun ButtonToNavConstraint(
             action()
         },
         shape = RoundedCornerShape(20.dp),
-        modifier = modifier.size(100.dp),
+        modifier = modifier.size(HEIGHT_BIG_BUTTON.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -300,9 +282,64 @@ fun ButtonToNavConstraint(
     }
 }
 
+@Composable
+fun TopRowMainScreen(
+    modifier: Modifier = Modifier,
+    actionForView: () -> Unit = {},
+    actionForNight: () -> Unit = {},
+    buttonColor: ButtonColors = ButtonDefaults.buttonColors(),
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Button(
+            modifier = Modifier,
+            colors = buttonColor,
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 5.dp,
+            ),
+            onClick = {
+                actionForNight()
+            }
+        ) {
+            Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
+        }
+
+        FloatingActionButton(
+            modifier = Modifier.size(56.dp),
+            onClick = {
+                actionForView()
+            },
+            shape = CircleShape,
+            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
+                defaultElevation = 5.dp,
+                pressedElevation = 30.dp
+            ),
+            interactionSource = remember { MutableInteractionSource() }
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
+                "Night mode",
+                //modifier = modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+const val HEIGHT_BIG_BUTTON = 100
+
+@Composable
+@Preview
+fun TopRowMainScreenPreview(
+    modifier: Modifier = Modifier,
+) {
+    TopRowMainScreen(modifier.fillMaxWidth())
+}
 
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun MainScreenConstraintPreview() {
-    MainScreenConstraint(navController = null)
+    MainScreenRow(navController = null)
 }
