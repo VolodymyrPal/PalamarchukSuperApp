@@ -332,8 +332,11 @@ fun ItemListSkill(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
-            Box(
+
+            BasicText(
                 modifier = Modifier
+                    .weight(0.5f)
+                    .animateContentSize()
                     .then(remember(isVisible) {
                         Modifier.clickable { isExpanded = !isExpanded }
                     })
