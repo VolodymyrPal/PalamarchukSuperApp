@@ -339,24 +339,21 @@ fun ItemListSkill(
                     .animateContentSize()
                     .then(remember(isVisible) {
                         Modifier.clickable { isExpanded = !isExpanded }
-                    })
-            ) {
-                BasicText(
-                    style = TextStyle(
-                        fontSize = 10.sp,
-                        fontStyle = FontStyle.Italic,
-                        color = if (!isVisible) MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                            alpha = 0f
+                    }),
+                style = TextStyle(
+                    fontSize = 10.sp,
+                    fontStyle = FontStyle.Italic,
+                    color = if (!isVisible) MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                        alpha = 0f
 
-                        ) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                            alpha = 0.5f
-                        )
+                    ) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                        alpha = 0.5f
                     ),
-                    modifier = Modifier.animateContentSize(),
-                    text = if (!isExpanded) "Details >>" else ("<< Hide"),
-                )
+                    textAlign = TextAlign.Left
+                ),
 
-            }
+                text = if (!isExpanded) "Details >>" else ("<< Hide"),
+            )
         }
     }
 }
