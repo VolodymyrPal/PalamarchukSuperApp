@@ -316,17 +316,20 @@ fun ItemListSkill(
         Row(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(
-                modifier = modifier
-                    .padding(start = 2.dp),
+            BasicText(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .weight(0.4f),
                 text = SimpleDateFormat(
                     "dd MMMM yyyy: HH:mm",
                     Locale.US
                 ).format(item.skill.date),
-                fontStyle = FontStyle.Italic,
-                fontSize = 11.sp,
-                textAlign = TextAlign.Right,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = TextStyle(
+                    fontStyle = FontStyle.Italic,
+                    fontSize = 11.sp,
+                    textAlign = TextAlign.Left,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
             Box(
                 modifier = Modifier
