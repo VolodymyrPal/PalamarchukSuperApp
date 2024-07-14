@@ -315,6 +315,7 @@ fun ItemListSkill(
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom
         ) {
             BasicText(
                 modifier = Modifier
