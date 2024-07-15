@@ -28,7 +28,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -296,7 +295,7 @@ fun StoreLazyCard(
                     items(
 //                        items = viewModel.testData.map { it.toProductDomainRW() },
 //                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
-                        items = productList.data.subList(0, 10),
+                        items = productList.data,
                         key = { item: ProductDomainRW -> item.product.id },
                     ) { item ->
                         AnimatedVisibility(
@@ -359,16 +358,10 @@ fun ListItemProduct(
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
 ) {
+    Box(modifier = modifier.size(150.dp, 200.dp)) {
 
-    ConstraintLayout(
-        modifier = Modifier
-            .size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)
-    ) {
-        val (image, quantityMinusButton, quantityMinusField, quantityPlusField, quantity, quantityPlusButton, ratingBar, name, sold, price, discountedPrice, saveText) = createRefs()
         var isVisible by remember { mutableStateOf(false) }
-
         var job by remember { mutableStateOf<Job?>(null) }
-
         var isPressed by remember { mutableStateOf(false) }
         var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
         val scope = rememberCoroutineScope()
