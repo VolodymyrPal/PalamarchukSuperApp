@@ -632,19 +632,19 @@ fun StarRatingBar(
 fun ListItemProductPreview() {
     ListItemProduct(
         item = ProductDomainRW(
-            Product(
-                id = 6717, title = "eripuit", price = 5869, category = ProductCategory(
-                    id = 3226,
-                    name = "Errol Clemons",
-                    image = "legere"
-                ), images = emptyList() // ProductImages(urls = listOf())
-            )
-        ),
-        viewModel = StoreViewModel(
-            repository = StoreRepositoryImplForPreview(),
-            apiRepository = ProductRepository()
-        ),
-        onEvent = {}
+            product = Product(
+                id = 6360,
+                title = "efficiantur",
+                price = 1161,
+                description = "tation",
+                category = ProductCategory(
+                    id = 6080,
+                    name = "Les Vaughn",
+                    image = "habeo"
+                ),
+                images = listOf()
+            ), quantity = 5234, liked = false
+        )
     )
 }
 
