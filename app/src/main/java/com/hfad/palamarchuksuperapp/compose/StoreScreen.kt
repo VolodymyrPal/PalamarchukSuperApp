@@ -478,102 +478,111 @@ fun ListItemProduct(
             )
         }
 
-        Icon(
-            modifier = Modifier
-                .size(40.dp)
-                .alpha(if (isVisible || isPressed) 0.95f else 0f)
-                .constrainAs(quantityPlusButton) {
-                    start.linkTo(quantity.end)
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                },
-            imageVector = Icons.Default.Add,
-            contentDescription = "Increase Quantity"
-        )
+        Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.product.category.image)
+                    .crossfade(true)
+                    .error(R.drawable.custom_popup_background)
+                    .placeholder(R.drawable.lion_jpg_21)
+                    .build(),
+                contentDescription = "Product Image",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .size(120.dp, 120.dp)
+                    .clip(RoundedCornerShape(percent = 12))
+            )
+            Text(
+                text = item.product.title.uppercase(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                fontSize = TextUnit(12f, TextUnitType.Sp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                var rating by remember { mutableFloatStateOf(5f) }
+                StarRatingBar(
+                    maxStars = 5,
+                    rating = rating,
+                    onRatingChanged = { ratingChange ->
+                        rating = ratingChange
+                    },
+                    modifier = Modifier
+                )
 
-
-        Text(
-            text = item.product.title.uppercase(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-            fontSize = TextUnit(12f, TextUnitType.Sp),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.constrainAs(name) {
-                top.linkTo(image.bottom, 2.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
+                Text(
+                    text = "500...",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontStyle = FontStyle.Italic,
+                        color = Color.Gray
+                    ),
+                    modifier = Modifier
+                )
             }
-        )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${item.product.price}$",
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Color.DarkGray,
+                        fontStyle = FontStyle.Italic,
+                        fontSize = TextUnit(8f, TextUnitType.Sp)
+                    ),
+                    modifier = Modifier,
+                    textDecoration = TextDecoration.LineThrough
+                )
 
-        var rating by remember { mutableStateOf(5f) }
-        StarRatingBar(
-            maxStars = 5,
-            rating = rating,
-            onRatingChanged = { ratingChange ->
-                rating = ratingChange
-            },
-            modifier = Modifier.constrainAs(ratingBar) {
-                start.linkTo(parent.start)
-                end.linkTo(sold.start)
-                top.linkTo(name.bottom)
-                bottom.linkTo(sold.bottom)
+                Text(
+                    text = "${item.product.price / 2}$",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    fontSize = TextUnit(18f, TextUnitType.Sp),
+                    modifier = Modifier
+                )
             }
-        )
-
-        Text(
-            text = "500...",
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontStyle = FontStyle.Italic,
-                color = Color.Gray
-            ),
-            modifier = Modifier.constrainAs(sold) {
-                top.linkTo(name.bottom)
-                end.linkTo(parent.end)
-                start.linkTo(ratingBar.end)
-            }
-        )
-
-        Text(
-            text = "${item.product.price}$",
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = Color.DarkGray,
-                fontStyle = FontStyle.Italic,
+            Text(
+                text = "SAVE 50% TODAY",
+                style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.error),
+                modifier = Modifier,
                 fontSize = TextUnit(8f, TextUnitType.Sp)
-            ),
-            modifier = Modifier.constrainAs(price) {
-                top.linkTo(discountedPrice.top)
-                bottom.linkTo(discountedPrice.bottom)
-                end.linkTo(discountedPrice.start)
-            },
-            textDecoration = TextDecoration.LineThrough
-        )
+            )
+        }
 
-        Text(
-            text = "${item.product.price / 2}$",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            fontSize = TextUnit(18f, TextUnitType.Sp),
+        Box(
             modifier = Modifier
-                .constrainAs(discountedPrice) {
-                    top.linkTo(ratingBar.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(saveText.top)
-                }
-        )
-
-        Text(
-            text = "SAVE 50% TODAY",
-            style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.error),
-            modifier = Modifier.constrainAs(saveText) {
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
-            fontSize = TextUnit(8f, TextUnitType.Sp)
-        )
+                .matchParentSize()
+        ) {
+            Text(
+                text = "$quantityToBuy",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSecondary,
+                fontSize = TextUnit(32f, TextUnitType.Sp),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .alpha(if (quantityToBuy > 0 || (isVisible || isPressed)) 0.95f else 0f)
+            )
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .size(40.dp)
+                    .alpha(if (isVisible || isPressed) 0.95f else 0f),
+                imageVector = ImageVector.vectorResource(id = R.drawable.single_line_outlined),
+                contentDescription = "Decrease Quantity"
+            )
+            Icon(
+                modifier = Modifier
+                    .size(40.dp)
+                    .align(Alignment.CenterEnd)
+                    .alpha(if (isVisible || isPressed) 0.95f else 0f)
+                ,
+                imageVector = Icons.Default.Add,
+                contentDescription = "Increase Quantity"
+            )
+        }
     }
 }
 
