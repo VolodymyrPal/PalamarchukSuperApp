@@ -629,9 +629,8 @@ fun StarRatingBar(
 
 @Preview
 @Composable
-fun ItemListProductPreview() {
-    ItemListProduct(
-        modifier = Modifier.background(color = Color.White),
+fun ListItemProductPreview() {
+    ListItemProduct(
         item = ProductDomainRW(
             Product(
                 id = 6717, title = "eripuit", price = 5869, category = ProductCategory(
