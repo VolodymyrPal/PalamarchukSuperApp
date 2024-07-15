@@ -374,39 +374,19 @@ fun ListItemProduct(
             }
         }
 
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(item.product.category.image)
-                .crossfade(true)
-                .error(R.drawable.custom_popup_background)
-                .placeholder(R.drawable.lion_jpg_21)
-                .build(),
-            contentDescription = "Product Image",
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier
-                .size(120.dp, 120.dp)
-                .clip(RoundedCornerShape(percent = 12))
-                .constrainAs(image) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                    start.linkTo(parent.start)
-                }
-        )
-
-        Box(
-            modifier = Modifier
-                .size(50.dp, HEIGHT_ITEM.dp)
+        Row(
+            modifier = Modifier.matchParentSize()
+        ) {
+            Box(modifier = Modifier
+                .weight(0.4f)
+                .fillMaxWidth()
+                .fillMaxHeight()
                 .alpha(0f)
-                .constrainAs(quantityMinusField) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }
                 .pointerInput(item) {
                     detectTapGestures(
                         onTap = {
                             if (quantityToBuy > 0) quantityToBuy--
-                            if (!isPressed) viewModel?.event(
+                            if (!isPressed) onEvent(
                                 StoreViewModel.Event.SetItemToBasket(
                                     item,
                                     quantityToBuy
@@ -428,7 +408,7 @@ fun ListItemProduct(
                                 awaitRelease()
                                 job?.cancel()
                                 Log.d("TAG", "event: awaitReleased")
-                                viewModel?.event(
+                                onEvent(
                                     StoreViewModel.Event.SetItemToBasket(
                                         item,
                                         quantityToBuy
@@ -443,93 +423,60 @@ fun ListItemProduct(
                             }
                         }
                     )
-                }
-        )
-        Icon(
-            modifier = Modifier
-                .size(40.dp)
-                .alpha(if (isVisible || isPressed) 0.95f else 0f)
-                .constrainAs(quantityMinusButton) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(quantity.start)
-                },
-            imageVector = ImageVector.vectorResource(id = R.drawable.single_line_outlined),
-            contentDescription = "Decrease Quantity"
-
-        )
-
-
-        Text(
-            text = "$quantityToBuy",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSecondary,
-            fontSize = TextUnit(32f, TextUnitType.Sp),
-            modifier = Modifier
-                .alpha(if (item.quantity > 0 || (isVisible || isPressed)) 0.95f else 0f)
-                .constrainAs(quantity) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-        )
-        Box(modifier = Modifier
-            .size(85.dp, HEIGHT_ITEM.dp)
-            .alpha(0f)
-            .constrainAs(quantityPlusField) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-            }
-            .pointerInput(item) {
-                detectTapGestures(
-                    onTap = {
-                        if (quantityToBuy >= 0) quantityToBuy++
-                        if (!isPressed) viewModel?.event(
-                            StoreViewModel.Event.SetItemToBasket(
-                                item,
-                                item.quantity
-                            )
-                        )
-                    },
-                    onPress = {
-                        isPressed = true
-                        isVisible = true
-                        job = scope.launch {
-                            delay(500)
-                            isVisible = true
-                            while (isPressed) {
-                                if (quantityToBuy >= 0) quantityToBuy++
-                                delay(20)
-                            }
-                        }
-                        try {
-                            awaitRelease()
-                            job?.cancel()
-                            viewModel?.event(
+                })
+            Box(modifier = Modifier
+                .weight(0.6f)
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .alpha(0f)
+                .pointerInput(item) {
+                    detectTapGestures(
+                        onTap = {
+                            if (quantityToBuy >= 0) quantityToBuy++
+                            if (!isPressed) onEvent(
                                 StoreViewModel.Event.SetItemToBasket(
                                     item,
-                                    quantityToBuy
+                                    item.quantity
                                 )
                             )
-                            isPressed = false
+                        },
+                        onPress = {
+                            isPressed = true
                             isVisible = true
-                        } catch (e: CancellationException) {
-                            job?.cancel()
-                            isPressed = false
-                            isVisible = true
-                        } catch (e: Exception) {
-                            job?.cancel()
-                            Log.d("Store screen exception: ", "event: ${e.message}")
-                            isPressed = false
-                            isVisible = true
+                            job = scope.launch {
+                                delay(500)
+                                isVisible = true
+                                while (isPressed) {
+                                    if (quantityToBuy >= 0) quantityToBuy++
+                                    delay(20)
+                                }
+                            }
+                            try {
+                                awaitRelease()
+                                job?.cancel()
+                                onEvent(
+                                    StoreViewModel.Event.SetItemToBasket(
+                                        item,
+                                        quantityToBuy
+                                    )
+                                )
+                                isPressed = false
+                                isVisible = true
+                            } catch (e: CancellationException) {
+                                job?.cancel()
+                                isPressed = false
+                                isVisible = true
+                            } catch (e: Exception) {
+                                job?.cancel()
+                                Log.d("Store screen exception: ", "event: ${e.message}")
+                                isPressed = false
+                                isVisible = true
+                            }
                         }
-                    }
-                )
-            }
-        )
+                    )
+                }
+            )
+        }
 
         Icon(
             modifier = Modifier
