@@ -228,7 +228,9 @@ fun StoreScreenContent(
     LazyColumn(
         modifier = modifier
             .background(color = md_theme_my_royal),
-        flingBehavior = ScrollableDefaults.flingBehavior()
+        flingBehavior = ScrollableDefaults.flingBehavior(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     )
     {
         item {
@@ -285,7 +287,11 @@ fun StoreLazyCard(
                         .fillMaxWidth()
                         .height((productList.data.size / 3 * HEIGHT_ITEM + HEIGHT_ITEM + 20).dp),
                     columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                    contentPadding = PaddingValues(
+//                        start = 12.dp,
+//                        end = 12.dp
+//                    ), // Add padding before start and after end
                 ) {
                     items(
 //                        items = viewModel.testData.map { it.toProductDomainRW() },
@@ -314,7 +320,12 @@ fun StoreLazyCard(
                     }
                 }
             } else {
-                LazyRow {
+                LazyRow(
+                    contentPadding = PaddingValues(
+                        start = 12.dp,
+                        end = 12.dp
+                    ), // Add padding before start and after end
+                ) {
                     items(
                         items = productList.data.subList(0, 10),
                         key = { item: ProductDomainRW -> item.product.id },
