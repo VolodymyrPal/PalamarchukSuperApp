@@ -270,7 +270,7 @@ fun StoreLazyCard(
     ) {
         Card(
             modifier = Modifier
-                .padding(4.dp)
+                //  .padding(4.dp)
                 .fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(5.dp)
@@ -311,10 +311,9 @@ fun StoreLazyCard(
                                 animationSpec = TweenSpec(100, 100, LinearEasing)
                             )
                         ) {
-                            ItemListProduct(
+                            ListItemProduct(
                                 item = item,
                                 onEvent = remember(item) { { event -> viewModel?.event(event) } },
-                                viewModel = viewModel
                             )
                         }
                     }
@@ -327,7 +326,7 @@ fun StoreLazyCard(
                     ), // Add padding before start and after end
                 ) {
                     items(
-                        items = productList.data.subList(0, 10),
+                        items = productList.data,
                         key = { item: ProductDomainRW -> item.product.id },
                     ) { item ->
                         AnimatedVisibility(
@@ -341,11 +340,10 @@ fun StoreLazyCard(
                                 animationSpec = TweenSpec(100, 100, LinearEasing)
                             )
                         ) {
-                            ItemListProduct(
+                            ListItemProduct(
 //                        item = item,
                                 item = item, // TODO test rep
                                 onEvent = remember(item) { { event -> viewModel?.event(event) } },
-                                viewModel = viewModel
                             )
                         }
                     }
@@ -356,11 +354,10 @@ fun StoreLazyCard(
 }
 
 @Composable
-fun ItemListProduct(
+fun ListItemProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
-    viewModel: StoreViewModel?,
 ) {
 
     ConstraintLayout(
