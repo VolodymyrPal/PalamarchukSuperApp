@@ -22,9 +22,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -221,15 +222,19 @@ fun StoreScreen(
 
 @Composable
 fun StoreScreenContent(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxSize(),
     viewModel: StoreViewModel,
 ) {
-    LazyColumn(
+    val state by viewModel.uiState.collectAsState()
+    val productList = state as State.Success
+
+    LazyVerticalGrid(
         modifier = modifier
             .background(color = md_theme_my_royal),
         flingBehavior = ScrollableDefaults.flingBehavior(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
+        horizontalArrangement = Arrangement.Center
     )
     {
         item {
