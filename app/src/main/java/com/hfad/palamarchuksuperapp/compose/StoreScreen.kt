@@ -243,7 +243,8 @@ fun StoreScreenContent(
                 viewModel = viewModel
             )
         }
-        item {
+
+        item(span = { GridItemSpan(2) }) {
             StoreLazyCard(
                 modifier = Modifier,
                 viewModel = viewModel
