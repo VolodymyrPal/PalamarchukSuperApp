@@ -237,9 +237,9 @@ fun StoreScreenContent(
         horizontalArrangement = Arrangement.Center
     )
     {
-        item {
+        item(span = { GridItemSpan(2) }) {
             StoreLazyCard(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxWidth(),
                 viewModel = viewModel
             )
         }
