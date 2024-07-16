@@ -340,7 +340,7 @@ fun ListItemProduct(
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
 ) {
-    Box(modifier = modifier.size(150.dp, 200.dp)) {
+    Box(modifier = modifier.size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)) {
 
         var isVisible by remember { mutableStateOf(false) }
         var job by remember { mutableStateOf<Job?>(null) }
@@ -361,8 +361,7 @@ fun ListItemProduct(
         ) {
             Box(modifier = Modifier
                 .weight(0.4f)
-                .fillMaxWidth()
-                .fillMaxHeight()
+                .fillMaxHeight()  // Use fillMaxHeight instead of fillMaxSize to avoid expanding beyond parent
                 .alpha(0f)
                 .pointerInput(item) {
                     detectTapGestures(
@@ -389,7 +388,6 @@ fun ListItemProduct(
                             try {
                                 awaitRelease()
                                 job?.cancel()
-                                Log.d("TAG", "event: awaitReleased")
                                 onEvent(
                                     StoreViewModel.Event.SetItemToBasket(
                                         item,
@@ -408,8 +406,7 @@ fun ListItemProduct(
                 })
             Box(modifier = Modifier
                 .weight(0.6f)
-                .fillMaxWidth()
-                .fillMaxHeight()
+                .fillMaxHeight()  // Use fillMaxHeight instead of fillMaxSize to avoid expanding beyond parent
                 .alpha(0f)
                 .pointerInput(item) {
                     detectTapGestures(
@@ -536,7 +533,7 @@ fun ListItemProduct(
 
         Box(
             modifier = Modifier
-                .matchParentSize()
+                .fillMaxSize()
         ) {
             Text(
                 text = "$quantityToBuy",
@@ -559,8 +556,7 @@ fun ListItemProduct(
                 modifier = Modifier
                     .size(40.dp)
                     .align(Alignment.CenterEnd)
-                    .alpha(if (isVisible || isPressed) 0.95f else 0f)
-                ,
+                    .alpha(if (isVisible || isPressed) 0.95f else 0f),
                 imageVector = Icons.Default.Add,
                 contentDescription = "Increase Quantity"
             )
