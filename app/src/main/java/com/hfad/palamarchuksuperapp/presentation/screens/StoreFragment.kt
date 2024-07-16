@@ -113,10 +113,10 @@ class StoreFragment : Fragment() {
             }
 
             is State.Success -> {
-                Log.d("HANDLE STATE: ", "$state")
-                adapter1.setData(state.data.filter { it.product.category.name == "Tigers" })
-                adapter2.setData(state.data)
-                adapter3.setData(state.data)
+                Log.d("HANDLE STATE: ", "${state.data.size}")
+                adapter1.setData(state.data.subList(0, 25))
+                adapter2.setData(state.data.subList(0, 25))
+                adapter3.setData(state.data.subList(0, 25))
             }
         }
     }
