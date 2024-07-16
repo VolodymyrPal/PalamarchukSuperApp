@@ -280,10 +280,9 @@ fun StoreScreenContent(
 @Composable
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
-    horizontal: Boolean = true,
     viewModel: StoreViewModel?,
+) {
 
-    ) {
     val state by viewModel?.uiState!!.collectAsState()
     val productList = state as State.Success
     Column(
@@ -303,71 +302,31 @@ fun StoreLazyCard(
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
             )
-            if (!horizontal) {
-                LazyVerticalGrid(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height((productList.data.size / 3 * HEIGHT_ITEM + HEIGHT_ITEM + 20).dp),
-                    columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                    contentPadding = PaddingValues(
-//                        start = 12.dp,
-//                        end = 12.dp
-//                    ), // Add padding before start and after end
-                ) {
-                    items(
-//                        items = viewModel.testData.map { it.toProductDomainRW() },
-//                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
-                        items = productList.data,
-                        key = { item: ProductDomainRW -> item.product.id },
-                    ) { item ->
-                        AnimatedVisibility(
-                            modifier = Modifier
-                                .animateItem()
-                                .padding(0.dp, 0.dp, 10.dp, 10.dp),
-                            visible = true,
-                            exit = fadeOut(
-                                animationSpec = TweenSpec(100, 100, LinearEasing)
-                            ),
-                            enter = fadeIn(
-                                animationSpec = TweenSpec(100, 100, LinearEasing)
-                            )
-                        ) {
-                            ListItemProduct(
-                                item = item,
-                                onEvent = remember(item) { { event -> viewModel?.event(event) } },
-                            )
-                        }
-                    }
-                }
-            } else {
-                LazyRow(
-                    contentPadding = PaddingValues(
-                        start = 12.dp,
-                        end = 12.dp
-                    ), // Add padding before start and after end
-                ) {
-                    items(
-                        items = productList.data,
-                        key = { item: ProductDomainRW -> item.product.id },
-                    ) { item ->
-                        AnimatedVisibility(
-                            modifier = Modifier
-                                .animateItem(),
-                            visible = true,
-                            exit = fadeOut(
-                                animationSpec = TweenSpec(100, 100, LinearEasing)
-                            ),
-                            enter = fadeIn(
-                                animationSpec = TweenSpec(100, 100, LinearEasing)
-                            )
-                        ) {
-                            ListItemProduct(
-//                        item = item,
-                                item = item, // TODO test rep
-                                onEvent = remember(item) { { event -> viewModel?.event(event) } },
-                            )
-                        }
+            LazyRow(
+                contentPadding = PaddingValues(
+                    start = 12.dp,
+                    end = 12.dp
+                ), // Add padding before start and after end
+            ) {
+                items(
+                    items = productList.data,
+                    key = { item: ProductDomainRW -> item.product.id },
+                ) { item ->
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .animateItem(),
+                        visible = true,
+                        exit = fadeOut(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        ),
+                        enter = fadeIn(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        )
+                    ) {
+                        ListItemProduct(
+                            item = item, // TODO test rep
+                            onEvent = remember(item) { { event -> viewModel?.event(event) } },
+                        )
                     }
                 }
             }
