@@ -83,7 +83,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
@@ -169,7 +169,7 @@ fun StoreScreen(
                             "Floating action button."
                         )
                         if (myBasket.isNotEmpty()) {
-                            Text(text = viewModel.basketList.value.sumOf { it.quantity }.toString())
+                            Text(text = myBasket.sumOf { it.quantity }.toString())
                         }
                     }
                 }
