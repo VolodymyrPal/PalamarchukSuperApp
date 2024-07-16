@@ -250,12 +250,29 @@ fun StoreScreenContent(
                 viewModel = viewModel
             )
         }
-        item {
-            StoreLazyCard(
-                modifier = Modifier,
-                horizontal = false,
-                viewModel = viewModel
-            )
+        items(
+//                        items = viewModel.testData.map { it.toProductDomainRW() },
+//                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
+            items = productList.data,
+            key = { item: ProductDomainRW -> item.product.id },
+        ) { item ->
+            AnimatedVisibility(
+                modifier = Modifier
+                    .animateItem(),
+                   // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                visible = true,
+                exit = fadeOut(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                ),
+                enter = fadeIn(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                )
+            ) {
+                ListItemProduct(
+                    item = item,
+                    onEvent = remember(item) { { event -> viewModel.event(event) } },
+                )
+            }
         }
     }
 }
