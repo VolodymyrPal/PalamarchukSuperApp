@@ -458,16 +458,21 @@ fun ListItemProduct(
         }
 
         Column(
-            modifier = Modifier,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .wrapContentSize(), // Wrap content size to avoid expanding beyond parent size
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AsyncImage(
+
+            SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.product.category.image)
+                    .data(item.product.images[0])
+                    .placeholder(R.drawable.bicon_camera_selector)
+                    .error(R.drawable.bicon_home_black_filled)
+                    .size(100)
                     .crossfade(true)
-                    .error(R.drawable.custom_popup_background)
-                    .placeholder(R.drawable.lion_jpg_21)
                     .build(),
+                loading = { CircularProgressIndicator() },
                 contentDescription = "Product Image",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
