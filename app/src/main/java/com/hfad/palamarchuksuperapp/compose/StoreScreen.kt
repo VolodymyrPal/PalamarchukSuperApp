@@ -226,16 +226,16 @@ fun StoreScreenContent(
     productList: List<ProductDomainRW>,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
-    val state by viewModel.uiState.collectAsState()
-    val productList = state as State.Success
 
     LazyVerticalGrid(
         modifier = modifier
-            .background(color = md_theme_my_royal),
+            .fillMaxSize()
+            .background(color = md_theme_my_royal)
+            .padding(start = 8.dp, end = 8.dp, top = 8.dp),
         flingBehavior = ScrollableDefaults.flingBehavior(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Absolute.Center
     )
     {
         item(span = { GridItemSpan(2) }) {
@@ -286,9 +286,10 @@ fun StoreLazyCard(
     onEvent: (StoreViewModel.Event) -> Unit,
     productList: List<ProductDomainRW>,
 ) {
+    val iconPlus =
+        rememberAsyncImagePainter(model = Icons.Default.Add)
+    val iconMinus = rememberAsyncImagePainter(model = ImageVector.vectorResource(id = R.drawable.single_line_outlined))
 
-    val state by viewModel?.uiState!!.collectAsState()
-    val productList = state as State.Success
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
@@ -330,6 +331,8 @@ fun StoreLazyCard(
                         ListItemProduct(
                             item = item, // TODO test rep
                             onEvent = remember(item) { { event -> onEvent(event) } },
+                            iconPlus = iconPlus,
+                            iconMinus = iconMinus
                         )
                     }
                 }
@@ -343,9 +346,10 @@ fun ListItemProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
+    iconPlus : ImageVector = Icons.Default.Add,  //Passing remember vectors for faster UI updates
+    iconMinus : ImageVector = ImageVector.vectorResource(id = R.drawable.single_line_outlined), //Passing remember vectors for faster UI updates
 ) {
     Box(modifier = modifier.size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)) {
-
         var isVisible by remember { mutableStateOf(false) }
         var job by remember { mutableStateOf<Job?>(null) }
         var isPressed by remember { mutableStateOf(false) }
@@ -470,7 +474,7 @@ fun ListItemProduct(
 
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.product.images[0])
+                    .data(item.product.category.image)
                     .placeholder(R.drawable.bicon_camera_selector)
                     .error(R.drawable.bicon_home_black_filled)
                     .size(100)
@@ -558,7 +562,7 @@ fun ListItemProduct(
                     .align(Alignment.CenterStart)
                     .size(40.dp)
                     .alpha(if (isVisible || isPressed) 0.95f else 0f),
-                imageVector = ImageVector.vectorResource(id = R.drawable.single_line_outlined),
+                imageVector = iconMinus,
                 contentDescription = "Decrease Quantity"
             )
             Icon(
@@ -566,7 +570,7 @@ fun ListItemProduct(
                     .size(40.dp)
                     .align(Alignment.CenterEnd)
                     .alpha(if (isVisible || isPressed) 0.95f else 0f),
-                imageVector = Icons.Default.Add,
+                imageVector = iconPlus,
                 contentDescription = "Increase Quantity"
             )
         }
