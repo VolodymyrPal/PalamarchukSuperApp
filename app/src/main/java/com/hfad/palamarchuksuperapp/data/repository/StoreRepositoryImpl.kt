@@ -24,13 +24,13 @@ class StoreRepositoryImpl : StoreRepository {
         TODO("Not yet implemented")
     }
 
-    override fun fetchProductsTest() : Flow<List<Product>> {
+    override fun fetchProductsTest(): Flow<List<Product>> {
         val one = Product(
             id = 5839, title = "adversarium", price = 2103, category = ProductCategory(
                 id = 8971,
                 name = "Troy Mays",
                 image = "ligula"
-            ), images =  emptyList() //ProductImages(urls = listOf())
+            ), images = emptyList() //ProductImages(urls = listOf())
         )
         val two = Product(
             id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
@@ -157,8 +157,9 @@ class StoreRepositoryImplForPreview : StoreRepository {
             ), images = emptyList()//ProductImages(urls = listOf())
 
         )
-        val productList = MutableStateFlow(listOf(one, two, three, four, five, six, seven, eight, nine, ten))
 
+        val productList =
+            MutableStateFlow(listOf(one, two, three, four, five, six, seven, eight, nine, ten))
         return productList
     }
 
