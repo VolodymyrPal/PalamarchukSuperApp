@@ -80,7 +80,9 @@
     <style name="MyToolBarStyle" parent="Widget.Material3.CollapsingToolbar.Medium">
         <item name= "collapsedTitleTextColor"> @color/md_theme_onPrimaryContainer </item>
         <item name= "expandedTitleTextColor"> @color/md_theme_onPrimaryContainer </item>
-        <item name="contentScrim"> @color/md_theme_onPrimary </item>
+        <item name= "contentScrim"> @color/md_theme_onPrimary </item>
+        <item name="android:background">@color/md_theme_onPrimary</item>
+
     </style>
 
 

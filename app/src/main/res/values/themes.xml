@@ -93,10 +93,11 @@
         <item name="android:background">@drawable/rounded_shape</item>
     </style>
 
-    <style name="MyToolBarStyle" parent="Widget.Material3.CollapsingToolbar.Medium">
+    <style name="MyToolBarStyle" parent="Widget.Material3.CollapsingToolbar">
         <item name="collapsedTitleTextColor">@color/md_theme_primaryContainer</item>
         <item name="expandedTitleTextColor">@color/md_theme_primaryContainer</item>
         <item name="contentScrim">@color/md_theme_primary</item>
+        <item name="android:background">@color/md_theme_primary</item>
     </style>
 
 
