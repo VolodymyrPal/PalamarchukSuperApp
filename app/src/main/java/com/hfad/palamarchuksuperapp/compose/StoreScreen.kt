@@ -85,6 +85,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.SubcomposeAsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
@@ -109,9 +110,7 @@ fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: Navigation?,
     viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
-    //daggerViewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    //val viewModel: StoreViewModel by viewModel()
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -212,7 +211,8 @@ fun StoreScreen(
                 is State.Success -> {
                     StoreScreenContent(
                         modifier = Modifier,
-                        viewModel = viewModel,
+                        productList = (state as State.Success).data,
+                        onEvent = viewModel::event
                     )
                 }
             }
@@ -222,8 +222,9 @@ fun StoreScreen(
 
 @Composable
 fun StoreScreenContent(
-    modifier: Modifier = Modifier.fillMaxSize(),
-    viewModel: StoreViewModel,
+    modifier: Modifier = Modifier,
+    productList: List<ProductDomainRW>,
+    onEvent: (StoreViewModel.Event) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
     val productList = state as State.Success
@@ -240,26 +241,28 @@ fun StoreScreenContent(
         item(span = { GridItemSpan(2) }) {
             StoreLazyCard(
                 modifier = Modifier.fillMaxWidth(),
-                viewModel = viewModel
+                onEvent = onEvent,
+                productList = productList,
             )
         }
 
         item(span = { GridItemSpan(2) }) {
             StoreLazyCard(
                 modifier = Modifier,
-                viewModel = viewModel
+                productList = productList,
+                onEvent = onEvent
             )
         }
         items(
 //                        items = viewModel.testData.map { it.toProductDomainRW() },
 //                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
-            items = productList.data,
+            items = productList,
             key = { item: ProductDomainRW -> item.product.id },
         ) { item ->
             AnimatedVisibility(
                 modifier = Modifier
                     .animateItem(),
-                   // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                // .padding(0.dp, 0.dp, 10.dp, 10.dp),
                 visible = true,
                 exit = fadeOut(
                     animationSpec = TweenSpec(100, 100, LinearEasing)
@@ -270,7 +273,7 @@ fun StoreScreenContent(
             ) {
                 ListItemProduct(
                     item = item,
-                    onEvent = remember(item) { { event -> viewModel.event(event) } },
+                    onEvent = remember(item) { { event -> onEvent(event) } },
                 )
             }
         }
@@ -280,7 +283,8 @@ fun StoreScreenContent(
 @Composable
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel?,
+    onEvent: (StoreViewModel.Event) -> Unit,
+    productList: List<ProductDomainRW>,
 ) {
 
     val state by viewModel?.uiState!!.collectAsState()
@@ -309,7 +313,7 @@ fun StoreLazyCard(
                 ), // Add padding before start and after end
             ) {
                 items(
-                    items = productList.data,
+                    items = productList,
                     key = { item: ProductDomainRW -> item.product.id },
                 ) { item ->
                     AnimatedVisibility(
@@ -325,7 +329,7 @@ fun StoreLazyCard(
                     ) {
                         ListItemProduct(
                             item = item, // TODO test rep
-                            onEvent = remember(item) { { event -> viewModel?.event(event) } },
+                            onEvent = remember(item) { { event -> onEvent(event) } },
                         )
                     }
                 }
@@ -640,7 +644,9 @@ fun StoreLazyListForPreview(
         apiRepository = ProductRepository()
     ),
 ) {
-    StoreLazyCard(viewModel = viewModel)
+    StoreLazyCard(
+        productList = viewModel.testData,
+        onEvent = {})
 }
 
 @Composable
@@ -657,9 +663,6 @@ fun StoreScreenPreview() {
 
 const val HEIGHT_ITEM = 200
 const val WIDTH_ITEM = 150
-
-
-
 
 
 //@Composable
