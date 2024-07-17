@@ -27,23 +27,30 @@ class StoreViewModel @Inject constructor(
         MutableStateFlow(State.Processing)
     val myUiState = _myUiState.asStateFlow()
 
+    lateinit var testData: List<ProductDomainRW>
 
     init {
         event(Event.FetchSkills)
 
         viewModelScope.launch {
-            uiState.collect { state ->
-                when (state) {
-                    is State.Success -> {
-                        updateBasketList(state)
-                    }
+            launch {
+                uiState.collect { state ->
+                    when (state) {
+                        is State.Success -> {
+                            updateBasketList(state)
+                        }
 
-                    else -> {
-                        // do nothing
+                        else -> {
+                            // do nothing
+                        }
                     }
                 }
             }
+            launch {
+                testData = repository.fetchProducts().first().map { it.toProductDomainRW() }
+            }
         }
+
     }
 
     private fun updateBasketList(state: State.Success<List<ProductDomainRW>>) {
