@@ -85,7 +85,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.SubcomposeAsyncImage
-import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
@@ -286,10 +285,6 @@ fun StoreLazyCard(
     onEvent: (StoreViewModel.Event) -> Unit,
     productList: List<ProductDomainRW>,
 ) {
-    val iconPlus =
-        rememberAsyncImagePainter(model = Icons.Default.Add)
-    val iconMinus = rememberAsyncImagePainter(model = ImageVector.vectorResource(id = R.drawable.single_line_outlined))
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
@@ -346,10 +341,10 @@ fun ListItemProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
-    iconPlus : ImageVector = Icons.Default.Add,  //Passing remember vectors for faster UI updates
-    iconMinus : ImageVector = ImageVector.vectorResource(id = R.drawable.single_line_outlined), //Passing remember vectors for faster UI updates
-) {
+
+    ) {
     Box(modifier = modifier.size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)) {
+
         var isVisible by remember { mutableStateOf(false) }
         var job by remember { mutableStateOf<Job?>(null) }
         var isPressed by remember { mutableStateOf(false) }
@@ -394,6 +389,7 @@ fun ListItemProduct(
                                 }
                             }
                             try {
+
                                 awaitRelease()
                                 job?.cancel()
                                 onEvent(
