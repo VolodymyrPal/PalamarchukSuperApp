@@ -326,8 +326,6 @@ fun StoreLazyCard(
                         ListItemProduct(
                             item = item, // TODO test rep
                             onEvent = remember(item) { { event -> onEvent(event) } },
-                            iconPlus = iconPlus,
-                            iconMinus = iconMinus
                         )
                     }
                 }
@@ -403,7 +401,12 @@ fun ListItemProduct(
                             } catch (e: CancellationException) {
                                 Log.d("E: ", "event: ${e.message}")
                                 isPressed = false
-                                isVisible = true
+                                isVisible = false
+                            } catch (e: Exception) {
+                                job?.cancel()
+                                Log.d("Store screen exception: ", "event: ${e.message}")
+                                isPressed = false
+                                isVisible = false
                             }
                         }
                     )
@@ -448,7 +451,7 @@ fun ListItemProduct(
                             } catch (e: CancellationException) {
                                 job?.cancel()
                                 isPressed = false
-                                isVisible = true
+                                isVisible = false
                             } catch (e: Exception) {
                                 job?.cancel()
                                 Log.d("Store screen exception: ", "event: ${e.message}")
@@ -558,7 +561,7 @@ fun ListItemProduct(
                     .align(Alignment.CenterStart)
                     .size(40.dp)
                     .alpha(if (isVisible || isPressed) 0.95f else 0f),
-                imageVector = iconMinus,
+                imageVector = ImageVector.vectorResource(id = R.drawable.single_line_outlined),
                 contentDescription = "Decrease Quantity"
             )
             Icon(
@@ -566,7 +569,7 @@ fun ListItemProduct(
                     .size(40.dp)
                     .align(Alignment.CenterEnd)
                     .alpha(if (isVisible || isPressed) 0.95f else 0f),
-                imageVector = iconPlus,
+                imageVector = Icons.Default.Add,
                 contentDescription = "Increase Quantity"
             )
         }
