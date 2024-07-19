@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.presentation.screens
+package com.hfad.palamarchuksuperapp.ui.screens
 
 import android.os.Bundle
 import android.util.Log

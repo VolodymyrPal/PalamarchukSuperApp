@@ -46,7 +46,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.data.entities.Skill
-import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import java.util.UUID
 
 
