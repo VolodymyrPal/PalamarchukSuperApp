@@ -110,11 +110,13 @@ class StoreListAdapter(
                 productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
                 quantity.text = product.quantity.toString()
 
-                binding.quantityPlusCard.alpha = 0f
-                binding.quantityMinusCard.alpha = 0f
-                binding.quantity.alpha = 0f
+                productRating.rating = product.product.rating.rate.toFloat()
 
-                productImage.load(product.product.category.image?: "") {
+                quantityPlusCard.alpha = 0f
+                quantityMinusCard.alpha = 0f
+                quantity.alpha = 0f
+
+                productImage.load(product.product.image) {
                     size(50)
                     crossfade(true)
                     placeholder(R.drawable.lion_jpg_21)
