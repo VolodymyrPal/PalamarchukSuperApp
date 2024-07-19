@@ -1,5 +1,6 @@
 [versions]
 agp = "8.4.2"
+converterMoshi = "2.9.0"
 datastorePreferences = "1.1.1"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -11,6 +12,7 @@ material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 lifecycle = "2.8.2"
+moshiKotlin = "1.15.1"
 nav_version = "2.8.0-beta03"
 fragment_version = "1.8.0"
 databindingRuntime = "8.5.0"
@@ -22,7 +24,7 @@ room_version = "2.6.1"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -34,6 +36,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", name = "ui-tooling-preview" }
 compose-material3 = { module = "androidx.compose.material3:material3", name = "material3" }
 activity-compose = { module = "androidx.activity:activity-compose", name = "activity-compose", version.ref = "activity" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 viemodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
