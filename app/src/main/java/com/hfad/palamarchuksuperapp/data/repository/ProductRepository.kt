@@ -7,19 +7,19 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import javax.inject.Inject
 
-class ProductRepository @Inject constructor() : PlatziApi {
-    private var platziApi: PlatziApi
+class ProductRepository @Inject constructor() : FakeStoreApi {
+    private var fakeStoreApi: FakeStoreApi
 
     init {
         val httpClient: OkHttpClient = OkHttpClient.Builder().build()
         val retrofit: Retrofit =
-            Retrofit.Builder().baseUrl("https://api.escuelajs.co/api/v1/")
                 .addConverterFactory(GsonConverterFactory.create())
+            Retrofit.Builder().baseUrl("https://fakestoreapi.com/")
                 .client(httpClient)
                 .build()
-        platziApi = retrofit.create<PlatziApi>()
+        fakeStoreApi = retrofit.create<FakeStoreApi>()
     }
 
-    override suspend fun fetchProducts() = platziApi.fetchProducts()
+    override suspend fun fetchProducts() = fakeStoreApi.fetchProducts()
 
 }

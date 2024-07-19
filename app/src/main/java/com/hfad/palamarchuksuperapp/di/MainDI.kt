@@ -79,7 +79,7 @@ object NetworkModule {
         return StoreRepositoryImplForPreview()
     }
     @Provides
-    fun PlatziApiImpl(): PlatziApi {
+    fun PlatziApiImpl(): FakeStoreApi {
         return ProductRepository()
     }
 }
