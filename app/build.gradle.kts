@@ -101,6 +101,8 @@ dependencies {
     kapt(libs.room.annotation)
 
     implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.converter.moshi)
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
 
 }
