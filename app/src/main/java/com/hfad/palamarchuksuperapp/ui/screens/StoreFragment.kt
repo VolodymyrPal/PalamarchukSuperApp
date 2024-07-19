@@ -116,9 +116,13 @@ class StoreFragment : Fragment() {
             }
 
             is State.Success -> {
-                Log.d("HANDLE STATE: ", "${state.data.size}")
-                adapter1.setData(state.data)
-                adapter2.setData(state.data)
+                val productListInter = state.data.filter {
+                    state.data[0].product.category != it.product.category }
+                val finalProductList = productListInter.filter {
+                    productListInter[0].product.category == it.product.category }
+
+                adapter1.setData(state.data.filter { state.data[0].product.category == it.product.category })
+                adapter2.setData(finalProductList)
                 adapter3.setData(state.data)
             }
         }

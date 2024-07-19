@@ -241,16 +241,23 @@ fun StoreScreenContent(
             StoreLazyCard(
                 modifier = Modifier.fillMaxWidth(),
                 onEvent = onEvent,
-                productList = productList,
+                productList = productList.filter { productList[0].product.category == it.product.category },
             )
         }
 
         item(span = { GridItemSpan(2) }) {
         item(span = { GridItemSpan(itemSpan) }) {
+
+            val productListInter = productList.filter {
+                productList[0].product.category != it.product.category }
+
+            val finalProductList = productListInter.filter {
+                productListInter[0].product.category == it.product.category }
+
             StoreLazyCard(
                 modifier = Modifier,
-                productList = productList,
-                onEvent = onEvent
+                onEvent = onEvent,
+                productList = finalProductList
             )
         }
         items(
@@ -474,7 +481,7 @@ fun ListItemProduct(
 
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.product.category.image)
+                    .data(item.product.image)
                     .placeholder(R.drawable.bicon_camera_selector)
                     .error(R.drawable.bicon_home_black_filled)
                     .size(100)
@@ -496,13 +503,10 @@ fun ListItemProduct(
                 overflow = TextOverflow.Ellipsis,
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
-                var rating by remember { mutableFloatStateOf(5f) }
                 StarRatingBar(
                     maxStars = 5,
-                    rating = rating,
-                    onRatingChanged = { ratingChange ->
-                        rating = ratingChange
-                    },
+                    rating = item.product.rating.rate.toFloat(),
+                    onRatingChanged = {  },
                     modifier = Modifier
                 )
 
@@ -624,17 +628,17 @@ fun ListItemProductPreview() {
     ListItemProduct(
         item = ProductDomainRW(
             product = Product(
-                id = 6360,
-                title = "efficiantur",
-                price = 1161,
-                description = "tation",
-                category = ProductCategory(
-                    id = 6080,
-                    name = "Les Vaughn",
-                    image = "habeo"
-                ),
-                images = listOf()
-            ), quantity = 5234, liked = false
+                id = 8101,
+                title = "intellegat",
+                price = 1112.0,
+                description = "vituperatoribus",
+                category = "eripuit",
+                image = "himenaeos",
+                rating = ProductRating(
+                    rate = 102.103,
+                    count = 7238
+                )
+            )
         )
     )
 }
