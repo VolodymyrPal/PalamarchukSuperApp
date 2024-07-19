@@ -64,7 +64,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
-                        android:text="Lions"
+                        android:text="Category #1"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
@@ -72,6 +72,7 @@
                         android:id="@+id/section_1_recyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:nestedScrollingEnabled="false"
                         android:orientation="horizontal"
                         tools:layout="@layout/list_item_product" />
@@ -109,6 +110,7 @@
                         android:id="@+id/section_2_recyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:nestedScrollingEnabled="false"
                         android:scrollbars="horizontal" />
 
@@ -146,6 +148,7 @@
                         android:id="@+id/section_3_recyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:nestedScrollingEnabled="false"
                         android:scrollbars="horizontal" />
 

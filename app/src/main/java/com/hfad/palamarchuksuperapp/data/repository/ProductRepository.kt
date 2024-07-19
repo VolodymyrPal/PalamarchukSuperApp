@@ -13,8 +13,8 @@ class ProductRepository @Inject constructor() : FakeStoreApi {
     init {
         val httpClient: OkHttpClient = OkHttpClient.Builder().build()
         val retrofit: Retrofit =
-                .addConverterFactory(GsonConverterFactory.create())
             Retrofit.Builder().baseUrl("https://fakestoreapi.com/")
+                .addConverterFactory(MoshiConverterFactory.create().asLenient())  // TODO asLenient good only for testing, not production
                 .client(httpClient)
                 .build()
         fakeStoreApi = retrofit.create<FakeStoreApi>()
