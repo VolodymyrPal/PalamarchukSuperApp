@@ -1,8 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.entities.Product
-import com.hfad.palamarchuksuperapp.data.entities.ProductCategory
-import com.hfad.palamarchuksuperapp.data.entities.ProductImages
+import com.hfad.palamarchuksuperapp.data.entities.ProductRating
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

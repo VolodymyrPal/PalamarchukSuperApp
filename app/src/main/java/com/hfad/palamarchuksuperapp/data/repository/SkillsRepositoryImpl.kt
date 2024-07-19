@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.data.repository
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
-import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID

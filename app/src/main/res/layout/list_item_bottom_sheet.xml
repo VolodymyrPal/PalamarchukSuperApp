@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:isScrollContainer="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        tools:context=".presentation.screens.BottomSheetFragment">
+        tools:context=".ui.screens.BottomSheetFragment">
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="200dp"

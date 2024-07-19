@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/md_theme_inverseOnSurface"
         android:isScrollContainer="true"
-        tools:context=".presentation.screens.MainActivity">
+        tools:context=".ui.screens.MainActivity">
 
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

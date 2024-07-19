@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
 import com.hfad.palamarchuksuperapp.data.entities.Skill
-import com.hfad.palamarchuksuperapp.presentation.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import kotlinx.coroutines.flow.Flow
 
 interface SkillRepository {

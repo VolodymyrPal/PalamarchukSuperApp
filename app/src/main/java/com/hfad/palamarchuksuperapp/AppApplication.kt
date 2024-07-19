@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp
 import AppComponent
 import android.app.Application
 import android.content.Context
-import com.hfad.palamarchuksuperapp.domain.repository.PreferencesRepository
+import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File

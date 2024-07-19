@@ -7,8 +7,8 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 
 import android.app.Activity
 import android.content.Intent
-import com.hfad.palamarchuksuperapp.compose.ComposeMainActivity
-import com.hfad.palamarchuksuperapp.presentation.screens.MainActivity
+import com.hfad.palamarchuksuperapp.ui.compose.ComposeMainActivity
+import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 
 class SwitchToActivityUseCase {
     operator fun invoke(oldActivity: Activity, key: ActivityKey) {

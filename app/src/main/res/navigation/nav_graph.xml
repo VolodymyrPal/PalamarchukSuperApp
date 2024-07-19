@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/mainScreenFragment"
         tools:layout="@layout/main_screen_fragment"
-        android:name="com.hfad.palamarchuksuperapp.presentation.screens.MainScreenFragment"
+        android:name="com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment"
         android:label="MainScreenFragment" >
         <action
             android:id="@+id/to_skills_fragment"
@@ -19,11 +19,11 @@
     </fragment>
     <fragment
         android:id="@+id/skillsFragment"
-        android:name="com.hfad.palamarchuksuperapp.presentation.screens.SkillsFragment"
+        android:name="com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment"
         android:label="fragment_skills"
         tools:layout="@layout/fragment_skills" />
     <fragment
         android:id="@+id/storeFragment"
-        android:name="com.hfad.palamarchuksuperapp.presentation.screens.StoreFragment"
+        android:name="com.hfad.palamarchuksuperapp.ui.screens.StoreFragment"
         android:label="StoreFragment" />
 </navigation>
