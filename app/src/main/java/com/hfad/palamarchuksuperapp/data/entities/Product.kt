@@ -1,21 +1,30 @@
 package com.hfad.palamarchuksuperapp.data.entities
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Product(
+    @Json(name="id")
     val id: Int = 0,
+    @Json(name="title")
     val title: String = "",
-    val price: Int = 0,
+    @Json(name="price")
+    val price: Double = 0.0,
+    @Json(name="description")
     val description: String = "",
-    val category: ProductCategory = ProductCategory(),
-    val images: List<String> = emptyList(),
-)
-
-data class ProductCategory (
-    val id: Int = 0,
-    val name: String = "",
+    @Json(name="category")
+    val category: String = "",
+    @Json(name="image")
     val image: String = "",
+    @Json(name = "rating")
+    val rating: ProductRating = ProductRating()
 )
 
-data class ProductImages (
-    val urls: List<String> = emptyList()
+@JsonClass (generateAdapter = true)
+data class ProductRating (
+    @Json(name="rate")
+    val rate: Double = 0.0,
+    @Json(name="count")
+    val count: Int = 0
 )
