@@ -61,9 +61,11 @@ class StoreFragment : Fragment() {
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.section2RecyclerView.adapter = adapter2
 
+        val density = view.context.resources.displayMetrics.density
+        val numSpan = (resources.displayMetrics.widthPixels/density/WIDTH_ITEM).coerceAtLeast(1f)
         val adapter3 = StoreListAdapter(viewModel, parentFragmentManager)
         binding.section3RecyclerView.layoutManager =
-            GridLayoutManager(context, 2, LinearLayoutManager.VERTICAL, false)
+            GridLayoutManager(context, numSpan.toInt(), LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
 
         //  viewModel.event(StoreViewModel.Event.FetchSkills)

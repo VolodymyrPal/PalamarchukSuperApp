@@ -225,7 +225,7 @@ fun StoreScreenContent(
     productList: List<ProductDomainRW>,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
-
+    val itemSpan = LocalConfiguration.current.screenWidthDp/WIDTH_ITEM
     LazyVerticalGrid(
         modifier = modifier
             .fillMaxSize()
@@ -237,7 +237,7 @@ fun StoreScreenContent(
         horizontalArrangement = Arrangement.Absolute.Center
     )
     {
-        item(span = { GridItemSpan(2) }) {
+        item(span = { GridItemSpan(itemSpan) }) {
             StoreLazyCard(
                 modifier = Modifier.fillMaxWidth(),
                 onEvent = onEvent,
@@ -246,6 +246,7 @@ fun StoreScreenContent(
         }
 
         item(span = { GridItemSpan(2) }) {
+        item(span = { GridItemSpan(itemSpan) }) {
             StoreLazyCard(
                 modifier = Modifier,
                 productList = productList,
