@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +56,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,6 +69,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -116,9 +117,12 @@ fun StoreScreen(
         topBar = {
             MediumTopAppBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.primaryContainer,
-                    scrolledContainerColor = MaterialTheme.colorScheme.primary
+                    containerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onPrimary,             // Hiding top bar
+                    titleContentColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
+                    else MaterialTheme.colorScheme.onPrimaryContainer,
+                    scrolledContainerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onPrimary      // Expanded top bar
                 ),
                 title = {
                     Text(
@@ -245,7 +249,6 @@ fun StoreScreenContent(
             )
         }
 
-        item(span = { GridItemSpan(2) }) {
         item(span = { GridItemSpan(itemSpan) }) {
 
             val productListInter = productList.filter {
@@ -306,7 +309,7 @@ fun StoreLazyCard(
         ) {
             Text(
                 modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                text = "Lions",
+                text = productList[0].product.category.uppercase(),
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
             )
