@@ -25,43 +25,71 @@ class StoreRepositoryImpl : StoreRepository {
 
     override fun fetchProductsTest(): Flow<List<Product>> {
         val one = Product(
-            id = 5839, title = "adversarium", price = 2103, category = ProductCategory(
-                id = 8971,
-                name = "Troy Mays",
-                image = "ligula"
-            ), images = emptyList() //ProductImages(urls = listOf())
+            id = 3080,
+            title = "dis",
+            price = 3550.0,
+            description = "splendide",
+            category = "percipit",
+            image = "mel",
+            rating = ProductRating(
+                rate = 2.3,
+                count = 7867
+            )
+
         )
         val two = Product(
-            id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
-                id = 2222,
-                name = "Tigers",
-                image = "quo"
-            ), images = emptyList() // ProductImages(urls = listOf())
+            id = 5851,
+            title = "fugit",
+            price = 8524.0,
+            description = "ubique",
+            category = "montes",
+            image = "voluptaria",
+            rating = ProductRating(
+                rate = 6.7,
+                count = 1920
+            )
+
         )
 
         val three = Product(
-            id = 8772, title = "vivendo", price = 110, category = ProductCategory(
-                id = 3333,
-                name = "Tigers",
-                image = "quo"
-            ), images = emptyList()// ProductImages(urls = listOf())
+            id = 3541,
+            title = "mutat",
+            price = 7095.0,
+            description = "alia",
+            category = "numquam",
+            image = "iuvaret",
+            rating = ProductRating(
+                rate = 10.11,
+                count = 7348
+            )
+
         )
 
         val four = Product(
-            id = 9727, title = "viris", price = 5347, category = ProductCategory(
-                id = 6016,
-                name = "Jay Berger",
-                image = "leo"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 7729,
+            title = "varius",
+            price = 8517.0,
+            description = "veri",
+            category = "principes",
+            image = "ancillae",
+            rating = ProductRating(
+                rate = 14.15,
+                count = 6346
+            )
 
         )
 
         val five = Product(
-            id = 3490, title = "meliore", price = 4427, category = ProductCategory(
-                id = 8213,
-                name = "Truman Welch",
-                image = "scelerisque"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 5569,
+            title = "facilis",
+            price = 2877.0,
+            description = "alterum",
+            category = "neque",
+            image = "dicit",
+            rating = ProductRating(
+                rate = 18.19,
+                count = 9885
+            )
 
         )
         val productList = MutableStateFlow(listOf(one, two, three, four, five))
@@ -73,87 +101,143 @@ class StoreRepositoryImpl : StoreRepository {
 class StoreRepositoryImplForPreview : StoreRepository {
     override fun fetchProducts(): Flow<List<Product>> {
         val one = Product(
-            id = 5839, title = "adversarium", price = 2103, category = ProductCategory(
-                id = 8971,
-                name = "Troy Mays",
-                image = "ligula"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 2589,
+            title = "nonumy",
+            price = 5638.0,
+            description = "suavitate",
+            category = "nascetur",
+            image = "pellentesque",
+            rating = ProductRating(
+                rate = 22.23,
+                count = 1453
+            )
+
         )
         val two = Product(
-            id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
-                id = 2222,
-                name = "Tigers",
-                image = "quo"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 8328,
+            title = "suas",
+            price = 4893.0,
+            description = "sodales",
+            category = "adipiscing",
+            image = "ponderum",
+            rating = ProductRating(
+                rate = 26.27,
+                count = 9346
+            )
+
         )
 
         val three = Product(
-            id = 8772, title = "vivendo", price = 110, category = ProductCategory(
-                id = 3333,
-                name = "Tigers",
-                image = "quo"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 2588,
+            title = "fuisset",
+            price = 7040.0,
+            description = "ipsum",
+            category = "feugiat",
+            image = "qualisque",
+            rating = ProductRating(
+                rate = 30.31,
+                count = 6197
+            )
+
         )
 
         val four = Product(
-            id = 9727, title = "viris", price = 5347, category = ProductCategory(
-                id = 6016,
-                name = "Jay Berger",
-                image = "leo"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 2497,
+            title = "laoreet",
+            price = 2419.0,
+            description = "sumo",
+            category = "rutrum",
+            image = "pulvinar",
+            rating = ProductRating(
+                rate = 34.35,
+                count = 9073
+            )
+
 
         )
 
         val five = Product(
-            id = 3490, title = "meliore", price = 4427, category = ProductCategory(
-                id = 8213,
-                name = "Truman Welch",
-                image = "scelerisque"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 2534,
+            title = "consectetur",
+            price = 4170.0,
+            description = "ad",
+            category = "eam",
+            image = "alterum",
+            rating = ProductRating(
+                rate = 38.39,
+                count = 6416
+            )
+
 
         )
         val six = Product(
-            id = 7820, title = "quem", price = 1640, category = ProductCategory(
-                id = 1628,
-                name = "Christi Glover",
-                image = "taciti"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 1610,
+            title = "aenean",
+            price = 3957.0,
+            description = "definitionem",
+            category = "conclusionemque",
+            image = "nisi",
+            rating = ProductRating(
+                rate = 58.59,
+                count = 5393
+            )
+
 
         )
         val seven = Product(
-            id = 5049, title = "petentium", price = 5247, category = ProductCategory(
-                id = 5868,
-                name = "Belinda Carroll",
-                image = "sea"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 3645,
+            title = "ancillae",
+            price = 3688.0,
+            description = "consetetur",
+            category = "sadipscing",
+            image = "graeco",
+            rating = ProductRating(
+                rate = 54.55,
+                count = 1279
+            )
+
 
         )
 
         val eight = Product(
-            id = 8710, title = "ne", price = 1622, category = ProductCategory(
-                id = 5070,
-                name = "Tomas Osborn",
-                image = "scripta"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 3617,
+            title = "suspendisse",
+            price = 6301.0,
+            description = "quidam",
+            category = "wisi",
+            image = "sale",
+            rating = ProductRating(
+                rate = 50.51,
+                count = 4509
+            )
 
         )
 
         val nine = Product(
-            id = 5423, title = "pretium", price = 8339, category = ProductCategory(
-                id = 4317,
-                name = "Saundra Valdez",
-                image = "magnis"
-            ), images = emptyList()//ProductImages(urls = listOf())
-
+            id = 3419,
+            title = "gravida",
+            price = 2200.0,
+            description = "tempor",
+            category = "prodesset",
+            image = "movet",
+            rating = ProductRating(
+                rate = 46.47,
+                count = 1367
+            )
 
         )
 
         val ten = Product(
-            id = 7184, title = "definitiones", price = 7724, category = ProductCategory(
-                id = 5407,
-                name = "Michele Le",
-                image = "senectus"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 1937,
+            title = "ferri",
+            price = 7683.0,
+            description = "et",
+            category = "nulla",
+            image = "possim",
+            rating = ProductRating(
+                rate = 42.43,
+                count = 4660
+            )
 
         )
 
@@ -176,87 +260,138 @@ class StoreRepositoryImplForPreview : StoreRepository {
 
     override fun fetchProductsTest(): Flow<List<Product>> {
         val one = Product(
-            id = 5839, title = "adversarium", price = 2103, category = ProductCategory(
-                id = 8971,
-                name = "Troy Mays",
-                image = "ligula"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 7841,
+            title = "mei",
+            price = 6628.0,
+            description = "fabellas",
+            category = "diam",
+            image = "definitiones",
+            rating = ProductRating(
+                rate = 98.99,
+                count = 5671
+            )
+
         )
         val two = Product(
-            id = 8777, title = "vivendo", price = 1234, category = ProductCategory(
-                id = 2222,
-                name = "Tigers",
-                image = "quo"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 1251,
+            title = "sapientem",
+            price = 7910.0,
+            description = "felis",
+            category = "eget",
+            image = "at",
+            rating = ProductRating(
+                rate = 94.95,
+                count = 8308
+            )
+
         )
 
         val three = Product(
-            id = 8772, title = "vivendo", price = 110, category = ProductCategory(
-                id = 3333,
-                name = "Tigers",
-                image = "quo"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 6493,
+            title = "fermentum",
+            price = 3466.0,
+            description = "sumo",
+            category = "duo",
+            image = "libero",
+            rating = ProductRating(
+                rate = 90.91,
+                count = 6085
+            )
         )
 
         val four = Product(
-            id = 9727, title = "viris", price = 5347, category = ProductCategory(
-                id = 6016,
-                name = "Jay Berger",
-                image = "leo"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 4134,
+            title = "ridiculus",
+            price = 4810.0,
+            description = "posse",
+            category = "quaeque",
+            image = "accumsan",
+            rating = ProductRating(
+                rate = 86.87,
+                count = 7737
+            )
 
         )
 
         val five = Product(
-            id = 3490, title = "meliore", price = 4427, category = ProductCategory(
-                id = 8213,
-                name = "Truman Welch",
-                image = "scelerisque"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 6008,
+            title = "vel",
+            price = 4074.0,
+            description = "vulputate",
+            category = "docendi",
+            image = "nihil",
+            rating = ProductRating(
+                rate = 82.83,
+                count = 7827
+            )
 
         )
         val six = Product(
-            id = 7820, title = "quem", price = 1640, category = ProductCategory(
-                id = 1628,
-                name = "Christi Glover",
-                image = "taciti"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 5807,
+            title = "instructior",
+            price = 3108.0,
+            description = "inceptos",
+            category = "referrentur",
+            image = "postea",
+            rating = ProductRating(
+                rate = 78.79,
+                count = 9612
+            )
 
         )
         val seven = Product(
-            id = 5049, title = "petentium", price = 5247, category = ProductCategory(
-                id = 5868,
-                name = "Belinda Carroll",
-                image = "sea"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 4485,
+            title = "luctus",
+            price = 7969.0,
+            description = "nam",
+            category = "signiferumque",
+            image = "arcu",
+            rating = ProductRating(
+                rate = 74.75,
+                count = 6535
+            )
 
         )
 
         val eight = Product(
-            id = 8710, title = "ne", price = 1622, category = ProductCategory(
-                id = 5070,
-                name = "Tomas Osborn",
-                image = "scripta"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 5765,
+            title = "perpetua",
+            price = 3170.0,
+            description = "consul",
+            category = "odio",
+            image = "mediocritatem",
+            rating = ProductRating(
+                rate = 70.71,
+                count = 2539
+            )
 
         )
 
         val nine = Product(
-            id = 5423, title = "pretium", price = 8339, category = ProductCategory(
-                id = 4317,
-                name = "Saundra Valdez",
-                image = "magnis"
-            ), images = emptyList()//ProductImages(urls = listOf())
-
+            id = 3736,
+            title = "auctor",
+            price = 5425.0,
+            description = "consul",
+            category = "litora",
+            image = "tritani",
+            rating = ProductRating(
+                rate = 66.67,
+                count = 8740
+            )
 
         )
 
         val ten = Product(
-            id = 7184, title = "definitiones", price = 7724, category = ProductCategory(
-                id = 5407,
-                name = "Michele Le",
-                image = "senectus"
-            ), images = emptyList()//ProductImages(urls = listOf())
+            id = 5292,
+            title = "viris",
+            price = 1602.0,
+            description = "aperiri",
+            category = "partiendo",
+            image = "legimus",
+            rating = ProductRating(
+                rate = 62.63,
+                count = 8296
+            )
 
         )
         val productList = MutableStateFlow(listOf(one, two, three, four, five, six, seven, eight, nine, ten))
