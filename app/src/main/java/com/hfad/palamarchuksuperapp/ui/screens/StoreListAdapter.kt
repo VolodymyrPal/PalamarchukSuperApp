@@ -53,9 +53,15 @@ class StoreListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
-        val binding =
-            ListItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ProductHolder(binding, viewModel, fragmentManager)
+        if (viewType == 1) {
+            val binding =
+                ListItemProductRecyclerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ProductHolder.ProductRecyclerHolder(binding, viewModel, fragmentManager)
+        } else {
+            val binding =
+                ListItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ProductHolder.ProductItemHolder(binding, viewModel, fragmentManager)
+        }
     }
 
     override fun onBindViewHolder(holder: ProductHolder, position: Int) {
@@ -72,13 +78,39 @@ class StoreListAdapter(
         }
     }
 
-    class ProductHolder(
-        private val binding: ListItemProductBinding,
-        private val viewModel: StoreViewModel,
-        private val parentFragmentManager: FragmentManager,
-    ) : RecyclerView.ViewHolder(binding.root) {
 
-        private var timerJob: Job? = null
+    sealed class ProductHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        var adapter1 : StoreListAdapter? = null
+        var adapter2 : StoreListAdapter? = null
+
+        abstract fun bind(product: ProductDomainRW)
+
+        class ProductRecyclerHolder(
+            private val binding: ListItemProductRecyclerBinding,
+            private val viewModel: StoreViewModel,
+            private val parentFragmentManager: FragmentManager,
+        ) : ProductHolder(binding.root) {
+
+            init {
+                adapter1?.setData(viewModel.testData)
+                adapter2?.setData(viewModel.testData)
+            }
+
+            override fun bind(product: ProductDomainRW) {
+                val adapter = StoreListAdapter(viewModel, parentFragmentManager)
+                binding.section1RecyclerView.layoutManager =
+                    LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+                binding.section1RecyclerView.adapter = adapter
+            }
+        }
+
+        class ProductItemHolder(
+            private val binding: ListItemProductBinding,
+            private val viewModel: StoreViewModel,
+            private val parentFragmentManager: FragmentManager,
+        ) : ProductHolder(binding.root) {
+            private var timerJob: Job? = null
 
         private fun onClick() {
             timerJob?.cancel()
