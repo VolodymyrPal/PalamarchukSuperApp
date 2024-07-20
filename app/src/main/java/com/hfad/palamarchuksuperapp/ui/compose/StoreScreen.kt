@@ -231,7 +231,7 @@ fun StoreScreenContent(
     productList: List<ProductDomainRW>,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
-    val itemSpan = LocalConfiguration.current.screenWidthDp/WIDTH_ITEM
+    val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
     LazyVerticalGrid(
         modifier = modifier
             .fillMaxSize()
@@ -567,6 +567,7 @@ fun ListItemProduct(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .alpha(if (quantityToBuy > 0 || (isVisible || isPressed)) 0.95f else 0f)
+                    .background(Color.Gray.copy(alpha = 0.5f), shape = RoundedCornerShape(50))
             )
             Icon(
                 modifier = Modifier

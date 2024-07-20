@@ -13,11 +13,13 @@ import android.view.accessibility.AccessibilityEvent
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
+import com.hfad.palamarchuksuperapp.databinding.ListItemProductRecyclerBinding
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import kotlinx.coroutines.Job
@@ -28,12 +30,27 @@ import kotlinx.coroutines.launch
 class StoreListAdapter(
     private val viewModel: StoreViewModel,
     private val fragmentManager: FragmentManager,
-) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductDiffItemCallback()) {
+) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductHolder.ProductDiffItemCallback()) {
+
+    var listOne: List<ProductDomainRW> = emptyList()
+    var listTwo: List<ProductDomainRW> = emptyList()
 
     fun setData(productList: List<ProductDomainRW>) {
+        listOne = productList.filter { productList[0].product.category == it.product.category }
+
+        val productListInter = productList.filter {
+            productList[0].product.category != it.product.category }
+        listTwo = productListInter.filter {
+            productListInter[0].product.category == it.product.category }
+        Log.d("Data submitted: ", "SUBMITTED")
         submitList(productList)
     }
 
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == 0 || position == 1) 1
+        else super.getItemViewType(position)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
         val binding =
