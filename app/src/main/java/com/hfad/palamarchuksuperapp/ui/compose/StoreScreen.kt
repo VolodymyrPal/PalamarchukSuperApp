@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -111,9 +112,13 @@ fun StoreScreen(
     navController: Navigation?,
     viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     Scaffold(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             MediumTopAppBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -147,9 +152,7 @@ fun StoreScreen(
                         )
                     }
                 },
-                scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-                    rememberTopAppBarState()
-                )
+                scrollBehavior = scrollBehavior
             )
 
         },
@@ -185,7 +188,6 @@ fun StoreScreen(
                     bottom = paddingValues.calculateBottomPadding(),
                     top = paddingValues.calculateTopPadding()
                 )
-
         ) {
             val state by viewModel.uiState.collectAsState()
 
@@ -252,10 +254,12 @@ fun StoreScreenContent(
         item(span = { GridItemSpan(itemSpan) }) {
 
             val productListInter = productList.filter {
-                productList[0].product.category != it.product.category }
+                productList[0].product.category != it.product.category
+            }
 
             val finalProductList = productListInter.filter {
-                productListInter[0].product.category == it.product.category }
+                productListInter[0].product.category == it.product.category
+            }
 
             StoreLazyCard(
                 modifier = Modifier,
@@ -304,7 +308,7 @@ fun StoreLazyCard(
             modifier = Modifier
                 //  .padding(4.dp)
                 .fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = Color.Blue),
             elevation = CardDefaults.cardElevation(5.dp)
         ) {
             Text(
@@ -509,7 +513,7 @@ fun ListItemProduct(
                 StarRatingBar(
                     maxStars = 5,
                     rating = item.product.rating.rate.toFloat(),
-                    onRatingChanged = {  },
+                    onRatingChanged = { },
                     modifier = Modifier
                 )
 
