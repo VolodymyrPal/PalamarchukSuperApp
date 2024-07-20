@@ -74,7 +74,7 @@ class StoreListAdapter(
             holder.bind(item)
         } else {
             val bundle = payloads[0] as Bundle
-            holder.updateQuantity(bundle, item)
+            (holder as ProductHolder.ProductItemHolder).updateQuantity(bundle, item)
         }
     }
 
@@ -112,90 +112,104 @@ class StoreListAdapter(
         ) : ProductHolder(binding.root) {
             private var timerJob: Job? = null
 
-        private fun onClick() {
-            timerJob?.cancel()
-            timerJob = viewModel.viewModelScope.launch {
-                binding.quantityPlusCard.alpha = 1f
-                binding.quantityMinusCard.alpha = 1f
-                binding.quantity.alpha = 1f
-                delay(2000)
-                binding.quantityPlusCard.alpha = 0f
-                binding.quantityMinusCard.alpha = 0f
-                if (binding.quantity.text == "0") {
-                    binding.quantity.alpha = 0f
-                } else {
+            private fun onClick() {
+                timerJob?.cancel()
+                timerJob = viewModel.viewModelScope.launch {
+                    binding.quantityPlusCard.alpha = 1f
+                    binding.quantityMinusCard.alpha = 1f
                     binding.quantity.alpha = 1f
+                    delay(2000)
+                    binding.quantityPlusCard.alpha = 0f
+                    binding.quantityMinusCard.alpha = 0f
+                    if (binding.quantity.text == "0") {
+                        binding.quantity.alpha = 0f
+                    } else {
+                        binding.quantity.alpha = 1f
+                    }
                 }
             }
-        }
 
-        fun updateQuantity(bundle: Bundle, product: ProductDomainRW) {
-            val quantity = bundle.getInt(PAYLOAD_QUANTITY)
-            binding.quantity.text = quantity.toString()
-            binding.quantityPlus.setOnClickListener {
-                viewModel.event(
-                    event = StoreViewModel.Event.AddProduct(
-                        product = product,
-                        quantity = 1
-                    )
-                )
-            }
-            binding.quantityMinus.setOnClickListener {
-                viewModel.event(
-                    event = StoreViewModel.Event.AddProduct(
-                        product = product,
-                        quantity = -1
-                    )
-                )
-            }
-            onClick()
-        }
-
-        @SuppressLint("ClickableViewAccessibility")
-        fun bind(product: ProductDomainRW) {
-            binding.apply {
-                productName.text = "${product.product.title}"
-                productPrice.text = "${product.product.price}$"
-                productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
-                quantity.text = product.quantity.toString()
-
-                productRating.rating = product.product.rating.rate.toFloat()
-
-                quantityPlusCard.alpha = 0f
-                quantityMinusCard.alpha = 0f
-                quantity.alpha = 0f
-
-                productImage.load(product.product.image) {
-                    size(50)
-                    crossfade(true)
-                    placeholder(R.drawable.lion_jpg_21)
-                    this.error(R.drawable.lion_jpg_21)
-                }
-
-                quantityPlusCard.visibility = View.VISIBLE
-                quantityMinusCard.visibility = View.VISIBLE
-                quantity.visibility = View.VISIBLE
-
-                quantityPlus.setOnLongClickListener {
+            fun updateQuantity(bundle: Bundle, product: ProductDomainRW) {
+                val quantity = bundle.getInt(PAYLOAD_QUANTITY)
+                binding.quantity.text = quantity.toString()
+                binding.quantityPlus.setOnClickListener {
                     viewModel.event(
-                        event = StoreViewModel.Event.SetItemToBasket(
+                        event = StoreViewModel.Event.AddProduct(
                             product = product,
                             quantity = 1
                         )
                     )
-                    false
                 }
+                binding.quantityMinus.setOnClickListener {
+                    viewModel.event(
+                        event = StoreViewModel.Event.AddProduct(
+                            product = product,
+                            quantity = -1
+                        )
+                    )
+                }
+                onClick()
+            }
 
-                var timerJob: Job? = null
+            @SuppressLint("ClickableViewAccessibility")
+            override fun bind(product: ProductDomainRW) {
+                binding.apply {
+                    productName.text = "${product.product.title}"
+                    productPrice.text = "${product.product.price}$"
+                    productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
+                    quantity.text = product.quantity.toString()
 
-                quantityPlus.setOnTouchListener { v, event ->
-                    when (event.action) {
-                        MotionEvent.ACTION_DOWN -> {
-                            timerJob = viewModel.viewModelScope.launch {
-                                delay(500)
-                                onClick()
-                                while (true) {
-                                    delay(20)
+                    productRating.rating = product.product.rating.rate.toFloat()
+
+                    quantityPlusCard.alpha = 0f
+                    quantityMinusCard.alpha = 0f
+                    quantity.alpha = 0f
+
+                    productImage.load(product.product.image) {
+                        size(50)
+                        crossfade(true)
+                        placeholder(R.drawable.lion_jpg_21)
+                        this.error(R.drawable.lion_jpg_21)
+                    }
+
+                    quantityPlusCard.visibility = View.VISIBLE
+                    quantityMinusCard.visibility = View.VISIBLE
+                    quantity.visibility = View.VISIBLE
+
+                    quantityPlus.setOnLongClickListener {
+                        viewModel.event(
+                            event = StoreViewModel.Event.SetItemToBasket(
+                                product = product,
+                                quantity = 1
+                            )
+                        )
+                        false
+                    }
+
+                    var timerJob: Job? = null
+
+                    quantityPlus.setOnTouchListener { v, event ->
+                        when (event.action) {
+                            MotionEvent.ACTION_DOWN -> {
+                                timerJob = viewModel.viewModelScope.launch {
+                                    delay(500)
+                                    onClick()
+                                    while (true) {
+                                        delay(20)
+                                        viewModel.event(
+                                            event = StoreViewModel.Event.AddProduct(
+                                                product = product,
+                                                quantity = 1
+                                            )
+                                        )
+                                    }
+                                }
+                                true
+                            }
+
+                            MotionEvent.ACTION_UP -> {
+                                timerJob?.cancel()
+                                if (event.downTime - event.eventTime < ViewConfiguration.getLongPressTimeout()) {
                                     viewModel.event(
                                         event = StoreViewModel.Event.AddProduct(
                                             product = product,
@@ -203,69 +217,59 @@ class StoreListAdapter(
                                         )
                                     )
                                 }
+                                true
                             }
-                            true
-                        }
 
-                        MotionEvent.ACTION_UP -> {
-                            timerJob?.cancel()
-                            if (event.downTime - event.eventTime < ViewConfiguration.getLongPressTimeout()) {
-                                viewModel.event(
-                                    event = StoreViewModel.Event.AddProduct(
-                                        product = product,
-                                        quantity = 1
-                                    )
-                                )
+                            MotionEvent.ACTION_MOVE -> {
+                                true
                             }
-                            true
-                        }
 
-                        MotionEvent.ACTION_MOVE -> {
-                            true
-                        }
-
-                        else -> {
-                            timerJob?.cancel()
-                            v.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED)
-                            Log.d("MotionEvent", "$event")
-                            false
+                            else -> {
+                                timerJob?.cancel()
+                                v.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED)
+                                Log.d("MotionEvent", "$event")
+                                false
+                            }
                         }
                     }
-                }
-                productPrice.paintFlags =
-                    productPriceDiscounted.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            }
-        }
-    }
-
-    class ProductDiffItemCallback : DiffUtil.ItemCallback<ProductDomainRW>() {
-        override fun areItemsTheSame(
-            oldItem: ProductDomainRW,
-            newItem: ProductDomainRW,
-        ): Boolean = oldItem.product.id == newItem.product.id
-
-        override fun areContentsTheSame(
-            oldItem: ProductDomainRW,
-            newItem: ProductDomainRW,
-        ): Boolean {
-            return oldItem.quantity == newItem.quantity
-        }
-
-        override fun getChangePayload(oldItem: ProductDomainRW, newItem: ProductDomainRW): Any? {
-            if (oldItem.product.id == newItem.product.id) {
-                return if (oldItem.quantity == newItem.quantity) {
-                    super.getChangePayload(oldItem, newItem)
-                } else {
-                    val diff = Bundle()
-                    diff.putInt(PAYLOAD_QUANTITY, newItem.quantity)
-                    diff
+                    productPrice.paintFlags =
+                        productPriceDiscounted.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 }
             }
-            return super.getChangePayload(oldItem, newItem)
         }
-    }
 
-    companion object {
-        private const val PAYLOAD_QUANTITY = "payload_quantity"
+        class ProductDiffItemCallback : DiffUtil.ItemCallback<ProductDomainRW>() {
+            override fun areItemsTheSame(
+                oldItem: ProductDomainRW,
+                newItem: ProductDomainRW,
+            ): Boolean = oldItem.product.id == newItem.product.id
+
+            override fun areContentsTheSame(
+                oldItem: ProductDomainRW,
+                newItem: ProductDomainRW,
+            ): Boolean {
+                return oldItem.quantity == newItem.quantity
+            }
+
+            override fun getChangePayload(
+                oldItem: ProductDomainRW,
+                newItem: ProductDomainRW,
+            ): Any? {
+                if (oldItem.product.id == newItem.product.id) {
+                    return if (oldItem.quantity == newItem.quantity) {
+                        super.getChangePayload(oldItem, newItem)
+                    } else {
+                        val diff = Bundle()
+                        diff.putInt(PAYLOAD_QUANTITY, newItem.quantity)
+                        diff
+                    }
+                }
+                return super.getChangePayload(oldItem, newItem)
+            }
+        }
+
+        companion object {
+            private const val PAYLOAD_QUANTITY = "payload_quantity"
+        }
     }
 }
