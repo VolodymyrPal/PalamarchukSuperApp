@@ -62,11 +62,26 @@ class StoreFragment : Fragment() {
         binding.section2RecyclerView.adapter = adapter2
 
         val density = view.context.resources.displayMetrics.density
-        val numSpan = (resources.displayMetrics.widthPixels/density/WIDTH_ITEM).coerceAtLeast(1f)
+        val numSpan =
+            (resources.displayMetrics.widthPixels / density / WIDTH_ITEM).coerceAtLeast(1f)
         val adapter3 = StoreListAdapter(viewModel, parentFragmentManager)
         binding.section3RecyclerView.layoutManager =
             GridLayoutManager(context, numSpan.toInt(), LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
+        (binding.section3RecyclerView.layoutManager as GridLayoutManager).spanSizeLookup =
+            object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return when (position == 0 || position == 1) {
+                        true -> {
+                            numSpan.toInt()
+                        }
+                        else -> {
+                            1
+                        }
+                    }
+                }
+            }
+
 
         //  viewModel.event(StoreViewModel.Event.FetchSkills)
 
@@ -117,9 +132,11 @@ class StoreFragment : Fragment() {
 
             is State.Success -> {
                 val productListInter = state.data.filter {
-                    state.data[0].product.category != it.product.category }
+                    state.data[0].product.category != it.product.category
+                }
                 val finalProductList = productListInter.filter {
-                    productListInter[0].product.category == it.product.category }
+                    productListInter[0].product.category == it.product.category
+                }
 
                 adapter1.setData(state.data.filter { state.data[0].product.category == it.product.category })
                 adapter2.setData(finalProductList)
