@@ -42,7 +42,7 @@ class StoreListAdapter(
             productList[0].product.category != it.product.category }
         listTwo = productListInter.filter {
             productListInter[0].product.category == it.product.category }
-        Log.d("Data submitted: ", "SUBMITTED")
+
         submitList(productList)
     }
 
@@ -53,6 +53,7 @@ class StoreListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
+        Log.d("CreateViewHolder", "onCreateViewHolder: $viewType")
         if (viewType == 1) {
             val binding =
                 ListItemProductRecyclerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -64,9 +65,7 @@ class StoreListAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: ProductHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
+    override fun onBindViewHolder(holder: ProductHolder, position: Int) {}
 
     override fun onBindViewHolder(holder: ProductHolder, position: Int, payloads: List<Any>) {
         val item = getItem(position)
