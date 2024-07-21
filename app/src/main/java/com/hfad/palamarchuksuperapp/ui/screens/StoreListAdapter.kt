@@ -96,16 +96,15 @@ class StoreListAdapter(
             private val parentFragmentManager: FragmentManager,
         ) : ProductHolder(binding.root) {
 
-            init {
-                adapter1?.setData(viewModel.testData)
-                adapter2?.setData(viewModel.testData)
-            }
-
-            override fun bind(product: ProductDomainRW) {
+            fun bind(products: List<ProductDomainRW>) {
                 val adapter = StoreListAdapter(viewModel, parentFragmentManager)
                 binding.section1RecyclerView.layoutManager =
                     LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
                 binding.section1RecyclerView.adapter = adapter
+            }
+
+            override fun bind(product: ProductDomainRW) {
+                Log.d("empty bind", "bind:")
             }
         }
 
