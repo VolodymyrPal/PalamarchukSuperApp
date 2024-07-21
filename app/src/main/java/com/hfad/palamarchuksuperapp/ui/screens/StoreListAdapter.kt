@@ -68,6 +68,11 @@ class StoreListAdapter(
     override fun onBindViewHolder(holder: ProductHolder, position: Int) {}
 
     override fun onBindViewHolder(holder: ProductHolder, position: Int, payloads: List<Any>) {
+        if (holder is ProductHolder.ProductRecyclerHolder) {
+            holder.adapter1?.setData(listOne)
+            holder.adapter2?.setData(listTwo)
+        }
+
         val item = getItem(position)
         if (payloads.isEmpty() || payloads[0] !is Bundle) {
             holder.bind(item)
