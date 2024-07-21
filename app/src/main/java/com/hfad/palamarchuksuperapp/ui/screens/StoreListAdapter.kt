@@ -32,8 +32,8 @@ class StoreListAdapter(
     private val fragmentManager: FragmentManager,
 ) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductHolder.ProductDiffItemCallback()) {
 
-    var listOne: List<ProductDomainRW> = emptyList()
-    var listTwo: List<ProductDomainRW> = emptyList()
+    var listOne: List<ProductDomainRW> = viewModel.testData
+    var listTwo: List<ProductDomainRW> = viewModel.testData
 
     fun setData(productList: List<ProductDomainRW>) {
         listOne = productList.filter { productList[0].product.category == it.product.category }
