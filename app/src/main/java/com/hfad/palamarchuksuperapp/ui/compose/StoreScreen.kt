@@ -95,7 +95,7 @@ import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.data.entities.ProductRating
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
-import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPreview
+import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
@@ -656,7 +656,7 @@ fun ListItemProductPreview() {
 fun StoreLazyListForPreview(
     modifier: Modifier = Modifier,
     viewModel: StoreViewModel = StoreViewModel(
-        repository = StoreRepositoryImplForPreview(),
+        repository = StoreRepositoryImpl(),
         apiRepository = ProductRepository()
     ),
 ) {
@@ -671,7 +671,7 @@ fun StoreScreenPreview() {
     StoreScreen(
         navController = null,
         viewModel = StoreViewModel(
-            repository = StoreRepositoryImplForPreview(),
+            repository = StoreRepositoryImpl(),
             apiRepository = ProductRepository()
         )
     )
