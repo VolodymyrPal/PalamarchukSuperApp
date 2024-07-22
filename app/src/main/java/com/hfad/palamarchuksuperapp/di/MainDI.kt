@@ -8,7 +8,7 @@ import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
-import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImplForPreview
+import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
@@ -76,7 +76,7 @@ abstract class ModelsModule {
 object NetworkModule {
     @Provides
     fun StoreRepository(): StoreRepository {
-        return StoreRepositoryImplForPreview()
+        return StoreRepositoryImpl()
     }
     @Provides
     fun PlatziApiImpl(): FakeStoreApi {
