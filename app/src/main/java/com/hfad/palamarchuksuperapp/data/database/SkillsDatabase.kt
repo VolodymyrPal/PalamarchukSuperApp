@@ -12,5 +12,5 @@ import com.hfad.palamarchuksuperapp.data.entities.Skill
 abstract class SkillsDatabase : RoomDatabase() {
     abstract fun skillsDao(): SkillsDao
 }
-const val DATABASE_NAME = "mydatabase"
+const val DATABASE_SKILLS_NAME = "mydatabase"
 const val DATABASE_PROJECT_NAME = "myDatabaseRoom"

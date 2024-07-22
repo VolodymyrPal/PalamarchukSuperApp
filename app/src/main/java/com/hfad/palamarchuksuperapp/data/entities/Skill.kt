@@ -5,11 +5,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.hfad.palamarchuksuperapp.data.database.DATABASE_NAME
+import com.hfad.palamarchuksuperapp.data.database.DATABASE_SKILLS_NAME
 import java.util.Date
 import java.util.UUID
 
-@Entity(tableName = DATABASE_NAME)
+@Entity(tableName = DATABASE_SKILLS_NAME)
 @TypeConverters (Converters::class)
 data class Skill(
     @PrimaryKey(autoGenerate = true)
