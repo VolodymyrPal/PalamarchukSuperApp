@@ -9,4 +9,5 @@ interface StoreRepository {
     suspend fun addProduct(product: Product)
     suspend fun updateProduct(product: Product)
     fun fetchProductsTest() : Flow<List<Product>>
+    suspend fun refreshProducts()
 }

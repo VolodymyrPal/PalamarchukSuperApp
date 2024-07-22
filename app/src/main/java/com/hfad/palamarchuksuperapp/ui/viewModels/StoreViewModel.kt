@@ -42,7 +42,7 @@ class StoreViewModel @Inject constructor(
                 }
             }
             launch {
-                testData = repository.fetchProducts().first().map { it.toProductDomainRW() }
+                testData = repository.fetchProductsTest().first().map { it.toProductDomainRW() }
             }
         }
 

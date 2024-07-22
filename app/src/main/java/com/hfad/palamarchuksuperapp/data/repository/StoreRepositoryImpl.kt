@@ -155,6 +155,10 @@ class StoreRepositoryImpl @Inject constructor() : StoreRepository {
         return productList
     }
 
+    override suspend fun refreshProducts() {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun deleteProduct(product: Product) {
         TODO("Not yet implemented")
     }
