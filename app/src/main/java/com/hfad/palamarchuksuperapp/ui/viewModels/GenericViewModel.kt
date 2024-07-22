@@ -3,12 +3,16 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -65,6 +69,13 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     protected fun emitFailure(e: Throwable) {
         _uiState.update { State.Error(e) }
     }
+}
+
+fun <T> Flow<T>.asResult(): Flow<State<T>> {
+    return this
+        .map<T, State<T>> { State.Success(it) }
+        .onStart { emit(State.Processing) }
+        .catch { emit(State.Error(it)) }
 }
 
 interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
