@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -39,16 +40,18 @@ import kotlinx.coroutines.launch
 @Composable
 fun BottomNavBar(
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
     navController: Navigation?,
 ) {
-    val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val vibratorManager =
-            LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-        vibratorManager.defaultVibrator
-    } else {
-        @Suppress("DEPRECATION")
-        LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+    val context: Context = LocalContext.current
+    val vibe: Vibrator = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+        }
     }
 
     @Suppress("DEPRECATION")
@@ -134,7 +137,6 @@ fun BottomNavBar(
             )
         }
     }
-
 }
 
 @Composable
