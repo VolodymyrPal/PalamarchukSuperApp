@@ -55,6 +55,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -110,10 +111,10 @@ import kotlinx.coroutines.launch
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: Navigation?,
-    viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
+
 ) {
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory())
 
     Scaffold(
         modifier = modifier
@@ -189,7 +190,12 @@ fun StoreScreen(
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
+            val myState by remember { derivedStateOf { viewModel.uiState.value } }
+
             val state by viewModel.uiState.collectAsState()
+
+            Log.d("TAG", "StoreScreen: $state")
+
 
             when (state) {
                 State.Processing -> {
@@ -308,7 +314,7 @@ fun StoreLazyCard(
             modifier = Modifier
                 //  .padding(4.dp)
                 .fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.Blue),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary),
             elevation = CardDefaults.cardElevation(5.dp)
         ) {
             Text(
@@ -670,10 +676,10 @@ fun StoreLazyListForPreview(
 fun StoreScreenPreview() {
     StoreScreen(
         navController = null,
-        viewModel = StoreViewModel(
-            repository = StoreRepositoryImpl(),
-            apiRepository = ProductRepository()
-        )
+//        viewModel = StoreViewModel(
+//            repository = StoreRepositoryImpl(),
+//            apiRepository = ProductRepository()
+//        )
     )
 }
 
