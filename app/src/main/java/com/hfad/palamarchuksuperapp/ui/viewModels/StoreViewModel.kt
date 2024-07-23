@@ -125,7 +125,6 @@ class StoreViewModel @Inject constructor(
     private fun fetchProducts() {
         emitState(emitProcessing = true) { current ->
             try {
-                emitState(State.Processing)
                 val products = withContext(Dispatchers.IO) {
                     apiRepository.fetchProducts()
                 }
