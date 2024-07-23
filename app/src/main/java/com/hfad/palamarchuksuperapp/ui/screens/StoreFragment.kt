@@ -51,16 +51,6 @@ class StoreFragment : Fragment() {
         _binding = FragmentStoreBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        val adapter = StoreListAdapter(viewModel, parentFragmentManager)
-        binding.section1RecyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.section1RecyclerView.adapter = adapter
-
-        val adapter2 = StoreListAdapter(viewModel, parentFragmentManager)
-        binding.section2RecyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        binding.section2RecyclerView.adapter = adapter2
-
         val density = view.context.resources.displayMetrics.density
         val numSpan =
             (resources.displayMetrics.widthPixels / density / WIDTH_ITEM).coerceAtLeast(1f)
@@ -89,7 +79,7 @@ class StoreFragment : Fragment() {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.uiState.collectLatest { state ->
-                        handleState(state, adapter, adapter2, adapter3)
+                        handleState(state, adapter3)
                     }
                 }
                 launch {
@@ -105,8 +95,6 @@ class StoreFragment : Fragment() {
 
     private fun handleState(
         state: State<List<ProductDomainRW>>,
-        adapter1: StoreListAdapter,
-        adapter2: StoreListAdapter,
         adapter3: StoreListAdapter,
     ) {
         when (state) {
@@ -131,15 +119,6 @@ class StoreFragment : Fragment() {
             }
 
             is State.Success -> {
-                val productListInter = state.data.filter {
-                    state.data[0].product.category != it.product.category
-                }
-                val finalProductList = productListInter.filter {
-                    productListInter[0].product.category == it.product.category
-                }
-
-                adapter1.setData(state.data.filter { state.data[0].product.category == it.product.category })
-                adapter2.setData(finalProductList)
                 adapter3.setData(state.data)
             }
         }
