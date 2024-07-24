@@ -119,6 +119,7 @@ class StoreFragment : Fragment() {
             }
 
             is State.Success -> {
+                Log.d("Was calling updating: ", "Updating recycler")
                 adapter3.setData(state.data)
             }
         }
