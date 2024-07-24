@@ -39,13 +39,16 @@ class StoreListAdapter(
     var listTwo: List<ProductDomainRW> = viewModel.testData
 
     fun setData(productList: List<ProductDomainRW>) {
-        listOne = productList.filter { productList[0].product.category == it.product.category }
 
-        val productListInter = productList.filter {
-            productList[0].product.category != it.product.category
-        }
-        listTwo = productListInter.filter {
-            productListInter[0].product.category == it.product.category
+        val uniqProducts = productList.map { it.product.category }.toSet()
+        val uniqProductsSize = productList.size
+
+        val a = productList.filter { it.product.category == productList[0].product.category }
+
+        uniqProducts.forEachIndexed {  index, s ->
+            if (index < numOfRecyclerRows) {
+                listRows[index] = productList.filter { it.product.category == s }
+            }
         }
 
         submitList(productList)
@@ -53,7 +56,7 @@ class StoreListAdapter(
 
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == 0 || position == 1) 1
+        return if (position < numOfRecyclerRows) 1
         else super.getItemViewType(position)
     }
 
