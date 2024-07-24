@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -37,6 +38,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         block: suspend (current: State<T>) -> State<T>,
     ): Job =
         viewModelScope.launch {
+            Log.d("TAG", "emitState: big code")
             val current = uiState.value
             if (emitProcessing) {
                 emitProcessing()
@@ -47,6 +49,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         }
 
     protected fun emitState(value: State<T>) {
+        Log.d("TAG", "emitState: emiti State just update")
         _uiState.update { value }
     }
 
@@ -54,6 +57,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         if (value == null) {
             emitEmpty()
         } else {
+            Log.d("TAG", "emitState: suspended emit State just update")
             _uiState.update { State.Success(value) }
         }
     }
@@ -63,6 +67,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     }
 
     private fun emitProcessing() {
+        Log.d("TAG", "Emit Processing")
         _uiState.update { State.Processing }
     }
 
