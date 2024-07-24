@@ -30,7 +30,10 @@ import kotlinx.coroutines.launch
 class StoreListAdapter(
     private val viewModel: StoreViewModel,
     private val fragmentManager: FragmentManager,
+    private val numOfRecyclerRows: Int = 2
 ) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductHolder.ProductDiffItemCallback()) {
+
+    val listRows : MutableList <List<ProductDomainRW>> = MutableList(numOfRecyclerRows) { emptyList() }
 
     var listOne: List<ProductDomainRW> = viewModel.testData
     var listTwo: List<ProductDomainRW> = viewModel.testData
