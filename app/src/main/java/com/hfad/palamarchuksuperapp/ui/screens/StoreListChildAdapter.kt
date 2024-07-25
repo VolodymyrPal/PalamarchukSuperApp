@@ -26,25 +26,21 @@ import kotlinx.coroutines.launch
 
 class StoreListChildAdapter(
     private val viewModel: StoreViewModel,
-    private val fragmentManager: FragmentManager,
 ) : ListAdapter<ProductDomainRW, StoreListChildAdapter.ProductItemHolder>(ProductItemHolder.ProductDiffItemCallback()) {
 
     fun setData(productList: List<ProductDomainRW>) {
         submitList(productList)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position == 0 || position == 1) 1
-        else super.getItemViewType(position)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductItemHolder {
         val binding =
             ListItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ProductItemHolder(binding, viewModel, fragmentManager)
+        return ProductItemHolder(binding, viewModel)
     }
 
-    override fun onBindViewHolder(holder: ProductItemHolder, position: Int) {}
+    override fun onBindViewHolder(holder: ProductItemHolder, position: Int) {
+
+    }
 
     override fun onBindViewHolder(holder: ProductItemHolder, position: Int, payloads: List<Any>) {
         val item = getItem(position)
@@ -60,7 +56,6 @@ class StoreListChildAdapter(
     class ProductItemHolder(
         private val binding: ListItemProductBinding,
         private val viewModel: StoreViewModel,
-        private val parentFragmentManager: FragmentManager,
     ) : RecyclerView.ViewHolder(binding.root) {
         private var timerJob: Job? = null
 
@@ -118,7 +113,7 @@ class StoreListChildAdapter(
                 quantity.alpha = 0f
 
                 productImage.load(product.product.image) {
-                    size(50)
+                    size(100)
                     crossfade(true)
                     placeholder(R.drawable.lion_jpg_21)
                     this.error(R.drawable.lion_jpg_21)

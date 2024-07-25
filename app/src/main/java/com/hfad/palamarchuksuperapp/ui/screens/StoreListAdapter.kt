@@ -119,8 +119,8 @@ class StoreListAdapter(
         class ProductItemHolder(
             private val binding: ListItemProductBinding,
             private val viewModel: StoreViewModel,
-            private val parentFragmentManager: FragmentManager,
         ) : ProductHolder(binding.root) {
+
             private var timerJob: Job? = null
 
             private fun onClick() {
