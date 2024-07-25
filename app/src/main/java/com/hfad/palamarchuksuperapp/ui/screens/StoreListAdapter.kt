@@ -39,9 +39,22 @@ class StoreListAdapter(
         val uniqProducts =
             productList.map { it.product.category }.toSet()  // list of unique categories
 
-        uniqProducts.forEachIndexed {  index, s ->
+        uniqProducts.forEachIndexed { index, s ->
             if (index < numOfRecyclerRows) {
-                listRows[index] = productList.filter { it.product.category == s }
+                if (listChildRecycler.getOrNull(index) != null) {
+                    listChildRecycler.forEachIndexed { i, list ->
+                        list.adapter.setData(
+                            productList.filter { it.product.category == s }
+                        )
+                    }
+                } else {
+                    listChildRecycler.add(
+                        ChildRecycler(
+                            data = productList.filter { it.product.category == s },
+                            viewModel = viewModel
+                        )
+                    )
+                }
             }
         }
 
