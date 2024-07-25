@@ -67,18 +67,22 @@ class StoreListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
-        if (viewType == 1) {
+        if (viewType >= 0) {
             val binding =
                 ListItemProductRecyclerBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
                 )
-            return ProductHolder.ProductRecyclerHolder(binding, viewModel, fragmentManager)
+            val holder = ProductHolder.ProductRecyclerHolder(binding, viewModel)
+            listChildRecycler[viewType].holder = holder
+            holder.binding.section1RecyclerView.layoutManager =
+                LinearLayoutManager(parent.context, LinearLayoutManager.HORIZONTAL, false)
+            return holder
         } else {
             val binding =
                 ListItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return ProductHolder.ProductItemHolder(binding, viewModel, fragmentManager)
+            return ProductHolder.ProductItemHolder(binding, viewModel)
         }
     }
 
