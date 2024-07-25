@@ -26,7 +26,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 class StoreListAdapter(
     private val viewModel: StoreViewModel,
     private val fragmentManager: FragmentManager,
@@ -294,3 +293,10 @@ class StoreListAdapter(
         }
     }
 }
+
+data class ChildRecycler(
+    val data: List<ProductDomainRW>? = emptyList(),
+    val viewModel: StoreViewModel,
+    val adapter: StoreListChildAdapter = StoreListChildAdapter(viewModel),
+    var holder : StoreListAdapter.ProductHolder.ProductRecyclerHolder? = null
+)
