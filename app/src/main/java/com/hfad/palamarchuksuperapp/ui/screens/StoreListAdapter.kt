@@ -57,14 +57,13 @@ class StoreListAdapter(
                 }
             }
         }
-
         submitList(productList)
     }
 
 
     override fun getItemViewType(position: Int): Int {
-        return if (position < numOfRecyclerRows) 1
-        else super.getItemViewType(position)
+        return if (position < listChildRecycler.size) position
+        else -1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
