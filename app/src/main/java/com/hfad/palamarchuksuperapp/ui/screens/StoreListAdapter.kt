@@ -90,14 +90,7 @@ class StoreListAdapter(
 
     override fun onBindViewHolder(holder: ProductHolder, position: Int, payloads: List<Any>) {
         if (holder is ProductHolder.ProductRecyclerHolder) {
-            val adapter1 = StoreListChildAdapter(viewModel, fragmentManager)
-            val adapter2 = StoreListChildAdapter(viewModel, fragmentManager)
-
-            holder.binding.section1RecyclerView.layoutManager =
-                LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
-            holder.binding.section1RecyclerView.adapter = adapter1
-
-            adapter1.setData(listOne)
+            holder.bind(listChildRecycler[position].data!!)
         } else {
             val item = getItem(position)
             if (payloads.isEmpty() || payloads[0] !is Bundle) {
@@ -116,24 +109,11 @@ class StoreListAdapter(
 
         class ProductRecyclerHolder(
             val binding: ListItemProductRecyclerBinding,
-            private val viewModel: StoreViewModel,
-            private val parentFragmentManager: FragmentManager,
+            viewModel: StoreViewModel,
         ) : ProductHolder(binding.root) {
 
-            val adapter1: StoreListChildAdapter = StoreListChildAdapter(viewModel, parentFragmentManager)
-            val adapter2: StoreListChildAdapter = StoreListChildAdapter(viewModel, parentFragmentManager)
-
-            init {
-                binding.section1RecyclerView.layoutManager =
-                    LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
-                binding.section1RecyclerView.adapter = adapter1
-                Log.d("Was created", "1")
-            }
 
 
-            override fun bind(product: ProductDomainRW) {
-
-            }
         }
 
         class ProductItemHolder(
