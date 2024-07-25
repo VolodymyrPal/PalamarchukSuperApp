@@ -36,10 +36,8 @@ class StoreListAdapter(
 
     fun setData(productList: List<ProductDomainRW>) {
 
-        val uniqProducts = productList.map { it.product.category }.toSet()
-        val uniqProductsSize = productList.size
-
-        val a = productList.filter { it.product.category == productList[0].product.category }
+        val uniqProducts =
+            productList.map { it.product.category }.toSet()  // list of unique categories
 
         uniqProducts.forEachIndexed {  index, s ->
             if (index < numOfRecyclerRows) {
