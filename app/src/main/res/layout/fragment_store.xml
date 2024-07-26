@@ -58,16 +58,8 @@
                     android:orientation="vertical"
                     android:padding="8dp"
                     android:paddingStart="8dp"
-                    android:paddingEnd="0dp">
-
-                    <TextView
-                        android:id="@+id/section_3_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="Section 3"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
+                    android:paddingEnd="0dp"
+                    >
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/section_3_recyclerView"
