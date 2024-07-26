@@ -54,14 +54,15 @@ class StoreFragment : Fragment() {
         val density = view.context.resources.displayMetrics.density
         val numSpan =
             (resources.displayMetrics.widthPixels / density / WIDTH_ITEM).coerceAtLeast(1f)
-        val adapter3 = StoreListAdapter(viewModel, parentFragmentManager)
+        val numOfRecyclerRows = 2
+        val adapter3 = StoreListAdapter(viewModel, numOfRecyclerRows )
         binding.section3RecyclerView.layoutManager =
             GridLayoutManager(context, numSpan.toInt(), LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
         (binding.section3RecyclerView.layoutManager as GridLayoutManager).spanSizeLookup =
             object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
-                    return when (position == 0 || position == 1) {
+                    return when (position < numOfRecyclerRows) {
                         true -> {
                             numSpan.toInt()
                         }
