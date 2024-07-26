@@ -52,7 +52,13 @@ class StoreListAdapter(
                 }
             }
         }
-        submitList(productList)
+
+        val listToSubmit = productList.toMutableList()
+        repeat(listChildRecycler.size) {
+            listToSubmit.add(0, ProductDomainRW(Product()))
+        }
+
+        submitList(listToSubmit)
     }
 
 
