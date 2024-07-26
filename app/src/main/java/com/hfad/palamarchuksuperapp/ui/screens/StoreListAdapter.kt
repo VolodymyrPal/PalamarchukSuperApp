@@ -192,7 +192,9 @@ class StoreListAdapter(
 
                     quantityPlusCard.alpha = 0f
                     quantityMinusCard.alpha = 0f
-                    quantity.alpha = 0f
+                    quantity.alpha = if (product.quantity == 0) 0f else 1f
+
+
 
                     productImage.load(product.product.image) {
                         size(50)
