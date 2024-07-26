@@ -41,7 +41,7 @@ class StoreListAdapter(
         uniqProducts.forEachIndexed { index, s ->
             if (index < numOfRecyclerRows) {
                 if (listChildRecycler.getOrNull(index) != null) {
-                    listChildRecycler[index].adapter.setData(productList.filter { it.product.category == s } )
+                    listChildRecycler[index].adapter.setData(productList.filter { it.product.category == s })
                 } else {
                     listChildRecycler.add(
                         ChildRecycler(
@@ -68,6 +68,7 @@ class StoreListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductHolder {
+
         if (viewType >= 0) {
             val binding =
                 ListItemProductRecyclerBinding.inflate(
@@ -75,10 +76,12 @@ class StoreListAdapter(
                     parent,
                     false
                 )
-            val holder = ProductHolder.ProductRecyclerHolder(binding, viewModel)
-            listChildRecycler[viewType].holder = holder
-            holder.binding.section1RecyclerView.layoutManager =
-                LinearLayoutManager(parent.context, LinearLayoutManager.HORIZONTAL, false)
+            val holder = ProductHolder.ProductRecyclerHolder(
+                binding,
+                viewModel,
+                listChildRecycler[viewType].adapter,
+                firstInfo = listChildRecycler[viewType].data!!
+            )
             return holder
         } else {
             val binding =
