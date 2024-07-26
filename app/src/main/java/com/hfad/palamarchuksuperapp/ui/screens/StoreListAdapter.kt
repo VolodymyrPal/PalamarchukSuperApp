@@ -112,12 +112,26 @@ class StoreListAdapter(
         abstract fun bind(product: ProductDomainRW)
 
         class ProductRecyclerHolder(
-            val binding: ListItemProductRecyclerBinding,
+            private val binding: ListItemProductRecyclerBinding,
             viewModel: StoreViewModel,
+            private val adapter: StoreListChildAdapter = StoreListChildAdapter(viewModel),
+            firstInfo: List<ProductDomainRW> = emptyList(),
         ) : ProductHolder(binding.root) {
 
+            init {
+                this.binding.section1RecyclerView.layoutManager =
+                    LinearLayoutManager(binding.root.context, LinearLayoutManager.HORIZONTAL, false)
+                this.binding.section1RecyclerView.adapter =
+                    adapter
+                this.binding.section1Title.text = firstInfo.first().product.category.uppercase()
+                adapter.setData(firstInfo)
+            }
 
+            override fun bind(product: ProductDomainRW) {
+            }
 
+            fun bind(product: List<ProductDomainRW>) {
+            }
         }
 
         class ProductItemHolder(
