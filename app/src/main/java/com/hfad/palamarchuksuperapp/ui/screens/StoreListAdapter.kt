@@ -306,8 +306,8 @@ class StoreListAdapter(
 }
 
 data class ChildRecycler(
-    val data: List<ProductDomainRW>? = emptyList(),
+    var data: List<ProductDomainRW>? = emptyList(),
     val viewModel: StoreViewModel,
     val adapter: StoreListChildAdapter = StoreListChildAdapter(viewModel),
-    var holder : StoreListAdapter.ProductHolder.ProductRecyclerHolder? = null
+    var holder: StoreListAdapter.ProductHolder.ProductRecyclerHolder? = null,
 )

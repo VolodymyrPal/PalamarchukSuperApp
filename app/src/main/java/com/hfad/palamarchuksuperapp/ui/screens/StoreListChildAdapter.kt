@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -27,19 +26,22 @@ import kotlinx.coroutines.launch
 class StoreListChildAdapter(
     private val viewModel: StoreViewModel,
 ) : ListAdapter<ProductDomainRW, StoreListChildAdapter.ProductItemHolder>(ProductItemHolder.ProductDiffItemCallback()) {
-
+    init {
+        Log.d("STORE LIST CHILD ADAPTER", "init")
+    }
     fun setData(productList: List<ProductDomainRW>) {
+        Log.d("STORE LIST CHILD ADAPTER", "setData: $productList")
         submitList(productList)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductItemHolder {
+
         val binding =
             ListItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ProductItemHolder(binding, viewModel)
     }
 
     override fun onBindViewHolder(holder: ProductItemHolder, position: Int) {
-
     }
 
     override fun onBindViewHolder(holder: ProductItemHolder, position: Int, payloads: List<Any>) {
