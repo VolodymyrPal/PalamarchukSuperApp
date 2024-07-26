@@ -53,7 +53,10 @@ fun MainContent() {
         }
     }
     AppTheme {
-        NavHost(navController = navController, startDestination = Routes.MainScreenConstraint) {
+        NavHost(
+            navController = navController,
+            startDestination = Routes.MainScreenConstraint
+        ) {
             composable<Routes.MainScreenConstraint> {
                 MainScreenRow(
                     actionSkillsButton = remember { { navArgClass.navigate(Routes.Settings) } },
