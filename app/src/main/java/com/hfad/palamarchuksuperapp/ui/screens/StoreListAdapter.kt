@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductRecyclerBinding
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -28,8 +28,7 @@ import kotlinx.coroutines.launch
 
 class StoreListAdapter(
     private val viewModel: StoreViewModel,
-    private val fragmentManager: FragmentManager,
-    private val numOfRecyclerRows: Int = 2,
+    private val numOfRecyclerRows: Int = 4,
 ) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductHolder.ProductDiffItemCallback()) {
 
     private val listChildRecycler: MutableList<ChildRecycler> = mutableListOf()
@@ -42,11 +41,7 @@ class StoreListAdapter(
         uniqProducts.forEachIndexed { index, s ->
             if (index < numOfRecyclerRows) {
                 if (listChildRecycler.getOrNull(index) != null) {
-                    listChildRecycler.forEachIndexed { i, list ->
-                        list.adapter.setData(
-                            productList.filter { it.product.category == s }
-                        )
-                    }
+                    listChildRecycler[index].adapter.setData(productList.filter { it.product.category == s } )
                 } else {
                     listChildRecycler.add(
                         ChildRecycler(
