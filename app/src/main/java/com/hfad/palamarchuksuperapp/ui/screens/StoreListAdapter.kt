@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
@@ -114,7 +115,7 @@ class StoreListAdapter(
         class ProductRecyclerHolder(
             private val binding: ListItemProductRecyclerBinding,
             viewModel: StoreViewModel,
-            private val adapter: StoreListChildAdapter = StoreListChildAdapter(viewModel),
+            adapter: StoreListChildAdapter = StoreListChildAdapter(viewModel),
             firstInfo: List<ProductDomainRW> = emptyList(),
         ) : ProductHolder(binding.root) {
 
@@ -197,10 +198,11 @@ class StoreListAdapter(
 
 
                     productImage.load(product.product.image) {
-                        size(50)
+                        size(100)
                         crossfade(true)
                         placeholder(R.drawable.lion_jpg_21)
                         this.error(R.drawable.lion_jpg_21)
+                        scale(Scale.FIT)
                     }
 
                     quantityPlusCard.visibility = View.VISIBLE
