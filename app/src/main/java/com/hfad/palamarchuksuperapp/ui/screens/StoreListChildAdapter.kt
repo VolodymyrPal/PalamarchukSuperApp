@@ -9,12 +9,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.accessibility.AccessibilityEvent
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -29,6 +31,7 @@ class StoreListChildAdapter(
     init {
         Log.d("STORE LIST CHILD ADAPTER", "init")
     }
+
     fun setData(productList: List<ProductDomainRW>) {
         Log.d("STORE LIST CHILD ADAPTER", "setData: $productList")
         submitList(productList)
@@ -102,7 +105,9 @@ class StoreListChildAdapter(
 
         @SuppressLint("ClickableViewAccessibility")
         fun bind(product: ProductDomainRW) {
+            Log.d("Bind", "bind: $product")
             binding.apply {
+                cardView.layoutParams.width = WRAP_CONTENT
                 productName.text = "${product.product.title}"
                 productPrice.text = "${product.product.price}$"
                 productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
@@ -112,14 +117,16 @@ class StoreListChildAdapter(
 
                 quantityPlusCard.alpha = 0f
                 quantityMinusCard.alpha = 0f
-                quantity.alpha = if (product.quantity==0) 0f else 1f
+                quantity.alpha = if (product.quantity == 0) 0f else 1f
 
                 productImage.load(product.product.image) {
                     size(100)
                     crossfade(true)
                     placeholder(R.drawable.lion_jpg_21)
                     this.error(R.drawable.lion_jpg_21)
+                    scale(Scale.FIT)
                 }
+
 
                 quantityPlusCard.visibility = View.VISIBLE
                 quantityMinusCard.visibility = View.VISIBLE
