@@ -12,8 +12,8 @@ import coil.load
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
-import com.hfad.palamarchuksuperapp.databinding.MainScreenFragmentBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 class MainScreenFragment : Fragment() {
 
-    private var _binding: MainScreenFragmentBinding? = null
+    private var _binding: FragmentMainScreenBinding? = null
     private val binding get() = _binding!!
 
     @Inject lateinit var preferencesRepository: PreferencesRepository
@@ -41,7 +41,7 @@ class MainScreenFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
 
-        _binding = MainScreenFragmentBinding.inflate(inflater, container, false)
+        _binding = FragmentMainScreenBinding.inflate(inflater, container, false)
         val view = binding.root
 
         updatePhoto()
