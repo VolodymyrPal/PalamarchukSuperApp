@@ -15,6 +15,7 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.FragmentSkillsBinding
 import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
+import com.hfad.palamarchuksuperapp.ui.screens.adapters.SkillsListAdapter
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import kotlinx.coroutines.launch
