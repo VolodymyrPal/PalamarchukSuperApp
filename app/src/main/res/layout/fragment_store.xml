@@ -89,6 +89,15 @@
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="end"></com.google.android.material.navigation.NavigationView>
+        android:layout_gravity="end">
+
+        <ViewStub
+            android:id="@+id/stub_basket_store"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout="@layout/drawer_basket_store"
+            />
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
