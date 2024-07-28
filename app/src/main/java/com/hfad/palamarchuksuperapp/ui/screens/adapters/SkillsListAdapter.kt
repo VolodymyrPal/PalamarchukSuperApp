@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.screens
+package com.hfad.palamarchuksuperapp.ui.screens.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
