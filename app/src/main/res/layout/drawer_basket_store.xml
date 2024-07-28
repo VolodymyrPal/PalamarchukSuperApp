@@ -12,22 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.1"
-        android:gravity="center_vertical||center_horizontal"
         android:text="BASKET" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_weight="0.2"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/baset_recyclerView"
+        android:layout_weight="0.7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="36sp"
-        android:text="POS #1" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_weight="0.2"
-        android:layout_width="match_parent"
-        android:textSize="36sp"
-        android:layout_height="wrap_content"
-        android:text="POS #2" />
+        android:layout_gravity="center_horizontal"
+        android:nestedScrollingEnabled="false"
+        android:scrollbars="horizontal" />
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_weight="0.1"
