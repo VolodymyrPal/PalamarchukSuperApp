@@ -19,6 +19,7 @@ import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.WIDTH_ITEM
+import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreListAdapter
 import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory

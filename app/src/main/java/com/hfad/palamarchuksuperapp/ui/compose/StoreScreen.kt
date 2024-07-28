@@ -190,8 +190,6 @@ fun StoreScreen(
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
-            val myState by remember { derivedStateOf { viewModel.uiState.value } }
-
             val state by viewModel.uiState.collectAsState()
 
             Log.d("TAG", "StoreScreen: $state")
