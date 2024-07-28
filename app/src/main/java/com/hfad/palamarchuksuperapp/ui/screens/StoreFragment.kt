@@ -57,7 +57,7 @@ class StoreFragment : Fragment() {
         val numSpan =
             (resources.displayMetrics.widthPixels / density / WIDTH_ITEM).coerceAtLeast(1f)
         val numOfRecyclerRows = 2
-        val adapter3 = StoreListAdapter(viewModel, numOfRecyclerRows )
+        val adapter3 = StoreListAdapter(viewModel, numOfRecyclerRows)
         binding.section3RecyclerView.layoutManager =
             GridLayoutManager(context, numSpan.toInt(), LinearLayoutManager.VERTICAL, false)
         binding.section3RecyclerView.adapter = adapter3
@@ -77,6 +77,8 @@ class StoreFragment : Fragment() {
 
         binding.storeFab.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.END)
+            Log.d("FAB CLICK: ", "${binding.stubBasketStore}")
+            binding.stubBasketStore.inflate()
         }
 
         //  viewModel.event(StoreViewModel.Event.FetchSkills)
