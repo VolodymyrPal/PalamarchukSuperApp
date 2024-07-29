@@ -11,26 +11,29 @@
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.1"
-        android:text="BASKET" />
+        android:gravity="center"
+        android:textSize="35sp"
+        android:text="BASKET TO BUY" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/baset_recyclerView"
+        android:id="@+id/basket_recyclerView"
         android:layout_weight="0.7"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:nestedScrollingEnabled="false"
         android:scrollbars="horizontal" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:layout_weight="0.1"
+        android:id="@+id/to_pay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TO PAY : 40.50$" />
+        android:text="@string/to_pay"
+        android:textSize="35sp"
+        />
 
     <com.google.android.material.button.MaterialButton
-        android:layout_weight="0.1"
+        android:layout_weight="0.05"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="ORDER ->"
