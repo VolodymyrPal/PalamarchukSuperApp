@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
-            android:src="@drawable/bicon_camera_selector"
+            android:src="@drawable/baseline_shopping_basket_24"
             app:layout_anchorGravity="bottom|end" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -93,9 +93,10 @@
 
         <ViewStub
             android:id="@+id/stub_basket_store"
+            android:inflatedId="@+id/drawer_basket_store"
+            android:layout="@layout/drawer_basket_store"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout="@layout/drawer_basket_store"
             />
 
     </com.google.android.material.navigation.NavigationView>
