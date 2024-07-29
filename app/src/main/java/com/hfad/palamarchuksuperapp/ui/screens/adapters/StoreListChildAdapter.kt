@@ -28,9 +28,6 @@ import kotlinx.coroutines.launch
 class StoreListChildAdapter(
     private val viewModel: StoreViewModel,
 ) : ListAdapter<ProductDomainRW, StoreListChildAdapter.ProductItemHolder>(ProductItemHolder.ProductDiffItemCallback()) {
-    init {
-        Log.d("STORE LIST CHILD ADAPTER", "init")
-    }
 
     fun setData(productList: List<ProductDomainRW>) {
         Log.d("STORE LIST CHILD ADAPTER", "setData: $productList")
@@ -38,7 +35,6 @@ class StoreListChildAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductItemHolder {
-
         val binding =
             ListItemProductBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ProductItemHolder(binding, viewModel)
