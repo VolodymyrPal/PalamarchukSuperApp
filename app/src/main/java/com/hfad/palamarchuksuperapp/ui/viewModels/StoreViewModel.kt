@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -50,14 +51,14 @@ class StoreViewModel @Inject constructor(
 
     private fun updateBasketList(state: State.Success<List<ProductDomainRW>>) {
         val updatedBasketList = state.data.filter { it.quantity > 0 }
-        _basketList.value = updatedBasketList
+        _basketList.update { updatedBasketList }
     }
 
     private val _basketList = MutableStateFlow<List<ProductDomainRW>>(emptyList())
     val basketList = _basketList.stateIn(
         initialValue = emptyList(),
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000)
+        started = SharingStarted.Eagerly
     )
 
     sealed class Event : BaseEvent {
