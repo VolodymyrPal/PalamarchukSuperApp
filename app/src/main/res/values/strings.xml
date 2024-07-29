@@ -11,4 +11,6 @@
     <string name="skills">Skills</string>
     <string name="settings">Settings</string>
     <string name="add_skill">Add Skill</string>
+    <string name="to_pay">To pay: $ %1$s</string>
+    <string name="product_sum">%1$s $</string>
 </resources>
