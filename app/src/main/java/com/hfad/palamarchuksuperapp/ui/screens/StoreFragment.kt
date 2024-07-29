@@ -14,11 +14,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.databinding.DrawerBasketStoreBinding
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.WIDTH_ITEM
+import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreBasketAdapter
 import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreListAdapter
 import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
@@ -28,11 +31,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class StoreFragment : Fragment() {
+
     private var _binding: FragmentStoreBinding? = null
     private val binding
         get() = checkNotNull(_binding) {
             "_binding = null"
         }
+
 
     @Inject
     lateinit var genericViewModelFactory: GenericViewModelFactory
@@ -40,6 +45,10 @@ class StoreFragment : Fragment() {
 
     @Inject
     lateinit var vibe: AppVibrator
+
+    private val viewStub by lazy { binding.stubBasketStore.inflate() }
+
+    private lateinit var stubBinding: DrawerBasketStoreBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,10 +84,28 @@ class StoreFragment : Fragment() {
                 }
             }
 
+
+        binding.stubBasketStore.setOnInflateListener{ _, inflatedView ->
+            stubBinding = DrawerBasketStoreBinding.bind(inflatedView)
+
+            val adapter = StoreBasketAdapter(viewModel)
+            stubBinding.basketRecyclerView.layoutManager =
+                GridLayoutManager(context, 1, LinearLayoutManager.VERTICAL, false)
+            stubBinding.basketRecyclerView.adapter = adapter
+
+            this.lifecycleScope.launch {
+                viewModel.basketList.collectLatest {
+                    adapter.setData(it)
+                    val summ = "%.2f".format(it.sumOf { item -> item.product.price * item.quantity } * 0.5)
+                    stubBinding.toPay.text = getString(R.string.to_pay, summ)
+                }
+            }
+        }
+
+
         binding.storeFab.setOnClickListener {
             binding.drawerLayout.openDrawer(GravityCompat.END)
-            Log.d("FAB CLICK: ", "${binding.stubBasketStore}")
-            binding.stubBasketStore.inflate()
+            viewStub
         }
 
         //  viewModel.event(StoreViewModel.Event.FetchSkills)
