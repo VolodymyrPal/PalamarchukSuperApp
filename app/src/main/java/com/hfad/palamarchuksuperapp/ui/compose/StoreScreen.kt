@@ -128,47 +128,63 @@ fun StoreScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
 
-    Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MediumTopAppBar(
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onPrimary,             // Hiding top bar
-                    titleContentColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
-                    else MaterialTheme.colorScheme.onPrimaryContainer,
-                    scrolledContainerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onPrimary      // Expanded top bar
-                ),
-                title = {
-                    Text(
-                        "MY SUPPA SHOP FOR CHICKS",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior
-            )
 
     ModalNavigationDrawer(
+        drawerContent = {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                ModalDrawerSheet {
+                    Text("Drawer title", modifier = Modifier.padding(16.dp))
+                    NavigationDrawerItem(
+                        label = { Text(text = "Drawer Item") },
+                        selected = false,
+                        onClick = { /*TODO*/ }
+                    )
+                }
+            }
+        },
+        gesturesEnabled = true,
+        drawerState = drawerState
+    ) {
+        val coroutineScope = rememberCoroutineScope()
+        Scaffold(
+            modifier = modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                MediumTopAppBar(
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(
+                        containerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onPrimary,             // Hiding top bar
+                        titleContentColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.onPrimaryContainer,
+                        scrolledContainerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onPrimary      // Expanded top bar
+                    ),
+                    title = {
+                        Text(
+                            "MY SUPPA SHOP FOR CHICKS",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { /* do something */ }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /* do something */ }) {
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    },
+                    scrollBehavior = scrollBehavior
+                )
 
             },
             bottomBar = {
