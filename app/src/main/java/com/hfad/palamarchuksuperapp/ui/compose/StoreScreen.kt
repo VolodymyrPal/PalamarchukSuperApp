@@ -79,6 +79,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
@@ -87,6 +88,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -166,6 +168,8 @@ fun StoreScreen(
                 scrollBehavior = scrollBehavior
             )
 
+    ModalNavigationDrawer(
+
         },
         bottomBar = {
             BottomNavBar(navController = navController)
@@ -202,37 +206,38 @@ fun StoreScreen(
         ) {
             val state by viewModel.uiState.collectAsState()
 
-            Log.d("TAG", "StoreScreen: $state")
+                Log.d("TAG", "StoreScreen: $state")
 
 
-            when (state) {
-                State.Processing -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center),
+                when (state) {
+                    State.Processing -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center),
+                            )
+                        }
+                    }
+
+                    State.Empty -> {
+                        Text(text = "Empty or Error. Please refresh by swipe!")
+                    }
+
+
+                    is State.Error -> {
+                        Text(
+                            text = "Error: ${(state as State.Error).exception}",
+                            color = Color.Red
                         )
                     }
-                }
-
-                State.Empty -> {
-                    Text(text = "Empty or Error. Please refresh by swipe!")
-                }
 
 
-                is State.Error -> {
-                    Text(
-                        text = "Error: ${(state as State.Error).exception}",
-                        color = Color.Red
-                    )
-                }
-
-
-                is State.Success -> {
-                    StoreScreenContent(
-                        modifier = Modifier,
-                        productList = (state as State.Success).data,
-                        onEvent = viewModel::event
-                    )
+                    is State.Success -> {
+                        StoreScreenContent(
+                            modifier = Modifier,
+                            productList = (state as State.Success).data,
+                            onEvent = viewModel::event
+                        )
+                    }
                 }
             }
         }
@@ -246,6 +251,7 @@ fun StoreScreenContent(
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
+
     LazyVerticalGrid(
         modifier = modifier
             .fillMaxSize()
