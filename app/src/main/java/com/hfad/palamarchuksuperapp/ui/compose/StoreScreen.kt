@@ -111,10 +111,15 @@ import kotlinx.coroutines.launch
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: Navigation?,
-
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    val viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory())
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val viewModel: StoreViewModel =
+        viewModel(factory = LocalContext.current.appComponent.viewModelFactory())
+
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
 
     Scaffold(
         modifier = modifier
