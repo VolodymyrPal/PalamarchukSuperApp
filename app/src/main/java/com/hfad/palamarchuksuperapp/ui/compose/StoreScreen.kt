@@ -170,41 +170,45 @@ fun StoreScreen(
 
     ModalNavigationDrawer(
 
-        },
-        bottomBar = {
-            BottomNavBar(navController = navController)
-        },
-        floatingActionButton = {
-            val myBasket by viewModel.basketList.collectAsState()
+            },
+            bottomBar = {
+                BottomNavBar(navController = navController)
+            },
+            floatingActionButton = {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
 
-            FloatingActionButton(
-                shape = RoundedCornerShape(33),
-                modifier = Modifier,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onClick = {
-                },
-                content = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
-                            "Floating action button."
-                        )
-                        if (myBasket.isNotEmpty()) {
-                            Text(text = myBasket.sumOf { it.quantity }.toString())
+                    val myBasket by viewModel.basketList.collectAsState()
+
+                    FloatingActionButton(
+                        shape = RoundedCornerShape(33),
+                        modifier = Modifier,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        onClick = {
+                            coroutineScope.launch { drawerState.open() }
+                        },
+                        content = {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
+                                    "Floating action button."
+                                )
+                                if (myBasket.isNotEmpty()) {
+                                    Text(text = myBasket.sumOf { it.quantity }.toString())
+                                }
+                            }
                         }
-                    }
+                    )
                 }
-            )
-        }
-    ) { paddingValues ->
-        Surface(
-            modifier = modifier
-                .padding(
-                    bottom = paddingValues.calculateBottomPadding(),
-                    top = paddingValues.calculateTopPadding()
-                )
-        ) {
-            val state by viewModel.uiState.collectAsState()
+            }
+        ) { paddingValues ->
+            Surface(
+                modifier = modifier
+                    .padding(
+                        bottom = paddingValues.calculateBottomPadding(),
+                        top = paddingValues.calculateTopPadding()
+                    )
+            ) {
+                val state by viewModel.uiState.collectAsState()
 
                 Log.d("TAG", "StoreScreen: $state")
 
