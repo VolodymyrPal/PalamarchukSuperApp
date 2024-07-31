@@ -48,9 +48,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -105,6 +102,7 @@ import com.hfad.palamarchuksuperapp.data.entities.ProductRating
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
 import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import kotlinx.coroutines.CancellationException
@@ -127,23 +125,13 @@ fun StoreScreen(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
+    MyNavigationDrawer(
+        drawerContentLeftSide = {
 
-
-    ModalNavigationDrawer(
-        drawerContent = {
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                ModalDrawerSheet {
-                    Text("Drawer title", modifier = Modifier.padding(16.dp))
-                    NavigationDrawerItem(
-                        label = { Text(text = "Drawer Item") },
-                        selected = false,
-                        onClick = { /*TODO*/ }
-                    )
-                }
-            }
         },
-        gesturesEnabled = true,
-        drawerState = drawerState
+        gesturesEnabled = false,
+        drawerStateLeft = drawerState,
+        drawerSideAlignment = true,
     ) {
         val coroutineScope = rememberCoroutineScope()
         Scaffold(
