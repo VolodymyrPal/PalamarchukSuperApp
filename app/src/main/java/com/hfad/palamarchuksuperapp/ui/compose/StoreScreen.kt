@@ -126,8 +126,16 @@ fun StoreScreen(
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     MyNavigationDrawer(
-        drawerContentLeftSide = {
-
+        mainDrawerContent = {
+            Box(Modifier.fillMaxSize()) {
+                Column {
+                    Text("Text in Drawer")
+                    Button(onClick = {
+                    }) {
+                        Text("Close Drawer")
+                    }
+                }
+            }
         },
         gesturesEnabled = false,
         drawerStateLeft = drawerState,
