@@ -254,11 +254,10 @@ fun DrawerBox(
                     visible = drawerState.isOpen
                 )
             }
-
-            Box(
+            ModalDrawerSheet (
                 Modifier
-                    .width(drawerWidthPx.dp)
                     .fillMaxHeight()
+                    .width((drawerWidthPx/LocalDensity.current.density).dp)
                     .offset { IntOffset(drawerOffset.roundToInt(), 0) }
             ) {
                 drawerContent()
