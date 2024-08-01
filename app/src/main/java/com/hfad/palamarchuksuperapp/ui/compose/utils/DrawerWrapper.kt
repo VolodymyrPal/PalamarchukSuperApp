@@ -79,53 +79,19 @@ fun MyNavigationDrawer(
 
         DrawerWrapper.Both -> {
 
-        }
+            BoxWithConstraints(modifier.fillMaxSize()) {
+                val fullWidth = constraints.maxWidth.toFloat()
+                val drawerWidthPx = with(density) { drawerWidth.toPx() }
 
-    }
+                val mainDrawerOffset by animateFloatAsState(
+                    targetValue = if (mainDrawerState.isOpen) 0f else -drawerWidthPx,
+                    label = "drawerOffset"
+                )
 
-    BoxWithConstraints(modifier.fillMaxSize()) {
-        val fullWidth = constraints.maxWidth.toFloat()
-        val drawerWidthPx = with((density)) { drawerWidth.toPx() }
-
-        val drawerOffset by animateFloatAsState(
-            targetValue =
-            when (drawerSideAlignment) {
-                DrawerWrapper.Left -> {
-                    if (drawerStateLeft.isOpen) 0f else -drawerWidthPx
-                }
-
-                else -> {
-                    if (drawerStateLeft.isOpen) fullWidth - drawerWidthPx else fullWidth
-                }
-            }, label = "drawerOffset"
-        )
-
-
-        val gestureModifier = if (gesturesEnabled) {
-            Modifier.draggable(
-                state = rememberDraggableState { delta ->
-                    scope.launch {
-                        val newValue =
-                            (drawerOffset - delta).coerceIn(fullWidth - drawerWidthPx, fullWidth)
-                        drawerStateLeft.snapTo(
-                            if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
-                            else DrawerValue.Closed
-                        )
-                    }
-                },
-                orientation = Orientation.Horizontal,
-                onDragStopped = { velocity ->
-                    scope.launch {
-                        when (drawerSideAlignment) {
-                            DrawerWrapper.Left -> if (velocity < 0) drawerStateLeft.open() else drawerStateLeft.close()
-                            else -> if (velocity > 0) drawerStateLeft.open() else drawerStateLeft.close()
-                        }
-                    }
-                }
-            )
-        } else {
-            Modifier
-        }
+                val subDrawerOffset by animateFloatAsState(
+                    targetValue = if (subDrawerState!!.isOpen) fullWidth - drawerWidthPx else fullWidth,
+                    label = "drawerOffset"
+                )
 
         Box(modifier = gestureModifier) {
             content()
