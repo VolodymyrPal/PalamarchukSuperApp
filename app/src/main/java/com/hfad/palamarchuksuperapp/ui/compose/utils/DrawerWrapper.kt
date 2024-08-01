@@ -93,27 +93,93 @@ fun MyNavigationDrawer(
                     label = "drawerOffset"
                 )
 
-        Box(modifier = gestureModifier) {
-            content()
+//                val mainGestureModifier = if (gesturesEnabled) {
+//                    Modifier.draggable(
+//                        state = rememberDraggableState { delta ->
+//                            scope.launch {
+//                                val newValue =
+//                                    (mainDrawerOffset - delta).coerceIn(
+//                                        fullWidth - drawerWidthPx,
+//                                        fullWidth
+//                                    )
+//                                drawerStateLeft.snapTo(
+//                                    if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
+//                                    else DrawerValue.Closed
+//                                )
+//                            }
+//                        },
+//                        orientation = Orientation.Horizontal,
+//                        onDragStopped = { velocity ->
+//                            scope.launch {
+//                                if (velocity < 0) drawerStateLeft.open() else drawerStateLeft.close()
+//                            }
+//                        }
+//                    )
+//                } else {
+//                    Modifier
+//                }
+//
+//                val subGestureModifier = if (gesturesEnabled) {
+//                    Modifier.draggable(
+//                        state = rememberDraggableState { delta ->
+//                            scope.launch {
+//                                val newValue =
+//                                    (subDrawerOffset - delta).coerceIn(
+//                                        fullWidth - drawerWidthPx,
+//                                        fullWidth
+//                                    )
+//                                drawerStateLeft.snapTo(
+//                                    if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
+//                                    else DrawerValue.Closed
+//                                )
+//                            }
+//                        },
+//                        orientation = Orientation.Horizontal,
+//                        onDragStopped = { velocity ->
+//                            scope.launch {
+//                                if (velocity > 0) drawerStateRight!!.open() else drawerStateRight!!.close()
+//                            }
+//                        }
+//                    )
+//                } else {
+//                    Modifier
+//                }
 
-            if (drawerStateLeft.isOpen) {
-                Scrim(
-                    color = scrimColor,
-                    onDismiss = {
-                        scope.launch { drawerStateLeft.close() }
-                    },
-                    visible = drawerStateLeft.isOpen
-                )
+                Box() {
+                    content()
+
+                    if (mainDrawerState.isOpen) {
+
+                        Box(
+                            Modifier
+                                .width(drawerWidthPx.dp)
+                                .fillMaxHeight()
+                                .offset { IntOffset(mainDrawerOffset.roundToInt(), 0) }
+                        ) {
+                            mainDrawerContent()
+                        }
+
+
+                    } else if (subDrawerState!!.isOpen) {
+                        Scrim(
+                            color = DrawerDefaults.scrimColor,
+                            onDismiss = {
+                                scope.launch { subDrawerState.close() }
+                            },
+                            visible = subDrawerState.isOpen
+                        )
+                        Box(
+                            Modifier
+                                .width(with(density) {drawerWidthPx.toDp()})
+                                .fillMaxHeight()
+                                .offset { IntOffset(subDrawerOffset.roundToInt(), 0) }
+                        ) {
+                            mainDrawerContent()
+                        }
+                    }
+                }
             }
 
-            Box(
-                Modifier
-                    .width(drawerWidth)
-                    .fillMaxHeight()
-                    .offset { IntOffset(drawerOffset.roundToInt(), 0) }
-            ) {
-                drawerContentLeftSide()
-            }
         }
     }
 }
