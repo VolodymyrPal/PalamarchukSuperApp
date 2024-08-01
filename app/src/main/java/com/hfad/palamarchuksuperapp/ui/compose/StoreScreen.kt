@@ -200,30 +200,27 @@ fun StoreScreen(
                 BottomNavBar(navController = navController)
             },
             floatingActionButton = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                val myBasket by viewModel.basketList.collectAsState()
 
-                    val myBasket by viewModel.basketList.collectAsState()
-
-                    FloatingActionButton(
-                        shape = RoundedCornerShape(33),
-                        modifier = Modifier,
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        onClick = {
-                            coroutineScope.launch { drawerState.open() }
-                        },
-                        content = {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
-                                    "Floating action button."
-                                )
-                                if (myBasket.isNotEmpty()) {
-                                    Text(text = myBasket.sumOf { it.quantity }.toString())
-                                }
+                FloatingActionButton(
+                    shape = RoundedCornerShape(33),
+                    modifier = Modifier,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    onClick = {
+                        coroutineScope.launch { drawerState.open() }
+                    },
+                    content = {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
+                                "Floating action button."
+                            )
+                            if (myBasket.isNotEmpty()) {
+                                Text(text = myBasket.sumOf { it.quantity }.toString())
                             }
                         }
-                    )
-                }
+                    }
+                )
             }
         ) { paddingValues ->
             Surface(
