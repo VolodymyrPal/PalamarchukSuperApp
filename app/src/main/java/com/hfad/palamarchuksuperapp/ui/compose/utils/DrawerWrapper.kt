@@ -62,9 +62,21 @@ fun MyNavigationDrawer(
                 mainDrawerContent()
             }
         }
-        DrawerWrapper.Right -> {
 
+        DrawerWrapper.Right -> {
+            DrawerBox(
+                modifier = modifier.fillMaxSize(),
+                drawerWidthPx = with(density) { drawerWidth.toPx() },
+                scope = scope,
+                gesturesEnabled = gesturesEnabled,
+                drawerState = mainDrawerState,
+                leftToRightSide = false,
+                content = { content() },
+            ) {
+                mainDrawerContent()
+            }
         }
+
         DrawerWrapper.Both -> {
 
         }
