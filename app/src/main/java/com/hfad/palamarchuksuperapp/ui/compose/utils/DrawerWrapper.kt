@@ -47,27 +47,19 @@ fun MyNavigationDrawer(
     content: @Composable () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val drawerWidth = 360.dp
     val density = LocalDensity.current
-
-//    when (leftRightSided) {
-//        DrawerWrapper.Left -> {
-//        }
-//        DrawerWrapper.Right -> {
-//    }
 
     when (drawerSideAlignment) {
         DrawerWrapper.Left -> {
             DrawerBox(
-                modifier = modifier.fillMaxSize(),
                 drawerWidthPx = with(density) { drawerWidth.toPx() },
                 scope = scope,
                 gesturesEnabled = gesturesEnabled,
-                drawerState = drawerStateLeft,
+                drawerState = mainDrawerState,
                 leftToRightSide = true,
-                content = { content() } ,
-                ) {
-                drawerContentLeftSide()
+                content = { content() },
+            ) {
+                mainDrawerContent()
             }
         }
         DrawerWrapper.Right -> {
