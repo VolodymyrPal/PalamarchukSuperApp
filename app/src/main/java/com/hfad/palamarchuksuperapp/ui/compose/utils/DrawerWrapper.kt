@@ -196,7 +196,7 @@ fun DrawerBox(
     content: @Composable () -> Unit,
     drawerContent: @Composable () -> Unit,
 ) {
-    BoxWithConstraints(modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier) {
         val fullWidth = constraints.maxWidth.toFloat()
 
         val drawerOffset by animateFloatAsState(
@@ -216,8 +216,12 @@ fun DrawerBox(
             Modifier.draggable(
                 state = rememberDraggableState { delta ->
                     scope.launch {
+                        val initialPosition = delta
                         val newValue =
-                            (drawerOffset - delta).coerceIn(fullWidth - drawerWidthPx, fullWidth)
+                            (drawerOffset - delta).coerceIn(
+                                fullWidth - drawerWidthPx,
+                                fullWidth
+                            )
                         drawerState.snapTo(
                             if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
                             else DrawerValue.Closed
