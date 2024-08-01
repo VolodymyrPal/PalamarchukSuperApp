@@ -137,9 +137,22 @@ fun StoreScreen(
                 }
             }
         },
-        gesturesEnabled = false,
-        drawerStateLeft = drawerState,
-        drawerSideAlignment = true,
+        gesturesEnabled = true,
+        drawerWidth = 500.dp,
+        mainDrawerState = drawerState,
+        drawerSideAlignment = DrawerWrapper.Right,
+        subDrawerContent = {
+            Column(
+                modifier = Modifier.background(Color.Red)
+            ) {
+                Text("Text in Drawer")
+                Button(onClick = {
+                }) {
+                    Text("Close Drawer")
+                }
+            }
+        },
+        subDrawerState = subDrawerState
     ) {
         val coroutineScope = rememberCoroutineScope()
         Scaffold(
