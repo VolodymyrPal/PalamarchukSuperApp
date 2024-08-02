@@ -242,9 +242,12 @@ fun DrawerBox(
                 orientation = Orientation.Horizontal,
                 onDragStopped = { velocity ->
                     scope.launch {
-                        when (leftToRightSide) {
-                            true -> if (velocity < 0) drawerState.open() else drawerState.close()
-                            else -> if (velocity > 0) drawerState.open() else drawerState.close()
+                        Log.d("My velocity is: ", "$velocity")
+                        when {
+                            (leftToRightSide && velocity > 0) -> drawerState.open()
+                            (leftToRightSide && velocity < 0) -> drawerState.close()
+                            (!leftToRightSide && velocity < 0) -> drawerState.open()
+                            (!leftToRightSide && velocity > 0) -> drawerState.close()
                         }
                     }
                 }
@@ -265,8 +268,9 @@ fun DrawerBox(
                     visible = drawerState.isOpen
                 )
             }
-            ModalDrawerSheet (
-                Modifier
+            ModalDrawerSheet(
+                drawerShape = RoundedCornerShape(32.dp),
+                modifier = Modifier
                     .fillMaxHeight()
                     .width((drawerWidthPx / LocalDensity.current.density).dp)
                     .offset { IntOffset(drawerOffset.roundToInt(), 0) }
