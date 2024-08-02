@@ -138,7 +138,7 @@ fun StoreScreen(
             }
         },
         gesturesEnabled = true,
-        drawerWidth = 500.dp,
+        drawerWidth = 360.dp,
         mainDrawerState = drawerState,
         drawerSideAlignment = DrawerWrapper.Right,
         subDrawerContent = {
@@ -423,7 +423,7 @@ fun ListItemProduct(
         ) {
             Box(modifier = Modifier
                 .weight(0.4f)
-                .fillMaxHeight()  // Use fillMaxHeight instead of fillMaxSize to avoid expanding beyond parent
+                .fillMaxHeight()
                 .alpha(0f)
                 .pointerInput(item) {
                     detectTapGestures(
@@ -442,7 +442,6 @@ fun ListItemProduct(
                             job = scope.launch {
                                 delay(500)
                                 while (isPressed) {
-                                    Log.d("Doing smthng", "event:")
                                     if (quantityToBuy > 0) quantityToBuy--
                                     delay(20)
                                 }
@@ -460,12 +459,10 @@ fun ListItemProduct(
                                 isPressed = false
                                 isVisible = true
                             } catch (e: CancellationException) {
-                                Log.d("E: ", "event: ${e.message}")
                                 isPressed = false
                                 isVisible = false
                             } catch (e: Exception) {
                                 job?.cancel()
-                                Log.d("Store screen exception: ", "event: ${e.message}")
                                 isPressed = false
                                 isVisible = false
                             }
@@ -478,6 +475,7 @@ fun ListItemProduct(
                 .alpha(0f)
                 .pointerInput(item) {
                     detectTapGestures(
+
                         onTap = {
                             if (quantityToBuy >= 0) quantityToBuy++
                             if (!isPressed) onEvent(
