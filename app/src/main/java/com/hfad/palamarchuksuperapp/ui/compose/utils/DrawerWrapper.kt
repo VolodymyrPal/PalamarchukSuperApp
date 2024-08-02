@@ -219,9 +219,9 @@ fun DrawerBox(
             Modifier.draggable(
                 state = rememberDraggableState { delta ->
                     scope.launch {
-                        val initialPosition = delta
-                        val newValue =
-                            (drawerOffset - delta).coerceIn(
+                        val newValue = when (leftToRightSide) {
+                            true -> (drawerOffset + delta).coerceIn(-drawerWidthPx, 0f)
+                            false -> (drawerOffset + delta).coerceIn(
                                 fullWidth - drawerWidthPx,
                                 fullWidth
                             )
