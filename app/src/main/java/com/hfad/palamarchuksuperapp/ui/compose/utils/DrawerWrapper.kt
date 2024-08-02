@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.compose.utils
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.DrawerDefaults.scrimColor
 import androidx.compose.material3.DrawerState
@@ -170,7 +172,7 @@ fun MyNavigationDrawer(
                         )
                         Box(
                             Modifier
-                                .width(with(density) {drawerWidthPx.toDp()})
+                                .width(with(density) { drawerWidthPx.toDp() })
                                 .fillMaxHeight()
                                 .offset { IntOffset(subDrawerOffset.roundToInt(), 0) }
                         ) {
@@ -205,12 +207,13 @@ fun DrawerBox(
                 true -> {
                     if (drawerState.isOpen) 0f else -drawerWidthPx
                 }
+
                 else -> {
                     if (drawerState.isOpen) fullWidth - drawerWidthPx else fullWidth
                 }
-            }, label = "drawerOffset"
+            },
+            label = "drawerOffset",
         )
-
 
         val gestureModifier = if (gesturesEnabled) {
             Modifier.draggable(
@@ -222,10 +225,18 @@ fun DrawerBox(
                                 fullWidth - drawerWidthPx,
                                 fullWidth
                             )
-                        drawerState.snapTo(
-                            if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
-                            else DrawerValue.Closed
-                        )
+                        }
+
+//                        drawerState.snapTo(
+//                            when (leftToRightSide) {
+//                                true ->
+//                                    if (newValue >= -drawerWidthPx / 2) DrawerValue.Open
+//                                else DrawerValue.Closed
+//
+//                                false -> if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
+//                                else DrawerValue.Closed
+//                            }
+//                        )
                     }
                 },
                 orientation = Orientation.Horizontal,
@@ -257,7 +268,7 @@ fun DrawerBox(
             ModalDrawerSheet (
                 Modifier
                     .fillMaxHeight()
-                    .width((drawerWidthPx/LocalDensity.current.density).dp)
+                    .width((drawerWidthPx / LocalDensity.current.density).dp)
                     .offset { IntOffset(drawerOffset.roundToInt(), 0) }
             ) {
                 drawerContent()
