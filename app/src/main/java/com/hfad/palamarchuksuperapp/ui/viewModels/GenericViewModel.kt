@@ -324,7 +324,21 @@ private class DefaultDataLoader<T> : DataLoader<T> {
 
 
 
+sealed interface RefreshTrigger {
+    suspend fun refresh()
+    val refreshEvent: SharedFlow<Unit>
+}
 
+fun RefreshTrigger(): RefreshTrigger = DefaultRefreshTrigger()
 
+private class DefaultRefreshTrigger : RefreshTrigger {
 
+    private val _refreshEvent = MutableSharedFlow<Unit>()
+    override val refreshEvent = _refreshEvent.asSharedFlow()
+
+    override suspend fun refresh() {
+        _refreshEvent.emit(Unit)
+    }
+
+}
 
