@@ -152,11 +152,21 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
     fun event(event: EVENT)
 }
 
+@Immutable
 sealed interface State<out T> {
-    object Processing : State<Nothing>
-    data class Success<out T>(val data: T) : State<T>
-    data class Error(val exception: Throwable) : State<Nothing>
-    object Empty : State<Nothing>
+    val loading: Boolean
+
+    data object Processing : State<Nothing> {
+        override val loading: Boolean = true
+    }
+
+    data class Success<out T>(val data: T, override val loading: Boolean = false) : State<T>
+    data class Error(val exception: Throwable, override val loading: Boolean = false) :
+        State<Nothing>
+
+    data object Empty : State<Nothing> {
+        override val loading: Boolean = true
+    }
 }
 
 sealed interface BaseEvent
