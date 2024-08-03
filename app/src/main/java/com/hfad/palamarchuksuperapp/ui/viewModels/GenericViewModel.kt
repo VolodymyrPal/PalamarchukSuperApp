@@ -44,12 +44,65 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     override val effect: SharedFlow<EFFECT> =
         effectFlow.asSharedFlow()
 
+    private val refreshTrigger = DefaultRefreshTrigger()
+
+    protected fun loadAndObserveData(
+        initialData: State<T> = State.Empty,
+        observeData: (T) -> Flow<T> = { emptyFlow() },
+        fetchData: suspend (State<T>) -> Result<T>,
+        onRefreshFailure: (Throwable) -> Unit = {}
+    ): StateFlow<State<T>> = loadAndObserveData(
+        initialData = initialData,
+        observeData = observeData,
+        fetchData = fetchData,
+        onRefreshFailure = onRefreshFailure
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = initialData
+    )
+
+    private fun loadAndObserveDataFlow(
+        refreshTrigger: RefreshTrigger,
+        initialData: State<T>,
+        observeData: (T) -> Flow<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+        onRefreshFailure: (Throwable) -> Unit
+    ): Flow<State<T>> {
+        return flow {
+            emit(initialData)
+            refreshTrigger.refreshEvent.collect {
+                emit(State.Processing)
+            }
+        }.flatMapLatest { currentState ->
+            flow {
+                emit(currentState)
+                if (currentState is State.Processing) {
+                    val newResult = fetchData(currentState)
+                    newResult.fold(
+                        onSuccess = { value ->
+                            emit(State.Success(value))
+                            emitAll(observeData(value).map { State.Success(it) })
+                        },
+                        onFailure = { exception ->
+                            if (currentState is State.Success) {
+                                onRefreshFailure(exception)
+                                emit(State.Success(currentState.data))
+                            } else {
+                                emit(State.Error(exception))
+                            }
+                        }
+                    )
+                }
+            }
+        }.distinctUntilChanged()
+    }
+
     protected fun emitState(
         emitProcessing: Boolean,
         block: suspend (current: State<T>) -> State<T>,
     ): Job =
         viewModelScope.launch {
-            Log.d("TAG", "emitState: big code")
             val current = uiState.value
             if (emitProcessing) {
                 emitProcessing()
@@ -60,7 +113,6 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         }
 
     protected fun emitState(value: State<T>) {
-        Log.d("TAG", "emitState: emiti State just update")
         _uiState.update { value }
     }
 
