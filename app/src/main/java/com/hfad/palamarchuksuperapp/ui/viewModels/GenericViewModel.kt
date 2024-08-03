@@ -267,10 +267,59 @@ sealed interface DataLoader<T> {
     ): Flow<State<T>>
 }
 
+fun <T> DataLoader(): DataLoader<T> = DefaultDataLoader()
+
+private class DefaultDataLoader<T> : DataLoader<T> {
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun loadAndObserveData(
+        initialData: State<T>,
+        refreshTrigger: RefreshTrigger?,
+        observeData: (T) -> Flow<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+    ): Flow<State<T>> {
+        val refreshEventFlow =
+            (refreshTrigger as? DefaultRefreshTrigger)?.refreshEvent ?: emptyFlow()
+
+        var lastValue = initialData
+
+        return flow {
+            emit(lastValue)
+            refreshEventFlow.collect {
+                if (!lastValue.loading) {
+                    emit(lastValue.toLoading())
+                }
+            }
+        }
+            .flatMapLatest { currentResult ->
+                loadAndObserveData(currentResult, observeData, fetchData)
+            }
+            .distinctUntilChanged()
+            .onEach { lastValue = it }
+
+    }
 
 
+    private fun loadAndObserveData(
+        initialData: State<T>,
+        observeData: (T) -> Flow<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+    ): Flow<State<T>> = flow {
+        val observe: (T) -> Flow<State<T>> =
+            { value -> observeData(value).map { loadingSuccess(it) } }
+        emit(initialData)
+        when {
+            initialData.loading -> {
+                val newResult = fetchData(initialData)
+                emit(newResult.toLoadingResult())
+                newResult.onSuccess { value -> emitAll(observe(value)) }
+            }
 
-
+            initialData is State.Success -> emitAll(observe(initialData.data))
+            else -> {}
+        }
+    }
+}
 
 
 
