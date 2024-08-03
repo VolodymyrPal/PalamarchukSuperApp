@@ -172,3 +172,39 @@ sealed interface State<out T> {
 sealed interface BaseEvent
 
 sealed interface BaseEffect
+
+fun <T> loading(): State<T> = State.Processing
+fun <T> loadingSuccess(data: T): State<T> = State.Success(data)
+fun <T> loadingFailure(e: Throwable): State<T> = State.Error(e)
+fun <T> Result<T>.toLoadingResult() = fold(
+    onSuccess = { loadingSuccess(it) },
+    onFailure = { loadingFailure(it) }
+)
+
+fun <T, R> State<T>.map(
+    block: (T) -> R,
+): State<R> = when (this) {
+    is State.Success -> State.Success(block(data), loading)
+    is State.Error -> State.Error(exception, loading)
+    is State.Processing -> State.Processing
+    is State.Empty -> State.Empty
+}
+
+fun <T> State<T>.toLoading(): State<T> = when (this) {
+    is State.Error -> copy(loading = true)
+    is State.Processing -> State.Processing
+    is State.Success -> copy(loading = true)
+    is State.Empty -> State.Empty
+}
+
+
+
+
+
+
+
+
+
+
+
+
