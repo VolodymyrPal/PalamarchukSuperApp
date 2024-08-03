@@ -197,6 +197,75 @@ fun <T> State<T>.toLoading(): State<T> = when (this) {
     is State.Empty -> State.Empty
 }
 
+sealed interface DataLoader<T> {
+
+    fun loadAndObserveData(
+        coroutineScope: CoroutineScope,
+        initialData: State<T>,
+        refreshTrigger: RefreshTrigger? = null,
+        observeData: (T) -> Flow<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+    ): StateFlow<State<T>> = loadAndObserveData(
+        initialData = initialData,
+        refreshTrigger = refreshTrigger,
+        observeData = observeData,
+        fetchData = fetchData,
+    ).stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = initialData
+    )
+
+    fun loadAndObserveData(
+        refreshTrigger: RefreshTrigger? = null,
+        initialData: State<T> = loading(),
+        observeData: (T) -> Flow<T> = { emptyFlow() },
+        fetchData: suspend (State<T>) -> Result<T>,
+        onRefreshFailure: (Throwable) -> Unit,
+    ): Flow<State<T>> = loadAndObserveData(
+        refreshTrigger = refreshTrigger,
+        initialData = initialData,
+        observeData = observeData,
+        fetchData = { oldValue: State<T> ->
+            fetchData(oldValue).fold(
+                onSuccess = { success(it) },
+                onFailure = { exception ->
+                    if (oldValue is State.Success) {
+                        onRefreshFailure(exception)
+                        success(oldValue.data)
+                    } else {
+                        failure(exception)
+                    }
+                }
+            )
+        }
+    )
+
+    fun loadAndObserveDataAsState(
+        coroutineScope: CoroutineScope,
+        initialData: State<T>,
+        refreshTrigger: RefreshTrigger? = null,
+        observeData: (T) -> Flow<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+    ): StateFlow<State<T>> = loadAndObserveData(
+        coroutineScope = coroutineScope,
+        initialData = initialData,
+        refreshTrigger = refreshTrigger,
+        observeData = observeData,
+        fetchData = fetchData,
+    ).stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = initialData
+    )
+
+    fun loadAndObserveData(
+        initialData: State<T>,
+        refreshTrigger: RefreshTrigger? = null,
+        observeData: (T) -> Flow<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+    ): Flow<State<T>>
+}
 
 
 
