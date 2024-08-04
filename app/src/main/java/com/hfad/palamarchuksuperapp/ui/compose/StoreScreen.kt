@@ -140,15 +140,15 @@ fun StoreScreen(
         gesturesEnabled = true,
         drawerWidth = 360.dp,
         mainDrawerState = drawerState,
-        drawerSideAlignment = DrawerWrapper.Right,
+        drawerSideAlignment = DrawerWrapper.Both,
         subDrawerContent = {
-            Column(
-                modifier = Modifier.background(Color.Red)
-            ) {
-                Text("Text in Drawer")
-                Button(onClick = {
-                }) {
-                    Text("Close Drawer")
+            Box(Modifier.fillMaxSize()) {
+                Column {
+                    Text("Text in Drawer")
+                    Button(onClick = {
+                    }) {
+                        Text("Close Drawer")
+                    }
                 }
             }
         },
@@ -207,7 +207,7 @@ fun StoreScreen(
                     modifier = Modifier,
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     onClick = {
-                        coroutineScope.launch { drawerState.open() }
+                        coroutineScope.launch { subDrawerState.open() }
                     },
                     content = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
