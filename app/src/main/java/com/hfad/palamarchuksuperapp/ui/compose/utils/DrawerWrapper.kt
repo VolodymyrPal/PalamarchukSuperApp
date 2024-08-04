@@ -204,32 +204,10 @@ fun DrawerBox(
 
         val gestureModifier = if (gesturesEnabled) {
             Modifier.draggable(
-                state = rememberDraggableState { delta ->
-                    scope.launch {
-                        val newValue = when (leftToRightSide) {
-                            true -> (drawerOffset + delta).coerceIn(-drawerWidthPx, 0f)
-                            false -> (drawerOffset + delta).coerceIn(
-                                fullWidth - drawerWidthPx,
-                                fullWidth
-                            )
-                        }
-
-//                        drawerState.snapTo(
-//                            when (leftToRightSide) {
-//                                true ->
-//                                    if (newValue >= -drawerWidthPx / 2) DrawerValue.Open
-//                                else DrawerValue.Closed
-//
-//                                false -> if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
-//                                else DrawerValue.Closed
-//                            }
-//                        )
-                    }
-                },
+                state = rememberDraggableState { },
                 orientation = Orientation.Horizontal,
                 onDragStopped = { velocity ->
                     scope.launch {
-                        Log.d("My velocity is: ", "$velocity")
                         when {
                             (leftToRightSide && velocity > 0) -> drawerState.open()
                             (leftToRightSide && velocity < 0) -> drawerState.close()
@@ -256,7 +234,12 @@ fun DrawerBox(
                 )
             }
             ModalDrawerSheet(
-                drawerShape = RoundedCornerShape(32.dp),
+                drawerShape = if (leftToRightSide) RoundedCornerShape(
+                    0.dp,
+                    32.dp,
+                    32.dp,
+                    0.dp
+                ) else RoundedCornerShape(32.dp, 0.dp, 0.dp, 32.dp),
                 modifier = Modifier
                     .fillMaxHeight()
                     .width((drawerWidthPx / LocalDensity.current.density).dp)
