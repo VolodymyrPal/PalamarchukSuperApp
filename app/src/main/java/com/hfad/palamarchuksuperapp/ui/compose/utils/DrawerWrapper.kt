@@ -99,7 +99,29 @@ fun MyNavigationDrawer(
                     Modifier.draggable(
                         state = rememberDraggableState {
 
-                Box() {
+                        },
+                        orientation = Orientation.Horizontal,
+                        onDragStopped = { velocity ->
+                            scope.launch {
+                                if (subDrawerState!!.isOpen) {
+                                    if (velocity > 0) {
+                                        subDrawerState.close()
+                                    }
+                                }
+                                if (mainDrawerState.isOpen) {
+                                    if (velocity < 0) {
+                                        mainDrawerState.close()
+                                    }
+                                }
+                                if (velocity < 0) subDrawerState.open() else mainDrawerState.open()
+                            }
+                        }
+                    )
+                } else {
+                    Modifier
+                }
+
+                Box(modifier = mainGestureModifier) {
                     content()
 
 
