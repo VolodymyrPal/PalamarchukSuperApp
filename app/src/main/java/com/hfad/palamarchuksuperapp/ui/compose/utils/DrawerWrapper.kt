@@ -87,12 +87,12 @@ fun MyNavigationDrawer(
 
                 val mainDrawerOffset by animateFloatAsState(
                     targetValue = if (mainDrawerState.isOpen) 0f else -drawerWidthPx,
-                    label = "drawerOffset"
+                    label = "mainDrawerOffset"
                 )
 
                 val subDrawerOffset by animateFloatAsState(
                     targetValue = if (subDrawerState!!.isOpen) fullWidth - drawerWidthPx else fullWidth,
-                    label = "drawerOffset"
+                    label = "subDrawerOffset"
                 )
 
 //                val mainGestureModifier = if (gesturesEnabled) {
