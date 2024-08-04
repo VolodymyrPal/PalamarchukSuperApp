@@ -95,74 +95,15 @@ fun MyNavigationDrawer(
                     label = "subDrawerOffset"
                 )
 
-//                val mainGestureModifier = if (gesturesEnabled) {
-//                    Modifier.draggable(
-//                        state = rememberDraggableState { delta ->
-//                            scope.launch {
-//                                val newValue =
-//                                    (mainDrawerOffset - delta).coerceIn(
-//                                        fullWidth - drawerWidthPx,
-//                                        fullWidth
-//                                    )
-//                                drawerStateLeft.snapTo(
-//                                    if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
-//                                    else DrawerValue.Closed
-//                                )
-//                            }
-//                        },
-//                        orientation = Orientation.Horizontal,
-//                        onDragStopped = { velocity ->
-//                            scope.launch {
-//                                if (velocity < 0) drawerStateLeft.open() else drawerStateLeft.close()
-//                            }
-//                        }
-//                    )
-//                } else {
-//                    Modifier
-//                }
-//
-//                val subGestureModifier = if (gesturesEnabled) {
-//                    Modifier.draggable(
-//                        state = rememberDraggableState { delta ->
-//                            scope.launch {
-//                                val newValue =
-//                                    (subDrawerOffset - delta).coerceIn(
-//                                        fullWidth - drawerWidthPx,
-//                                        fullWidth
-//                                    )
-//                                drawerStateLeft.snapTo(
-//                                    if (newValue <= fullWidth - drawerWidthPx / 2) DrawerValue.Open
-//                                    else DrawerValue.Closed
-//                                )
-//                            }
-//                        },
-//                        orientation = Orientation.Horizontal,
-//                        onDragStopped = { velocity ->
-//                            scope.launch {
-//                                if (velocity > 0) drawerStateRight!!.open() else drawerStateRight!!.close()
-//                            }
-//                        }
-//                    )
-//                } else {
-//                    Modifier
-//                }
+                val mainGestureModifier = if (gesturesEnabled) {
+                    Modifier.draggable(
+                        state = rememberDraggableState {
 
                 Box() {
                     content()
 
+
                     if (mainDrawerState.isOpen) {
-
-                        Box(
-                            Modifier
-                                .width(drawerWidthPx.dp)
-                                .fillMaxHeight()
-                                .offset { IntOffset(mainDrawerOffset.roundToInt(), 0) }
-                        ) {
-                            mainDrawerContent()
-                        }
-
-
-                    } else if (subDrawerState!!.isOpen) {
                         Scrim(
                             color = DrawerDefaults.scrimColor,
                             onDismiss = {
