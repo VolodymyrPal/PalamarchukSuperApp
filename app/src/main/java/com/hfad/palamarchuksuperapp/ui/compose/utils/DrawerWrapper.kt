@@ -129,22 +129,46 @@ fun MyNavigationDrawer(
                         Scrim(
                             color = DrawerDefaults.scrimColor,
                             onDismiss = {
+                                scope.launch { mainDrawerState.close() }
+                            },
+                            visible = mainDrawerState.isOpen
+                        )
+                    } else if (subDrawerState!!.isOpen) {
+                        Scrim(
+                            color = DrawerDefaults.scrimColor,
+                            onDismiss = {
                                 scope.launch { subDrawerState.close() }
                             },
                             visible = subDrawerState.isOpen
                         )
-                        Box(
-                            Modifier
-                                .width(with(density) { drawerWidthPx.toDp() })
-                                .fillMaxHeight()
-                                .offset { IntOffset(subDrawerOffset.roundToInt(), 0) }
-                        ) {
-                            mainDrawerContent()
-                        }
+                    }
+
+                    ModalDrawerSheet(
+                        drawerShape = RoundedCornerShape(
+                            0.dp,
+                            32.dp,
+                            32.dp,
+                            0.dp
+                        ),
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width((drawerWidthPx / LocalDensity.current.density).dp)
+                            .offset { IntOffset(mainDrawerOffset.roundToInt(), 0) }
+                    ) {
+                        mainDrawerContent()
+                    }
+
+                    ModalDrawerSheet(
+                        drawerShape = RoundedCornerShape(32.dp, 0.dp, 0.dp, 32.dp),
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width((drawerWidthPx / LocalDensity.current.density).dp)
+                            .offset { IntOffset(subDrawerOffset.roundToInt(), 0) }
+                    ) {
+                        mainDrawerContent()
                     }
                 }
             }
-
         }
     }
 }
