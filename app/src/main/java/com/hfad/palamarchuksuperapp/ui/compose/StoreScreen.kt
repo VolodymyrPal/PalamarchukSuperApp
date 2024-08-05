@@ -729,6 +729,144 @@ fun StoreScreenPreview() {
     )
 }
 
+@Composable
+@Preview
+fun SubDrawerContent(
+    modifier: Modifier = Modifier,
+    closeDrawerEvent: () -> Unit = {},
+    onEvent: (StoreViewModel.Event) -> Unit = {},
+    items: List<ProductDomainRW> = emptyList(),
+) {
+    val openAlertDialog = remember { mutableStateOf(false) }
+    Column(
+        modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterStart),
+                onClick = closeDrawerEvent
+            ) {
+                Icon(
+                    modifier = Modifier,
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close drawer",
+                )
+            }
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = "BASKET",
+                fontSize = 36.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            items(
+                key = { item: ProductDomainRW -> item.product.id },
+                items = items,
+            ) {
+                Box(
+                    Modifier
+                        .padding(4.dp)
+                        .fillMaxSize()
+                        .border(1.dp, Color.Black)
+                ) {
+                    val summ = "%.2f".format(it.product.price / 2 * it.quantity)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            modifier = Modifier.weight(0.2f),
+                            model = it.product.image,
+                            contentDescription = "Product Image"
+                        )
+                        Text(modifier = Modifier.weight(0.5f), text = it.product.description)
+                        NumberPicker(
+                            modifier = Modifier
+                                .weight(0.2f)
+                                .wrapContentWidth(),
+                            value = it.quantity,
+                            onValueChange = { value ->
+                                onEvent.invoke(
+                                    StoreViewModel.Event.SetItemToBasket(
+                                        it,
+                                        value
+                                    )
+                                )
+                            },
+                            range = 1..99
+                        )
+                        Text(
+                            modifier = Modifier.wrapContentWidth(),
+                            text = stringResource(R.string.product_sum, summ)
+                        )
+                    }
+                }
+            }
+        }
+        val summ =
+            "%.2f".format(items.sumOf { item -> item.product.price * item.quantity } * 0.5)
+        Text(
+            text = stringResource(R.string.to_pay, summ),
+            fontSize = 24.sp,
+            fontStyle = FontStyle.Italic
+        )
+        Button(modifier = Modifier.fillMaxWidth(), onClick = {
+            openAlertDialog.value = !openAlertDialog.value
+        }) {
+            Text(text = "ORDER", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+    when {
+        openAlertDialog.value -> {
+            val context = LocalContext.current
+            fun showToast() {
+                Toast.makeText(context, "Order confirmed", Toast.LENGTH_SHORT).show()
+            }
+            AlertDialog(
+                title = {
+                    Text(text = "Order confirmation")
+                },
+                text = {
+                    var phone by remember { mutableStateOf("") }
+                    Column {
+                        Text(text = "Please provide phone number for our managers to contact you")
+                        TextField(
+                            value = phone,
+                            onValueChange = { phone = it }
+                        )
+                    }
+                },
+                onDismissRequest = {
+                    openAlertDialog.value = false
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            for (item in items) {
+                                onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item, 0))
+                            }
+                            closeDrawerEvent()
+                            showToast()
+                            openAlertDialog.value = false
+                        }
+                    ) {
+                        Text("Send")
+                    }
+                },
+            )
+        }
+    }
+}
+
+
 const val HEIGHT_ITEM = 200
 const val WIDTH_ITEM = 150
 
