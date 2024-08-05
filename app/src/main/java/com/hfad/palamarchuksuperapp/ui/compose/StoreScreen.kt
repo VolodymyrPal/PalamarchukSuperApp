@@ -134,39 +134,33 @@ fun StoreScreen(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val myBasket by viewModel.basketList.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     MyNavigationDrawer(
         mainDrawerContent = {
-            Box(Modifier.fillMaxSize()) {
-                Column {
-                    Text("Text in Drawer")
-                    Button(onClick = {
-                    }) {
-                        Text("Close Drawer")
-                    }
-                }
-            }
+
         },
         gesturesEnabled = true,
         drawerWidth = 360.dp,
-        mainDrawerState = drawerState,
+        mainDrawerState = mainDrawerState,
         drawerSideAlignment = DrawerWrapper.Both,
         subDrawerContent = {
-            Box(Modifier.fillMaxSize()) {
-                Column {
-                    Text("Text in Drawer")
-                    Button(onClick = {
-                    }) {
-                        Text("Close Drawer")
-                    }
-                }
+            if (subDrawerState.isOpen) {
+                SubDrawerContent(
+                    closeDrawerEvent = {
+                        coroutineScope.launch { subDrawerState.close() }
+                    },
+                    onEvent = viewModel::event,
+                    items = myBasket
+                )
             }
         },
         subDrawerState = subDrawerState
     ) {
-        val coroutineScope = rememberCoroutineScope()
+
         Scaffold(
             modifier = modifier
                 .fillMaxSize()
