@@ -320,8 +320,6 @@ fun StoreScreenContent(
             )
         }
         items(
-//                        items = viewModel.testData.map { it.toProductDomainRW() },
-//                        key = { item: ProductDomainRW -> item.product.id } // TODO test rep
             items = productList,
             key = { item: ProductDomainRW -> item.product.id },
         ) { item ->
@@ -415,6 +413,10 @@ fun ListItemProduct(
         var isPressed by remember { mutableStateOf(false) }
         var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
         val scope = rememberCoroutineScope()
+
+        LaunchedEffect(item.quantity) {
+            quantityToBuy = item.quantity
+        }
 
         LaunchedEffect(item.quantity) {
             job?.cancelAndJoin()
