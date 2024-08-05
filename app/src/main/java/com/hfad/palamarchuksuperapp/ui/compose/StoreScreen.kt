@@ -722,10 +722,10 @@ fun StoreLazyListForPreview(
 fun StoreScreenPreview() {
     StoreScreen(
         navController = null,
-//        viewModel = StoreViewModel(
-//            repository = StoreRepositoryImpl(),
-//            apiRepository = ProductRepository()
-//        )
+        viewModel = StoreViewModel(
+            repository = StoreRepositoryImpl(),
+            apiRepository = ProductRepository()
+        )
     )
 }
 
