@@ -103,6 +103,8 @@ fun MyNavigationDrawer(
                         orientation = Orientation.Horizontal,
                         onDragStopped = { velocity ->
                             scope.launch {
+                                if (velocity < 0 && !mainDrawerState.isOpen) subDrawerState!!.open()
+                                if (velocity > 0 && !subDrawerState!!.isOpen) mainDrawerState.open()
                                 if (subDrawerState!!.isOpen) {
                                     if (velocity > 0) {
                                         subDrawerState.close()
@@ -113,7 +115,6 @@ fun MyNavigationDrawer(
                                         mainDrawerState.close()
                                     }
                                 }
-                                if (velocity < 0) subDrawerState.open() else mainDrawerState.open()
                             }
                         }
                     )
@@ -145,25 +146,25 @@ fun MyNavigationDrawer(
 
                     ModalDrawerSheet(
                         drawerShape = RoundedCornerShape(
+                            32.dp,
                             0.dp,
-                            32.dp,
-                            32.dp,
-                            0.dp
+                            0.dp,
+                            32.dp
                         ),
                         modifier = Modifier
                             .fillMaxHeight()
                             .width((drawerWidthPx / LocalDensity.current.density).dp)
-                            .offset { IntOffset(mainDrawerOffset.roundToInt(), 0) }
+                            .offset { IntOffset(subDrawerOffset.roundToInt(), 0) }
                     ) {
-                        mainDrawerContent()
+                        subDrawerContent()
                     }
 
                     ModalDrawerSheet(
-                        drawerShape = RoundedCornerShape(32.dp, 0.dp, 0.dp, 32.dp),
+                        drawerShape = RoundedCornerShape(0.dp, 32.dp, 32.dp, 0.dp),
                         modifier = Modifier
                             .fillMaxHeight()
                             .width((drawerWidthPx / LocalDensity.current.density).dp)
-                            .offset { IntOffset(subDrawerOffset.roundToInt(), 0) }
+                            .offset { IntOffset(mainDrawerOffset.roundToInt(), 0) }
                     ) {
                         mainDrawerContent()
                     }
