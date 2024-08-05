@@ -206,7 +206,7 @@ fun StoreScreen(
                 BottomNavBar(navController = navController)
             },
             floatingActionButton = {
-                val myBasket by viewModel.basketList.collectAsState()
+
 
                 FloatingActionButton(
                     shape = RoundedCornerShape(33),
@@ -238,9 +238,6 @@ fun StoreScreen(
             ) {
                 val state by viewModel.uiState.collectAsState()
 
-                Log.d("TAG", "StoreScreen: $state")
-
-
                 when (state) {
                     State.Processing -> {
                         Box(modifier = Modifier.fillMaxSize()) {
@@ -264,9 +261,12 @@ fun StoreScreen(
 
 
                     is State.Success -> {
+                        val productList by remember {
+                            derivedStateOf { (state as State.Success).data }
+                        }
                         StoreScreenContent(
                             modifier = Modifier,
-                            productList = (state as State.Success).data,
+                            productList = productList,
                             onEvent = viewModel::event
                         )
                     }
