@@ -86,10 +86,10 @@ dependencies {
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
-    implementation (libs.coil)
-    implementation (libs.coil.compose)
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
 
-    implementation (libs.zelory.compressor)
+    implementation(libs.zelory.compressor)
 
     implementation(libs.compose.tracing)
 
@@ -104,5 +104,9 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.converter.moshi)
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
+
+
+    implementation (libs.numberpicker)
+
 
 }
