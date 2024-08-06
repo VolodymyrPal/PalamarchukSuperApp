@@ -298,14 +298,14 @@ fun StoreScreenContent(
             StoreLazyCard(
                 modifier = Modifier.fillMaxWidth(),
                 onEvent = onEvent,
-                productList = productList.filter { productList[0].product.category == it.product.category },
+                productList = productList.data.filter { productList.data[0].product.category == it.product.category },
             )
         }
 
         item(span = { GridItemSpan(itemSpan) }) {
 
-            val productListInter = productList.filter {
-                productList[0].product.category != it.product.category
+            val productListInter = productList.data.filter {
+                productList.data[0].product.category != it.product.category
             }
 
             val finalProductList = productListInter.filter {
@@ -319,7 +319,7 @@ fun StoreScreenContent(
             )
         }
         items(
-            items = productList,
+            items = productList.data,
             key = { item: ProductDomainRW -> item.product.id },
         ) { item ->
             AnimatedVisibility(
