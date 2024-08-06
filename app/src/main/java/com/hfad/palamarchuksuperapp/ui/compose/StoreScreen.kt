@@ -237,6 +237,7 @@ fun StoreScreen(
                     )
             ) {
                 val state by viewModel.uiState.collectAsState()
+                Log.d("My state value: ", "state: $state")
 
                 when (state) {
                     State.Processing -> {
