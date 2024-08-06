@@ -277,9 +277,10 @@ fun StoreScreen(
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
-    productList: List<ProductDomainRW>,
+    productList: State<List<ProductDomainRW>>,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
+    productList as State.Success
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
 
     LazyVerticalGrid(
