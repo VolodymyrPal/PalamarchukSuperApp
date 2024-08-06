@@ -262,12 +262,9 @@ fun StoreScreen(
 
 
                     is State.Success -> {
-                        val productList by remember {
-                            derivedStateOf { (state as State.Success).data }
-                        }
                         StoreScreenContent(
                             modifier = Modifier,
-                            productList = productList,
+                            productList = state,
                             onEvent = viewModel::event
                         )
                     }
