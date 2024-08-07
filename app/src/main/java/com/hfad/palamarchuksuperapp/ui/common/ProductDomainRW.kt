@@ -1,7 +1,9 @@
 package com.hfad.palamarchuksuperapp.ui.common
 
+import androidx.compose.runtime.Immutable
 import com.hfad.palamarchuksuperapp.data.entities.Product
 
+@Immutable
 data class ProductDomainRW (
     val product: Product,
     val quantity: Int = 0,
