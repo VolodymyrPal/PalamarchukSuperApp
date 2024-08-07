@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -120,7 +121,6 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         if (value == null) {
             emitEmpty()
         } else {
-            Log.d("TAG", "emitState: suspended emit State just update")
             _uiState.update { State.Success(value) }
         }
     }
@@ -152,7 +152,7 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
     fun event(event: EVENT)
 }
 
-@Immutable
+@Stable
 sealed interface State<out T> {
     val loading: Boolean
 
@@ -160,6 +160,7 @@ sealed interface State<out T> {
         override val loading: Boolean = true
     }
 
+    @Immutable
     data class Success<out T>(val data: T, override val loading: Boolean = false) : State<T>
     data class Error(val exception: Throwable, override val loading: Boolean = false) :
         State<Nothing>
