@@ -236,39 +236,42 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
-                val state by viewModel.uiState.collectAsState()
-                Log.d("My state value: ", "state: $state")
 
-                when (state) {
-                    State.Processing -> {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center),
-                            )
-                        }
-                    }
+                StoreScreenState(
+                    modifier = Modifier,
+                    viewModel = viewModel
+                )
 
-                    State.Empty -> {
-                        Text(text = "Empty or Error. Please refresh by swipe!")
-                    }
-
-
-                    is State.Error -> {
-                        Text(
-                            text = "Error: ${(state as State.Error).exception}",
-                            color = Color.Red
-                        )
-                    }
-
-
-                    is State.Success -> {
-                        StoreScreenContent(
-                            modifier = Modifier,
-                            productList = state,
-                            onEvent = viewModel::event
-                        )
-                    }
-                }
+//                when (state) {
+//                    State.Processing -> {
+//                        Box(modifier = Modifier.fillMaxSize()) {
+//                            CircularProgressIndicator(
+//                                modifier = Modifier.align(Alignment.Center),
+//                            )
+//                        }
+//                    }
+//
+//                    State.Empty -> {
+//                        Text(text = "Empty or Error. Please refresh by swipe!")
+//                    }
+//
+//
+//                    is State.Error -> {
+//                        Text(
+//                            text = "Error: ${(state as State.Error).exception}",
+//                            color = Color.Red
+//                        )
+//                    }
+//
+//
+//                    is State.Success -> {
+//                        StoreScreenContent(
+//                            modifier = Modifier,
+//                            productList = productList,
+//                            onEvent = viewModel::event
+//                        )
+//                    }
+//                }
             }
         }
     }
