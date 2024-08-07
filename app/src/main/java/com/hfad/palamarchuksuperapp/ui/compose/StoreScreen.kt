@@ -136,7 +136,7 @@ fun StoreScreen(
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val myBasket by viewModel.basketList.collectAsState()
+    //val myBasket by viewModel.basketList.collectAsState() TODO
     val coroutineScope = rememberCoroutineScope()
 
     MyNavigationDrawer(
@@ -154,7 +154,7 @@ fun StoreScreen(
                         coroutineScope.launch { subDrawerState.close() }
                     },
                     onEvent = viewModel::event,
-                    items = myBasket
+                    items = emptyList()  //myBasket TODO
                 )
             }
         },
@@ -221,9 +221,9 @@ fun StoreScreen(
                                 painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
                                 "Floating action button."
                             )
-                            if (myBasket.isNotEmpty()) {
-                                Text(text = myBasket.sumOf { it.quantity }.toString())
-                            }
+//                            if (myBasket.isNotEmpty()) { TODO
+//                                Text(text = myBasket.sumOf { it.quantity }.toString())
+//                            }
                         }
                     }
                 )
