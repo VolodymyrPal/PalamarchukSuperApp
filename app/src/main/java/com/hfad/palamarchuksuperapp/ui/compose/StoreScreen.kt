@@ -314,10 +314,9 @@ fun StoreScreenState (
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
-    productList: State<List<ProductDomainRW>>,
+    productList: List<ProductDomainRW>,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
-    productList as State.Success
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
 
     LazyVerticalGrid(
@@ -331,32 +330,32 @@ fun StoreScreenContent(
         horizontalArrangement = Arrangement.Absolute.Center
     )
     {
-        item(span = { GridItemSpan(itemSpan) }) {
-            StoreLazyCard(
-                modifier = Modifier.fillMaxWidth(),
-                onEvent = onEvent,
-                productList = productList.data.filter { productList.data[0].product.category == it.product.category },
-            )
-        }
-
-        item(span = { GridItemSpan(itemSpan) }) {
-
-            val productListInter = productList.data.filter {
-                productList.data[0].product.category != it.product.category
-            }
-
-            val finalProductList = productListInter.filter {
-                productListInter[0].product.category == it.product.category
-            }
-
-            StoreLazyCard(
-                modifier = Modifier,
-                onEvent = onEvent,
-                productList = finalProductList
-            )
-        }
+//        item(span = { GridItemSpan(itemSpan) }) {
+//            StoreLazyCard(
+//                modifier = Modifier.fillMaxWidth(),
+//                onEvent = onEvent,
+//                productList = productList.filter { productList[0].product.category == it.product.category },
+//            )
+//        }
+//
+//        item(span = { GridItemSpan(itemSpan) }) {
+//
+//            val productListInter = productList.filter {
+//                productList[0].product.category != it.product.category
+//            }
+//
+//            val finalProductList = productListInter.filter {
+//                productListInter[0].product.category == it.product.category
+//            }
+//
+//            StoreLazyCard(
+//                modifier = Modifier,
+//                onEvent = onEvent,
+//                productList = finalProductList
+//            )
+//        }
         items(
-            items = productList.data,
+            items = productList,
             key = { item: ProductDomainRW -> item.product.id },
         ) { item ->
             AnimatedVisibility(
