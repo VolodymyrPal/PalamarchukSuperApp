@@ -278,6 +278,40 @@ fun StoreScreen(
 }
 
 @Composable
+fun StoreScreenState (
+    modifier: Modifier = Modifier,
+    viewModel: StoreViewModel
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    when (state) {
+        State.Processing -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+        }
+        State.Empty -> {
+            Text(text = "Empty or Error. Please refresh by swipe!")
+        }
+        is State.Error -> {
+            Text(
+                text = "Error: ${(state as State.Error).exception}",
+                color = Color.Red
+            )
+        }
+        is State.Success -> {
+            StoreScreenContent(
+                modifier = Modifier,
+                productList = (state as State.Success).data,
+                onEvent = viewModel::event
+            )
+        }
+    }
+}
+
+@Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
     productList: State<List<ProductDomainRW>>,
