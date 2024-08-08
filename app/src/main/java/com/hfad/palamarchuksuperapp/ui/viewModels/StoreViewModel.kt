@@ -145,20 +145,41 @@ class StoreViewModel @Inject constructor(
             }
         }
     }
+    private fun refresh() {
+        _isLoading.value = true
+        viewModelScope.launch {
+            apiRepository.fetchProducts()
+            _isLoading.value = false
+        }
+    }
 
-    private fun fetchProducts() {
-        emitState(emitProcessing = true) { current ->
-            try {
-                val products = withContext(Dispatchers.IO) {
-                    apiRepository.fetchProducts()
+    private fun setItemToBasket(product: ProductDomainRW, quantity: Int = 1) {
+        try {
+            viewModelScope.launch {
+                val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                val product = newSkills.find { it.product.id == product.product.id }
+                newSkills.indexOf(product).let {
+                    newSkills[it] = newSkills[it].copy(quantity = product!!.quantity)
+                    emitState(newSkills)
                 }
-                val skills = products.map { it.toProductDomainRW() }
-                Log.d("VM emitState data: ", "$skills")
-                return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
+            }
+        } catch (e: Exception) {
+            Log.d("Exception in SetItemToBasket", "event: ${e.message}")
+        }
+    }
 
-            } catch (e: Exception) {
-                Log.d("Eror in fetchProducts", "event: ${e.message}")
-                State.Error(e)
+    private fun addProduct(product: ProductDomainRW, quantity: Int = 1) {
+        viewModelScope.launch {
+            val newSkills = (uiState.first() as State.Success).data.toMutableList()
+            val skill = newSkills.find { it.product.id == product.product.id }
+            newSkills.indexOf(skill).let {
+                var newQuantity = 0
+                if (newSkills[it].quantity + product.quantity >= 0) {
+                    newQuantity = newSkills[it].quantity + product.quantity
+                }
+                newSkills[it] =
+                    newSkills[it].copy(quantity = newQuantity)
+                emitState(newSkills)
             }
         }
     }
