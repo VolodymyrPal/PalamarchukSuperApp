@@ -7,6 +7,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import javax.inject.Inject
 
+@Suppress("MaxLineLength")
 class ProductRepository @Inject constructor() : FakeStoreApi {
     private var fakeStoreApi: FakeStoreApi
 
