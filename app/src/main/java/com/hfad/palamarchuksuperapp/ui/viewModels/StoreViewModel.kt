@@ -3,18 +3,23 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.common.toProductDomainRW
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Stable
@@ -25,25 +30,53 @@ class StoreViewModel @Inject constructor(
 
     lateinit var testData: List<ProductDomainRW>
 
-    init {
-        event(Event.FetchSkills)
+//    init {
+//        event(Event.FetchSkills)
+//
+//        viewModelScope.launch {
+//            launch {
+//                uiState.collect { state ->
+//                    when (state) {
+//                        is State.Success -> {
+//                            updateBasketList(state)
+//                        }
+//
+//                        else -> {
+//                            // do nothing
+//                        }
+//                    }
+//                }
+//            }
+//            launch {
+//                testData = repository.fetchProductsTest().first().map { it.toProductDomainRW() }
+//            }
+//        }
+//    }
 
-        viewModelScope.launch {
-            launch {
-                uiState.collect { state ->
-                    when (state) {
-                        is State.Success -> {
-                            updateBasketList(state)
-                        }
+    private val _isLoading = MutableStateFlow(false)
 
-                        else -> {
-                            // do nothing
-                        }
-                    }
-                }
-            }
-            launch {
-                testData = repository.fetchProductsTest().first().map { it.toProductDomainRW() }
+    private fun getProductsAsFlow(): Flow<List<Product>> {
+        val a = flow { emit(apiRepository.fetchProducts())  }
+        Log.d("getProductsAsFlow", "a: $a")
+        return a
+    }
+
+    private val _products: Flow<Async<List<ProductDomainRW>>> =
+        combine(
+            getProductsAsFlow(), _isLoading
+        ) { products, _ ->
+            products.map { it.toProductDomainRW() }
+        }
+            .map { Async.Success(it) }
+            .catch { Async.Error(it) }
+
+
+    val myState: StateFlow<MyState> = combine(
+        _isLoading, _products
+    ) { isLoading, products ->
+        when (products) {
+            is Async.Success -> {
+                MyState(isLoading, products.data)
             }
         }
 
