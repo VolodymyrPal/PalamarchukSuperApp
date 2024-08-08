@@ -169,6 +169,12 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
     fun event(event: EVENT)
 }
 
+data class MyState(
+    val loading: Boolean = false,
+    val items: List<ProductDomainRW> = emptyList(),
+    val massage: String = ""
+)
+
 @Stable
 sealed interface State<out T> {
     val loading: Boolean
@@ -178,12 +184,16 @@ sealed interface State<out T> {
     }
 
     @Immutable
-    data class Success<out T>(val data: T, override val loading: Boolean = false) : State<T>
+    data class Success<out T>(val data: T, override val loading: Boolean = false) : State<T> {
+        val items: T
+            get() = data
+    }
+
     data class Error(val exception: Throwable, override val loading: Boolean = false) :
         State<Nothing>
 
     data object Empty : State<Nothing> {
-        override val loading: Boolean = true
+        override val loading: Boolean = false
     }
 }
 
