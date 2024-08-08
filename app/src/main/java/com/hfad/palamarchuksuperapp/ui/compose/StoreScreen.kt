@@ -227,6 +227,8 @@ fun StoreScreen(
                 )
             }
         ) { paddingValues ->
+            val myState by viewModel.myState.collectAsStateWithLifecycle()
+            Log.d("Store screen", "state: $myState")
             Surface(
                 modifier = modifier
                     .padding(
@@ -234,10 +236,11 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
-
                 StoreScreenState(
                     modifier = Modifier,
-                    viewModel = viewModel
+                    viewModelEvent = viewModel::event,
+                    loading = myState.loading,
+                    items = myState.items,
                 )
 
 //                when (state) {
