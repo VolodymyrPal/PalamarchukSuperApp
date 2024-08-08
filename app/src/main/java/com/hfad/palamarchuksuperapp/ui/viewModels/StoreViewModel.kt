@@ -122,12 +122,12 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-                fetchProducts()
+
             }
 
 
             is Event.OnRefresh -> {
-                fetchProducts()
+
             }
 
             is Event.ShowToast -> {
@@ -135,34 +135,13 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                viewModelScope.launch {
-                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
-                    val skill = newSkills.find { it.product.id == event.product.product.id }
-                    newSkills.indexOf(skill).let {
-                        var newQuantity = 0
-                        if (newSkills[it].quantity + event.quantity >= 0) {
-                            newQuantity = newSkills[it].quantity + event.quantity
-                        }
-                        newSkills[it] =
-                            newSkills[it].copy(quantity = newQuantity)
-                        emitState(newSkills)
-                    }
-                }
+                //addProduct(event.product, event.quantity)
+                refresh()
             }
 
             is Event.SetItemToBasket -> {
-                try {
-                    viewModelScope.launch {
-                        val newSkills = (uiState.first() as State.Success).data.toMutableList()
-                        val product = newSkills.find { it.product.id == event.product.product.id }
-                        newSkills.indexOf(product).let {
-                            newSkills[it] = newSkills[it].copy(quantity = event.quantity)
-                            emitState(newSkills)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.d("Exception in SetItemToBasket", "event: ${e.message}")
-                }
+                //setItemToBasket(event.product, event.quantity)
+                refresh()
             }
         }
     }
@@ -183,5 +162,22 @@ class StoreViewModel @Inject constructor(
             }
         }
     }
+
+//    private fun fetchProducts() {
+//        emitState(emitProcessing = true) {
+//            try {
+//                val products = withContext(Dispatchers.IO) {
+//                    apiRepository.fetchProducts()
+//                }
+//                val skills = products.map { it.toProductDomainRW() }
+//                Log.d("VM emitState data: ", "$skills")
+//                return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
+//
+//            } catch (e: Exception) {
+//                Log.d("Eror in fetchProducts", "event: ${e.message}")
+//                State.Error(e)
+//            }
+//        }
+//    }
 }
 
