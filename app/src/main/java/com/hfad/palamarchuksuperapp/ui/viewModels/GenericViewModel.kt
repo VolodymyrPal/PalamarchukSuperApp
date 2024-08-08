@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -40,6 +41,22 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = State.Empty
         )
+
+
+
+    private val _isLoading = MutableStateFlow(false)
+
+
+
+
+    sealed class Async<out T> {
+        object Loading : Async<Nothing>()
+        data class Error(val errorMessage: Throwable) : Async<Nothing>()
+        data class Success<out T>(val data: T) : Async<T>()
+    }
+
+
+
 
     private val effectFlow = MutableSharedFlow<EFFECT>()
     override val effect: SharedFlow<EFFECT> =
