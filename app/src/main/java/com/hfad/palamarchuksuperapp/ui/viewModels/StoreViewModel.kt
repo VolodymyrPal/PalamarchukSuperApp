@@ -78,9 +78,20 @@ class StoreViewModel @Inject constructor(
             is Async.Success -> {
                 MyState(isLoading, products.data)
             }
-        }
 
-    }
+            is Async.Error -> {
+                MyState(isLoading, massage = products.errorMessage.message.toString())
+            }
+
+            is Async.Loading -> {
+                MyState(isLoading)
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = MyState(loading = true)
+    )
 
     private fun updateBasketList(state: State.Success<List<ProductDomainRW>>) {
         val updatedBasketList = state.data.filter { it.quantity > 0 }
