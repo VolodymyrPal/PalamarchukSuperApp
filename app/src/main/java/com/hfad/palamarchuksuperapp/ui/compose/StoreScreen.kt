@@ -279,37 +279,55 @@ fun StoreScreen(
 }
 
 @Composable
-fun StoreScreenState (
+fun StoreScreenState(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel
+    viewModelEvent: KFunction1<StoreViewModel.Event, Unit>,
+    loading: Boolean,
+    items: List<ProductDomainRW>,
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val empty = items.isEmpty() && !loading
 
-    when (state) {
-        State.Processing -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
-        }
-        State.Empty -> {
-            Text(text = "Empty or Error. Please refresh by swipe!")
-        }
-        is State.Error -> {
-            Text(
-                text = "Error: ${(state as State.Error).exception}",
-                color = Color.Red
-            )
-        }
-        is State.Success -> {
-            StoreScreenContent(
-                modifier = Modifier,
-                productList = (state as State.Success).data,
-                onEvent = viewModel::event
+    if (loading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
             )
         }
     }
+    if (!empty) {
+        StoreScreenContent(
+            modifier = modifier,
+            productList = items,
+            onEvent = viewModelEvent
+        )
+    }
+
+
+//    when (state) {
+//        State.Processing -> {
+//            Box(modifier = Modifier.fillMaxSize()) {
+//                CircularProgressIndicator(
+//                    modifier = Modifier.align(Alignment.Center),
+//                )
+//            }
+//        }
+//        State.Empty -> {
+//            Text(text = "Empty or Error. Please refresh by swipe!")
+//        }
+//        is State.Error -> {
+//            Text(
+//                text = "Error: ${(state as State.Error).exception}",
+//                color = Color.Red
+//            )
+//        }
+//        is State.Success -> {
+//            StoreScreenContent(
+//                modifier = Modifier,
+//                productList = (state as State.Success).data,
+//                onEvent = viewModel::event
+//            )
+//        }
+//    }
 }
 
 @Composable
