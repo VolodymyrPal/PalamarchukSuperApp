@@ -285,15 +285,15 @@ fun StoreScreenState(
     loading: Boolean,
     items: List<ProductDomainRW>,
 ) {
-    val empty = items.isEmpty() && !loading
+    val empty = items.isEmpty()
 
-    if (loading) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-            )
-        }
-    }
+//    if (loading) {
+//        Box(modifier = Modifier.fillMaxSize()) {
+//            CircularProgressIndicator(
+//                modifier = Modifier.align(Alignment.Center),
+//            )
+//        }
+//    }
     if (!empty) {
         StoreScreenContent(
             modifier = modifier,
@@ -431,22 +431,22 @@ fun StoreLazyCard(
                     items = productList,
                     key = { item: ProductDomainRW -> item.product.id },
                 ) { item ->
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .animateItem(),
-                        visible = true,
-                        exit = fadeOut(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        ),
-                        enter = fadeIn(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        )
-                    ) {
-                        ListItemProduct(
-                            item = item, // TODO test rep
-                            onEvent = remember(item) { { event -> onEvent(event) } },
-                        )
-                    }
+//                    AnimatedVisibility(
+//                        modifier = Modifier
+//                            .animateItem(),
+//                        visible = true,
+//                        exit = fadeOut(
+//                            animationSpec = TweenSpec(100, 100, LinearEasing)
+//                        ),
+//                        enter = fadeIn(
+//                            animationSpec = TweenSpec(100, 100, LinearEasing)
+//                        )
+//                    ) {
+                    ListItemProduct(
+                        item = item, // TODO test rep
+                        onEvent = remember(item) { { event -> onEvent(event) } },
+                    )
+//                    }
                 }
             }
         }
