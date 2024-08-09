@@ -125,8 +125,7 @@ import kotlin.reflect.KFunction1
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: Navigation?,
-    viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory())
-       // viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
+    viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -200,9 +199,9 @@ fun StoreScreen(
                 )
 
             },
-            bottomBar = {
-                BottomNavBar(navController = navController)
-            },
+             bottomBar = {
+                 BottomNavBar(navController = navController)
+                         },
             floatingActionButton = {
 
 
@@ -227,8 +226,8 @@ fun StoreScreen(
                 )
             }
         ) { paddingValues ->
-            val myState by viewModel.myState.collectAsStateWithLifecycle()
-            Log.d("Store screen", "state: $myState")
+
+            //Log.d("Store screen", "state: $myState")
             Surface(
                 modifier = modifier
                     .padding(
@@ -236,6 +235,7 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
+                val myState by viewModel.myState.collectAsStateWithLifecycle()
                 StoreScreenState(
                     modifier = Modifier,
                     viewModelEvent = viewModel::event,
