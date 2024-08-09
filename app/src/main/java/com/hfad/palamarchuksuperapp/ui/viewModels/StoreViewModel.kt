@@ -56,7 +56,7 @@ class StoreViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
 
     private fun getProductsAsFlow(): Flow<List<Product>> {
-        val a = flow { emit(apiRepository.fetchProducts())  }
+        val a = flow { emit(apiRepository.fetchProducts()) }
         Log.d("getProductsAsFlow", "a: $a")
         return a
     }
@@ -75,16 +75,19 @@ class StoreViewModel @Inject constructor(
         _isLoading, _products
     ) { isLoading, products ->
         when (products) {
-            is Async.Success -> {
-                MyState(isLoading, products.data)
+            is Async.Loading -> {
+                MyState(isLoading)
             }
 
             is Async.Error -> {
                 MyState(isLoading, massage = products.errorMessage.message.toString())
             }
 
-            is Async.Loading -> {
-                MyState(isLoading)
+            is Async.Success -> {
+                MyState(
+                    loading = isLoading,
+                    items = products.data,
+                    )
             }
         }
     }.stateIn(
@@ -145,10 +148,16 @@ class StoreViewModel @Inject constructor(
             }
         }
     }
-    private fun refresh() {
+
+    fun refresh() {
         _isLoading.value = true
         viewModelScope.launch {
-            apiRepository.fetchProducts()
+            try {
+                apiRepository.fetchProducts()
+            } catch (e: Exception) {
+                Log.d("Exception in refresh", "event: ${e.message}")
+            }
+
             _isLoading.value = false
         }
     }
