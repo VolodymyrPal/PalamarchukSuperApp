@@ -65,7 +65,7 @@ fun BottomNavBar(
         }
     }
 
-    val appImages = AppImages(context).mainImage
+    val appImages = remember { AppImages(context).mainImage }
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
@@ -77,43 +77,59 @@ fun BottomNavBar(
                     appImages.updateMainPhoto()
                 }
             }
-        })
-
-    val homeTab = TabBarItem(
-        title = "Home",
-        selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
-        unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
-        onClick = {
-            onClickVibro()
-            navController?.navigate(Routes.MainScreenConstraint)
-        }
-    )
-    val cameraTab = TabBarItem(
-        title = "Camera",
-        selectedIcon = painterResource(id = R.drawable.bicon_camera_filled),
-        unselectedIcon = painterResource(id = R.drawable.bicon_camera_outlined),
-        onClick = {
-            onClickVibro()
-            cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
-        })
-
-    val settingsTab = TabBarItem(
-        "Settings",
-        selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
-        unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
-        badgeAmount = 10,
-        onClick = {
-            onClickVibro()
-            navController?.navigate(Routes.Settings)
         }
     )
 
-    val tabBarItems = listOf(homeTab, cameraTab, settingsTab)
+    val selectedIconHome = painterResource(id = R.drawable.bicon_home_black_filled)
+    val unselectedIconHome = painterResource(id = R.drawable.bicon_home_black_outlined)
+
+    val homeTab = remember {
+        TabBarItem(
+            title = "Home",
+            selectedIcon = selectedIconHome,
+            unselectedIcon = unselectedIconHome,
+            onClick = {
+                onClickVibro()
+                navController?.navigate(Routes.MainScreenConstraint)
+            }
+        )
+    }
+
+    val selectedIconCamera = painterResource(id = R.drawable.bicon_camera_filled)
+    val unselectedIconCamera = painterResource(id = R.drawable.bicon_camera_outlined)
+
+    val cameraTab = remember {
+        TabBarItem(
+            title = "Camera",
+            selectedIcon = selectedIconCamera,
+            unselectedIcon = unselectedIconCamera,
+            onClick = {
+                onClickVibro()
+                cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
+            }
+        )
+    }
+    val selectedIconSettings = painterResource(id = R.drawable.bicon_settings_filled)
+    val unselectedIconSettings = painterResource(id = R.drawable.bicon_settings_outlined)
+
+    val settingsTab = remember {
+        TabBarItem(
+            "Settings",
+            selectedIcon = selectedIconSettings,
+            unselectedIcon = unselectedIconSettings,
+            badgeAmount = 10,
+            onClick = {
+                onClickVibro()
+                navController?.navigate(Routes.Settings)
+            }
+        )
+    }
+
+    val tabBarItems = remember { listOf(homeTab, cameraTab, settingsTab) }
     NavigationBar(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
-
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
                 selected = selectedTabIndex == index,
