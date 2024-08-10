@@ -227,7 +227,6 @@ fun StoreScreen(
             }
         ) { paddingValues ->
 
-            //Log.d("Store screen", "state: $myState")
             Surface(
                 modifier = modifier
                     .padding(
@@ -285,15 +284,15 @@ fun StoreScreenState(
     loading: Boolean,
     items: List<ProductDomainRW>,
 ) {
-    val empty = items.isEmpty()
+    val empty = remember { items.isEmpty() }
 
-//    if (loading) {
-//        Box(modifier = Modifier.fillMaxSize()) {
-//            CircularProgressIndicator(
-//                modifier = Modifier.align(Alignment.Center),
-//            )
-//        }
-//    }
+    if (loading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+    }
     if (!empty) {
         StoreScreenContent(
             modifier = modifier,
@@ -377,23 +376,23 @@ fun StoreScreenContent(
             items = productList,
             key = { item: ProductDomainRW -> item.product.id },
         ) { item ->
-            AnimatedVisibility(
-                modifier = Modifier
-                    .animateItem(),
-                // .padding(0.dp, 0.dp, 10.dp, 10.dp),
-                visible = true,
-                exit = fadeOut(
-                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                ),
-                enter = fadeIn(
-                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                )
-            ) {
+//            AnimatedVisibility(
+//                modifier = Modifier
+//                    .animateItem(),
+//                // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+//                visible = true,
+//                exit = fadeOut(
+//                    animationSpec = TweenSpec(100, 100, LinearEasing)
+//                ),
+//                enter = fadeIn(
+//                    animationSpec = TweenSpec(100, 100, LinearEasing)
+//                )
+//            ) { TODO
                 ListItemProduct(
                     item = item,
                     onEvent = remember(item) { { event -> onEvent(event) } },
                 )
-            }
+//            }
         }
     }
 }
