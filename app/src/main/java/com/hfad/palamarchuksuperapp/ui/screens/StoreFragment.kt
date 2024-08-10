@@ -19,13 +19,12 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.DrawerBasketStoreBinding
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.WIDTH_ITEM
 import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreBasketAdapter
 import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreListAdapter
-import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
+import com.hfad.palamarchuksuperapp.ui.viewModels.MyState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -113,7 +112,7 @@ class StoreFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.uiState.collectLatest { state ->
+                    viewModel.myState.collectLatest { state ->
                         handleState(state, adapter3)
                     }
                 }
@@ -129,32 +128,32 @@ class StoreFragment : Fragment() {
 
 
     private fun handleState(
-        state: State<List<ProductDomainRW>>,
-        adapter3: StoreListAdapter,
+        state: MyState,
+        adapter: StoreListAdapter,
     ) {
-        when (state) {
-            is State.Empty -> {
-                Log.d("HANDLE STATE: ", "$state")
-                Toast.makeText(requireContext(), "Empty", Toast.LENGTH_SHORT).show()
+        when(state.items.isNotEmpty()) {
+            true -> {
+                adapter.setData(state.items)
             }
-
-            is State.Error -> {
-                Log.d("HANDLE STATE: ", "$state")
-                Toast.makeText(
-                    requireContext(),
-                    state.exception.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+            else -> {
+                adapter.setData(emptyList())
             }
-
-            is State.Processing -> {
+        }
+        when (state.loading) {
+            true -> {
                 Log.d("HANDLE STATE: ", "$state")
-
-                Toast.makeText(requireContext(), "Processing", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
             }
+            else -> {
+            }
+        }
+        when (state.massage.isNotEmpty()) {
+            true -> {
+                Log.d("HANDLE STATE: ", "$state")
+                Toast.makeText(requireContext(), state.massage, Toast.LENGTH_SHORT).show()
+            }
+            else -> {
 
-            is State.Success -> {
-                adapter3.setData(state.data)
             }
         }
     }
