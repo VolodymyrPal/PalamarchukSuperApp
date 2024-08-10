@@ -8,6 +8,7 @@ import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.common.toProductDomainRW
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -56,7 +58,7 @@ class StoreViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
 
     private fun getProductsAsFlow(): Flow<List<Product>> {
-        val a = flow { emit(apiRepository.fetchProducts()) }
+        val a = flow { emit(apiRepository.fetchProducts()) }.flowOn(Dispatchers.IO)
         Log.d("getProductsAsFlow", "a: $a")
         return a
     }
