@@ -170,7 +170,7 @@ class StoreViewModel @Inject constructor(
                 val newSkills = (uiState.first() as State.Success).data.toMutableList()
                 val product = newSkills.find { it.product.id == product.product.id }
                 newSkills.indexOf(product).let {
-                    newSkills[it] = newSkills[it].copy(quantity = product!!.quantity)
+                    newSkills[it] = newSkills[it].copy(quantity = quantity)
                     emitState(newSkills)
                 }
             }
@@ -186,7 +186,7 @@ class StoreViewModel @Inject constructor(
             newSkills.indexOf(skill).let {
                 var newQuantity = 0
                 if (newSkills[it].quantity + product.quantity >= 0) {
-                    newQuantity = newSkills[it].quantity + product.quantity
+                    newQuantity = newSkills[it].quantity + quantity
                 }
                 newSkills[it] =
                     newSkills[it].copy(quantity = newQuantity)
