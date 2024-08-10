@@ -140,13 +140,13 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                //addProduct(event.product, event.quantity)
-                refresh()
+                addProduct(event.product, event.quantity)
+                //refresh()
             }
 
             is Event.SetItemToBasket -> {
-                //setItemToBasket(event.product, event.quantity)
-                refresh()
+                setItemToBasket(event.product, event.quantity)
+                //refresh()
             }
         }
     }
