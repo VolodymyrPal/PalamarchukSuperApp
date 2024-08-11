@@ -132,7 +132,7 @@ class StoreViewModel @Inject constructor(
 
 
             is Event.OnRefresh -> {
-
+                refresh()
             }
 
             is Event.ShowToast -> {
