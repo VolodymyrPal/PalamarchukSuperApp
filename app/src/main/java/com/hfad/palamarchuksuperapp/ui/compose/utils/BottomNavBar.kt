@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -32,53 +34,53 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.ui.compose.Navigation
 import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction1
 
 @Stable
 @Composable
 fun BottomNavBar(
     modifier: Modifier = Modifier,
-    navController: Navigation?,
+    navigate: KFunction1<Routes, Unit>?,
 ) {
-    val context: Context = LocalContext.current
-    val vibe: Vibrator = remember {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    fun onClickVibro() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibe.vibrate(VibrationEffect.createOneShot(2, 60))
-        } else {
-            vibe.vibrate(1)
-        }
-    }
-
-    val appImages = remember { AppImages(context).mainImage }
+//    val context: Context = LocalContext.current
+//    val vibe: Vibrator = remember {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//            val vibratorManager =
+//                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+//            vibratorManager.defaultVibrator
+//        } else {
+//            @Suppress("DEPRECATION")
+//            context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+//        }
+//    }
+//
+//    @Suppress("DEPRECATION")
+//    fun onClickVibro() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            vibe.vibrate(VibrationEffect.createOneShot(2, 60))
+//        } else {
+//            vibe.vibrate(1)
+//        }
+//    }
+//
+//    val appImages = remember { AppImages(context).mainImage }
     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
-    val coroutineScope = rememberCoroutineScope()
-
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
-            if (it.resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    appImages.updateMainPhoto()
-                }
-            }
-        }
-    )
+//    val coroutineScope = rememberCoroutineScope()
+//
+//    val cameraLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.StartActivityForResult(),
+//        onResult = {
+//            if (it.resultCode == Activity.RESULT_OK) {
+//                coroutineScope.launch {
+//    //                appImages.updateMainPhoto()
+//                }
+//            }
+//        }
+//    )
 
     val selectedIconHome = painterResource(id = R.drawable.bicon_home_black_filled)
     val unselectedIconHome = painterResource(id = R.drawable.bicon_home_black_outlined)
@@ -89,8 +91,8 @@ fun BottomNavBar(
             selectedIcon = selectedIconHome,
             unselectedIcon = unselectedIconHome,
             onClick = {
-                onClickVibro()
-                navController?.navigate(Routes.MainScreenConstraint)
+                //onClickVibro()
+                navigate?.invoke(Routes.MainScreenConstraint)
             }
         )
     }
@@ -104,8 +106,8 @@ fun BottomNavBar(
             selectedIcon = selectedIconCamera,
             unselectedIcon = unselectedIconCamera,
             onClick = {
-                onClickVibro()
-                cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
+              //  onClickVibro()
+              //  cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
             }
         )
     }
@@ -119,8 +121,8 @@ fun BottomNavBar(
             unselectedIcon = unselectedIconSettings,
             badgeAmount = 10,
             onClick = {
-                onClickVibro()
-                navController?.navigate(Routes.Settings)
+              //  onClickVibro()
+                navigate?.invoke(Routes.Settings)
             }
         )
     }
@@ -134,7 +136,7 @@ fun BottomNavBar(
             NavigationBarItem(
                 selected = selectedTabIndex == index,
                 onClick = {
-                    onClickVibro()
+                   // onClickVibro()
                     selectedTabIndex = index
                     tabBarItem.onClick()
                     tabBarItem.badgeAmount = null
@@ -187,7 +189,7 @@ fun TabBarIconView(
 @Preview
 @Composable
 fun MyNavBarPreviewElement() {
-    BottomNavBar(navController = null)
+    BottomNavBar(navigate = null)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
