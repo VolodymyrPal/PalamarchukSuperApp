@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -64,6 +65,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -124,16 +126,18 @@ import kotlin.reflect.KFunction1
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    navController: Navigation?,
+    navController: KFunction1<Routes, Unit>?,
     viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
+    val navigate = remember { navController }
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    //val myBasket by viewModel.basketList.collectAsState() TODO
+    val myBasket by viewModel.basketList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     MyNavigationDrawer(
@@ -199,9 +203,7 @@ fun StoreScreen(
                 )
 
             },
-             bottomBar = {
-                 BottomNavBar(navController = navController)
-                         },
+            bottomBar = {  BottomNavBar(navigate = navigate) },
             floatingActionButton = {
 
 
