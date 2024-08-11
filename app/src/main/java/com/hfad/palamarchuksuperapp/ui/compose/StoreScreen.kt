@@ -155,7 +155,7 @@ fun StoreScreen(
                         coroutineScope.launch { subDrawerState.close() }
                     },
                     onEvent = viewModel::event,
-                    items = emptyList()  //myBasket TODO
+                    items = myBasket
                 )
             }
         },
@@ -192,7 +192,7 @@ fun StoreScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { /* do something */ }) {
+                        IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
                             Icon(
                                 imageVector = Icons.Filled.Menu,
                                 contentDescription = "Localized description"
@@ -201,7 +201,6 @@ fun StoreScreen(
                     },
                     scrollBehavior = scrollBehavior
                 )
-
             },
             bottomBar = {  BottomNavBar(navigate = navigate) },
             floatingActionButton = {
@@ -220,9 +219,9 @@ fun StoreScreen(
                                 painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
                                 "Floating action button."
                             )
-//                            if (myBasket.isNotEmpty()) { TODO
-//                                Text(text = myBasket.sumOf { it.quantity }.toString())
-//                            }
+                            if (myBasket.isNotEmpty()) {
+                                Text(text = myBasket.sumOf { it.quantity }.toString())
+                            }
                         }
                     }
                 )
@@ -243,37 +242,6 @@ fun StoreScreen(
                     loading = myState.loading,
                     items = myState.items,
                 )
-
-//                when (state) {
-//                    State.Processing -> {
-//                        Box(modifier = Modifier.fillMaxSize()) {
-//                            CircularProgressIndicator(
-//                                modifier = Modifier.align(Alignment.Center),
-//                            )
-//                        }
-//                    }
-//
-//                    State.Empty -> {
-//                        Text(text = "Empty or Error. Please refresh by swipe!")
-//                    }
-//
-//
-//                    is State.Error -> {
-//                        Text(
-//                            text = "Error: ${(state as State.Error).exception}",
-//                            color = Color.Red
-//                        )
-//                    }
-//
-//
-//                    is State.Success -> {
-//                        StoreScreenContent(
-//                            modifier = Modifier,
-//                            productList = productList,
-//                            onEvent = viewModel::event
-//                        )
-//                    }
-//                }
             }
         }
     }
