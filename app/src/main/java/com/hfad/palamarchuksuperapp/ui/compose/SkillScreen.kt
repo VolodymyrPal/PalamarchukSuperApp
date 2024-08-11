@@ -74,12 +74,13 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.reflect.KFunction1
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
 fun SkillScreen(
     modifier: Modifier = Modifier,
-    navController: Navigation?,
+    navController: KFunction1<Routes, Unit>?,
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
@@ -87,7 +88,7 @@ fun SkillScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(navController = navController)
+            BottomNavBar(navigate = navController)
         },
         floatingActionButton = {
             val context = LocalContext.current
