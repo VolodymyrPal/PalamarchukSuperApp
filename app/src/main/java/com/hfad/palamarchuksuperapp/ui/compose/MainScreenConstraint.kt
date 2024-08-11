@@ -61,18 +61,19 @@ import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.runBlocking
+import kotlin.reflect.KFunction1
 
 @Composable
 fun MainScreenRow(
     modifier: Modifier = Modifier,
     actionSkillsButton: () -> Unit = {},
-    navController: Navigation?,
+    navController: KFunction1<Routes, Unit>?,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             BottomNavBar(
-                navController = navController,
+                navigate = navController,
             )
         }
     ) { paddingValues ->
@@ -181,7 +182,7 @@ fun MainScreenRow(
                         Column(modifier = Modifier) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.navigate(Routes.StoreScreen) },
+                                action = { navController?.invoke(Routes.StoreScreen) },
                                 imagePath = R.drawable.store_image,
                                 text = "S T O R E"
                             )
@@ -192,20 +193,20 @@ fun MainScreenRow(
                         ) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.navigate(Routes.SkillScreen) },
+                                action = { navController?.invoke(Routes.SkillScreen) },
                                 text = "S K I L L S"
                             )
 
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.navigate(Routes.Settings) },
+                                action = { navController?.invoke(Routes.Settings) },
                                 text = "S K I L L S"
                             )
                         }
                         Column(modifier = Modifier) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.navigate(Routes.Settings) },
+                                action = { navController?.invoke(Routes.Settings) },
                                 text = "S K I L L S"
                             )
                         }
