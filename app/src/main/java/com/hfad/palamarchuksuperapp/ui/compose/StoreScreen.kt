@@ -270,33 +270,6 @@ fun StoreScreenState(
             onEvent = viewModelEvent
         )
     }
-
-
-//    when (state) {
-//        State.Processing -> {
-//            Box(modifier = Modifier.fillMaxSize()) {
-//                CircularProgressIndicator(
-//                    modifier = Modifier.align(Alignment.Center),
-//                )
-//            }
-//        }
-//        State.Empty -> {
-//            Text(text = "Empty or Error. Please refresh by swipe!")
-//        }
-//        is State.Error -> {
-//            Text(
-//                text = "Error: ${(state as State.Error).exception}",
-//                color = Color.Red
-//            )
-//        }
-//        is State.Success -> {
-//            StoreScreenContent(
-//                modifier = Modifier,
-//                productList = (state as State.Success).data,
-//                onEvent = viewModel::event
-//            )
-//        }
-//    }
 }
 
 @Composable
@@ -318,51 +291,51 @@ fun StoreScreenContent(
         horizontalArrangement = Arrangement.Absolute.Center
     )
     {
-//        item(span = { GridItemSpan(itemSpan) }) {
-//            StoreLazyCard(
-//                modifier = Modifier.fillMaxWidth(),
-//                onEvent = onEvent,
-//                productList = productList.filter { productList[0].product.category == it.product.category },
-//            )
-//        }
-//
-//        item(span = { GridItemSpan(itemSpan) }) {
-//
-//            val productListInter = productList.filter {
-//                productList[0].product.category != it.product.category
-//            }
-//
-//            val finalProductList = productListInter.filter {
-//                productListInter[0].product.category == it.product.category
-//            }
-//
-//            StoreLazyCard(
-//                modifier = Modifier,
-//                onEvent = onEvent,
-//                productList = finalProductList
-//            )
-//        }
+        item(span = { GridItemSpan(itemSpan) }) {
+            StoreLazyCard(
+                modifier = Modifier.fillMaxWidth(),
+                onEvent = onEvent,
+                productList = productList.filter { productList[0].product.category == it.product.category },
+            )
+        }
+
+        item(span = { GridItemSpan(itemSpan) }) {
+
+            val productListInter = productList.filter {
+                productList[0].product.category != it.product.category
+            }
+
+            val finalProductList = productListInter.filter {
+                productListInter[0].product.category == it.product.category
+            }
+
+            StoreLazyCard(
+                modifier = Modifier,
+                onEvent = onEvent,
+                productList = finalProductList
+            )
+        }
         items(
             items = productList,
             key = { item: ProductDomainRW -> item.product.id },
         ) { item ->
-//            AnimatedVisibility(
-//                modifier = Modifier
-//                    .animateItem(),
-//                // .padding(0.dp, 0.dp, 10.dp, 10.dp),
-//                visible = true,
-//                exit = fadeOut(
-//                    animationSpec = TweenSpec(100, 100, LinearEasing)
-//                ),
-//                enter = fadeIn(
-//                    animationSpec = TweenSpec(100, 100, LinearEasing)
-//                )
-//            ) { TODO
+            AnimatedVisibility(
+                modifier = Modifier
+                    .animateItem(),
+                // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                visible = true,
+                exit = fadeOut(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                ),
+                enter = fadeIn(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                )
+            ) {
                 ListItemProduct(
                     item = item,
                     onEvent = remember(item) { { event -> onEvent(event) } },
                 )
-//            }
+            }
         }
     }
 }
@@ -400,22 +373,22 @@ fun StoreLazyCard(
                     items = productList,
                     key = { item: ProductDomainRW -> item.product.id },
                 ) { item ->
-//                    AnimatedVisibility(
-//                        modifier = Modifier
-//                            .animateItem(),
-//                        visible = true,
-//                        exit = fadeOut(
-//                            animationSpec = TweenSpec(100, 100, LinearEasing)
-//                        ),
-//                        enter = fadeIn(
-//                            animationSpec = TweenSpec(100, 100, LinearEasing)
-//                        )
-//                    ) {
-                    ListItemProduct(
-                        item = item, // TODO test rep
-                        onEvent = remember(item) { { event -> onEvent(event) } },
-                    )
-//                    }
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .animateItem(),
+                        visible = true,
+                        exit = fadeOut(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        ),
+                        enter = fadeIn(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        )
+                    ) {
+                        ListItemProduct(
+                            item = item, // TODO test rep
+                            onEvent = remember(item) { { event -> onEvent(event) } },
+                        )
+                    }
                 }
             }
         }
