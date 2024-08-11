@@ -60,12 +60,12 @@ fun MainContent() {
             composable<Routes.MainScreenConstraint> {
                 MainScreenRow(
                     actionSkillsButton = remember { { navArgClass.navigate(Routes.Settings) } },
-                    navController = navArgClass
+                    navController = navArgClass::navigate
                 )
             }
             composable<Routes.SkillScreen> {
                 SkillScreen(
-                    navController = navArgClass
+                    navController = navArgClass::navigate
                 )
             }
             composable<Routes.Settings> {
@@ -73,7 +73,7 @@ fun MainContent() {
             }
             composable<Routes.StoreScreen> {
                 StoreScreen(
-                    navController = navArgClass
+                    navController = navArgClass::navigate
                 )
             }
         }
