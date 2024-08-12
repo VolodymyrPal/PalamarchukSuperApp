@@ -32,6 +32,17 @@ class StoreViewModel @Inject constructor(
 
     lateinit var testData: List<ProductDomainRW>
 
+    init {
+        viewModelScope.launch {
+            try {
+                val data = apiRepository.fetchProducts()
+                Log.d("VM product: ", "$data")
+            } catch (e: Exception) {
+                Log.e("ViewModel Error", "Failed to fetch products: ${e.message}")
+            }
+        }
+    }
+
 //    init {
 //        event(Event.FetchSkills)
 //
@@ -57,16 +68,16 @@ class StoreViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
 
-    private fun getProductsAsFlow(): Flow<List<Product>> {
-        val a = flow { emit(apiRepository.fetchProducts()) }.flowOn(Dispatchers.IO)
-        Log.d("getProductsAsFlow", "a: $a")
-        return a
-    }
+    private fun getProductsAsFlow(): Flow<List<Product>> = flow {
+        val products = apiRepository.fetchProducts()
+        emit(products)
+    }.flowOn(Dispatchers.IO)
 
     private val _products: Flow<Async<List<ProductDomainRW>>> =
         combine(
             getProductsAsFlow(), _isLoading
         ) { products, _ ->
+            Log.d("VM _products emiting: ", "$products")
             products.map { it.toProductDomainRW() }
         }
             .map { Async.Success(it) }
@@ -86,10 +97,11 @@ class StoreViewModel @Inject constructor(
             }
 
             is Async.Success -> {
+                Log.d("VM SUCCEІ emitState data: ", "${products.data}")
                 MyState(
-                    loading = isLoading,
+                    loading = false,
                     items = products.data,
-                    )
+                )
             }
         }
     }.stateIn(
