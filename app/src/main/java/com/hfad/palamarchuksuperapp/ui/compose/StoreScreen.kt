@@ -226,6 +226,7 @@ fun StoreScreen(
 
             Surface(
                 modifier = modifier
+                    .fillMaxSize()
                     .padding(
                         bottom = paddingValues.calculateBottomPadding(),
                         top = paddingValues.calculateTopPadding()
