@@ -37,7 +37,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -60,6 +59,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
@@ -98,7 +98,6 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
@@ -115,6 +114,7 @@ import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
+import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -127,9 +127,9 @@ import kotlin.reflect.KFunction1
 fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: KFunction1<Routes, Unit>?,
-    viewModel: StoreViewModel = viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
+    viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
+    //viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    val navigate = remember { navController }
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -202,10 +202,8 @@ fun StoreScreen(
                     scrollBehavior = scrollBehavior
                 )
             },
-            bottomBar = {  BottomNavBar(navigate = navigate) },
+            bottomBar = { BottomNavBar(navigate = navController) },
             floatingActionButton = {
-
-
                 FloatingActionButton(
                     shape = RoundedCornerShape(33),
                     modifier = Modifier,
@@ -219,9 +217,7 @@ fun StoreScreen(
                                 painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
                                 "Floating action button."
                             )
-                            if (myBasket.isNotEmpty()) {
-                                Text(text = myBasket.sumOf { it.quantity }.toString())
-                            }
+                            if (myBasket.isNotEmpty()) { Text(text = myBasket.sumOf { it.quantity }.toString()) }
                         }
                     }
                 )
@@ -258,9 +254,7 @@ fun StoreScreenState(
 
     if (loading) {
         Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-            )
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
     }
     if (!empty) {
