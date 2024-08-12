@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Suppress("MaxLineLength")
@@ -12,7 +13,11 @@ class ProductRepository @Inject constructor() : FakeStoreApi {
     private var fakeStoreApi: FakeStoreApi
 
     init {
-        val httpClient: OkHttpClient = OkHttpClient.Builder().build()
+        val httpClient: OkHttpClient = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build()
         val retrofit: Retrofit =
             Retrofit.Builder().baseUrl("https://fakestoreapi.com/")
                 .addConverterFactory(MoshiConverterFactory.create().asLenient())  // TODO asLenient good only for testing, not production
