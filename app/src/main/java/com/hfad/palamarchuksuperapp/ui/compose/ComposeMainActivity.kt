@@ -45,7 +45,7 @@ fun MainContent() {
         return fadeOut(tween(delayMillis = 90))
     }
 
-    val navArgClass = remember {
+    val navArgClass by lazy {
         object : Navigation {
             override fun navigate(route: Routes) {
                 navController.navigate(route)
