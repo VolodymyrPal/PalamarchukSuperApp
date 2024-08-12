@@ -119,7 +119,6 @@ fun SkillScreen(
             color = Color.Transparent, modifier = modifier
                 .fillMaxSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
-
         ) {
             val state by viewModel.uiState.collectAsState()
             viewModel.fetchSkills()
