@@ -35,40 +35,8 @@ class StoreViewModel @Inject constructor(
     lateinit var testData: List<ProductDomainRW>
 
     init {
-        viewModelScope.launch {
-            try {
-                val data = apiRepository.fetchProducts()
-                Log.d("VM product: ", "$data")
-            } catch (e: Exception) {
-                Log.e("ViewModel Error", "Failed to fetch products: ${e.message}")
-            }
-        }
+        event(Event.FetchSkills)
     }
-
-//    init {
-//        event(Event.FetchSkills)
-//
-//        viewModelScope.launch {
-//            launch {
-//                uiState.collect { state ->
-//                    when (state) {
-//                        is State.Success -> {
-//                            updateBasketList(state)
-//                        }
-//
-//                        else -> {
-//                            // do nothing
-//                        }
-//                    }
-//                }
-//            }
-//            launch {
-//                testData = repository.fetchProductsTest().first().map { it.toProductDomainRW() }
-//            }
-//        }
-//    }
-
-    private val _isLoading = MutableStateFlow(false)
 
     private fun getProductsAsFlow(): Flow<List<Product>> = flow {
         val products = apiRepository.fetchProducts()
