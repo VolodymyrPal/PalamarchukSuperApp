@@ -61,13 +61,14 @@ class StoreViewModel @Inject constructor(
             }
 
             is Async.Error -> {
-                MyState(isLoading, massage = products.errorMessage.message.toString())
+                MyState(
+                    loading = isLoading,  //TODO for testing (in product must be - false)
+                    message = products.errorMessage.message!!)
             }
 
             is Async.Success -> {
-                Log.d("VM SUCCEІ emitState data: ", "${products.data}")
                 MyState(
-                    loading = false,
+                    loading = isLoading, //TODO for testing (in product must be - false)
                     items = products.data,
                 )
             }
