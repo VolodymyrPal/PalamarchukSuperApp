@@ -42,9 +42,11 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
             initialValue = State.Empty
         )
 
+    private val effectFlow = MutableSharedFlow<EFFECT>()
+    override val effect: SharedFlow<EFFECT> =
+        effectFlow.asSharedFlow()
 
-
-    private val _isLoading = MutableStateFlow(false)
+    internal val _isLoading = MutableStateFlow(false)
 
 
 
@@ -58,9 +60,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
 
 
-    private val effectFlow = MutableSharedFlow<EFFECT>()
-    override val effect: SharedFlow<EFFECT> =
-        effectFlow.asSharedFlow()
+
 
     private val refreshTrigger = DefaultRefreshTrigger()
 
@@ -172,7 +172,7 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
 data class MyState(
     val loading: Boolean = false,
     val items: List<ProductDomainRW> = emptyList(),
-    val massage: String = ""
+    val message: String = ""
 )
 
 @Stable
@@ -350,8 +350,6 @@ private class DefaultDataLoader<T> : DataLoader<T> {
 }
 
 
-
-
 sealed interface RefreshTrigger {
     suspend fun refresh()
     val refreshEvent: SharedFlow<Unit>
@@ -369,4 +367,3 @@ private class DefaultRefreshTrigger : RefreshTrigger {
     }
 
 }
-
