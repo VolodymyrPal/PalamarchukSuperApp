@@ -147,10 +147,10 @@ class StoreFragment : Fragment() {
             else -> {
             }
         }
-        when (state.massage.isNotEmpty()) {
+        when (state.message.isNotEmpty()) {
             true -> {
                 Log.d("HANDLE STATE: ", "$state")
-                Toast.makeText(requireContext(), state.massage, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
             }
             else -> {
 
