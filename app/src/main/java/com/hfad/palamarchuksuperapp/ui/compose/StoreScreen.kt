@@ -299,19 +299,33 @@ fun StoreScreenState(
     loading: Boolean,
     items: List<ProductDomainRW>,
 ) {
-    val empty = remember { items.isEmpty() }
+    val empty = items.isEmpty()
 
-    if (loading) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-    }
-    if (!empty) {
-        StoreScreenContent(
-            modifier = modifier,
-            productList = items,
-            onEvent = viewModelEvent
+    val pullRefreshState =
+        rememberPullRefreshState(
+            refreshing = false,
+            onRefresh = { viewModelEvent(StoreViewModel.Event.OnRefresh) }
         )
+
+    if (!empty) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState),
+        ) {
+            StoreScreenContent(
+                modifier = modifier,
+                productList = items,
+                onEvent = viewModelEvent
+            )
+            PullRefreshIndicator(
+                refreshing = false,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                contentColor = Color.Yellow,
+                backgroundColor = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
