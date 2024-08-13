@@ -43,16 +43,14 @@ class StoreViewModel @Inject constructor(
         emit(products)
     }.flowOn(Dispatchers.IO)
 
-    private val _products: Flow<Async<List<ProductDomainRW>>> =
+    private var _products: Flow<Async<List<ProductDomainRW>>> =
         combine(
             getProductsAsFlow(), _isLoading
         ) { products, _ ->
-            Log.d("VM _products emiting: ", "$products")
             products.map { it.toProductDomainRW() }
         }
             .map { Async.Success(it) }
             .catch { Async.Error(it) }
-
 
     val myState: StateFlow<MyState> = combine(
         _isLoading, _products
@@ -109,12 +107,15 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-
+                viewModelScope.launch {
+                    emitState(apiRepository.fetchProducts().map { it.toProductDomainRW() })
+                }
             }
 
 
             is Event.OnRefresh -> {
-                refresh()
+                refreshProducts()
+            //refresh()
             }
 
             is Event.ShowToast -> {
@@ -122,12 +123,12 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                addProduct(event.product, event.quantity)
+                //addProduct(event.product, event.quantity)
                 //refresh()
             }
 
             is Event.SetItemToBasket -> {
-                setItemToBasket(event.product, event.quantity)
+                //setItemToBasket(event.product, event.quantity)
                 //refresh()
             }
         }
@@ -176,7 +177,7 @@ class StoreViewModel @Inject constructor(
             }
         }
     }
-
+}
 //    private fun fetchProducts() {
 //        emitState(emitProcessing = true) {
 //            try {
@@ -193,5 +194,3 @@ class StoreViewModel @Inject constructor(
 //            }
 //        }
 //    }
-}
-
