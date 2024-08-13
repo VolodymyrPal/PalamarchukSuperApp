@@ -137,16 +137,51 @@ class StoreViewModel @Inject constructor(
 
     fun refresh() {
         _isLoading.value = true
+        Log.d("refresh", "refresh: ${_isLoading.value}")
         viewModelScope.launch {
             try {
                 apiRepository.fetchProducts()
             } catch (e: Exception) {
                 Log.d("Exception in refresh", "event: ${e.message}")
             }
-
+            delay(1500)
             _isLoading.value = false
         }
     }
+
+
+    private fun refreshProducts() {
+        viewModelScope.launch {
+            _isLoading.value = true
+
+            try {
+                val newProducts = apiRepository.fetchProducts()
+
+                _products = combine(
+                    flowOf(newProducts), _isLoading
+                ) { products, _ ->
+                    products.map { it.toProductDomainRW() }
+                }
+                    .map { Async.Success(it) }
+                    .stateIn(
+                        scope = viewModelScope,
+                        started = SharingStarted.WhileSubscribed(),
+                        initialValue = Async.Loading
+                    )
+            } catch (e: Exception) {
+                _products = flowOf(Async.Error(e))
+                    .stateIn(
+                        scope = viewModelScope,
+                        started = SharingStarted.WhileSubscribed(),
+                        initialValue = Async.Error(e)
+                    )
+            } finally {
+                delay(1500)
+                _isLoading.value = false
+            }
+        }
+    }
+
 
     private fun setItemToBasket(product: ProductDomainRW, quantity: Int = 1) {
         try {
