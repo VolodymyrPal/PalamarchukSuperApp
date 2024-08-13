@@ -230,7 +230,9 @@ fun StoreScreen(
                                 painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
                                 "Floating action button."
                             )
-                            if (myBasket.isNotEmpty()) { Text(text = myBasket.sumOf { it.quantity }.toString()) }
+                            if (myBasket.isNotEmpty()) {
+                                Text(text = myBasket.sumOf { it.quantity }.toString())
+                            }
                         }
                     }
                 )
@@ -245,7 +247,7 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
-                val myState by viewModel.myState.collectAsStateWithLifecycle()
+
                 StoreScreenState(
                     modifier = Modifier,
                     viewModelEvent = viewModel::event,
