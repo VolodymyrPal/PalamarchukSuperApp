@@ -254,11 +254,44 @@ fun StoreScreen(
                     loading = myState.loading,
                     items = myState.items,
                 )
+                //StoreScreenState(modifier = Modifier, viewModelEvent = viewModel::event, state = uiState,)
             }
         }
     }
 }
 
+@Composable
+fun StoreScreenState(
+    modifier: Modifier = Modifier,
+    viewModelEvent: KFunction1<StoreViewModel.Event, Unit>,
+    state: State<List<ProductDomainRW>>,
+) {
+    when (state) {
+        is State.Empty -> {
+
+        }
+
+        is State.Error -> {
+            Text(text = state.exception.message!!)
+        }
+
+        is State.Processing -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        }
+
+        is State.Success -> {
+            StoreScreenContent(
+                modifier = modifier,
+                productList = state.data,
+                onEvent = viewModelEvent
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoreScreenState(
     modifier: Modifier = Modifier,
