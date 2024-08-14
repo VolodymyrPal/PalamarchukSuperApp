@@ -1,8 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import android.util.Log
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -49,17 +47,11 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     internal val _isLoading = MutableStateFlow(false)
 
 
-
-
     sealed class Async<out T> {
         object Loading : Async<Nothing>()
         data class Error(val errorMessage: Throwable) : Async<Nothing>()
         data class Success<out T>(val data: T) : Async<T>()
     }
-
-
-
-
 
 
     private val refreshTrigger = DefaultRefreshTrigger()
@@ -68,7 +60,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         initialData: State<T> = State.Empty,
         observeData: (T) -> Flow<T> = { emptyFlow() },
         fetchData: suspend (State<T>) -> Result<T>,
-        onRefreshFailure: (Throwable) -> Unit = {}
+        onRefreshFailure: (Throwable) -> Unit = {},
     ): StateFlow<State<T>> = loadAndObserveData(
         initialData = initialData,
         observeData = observeData,
@@ -85,7 +77,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         initialData: State<T>,
         observeData: (T) -> Flow<T>,
         fetchData: suspend (State<T>) -> Result<T>,
-        onRefreshFailure: (Throwable) -> Unit
+        onRefreshFailure: (Throwable) -> Unit,
     ): Flow<State<T>> {
         return flow {
             emit(initialData)
@@ -172,10 +164,9 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
 data class MyState(
     val loading: Boolean = false,
     val items: List<ProductDomainRW> = emptyList(),
-    val message: String = ""
+    val message: String = "",
 )
 
-@Stable
 sealed interface State<out T> {
     val loading: Boolean
 
@@ -183,7 +174,6 @@ sealed interface State<out T> {
         override val loading: Boolean = true
     }
 
-    @Immutable
     data class Success<out T>(val data: T, override val loading: Boolean = false) : State<T> {
         val items: T
             get() = data
