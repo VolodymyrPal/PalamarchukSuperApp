@@ -897,7 +897,21 @@ fun SubDrawerContent(
                         Text(text = "Please provide phone number for our managers to contact you")
                         TextField(
                             value = phone,
-                            onValueChange = { phone = it }
+                            onValueChange = { phone = it },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    for (item in items) {
+                                        onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item, 0))
+                                    }
+                                    closeDrawerEvent()
+                                    showToast()
+                                    openAlertDialog.value = false
+                                }
+                            )
                         )
                     }
                 },
