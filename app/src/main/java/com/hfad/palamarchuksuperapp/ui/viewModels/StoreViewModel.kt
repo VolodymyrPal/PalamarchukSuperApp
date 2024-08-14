@@ -137,7 +137,6 @@ class StoreViewModel @Inject constructor(
 
     fun refresh() {
         _isLoading.value = true
-        Log.d("refresh", "refresh: ${_isLoading.value}")
         viewModelScope.launch {
             try {
                 apiRepository.fetchProducts()
