@@ -24,7 +24,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.random.Random
 
 @Stable
 class StoreViewModel @Inject constructor(
@@ -115,8 +117,9 @@ class StoreViewModel @Inject constructor(
 
 
             is Event.OnRefresh -> {
-                refreshProducts()
+            //    refreshProducts()
             //refresh()
+                fetchProducts()
             }
 
             is Event.ShowToast -> {
@@ -124,7 +127,7 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                //addProduct(event.product, event.quantity)
+                addProduct(event.product, event.quantity)
                 //refresh()
             }
 
