@@ -215,20 +215,19 @@ class StoreViewModel @Inject constructor(
             }
         }
     }
+    private fun fetchProducts() {
+        emitState(emitProcessing = true) {
+            try {
+                val products = withContext(Dispatchers.IO) {
+                    apiRepository.fetchProducts()
+                }
+                val skills = products.map { it.toProductDomainRW() }
+                delay(2000)
+                if (Random.nextFloat() > 0.5) throw Exception("Something went wrong") //TODO
+                return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
+            } catch (e: Exception) {
+                State.Error(e)
+            }
+        }
+    }
 }
-//    private fun fetchProducts() {
-//        emitState(emitProcessing = true) {
-//            try {
-//                val products = withContext(Dispatchers.IO) {
-//                    apiRepository.fetchProducts()
-//                }
-//                val skills = products.map { it.toProductDomainRW() }
-//                Log.d("VM emitState data: ", "$skills")
-//                return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty
-//
-//            } catch (e: Exception) {
-//                Log.d("Eror in fetchProducts", "event: ${e.message}")
-//                State.Error(e)
-//            }
-//        }
-//    }
