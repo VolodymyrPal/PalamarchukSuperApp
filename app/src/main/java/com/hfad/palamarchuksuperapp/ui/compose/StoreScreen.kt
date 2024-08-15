@@ -274,6 +274,7 @@ fun StoreScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoreScreenState(
     modifier: Modifier = Modifier,
@@ -290,17 +291,34 @@ fun StoreScreenState(
         }
 
         is State.Processing -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
         }
 
         is State.Success -> {
-            StoreScreenContent(
-                modifier = modifier,
-                productList = state.data,
-                onEvent = viewModelEvent
-            )
+
+            val pullRefreshState =
+                rememberPullRefreshState(
+                    refreshing = false,
+                    onRefresh = { viewModelEvent(StoreViewModel.Event.OnRefresh) }
+                )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullRefresh(pullRefreshState),
+            ) {
+                StoreScreenContent(
+                    modifier = modifier,
+                    productList = state.data,
+                    onEvent = viewModelEvent
+                )
+                PullRefreshIndicator(
+                    refreshing = false,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    contentColor = Color.Yellow,
+                    backgroundColor = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
