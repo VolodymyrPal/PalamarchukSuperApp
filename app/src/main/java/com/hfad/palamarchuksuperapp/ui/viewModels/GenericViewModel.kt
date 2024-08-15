@@ -167,24 +167,20 @@ data class MyState(
     val message: String = "",
 )
 
-sealed interface State<out T> {
-    val loading: Boolean
+sealed class State<out T> {
+    val cachedData : T? = null
 
-    data object Processing : State<Nothing> {
-        override val loading: Boolean = true
-    }
+    data object Processing : State<Nothing>()
 
-    data class Success<out T>(val data: T, override val loading: Boolean = false) : State<T> {
+    data class Success<out T>(val data: T, val loading: Boolean = false) : State<T>() {
         val items: T
             get() = data
     }
 
-    data class Error(val exception: Throwable, override val loading: Boolean = false) :
-        State<Nothing>
+    data class Error(val exception: Throwable, val loading: Boolean = false) :
+        State<Nothing>()
 
-    data object Empty : State<Nothing> {
-        override val loading: Boolean = false
-    }
+    data object Empty : State<Nothing>()
 }
 
 sealed interface BaseEvent
