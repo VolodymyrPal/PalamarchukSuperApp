@@ -364,6 +364,90 @@ fun StoreScreenState(
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
+    state: State<List<ProductDomainRW>>,
+    onEvent: (StoreViewModel.Event) -> Unit,
+) {
+    val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
+
+    LazyVerticalGrid(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = md_theme_my_royal)
+            .padding(start = 8.dp, end = 8.dp, top = 8.dp),
+        flingBehavior = ScrollableDefaults.flingBehavior(),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
+        horizontalArrangement = Arrangement.Absolute.Center
+    )
+    {
+        if (state is State.Error) {
+            item(span = { GridItemSpan(itemSpan) }) {
+                Text(text = state.exception.message!!)
+            }
+        }
+
+        if (state.cachedData?.isNotEmpty() == true) {
+
+        }
+
+        if (state is State.Success) {
+
+            val productList = state.data
+
+            item(span = { GridItemSpan(itemSpan) }) {
+                StoreLazyCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    onEvent = onEvent,
+                    productList = productList.filter { productList[0].product.category == it.product.category },
+                )
+            }
+
+            item(span = { GridItemSpan(itemSpan) }) {
+
+                val productListInter = productList.filter {
+                    productList[0].product.category != it.product.category
+                }
+
+                val finalProductList = productListInter.filter {
+                    productListInter[0].product.category == it.product.category
+                }
+
+                StoreLazyCard(
+                    modifier = Modifier,
+                    onEvent = onEvent,
+                    productList = finalProductList
+                )
+            }
+            items(
+                items = productList,
+                key = { item: ProductDomainRW -> item.product.id },
+            ) { item ->
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .animateItem(),
+                    // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                    visible = true,
+                    exit = fadeOut(
+                        animationSpec = TweenSpec(100, 100, LinearEasing)
+                    ),
+                    enter = fadeIn(
+                        animationSpec = TweenSpec(100, 100, LinearEasing)
+                    )
+                ) {
+                    ListItemProduct(
+                        item = item,
+                        onEvent = remember(item) { { event -> onEvent(event) } },
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun StoreScreenContent(
+    modifier: Modifier = Modifier,
     productList: List<ProductDomainRW>,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
