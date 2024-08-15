@@ -141,6 +141,7 @@ fun StoreScreen(
 ) {
     val myState by viewModel.myState.collectAsStateWithLifecycle()
 
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -203,7 +204,7 @@ fun StoreScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
-                            if (myState.loading) {
+                            if (uiState is State.Processing) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
                                     color = Color.Yellow
@@ -252,13 +253,22 @@ fun StoreScreen(
                     )
             ) {
 
-                StoreScreenState(
+//                StoreScreenState(
+//                    modifier = Modifier,
+//                    viewModelEvent = viewModel::event,
+//                    loading = myState.loading,
+//                    items = myState.items,
+//                )
+//                StoreScreenState(
+//                    modifier = Modifier,
+//                    viewModelEvent = viewModel::event,
+//                    state = uiState,
+//                )
+                StoreScreenContent(
                     modifier = Modifier,
-                    viewModelEvent = viewModel::event,
-                    loading = myState.loading,
-                    items = myState.items,
+                    state = uiState,
+                    onEvent = viewModel::event
                 )
-                //StoreScreenState(modifier = Modifier, viewModelEvent = viewModel::event, state = uiState,)
             }
         }
     }
