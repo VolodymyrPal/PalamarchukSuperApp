@@ -137,10 +137,7 @@ fun StoreScreen(
     modifier: Modifier = Modifier,
     navController: KFunction1<Routes, Unit>?,
     viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
-    //viewModel(factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    val myState by viewModel.myState.collectAsStateWithLifecycle()
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -195,7 +192,7 @@ fun StoreScreen(
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = { viewModel.refresh() /* do something */ }) {
+                        IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) /* do something */ }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Localized description"
@@ -204,7 +201,16 @@ fun StoreScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
-                            if (uiState is State.Processing) {
+                            val refreshing = remember(uiState) {
+                                when (uiState) {
+                                    is State.Processing -> true
+                                    is State.Success -> return@remember (
+                                            (uiState as State.Success).refreshing)
+
+                                    else -> false
+                                }
+                            }
+                            if (refreshing) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
                                     color = Color.Yellow
@@ -243,7 +249,6 @@ fun StoreScreen(
                 )
             }
         ) { paddingValues ->
-
             Surface(
                 modifier = modifier
                     .fillMaxSize()
@@ -252,18 +257,6 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
-
-//                StoreScreenState(
-//                    modifier = Modifier,
-//                    viewModelEvent = viewModel::event,
-//                    loading = myState.loading,
-//                    items = myState.items,
-//                )
-//                StoreScreenState(
-//                    modifier = Modifier,
-//                    viewModelEvent = viewModel::event,
-//                    state = uiState,
-//                )
                 StoreScreenContent(
                     modifier = Modifier,
                     state = uiState,
@@ -1017,7 +1010,12 @@ fun SubDrawerContent(
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     for (item in items) {
-                                        onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item, 0))
+                                        onEvent.invoke(
+                                            StoreViewModel.Event.SetItemToBasket(
+                                                item,
+                                                0
+                                            )
+                                        )
                                     }
                                     closeDrawerEvent()
                                     showToast()
