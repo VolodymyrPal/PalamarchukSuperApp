@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -32,20 +31,17 @@ import kotlin.Result.Companion.success
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
 
-    private val _uiState: MutableStateFlow<State<T>> = MutableStateFlow(State.Empty)
+    private val _uiState: MutableStateFlow<State<T>> = MutableStateFlow(State.Empty(loading = true))
     override val uiState: StateFlow<State<T>> =
         _uiState.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = State.Empty
+            initialValue = State.Empty(loading = true)
         )
 
     private val effectFlow = MutableSharedFlow<EFFECT>()
     override val effect: SharedFlow<EFFECT> =
         effectFlow.asSharedFlow()
-
-    internal val _isLoading = MutableStateFlow(false)
-
 
     sealed class Async<out T> {
         object Loading : Async<Nothing>()
@@ -57,7 +53,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     private val refreshTrigger = DefaultRefreshTrigger()
 
     protected fun loadAndObserveData(
-        initialData: State<T> = State.Empty,
+        initialData: State<T> = State.Empty (loading = true),
         observeData: (T) -> Flow<T> = { emptyFlow() },
         fetchData: suspend (State<T>) -> Result<T>,
         onRefreshFailure: (Throwable) -> Unit = {},
@@ -135,11 +131,10 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     }
 
     private fun emitEmpty() {
-        _uiState.update { State.Empty }
+        _uiState.update { State.Empty(loading = false) }
     }
 
     private fun emitProcessing() {
-        Log.d("TAG", "Emit Processing")
         _uiState.update { State.Processing }
     }
 
@@ -161,28 +156,6 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
     fun event(event: EVENT)
 }
 
-data class MyState(
-    val loading: Boolean = false,
-    val items: List<ProductDomainRW> = emptyList(),
-    val message: String = "",
-)
-
-sealed class State<out T> {
-    val cachedData : T? = null
-
-    data object Processing : State<Nothing>()
-
-    data class Success<out T>(val data: T, val loading: Boolean = false) : State<T>() {
-        val items: T
-            get() = data
-    }
-
-    data class Error(val exception: Throwable, val loading: Boolean = false) :
-        State<Nothing>()
-
-    data object Empty : State<Nothing>()
-}
-
 sealed interface BaseEvent
 
 sealed interface BaseEffect
@@ -198,17 +171,17 @@ fun <T> Result<T>.toLoadingResult() = fold(
 fun <T, R> State<T>.map(
     block: (T) -> R,
 ): State<R> = when (this) {
-    is State.Success -> State.Success(block(data), loading)
+    is State.Success -> State.Success(block(data), refreshing)
     is State.Error -> State.Error(exception, loading)
     is State.Processing -> State.Processing
-    is State.Empty -> State.Empty
+    is State.Empty -> State.Empty (loading)
 }
 
 fun <T> State<T>.toLoading(): State<T> = when (this) {
     is State.Error -> copy(loading = true)
     is State.Processing -> State.Processing
-    is State.Success -> copy(loading = true)
-    is State.Empty -> State.Empty
+    is State.Success -> copy(refreshing = true)
+    is State.Empty -> State.Empty (loading)
 }
 
 sealed interface DataLoader<T> {
@@ -300,9 +273,6 @@ private class DefaultDataLoader<T> : DataLoader<T> {
         return flow {
             emit(lastValue)
             refreshEventFlow.collect {
-                if (!lastValue.loading) {
-                    emit(lastValue.toLoading())
-                }
             }
         }
             .flatMapLatest { currentResult ->
@@ -323,12 +293,6 @@ private class DefaultDataLoader<T> : DataLoader<T> {
             { value -> observeData(value).map { loadingSuccess(it) } }
         emit(initialData)
         when {
-            initialData.loading -> {
-                val newResult = fetchData(initialData)
-                emit(newResult.toLoadingResult())
-                newResult.onSuccess { value -> emitAll(observe(value)) }
-            }
-
             initialData is State.Success -> emitAll(observe(initialData.data))
             else -> {}
         }
