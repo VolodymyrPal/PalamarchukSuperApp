@@ -114,7 +114,7 @@ class StoreFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.myState.collectLatest { state ->
+                    viewModel.uiState.collectLatest { state ->
                         handleState(state, adapter3)
                     }
                 }
@@ -130,29 +130,22 @@ class StoreFragment : Fragment() {
 
 
     private fun handleState(
-        state: MyState,
+        state: State<List<ProductDomainRW>>,
         adapter: StoreListAdapter,
     ) {
-        when(state.items.isNotEmpty()) {
-            true -> {
+        when (state) {
+            is State.Success -> {
                 adapter.setData(state.items)
             }
-            else -> {
-                adapter.setData(emptyList())
-            }
-        }
-        when (state.loading) {
-            true -> {
+
+            is State.Processing -> {
                 Log.d("HANDLE STATE: ", "$state")
                 Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
             }
-            else -> {
-            }
-        }
-        when (state.message.isNotEmpty()) {
-            true -> {
+
+            is State.Error -> {
                 Log.d("HANDLE STATE: ", "$state")
-                Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), state.exception.message, Toast.LENGTH_SHORT).show()
             }
 
             is State.Empty -> adapter.setData(emptyList())
