@@ -111,7 +111,11 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         viewModelScope.launch {
             val current = uiState.value
             if (emitProcessing) {
-                emitProcessing()
+                if (current is State.Success) {
+                    _uiState.update { current.copy(refreshing = true) }
+                } else {
+                    emitProcessing()
+                }
             }
             _uiState.update {
                 block(current)
