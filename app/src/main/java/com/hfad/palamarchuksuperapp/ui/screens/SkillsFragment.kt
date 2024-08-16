@@ -55,12 +55,12 @@ class SkillsFragment : Fragment() {
                 launch {
                     viewModel.uiState.collect {
                         when (it) {
-                            State.Empty -> {
+                            is State.Empty -> {
                                 binding.progressBarCalories.visibility = View.GONE
                                 binding.errorEmptyText.isVisible = true
                             }
 
-                            State.Processing -> {
+                            is State.Processing -> {
                                 binding.errorEmptyText.isVisible = false
                                 binding.progressBarCalories.visibility = View.VISIBLE
                             }

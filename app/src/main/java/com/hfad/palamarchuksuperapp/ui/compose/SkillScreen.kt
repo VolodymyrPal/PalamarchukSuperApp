@@ -131,7 +131,7 @@ fun SkillScreen(
                     }
                 }
 
-                State.Empty -> {
+                is State.Empty -> {
                     Text(text = "Empty or Error. Please refresh by swipe!")
                 }
 

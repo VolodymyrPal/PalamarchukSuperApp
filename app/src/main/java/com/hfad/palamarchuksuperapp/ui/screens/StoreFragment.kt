@@ -19,12 +19,13 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.DrawerBasketStoreBinding
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
+import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.WIDTH_ITEM
 import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreBasketAdapter
 import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreListAdapter
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
-import com.hfad.palamarchuksuperapp.ui.viewModels.MyState
+import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -94,6 +95,7 @@ class StoreFragment : Fragment() {
 
             this.lifecycleScope.launch {
                 viewModel.basketList.collectLatest {
+                    Log.d("Basket list set data: ", "$it")
                     adapter.setData(it)
                     val summ = "%.2f".format(it.sumOf { item -> item.product.price * item.quantity } * 0.5)
                     stubBinding.toPay.text = getString(R.string.to_pay, summ)
@@ -152,9 +154,8 @@ class StoreFragment : Fragment() {
                 Log.d("HANDLE STATE: ", "$state")
                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
             }
-            else -> {
 
-            }
+            is State.Empty -> adapter.setData(emptyList())
         }
     }
 

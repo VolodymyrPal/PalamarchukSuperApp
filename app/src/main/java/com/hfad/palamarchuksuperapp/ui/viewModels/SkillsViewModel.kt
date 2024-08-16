@@ -126,7 +126,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                             State.Success(
                                 data = skills.first()
                             )
-                        } else State.Empty
+                        } else State.Empty (loading = false)
                     } catch (e: Exception) {
                         State.Error(e)
                     }
