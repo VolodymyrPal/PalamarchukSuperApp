@@ -55,7 +55,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         viewModelScope.launch {
             funWithState(
                 onSuccess = {
-                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                    val newSkills = (uiState.first() as State.Success).items.toMutableList()
                     newSkills.remove(skillDomainRW)
                     newSkills.add(0, skillDomainRW)
                     emitState(newSkills)
@@ -70,7 +70,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
             try {
                 funWithState(
                     onSuccess = {
-                        val newList = (uiState.value as State.Success).data.toMutableList()
+                        val newList = (uiState.value as State.Success).items.toMutableList()
                         newList.filter { it.chosen }.forEach {
                             repository.deleteSkill(it)
                             newList.remove(it)
@@ -88,7 +88,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
         viewModelScope.launch {
             funWithState(
                 onSuccess = {
-                    val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                    val newSkills = (uiState.first() as State.Success).items.toMutableList()
                     newSkills.add(skillDomainRW)
                     emitState(newSkills)
                     repository.addSkill(skillDomainRW)
@@ -124,7 +124,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                         delay(1000)
                         return@emitState if (skills.first().isNotEmpty()) {
                             State.Success(
-                                data = skills.first()
+                                items = skills.first()
                             )
                         } else State.Empty (loading = false)
                     } catch (e: Exception) {
@@ -141,7 +141,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                 SkillsChangeConst.ChooseOrNotSkill -> {
                     funWithState(
                         onSuccess = {
-                            val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                            val newSkills = (uiState.first() as State.Success).items.toMutableList()
                             newSkills.indexOf(skillDomainRW).let {
                                 newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
                                 emitState(newSkills)
@@ -154,7 +154,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                     funWithState(
                         onSuccess = {
                             val newList =
-                                (uiState.value as State.Success).data.toMutableList()
+                                (uiState.value as State.Success).items.toMutableList()
                             val skillToChange =
                                 newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
                             if (skillToChange == null) {

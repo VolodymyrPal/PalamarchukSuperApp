@@ -147,7 +147,7 @@ fun SkillScreen(
                 is State.Success -> {
                     LazyList(
                         modifier = Modifier.fillMaxSize(),
-                        item = (state as State.Success<List<SkillDomainRW>>).data,
+                        item = (state as State.Success<List<SkillDomainRW>>).items,
                         viewModel = viewModel
                     )
                 }

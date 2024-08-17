@@ -287,7 +287,6 @@ fun StoreScreenContent(
             .background(color = md_theme_my_royal)
             .padding(start = 8.dp, end = 8.dp, top = 8.dp)
     ) {
-
         LazyVerticalGrid(
             modifier = Modifier,
             flingBehavior = ScrollableDefaults.flingBehavior(),
@@ -309,7 +308,7 @@ fun StoreScreenContent(
 
             if (state is State.Success) {
 
-                val productList = state.data
+                val productList = state.items
 
                 item(span = { GridItemSpan(itemSpan) }) {
                     StoreLazyCard(
@@ -737,7 +736,7 @@ fun StoreLazyListForPreview(
     ),
 ) {
     StoreLazyCard(
-        productList = viewModel.testData,
+        productList = emptyList(),
         onEvent = {})
 }
 

@@ -95,7 +95,7 @@ class StoreViewModel @Inject constructor(
 
     private fun addProduct(product: ProductDomainRW, quantity: Int = 1) {
         viewModelScope.launch {
-            val newSkills = (uiState.first() as State.Success).data.toMutableList()
+            val newSkills = (uiState.first() as State.Success).items.toMutableList()
             val skill = newSkills.find { it.product.id == product.product.id }
             newSkills.indexOf(skill).let {
                 var newQuantity = 0
@@ -117,7 +117,7 @@ class StoreViewModel @Inject constructor(
                 val skills = products.map { it.toProductDomainRW() }
                 delay(2000)
                 if (Random.nextFloat() > 0.5) throw Exception("Something went wrong") //TODO
-                return@emitState if (skills.isNotEmpty()) State.Success(data = skills) else State.Empty (loading = false)
+                return@emitState if (skills.isNotEmpty()) State.Success(items = skills) else State.Empty (loading = false)
             } catch (e: Exception) {
                 State.Error(e)
             }
@@ -129,9 +129,6 @@ class StoreViewModel @Inject constructor(
 //        emit(products)
 //    }.flowOn(Dispatchers.IO)
 //
-//    private fun updateBasketList(state: State.Success<List<ProductDomainRW>>) {
-//        val updatedBasketList = state.data.filter { it.quantity > 0 }
-//        _basketList.update { updatedBasketList }
-//    }
+
 
 }

@@ -75,7 +75,7 @@ class SkillsFragment : Fragment() {
                                 binding.errorEmptyText.isVisible = false
                                 binding.progressBarCalories.visibility = View.GONE
                                 lifecycleScope.launch {
-                                    adapter.setData(it.data)
+                                    adapter.setData(it.items)
                                 }
                             }
                         }
