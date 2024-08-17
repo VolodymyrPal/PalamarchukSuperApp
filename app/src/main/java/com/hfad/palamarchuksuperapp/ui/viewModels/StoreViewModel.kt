@@ -11,8 +11,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,10 +26,15 @@ class StoreViewModel @Inject constructor(
     val apiRepository: ProductRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
-    lateinit var testData: List<ProductDomainRW>
-
     init {
         event(Event.FetchSkills)
+        viewModelScope.launch {
+            uiState.collectLatest {
+                if (it is State.Success) {
+                    updateBasketList(it)
+                }
+            }
+        }
     }
 
     private val _basketList = MutableStateFlow<List<ProductDomainRW>>(emptyList())
@@ -77,11 +84,16 @@ class StoreViewModel @Inject constructor(
         }
     }
 
+    private fun updateBasketList(state: State.Success<List<ProductDomainRW>>) {
+        val updatedBasketList = state.items.filter { it.quantity > 0 }
+        _basketList.update { updatedBasketList }
+    }
+
 
     private fun setItemToBasket(product: ProductDomainRW, quantity: Int = 1) {
         try {
             viewModelScope.launch {
-                val newSkills = (uiState.first() as State.Success).data.toMutableList()
+                val newSkills = (uiState.first() as State.Success).items.toMutableList()
                 val product = newSkills.find { it.product.id == product.product.id }
                 newSkills.indexOf(product).let {
                     newSkills[it] = newSkills[it].copy(quantity = quantity)
