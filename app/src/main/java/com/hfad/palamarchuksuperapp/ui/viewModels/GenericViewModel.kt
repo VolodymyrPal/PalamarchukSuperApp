@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -13,7 +12,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
@@ -21,12 +19,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.Result.Companion.failure
-import kotlin.Result.Companion.success
 
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
@@ -49,60 +44,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         data class Success<out T>(val data: T) : Async<T>()
     }
 
-
     private val refreshTrigger = DefaultRefreshTrigger()
-
-    protected fun loadAndObserveData(
-        initialData: State<T> = State.Empty (loading = true),
-        observeData: (T) -> Flow<T> = { emptyFlow() },
-        fetchData: suspend (State<T>) -> Result<T>,
-        onRefreshFailure: (Throwable) -> Unit = {},
-    ): StateFlow<State<T>> = loadAndObserveData(
-        initialData = initialData,
-        observeData = observeData,
-        fetchData = fetchData,
-        onRefreshFailure = onRefreshFailure
-    ).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = initialData
-    )
-
-    private fun loadAndObserveDataFlow(
-        refreshTrigger: RefreshTrigger,
-        initialData: State<T>,
-        observeData: (T) -> Flow<T>,
-        fetchData: suspend (State<T>) -> Result<T>,
-        onRefreshFailure: (Throwable) -> Unit,
-    ): Flow<State<T>> {
-        return flow {
-            emit(initialData)
-            refreshTrigger.refreshEvent.collect {
-                emit(State.Processing)
-            }
-        }.flatMapLatest { currentState ->
-            flow {
-                emit(currentState)
-                if (currentState is State.Processing) {
-                    val newResult = fetchData(currentState)
-                    newResult.fold(
-                        onSuccess = { value ->
-                            emit(State.Success(value))
-                            emitAll(observeData(value).map { State.Success(it) })
-                        },
-                        onFailure = { exception ->
-                            if (currentState is State.Success) {
-                                onRefreshFailure(exception)
-                                emit(State.Success(currentState.data))
-                            } else {
-                                emit(State.Error(exception))
-                            }
-                        }
-                    )
-                }
-            }
-        }.distinctUntilChanged()
-    }
 
     protected fun emitState(
         emitProcessing: Boolean,
@@ -145,13 +87,6 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     protected fun emitFailure(e: Throwable) {
         _uiState.update { State.Error(e) }
     }
-}
-
-fun <T> Flow<T>.asResult(): Flow<State<T>> {
-    return this
-        .map<T, State<T>> { State.Success(it) }
-        .onStart { emit(State.Processing) }
-        .catch { emit(State.Error(it)) }
 }
 
 interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
@@ -230,32 +165,7 @@ sealed interface DataLoader<T> {
                 }
             )
         }
-    )
-
-    fun loadAndObserveDataAsState(
-        coroutineScope: CoroutineScope,
-        initialData: State<T>,
-        refreshTrigger: RefreshTrigger? = null,
-        observeData: (T) -> Flow<T>,
-        fetchData: suspend (State<T>) -> Result<T>,
-    ): StateFlow<State<T>> = loadAndObserveData(
-        coroutineScope = coroutineScope,
-        initialData = initialData,
-        refreshTrigger = refreshTrigger,
-        observeData = observeData,
-        fetchData = fetchData,
-    ).stateIn(
-        scope = coroutineScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = initialData
-    )
-
-    fun loadAndObserveData(
-        initialData: State<T>,
-        refreshTrigger: RefreshTrigger? = null,
-        observeData: (T) -> Flow<T>,
-        fetchData: suspend (State<T>) -> Result<T>,
-    ): Flow<State<T>>
+    }
 }
 
 fun <T> DataLoader(): DataLoader<T> = DefaultDataLoader()
