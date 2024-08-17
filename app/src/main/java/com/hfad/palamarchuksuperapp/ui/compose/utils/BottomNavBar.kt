@@ -151,8 +151,8 @@ fun BottomNavBar(
                     )
                 },
                 alwaysShowLabel = true,
-                label = { Text(text = tabBarItem.title, modifier = modifier) },
-                modifier = modifier
+                label = { Text(text = tabBarItem.title, modifier = Modifier) },
+                modifier = Modifier
             )
         }
     }
