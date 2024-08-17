@@ -107,63 +107,31 @@ fun <T> Result<T>.toLoadingResult() = fold(
     onFailure = { loadingFailure(it) }
 )
 
-fun <T, R> State<T>.map(
-    block: (T) -> R,
-): State<R> = when (this) {
-    is State.Success -> State.Success(block(data), refreshing)
-    is State.Error -> State.Error(exception, loading)
-    is State.Processing -> State.Processing
-    is State.Empty -> State.Empty (loading)
-}
-
-fun <T> State<T>.toLoading(): State<T> = when (this) {
-    is State.Error -> copy(loading = true)
-    is State.Processing -> State.Processing
-    is State.Success -> copy(refreshing = true)
-    is State.Empty -> State.Empty (loading)
-}
-
 sealed interface DataLoader<T> {
 
     fun loadAndObserveData(
-        coroutineScope: CoroutineScope,
-        initialData: State<T>,
+        initialData: State<T> = State.Empty(loading = true),
         refreshTrigger: RefreshTrigger? = null,
         observeData: (T) -> Flow<T>,
         fetchData: suspend (State<T>) -> Result<T>,
-    ): StateFlow<State<T>> = loadAndObserveData(
-        initialData = initialData,
-        refreshTrigger = refreshTrigger,
-        observeData = observeData,
-        fetchData = fetchData,
-    ).stateIn(
-        scope = coroutineScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = initialData
-    )
+    ): Flow<State<T>> = flow {
 
-    fun loadAndObserveData(
-        refreshTrigger: RefreshTrigger? = null,
-        initialData: State<T> = loading(),
-        observeData: (T) -> Flow<T> = { emptyFlow() },
-        fetchData: suspend (State<T>) -> Result<T>,
-        onRefreshFailure: (Throwable) -> Unit,
-    ): Flow<State<T>> = loadAndObserveData(
-        refreshTrigger = refreshTrigger,
-        initialData = initialData,
-        observeData = observeData,
-        fetchData = { oldValue: State<T> ->
-            fetchData(oldValue).fold(
-                onSuccess = { success(it) },
-                onFailure = { exception ->
-                    if (oldValue is State.Success) {
-                        onRefreshFailure(exception)
-                        success(oldValue.data)
-                    } else {
-                        failure(exception)
-                    }
-                }
-            )
+        val observe: (T) -> Flow<State<T>> = { value ->
+            observeData(value).map { loadingSuccess(it) }
+        }
+        emit(initialData)
+        when {
+            initialData is State.Processing -> {
+                val newData = fetchData(initialData)
+                emit(newData.toLoadingResult())
+                newData.onSuccess { value -> emitAll(observe(value)) }
+            }
+
+            initialData is State.Success -> {
+                emitAll(observe(initialData.items))
+            }
+
+            else -> {}
         }
     }
 }
@@ -187,6 +155,8 @@ private class DefaultDataLoader<T> : DataLoader<T> {
         return flow {
             emit(lastValue)
             refreshEventFlow.collect {
+                emit(loading())
+                emit(fetchData(lastValue).toLoadingResult())
             }
         }
             .flatMapLatest { currentResult ->
@@ -197,8 +167,33 @@ private class DefaultDataLoader<T> : DataLoader<T> {
 
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun loadAndObserveRefreshData(
+        initialData: State<T>,
+        observeData: (T) -> Flow<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+        refreshTrigger: RefreshTrigger?,
+        coroutineScope: CoroutineScope,
+    ): StateFlow<State<T>> {
+        return flow {
+            val refreshEventFlow =
+                (refreshTrigger as? DefaultRefreshTrigger)?.refreshEvent ?: emptyFlow()
+            refreshEventFlow.collect {
+                if (initialData is State.Success) {
+                    emit(initialData.copy(refreshing = true))
+                } else {
+                    emit(loading())
+                }
+                emit(fetchData(initialData).toLoadingResult())
+            }
+        }
+            .flatMapLatest { currentResult ->
+                loadAndObserveData(currentResult, observeData, fetchData)
+            }.stateIn(coroutineScope, SharingStarted.Eagerly, initialData)
+    }
 
-    private fun loadAndObserveData(
+
+    fun loadAndObserveData(
         initialData: State<T>,
         observeData: (T) -> Flow<T>,
         fetchData: suspend (State<T>) -> Result<T>,
@@ -207,7 +202,7 @@ private class DefaultDataLoader<T> : DataLoader<T> {
             { value -> observeData(value).map { loadingSuccess(it) } }
         emit(initialData)
         when {
-            initialData is State.Success -> emitAll(observe(initialData.data))
+            initialData is State.Success -> emitAll(observe(initialData.items))
             else -> {}
         }
     }
