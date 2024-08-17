@@ -232,14 +232,13 @@ sealed interface State<out T> {
 
     data object Processing : State<Nothing>
 
-    data class Success<out T>(val data: T, val refreshing: Boolean = false) : State<T> {
-        val loading: Boolean by lazy { false }
-        val items: List<ProductDomainRW> by lazy { emptyList() }
-        val message: String by lazy { "" }
-    }
+    data class Success<out T>(
+        val items: T,
+        val refreshing: Boolean = false,
+        val message: String? = null,
+    ) : State<T>
 
-    data class Error(val exception: Throwable, val loading: Boolean = false) :
-        State<Nothing>
+    data class Error(val exception: Throwable) : State<Nothing>
 
     data class Empty(val loading: Boolean = true) : State<Nothing>
 }
