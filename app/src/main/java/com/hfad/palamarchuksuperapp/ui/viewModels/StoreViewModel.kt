@@ -26,6 +26,24 @@ class StoreViewModel @Inject constructor(
     val apiRepository: ProductRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
+    val refreshTrigger = RefreshTrigger()
+
+    val uiState1 = exampleDataLoader.loadAndObserveRefreshData(
+        coroutineScope = viewModelScope,
+        fetchData = fetchProduct(),
+        initialData = State.Empty(loading = true),
+        refreshTrigger = refreshTrigger,
+    )
+
+    private suspend fun fetchProduct(state : State<List<ProductDomainRW>>): Result<List<ProductDomainRW>> {
+        val products = withContext(Dispatchers.IO) {
+            apiRepository.fetchProducts()
+        }
+        val skills = products.map { it.toProductDomainRW() }
+        return if (skills.isNotEmpty()) Result.success(skills) else Result.failure(Exception("Something went wrong"))
+    }
+
+
     init {
         event(Event.FetchSkills)
         viewModelScope.launch {
@@ -120,6 +138,7 @@ class StoreViewModel @Inject constructor(
             }
         }
     }
+
     private fun fetchProducts() {
         emitState(emitProcessing = true) {
             try {
@@ -129,7 +148,9 @@ class StoreViewModel @Inject constructor(
                 val skills = products.map { it.toProductDomainRW() }
                 delay(2000)
                 if (Random.nextFloat() > 0.5) throw Exception("Something went wrong") //TODO
-                return@emitState if (skills.isNotEmpty()) State.Success(items = skills) else State.Empty (loading = false)
+                return@emitState if (skills.isNotEmpty()) State.Success(items = skills) else State.Empty(
+                    loading = false
+                )
             } catch (e: Exception) {
                 State.Error(e)
             }
