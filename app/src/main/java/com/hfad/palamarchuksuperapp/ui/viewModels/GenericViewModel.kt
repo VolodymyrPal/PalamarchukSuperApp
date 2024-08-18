@@ -26,6 +26,9 @@ import kotlinx.coroutines.launch
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
 
+    val exampleDataLoader = DefaultDataLoader<T>()
+
+
     private val _uiState: MutableStateFlow<State<T>> = MutableStateFlow(State.Empty(loading = true))
     override val uiState: StateFlow<State<T>> =
         _uiState.stateIn(
@@ -43,8 +46,6 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         data class Error(val errorMessage: Throwable) : Async<Nothing>()
         data class Success<out T>(val data: T) : Async<T>()
     }
-
-    private val refreshTrigger = DefaultRefreshTrigger()
 
     protected fun emitState(
         emitProcessing: Boolean,
@@ -98,14 +99,6 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
 sealed interface BaseEvent
 
 sealed interface BaseEffect
-
-fun <T> loading(): State<T> = State.Processing
-fun <T> loadingSuccess(data: T): State<T> = State.Success(data)
-fun <T> loadingFailure(e: Throwable): State<T> = State.Error(e)
-fun <T> Result<T>.toLoadingResult() = fold(
-    onSuccess = { loadingSuccess(it) },
-    onFailure = { loadingFailure(it) }
-)
 
 sealed interface DataLoader<T> {
 
@@ -190,21 +183,6 @@ private class DefaultDataLoader<T> : DataLoader<T> {
             .flatMapLatest { currentResult ->
                 loadAndObserveData(currentResult, observeData, fetchData)
             }.stateIn(coroutineScope, SharingStarted.Eagerly, initialData)
-    }
-
-
-    fun loadAndObserveData(
-        initialData: State<T>,
-        observeData: (T) -> Flow<T>,
-        fetchData: suspend (State<T>) -> Result<T>,
-    ): Flow<State<T>> = flow {
-        val observe: (T) -> Flow<State<T>> =
-            { value -> observeData(value).map { loadingSuccess(it) } }
-        emit(initialData)
-        when {
-            initialData is State.Success -> emitAll(observe(initialData.items))
-            else -> {}
-        }
     }
 }
 
