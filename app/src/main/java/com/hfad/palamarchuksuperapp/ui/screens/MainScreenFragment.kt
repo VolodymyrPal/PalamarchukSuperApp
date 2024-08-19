@@ -16,8 +16,9 @@ import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
-import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,9 +28,12 @@ class MainScreenFragment : Fragment() {
     private var _binding: FragmentMainScreenBinding? = null
     private val binding get() = _binding!!
 
-    @Inject lateinit var preferencesRepository: PreferencesRepository
-    @Inject lateinit var appImages: AppImages
-    @Inject lateinit var vibe: AppVibrator
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
+    @Inject
+    lateinit var appImages: AppImages
+    @Inject
+    lateinit var vibe: AppVibrator
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,10 +50,16 @@ class MainScreenFragment : Fragment() {
 
         updatePhoto()
 
-        binding.dayNightButton.setOnClickListener {
+        lifecycleScope.launch {
+            binding.dayNightButton.isChecked = preferencesRepository.storedQuery.first()
+        }
+
+
+        binding.dayNightButton.setOnCheckedChangeListener { _, isChecked ->
             vibe.standardClickVibration()
             lifecycleScope.launch {
-                ChangeDayNightModeUseCase()()
+                delay(200)
+                preferencesRepository.setStoredNightMode(isChecked)
             }
         }
 
@@ -68,7 +78,8 @@ class MainScreenFragment : Fragment() {
             }
             it.skillButton2.setOnClickListener {
                 findNavController().navigate(MainScreenFragmentDirections.actionMainScreenFragmentToStoreFragment())
-                vibe.standardClickVibration() }
+                vibe.standardClickVibration()
+            }
             it.skillButton3.setOnClickListener { vibe.standardClickVibration() }
             it.skillButton4.setOnClickListener { vibe.standardClickVibration() }
         }
