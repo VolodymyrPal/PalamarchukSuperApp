@@ -52,6 +52,18 @@
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
 
+        <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
+
+    </style>
+
+    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Switch" parent="">
+        <item name="colorPrimary"> @color/md_theme_onPrimary </item>
+        <item name="colorOnPrimary"> @color/my_royal </item>
+        <item name="colorOnPrimaryContainer"> @color/md_theme_onPrimary </item>
     </style>
 
 
