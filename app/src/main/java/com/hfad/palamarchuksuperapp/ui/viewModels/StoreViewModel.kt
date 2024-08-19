@@ -28,12 +28,7 @@ class StoreViewModel @Inject constructor(
 
     val refreshTrigger = RefreshTrigger()
 
-    val uiState1 = exampleDataLoader.loadAndObserveRefreshData(
-        coroutineScope = viewModelScope,
-        fetchData = fetchProduct(),
-        initialData = State.Empty(loading = true),
-        refreshTrigger = refreshTrigger,
-    )
+
 
     private suspend fun fetchProduct(state : State<List<ProductDomainRW>>): Result<List<ProductDomainRW>> {
         val products = withContext(Dispatchers.IO) {
