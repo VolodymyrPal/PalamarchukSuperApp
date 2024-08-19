@@ -17,22 +17,19 @@
         tools:context=".ui.screens.MainActivity">
 
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/day_night_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|top"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            app:trackDecoration="@drawable/empty_drawable"
+            app:thumbIcon="@drawable/darkmod_icon_outlined"
             android:contentDescription="@string/day_night_mode_button"
-            app:borderWidth="1dp"
-            app:elevation="15dp"
-            app:fabSize="auto"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:rippleColor="@color/md_theme_secondary"
-            app:shapeAppearance="@style/Widget.Material3.FloatingActionButton.Small.Secondary"
-            app:srcCompat="@drawable/darkmod_icon_outlined" />
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/compose_button"
