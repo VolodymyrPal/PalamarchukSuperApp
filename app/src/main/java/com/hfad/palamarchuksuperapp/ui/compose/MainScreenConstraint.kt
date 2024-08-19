@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +61,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction1
 
 @Composable
@@ -108,6 +109,7 @@ fun MainScreenRow(
                 vibe.vibrate(1)
             }
         }
+        val scope = rememberCoroutineScope()
 
         DisposableEffect(LocalLifecycleOwner.current) {
             fileObserver.startWatching()
@@ -141,7 +143,7 @@ fun MainScreenRow(
                             )
                         },
                         actionForView = {
-                            runBlocking { ChangeDayNightModeUseCase()() }
+                            scope.launch { ChangeDayNightModeUseCase()() }
                             onClickVibro()
                         },
                         buttonColor = buttonColor
