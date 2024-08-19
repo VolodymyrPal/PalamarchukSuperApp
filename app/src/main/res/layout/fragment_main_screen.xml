@@ -43,27 +43,44 @@
             android:inputType="text"
             android:letterSpacing="0"
             android:text="@string/compose"
-            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="17dp"
+            android:textColor="?attr/colorOnPrimaryFixed"
             app:borderWidth="1dp"
             app:cornerRadius="16dp"
-            app:elevation="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:rippleColor="@color/md_theme_secondary" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView"
+        <com.google.android.material.circularreveal.cardview.CircularRevealCardView
+            android:id="@+id/imageViewBox"
             android:layout_width="320dp"
             android:layout_height="320dp"
             android:layout_marginTop="72dp"
-            android:elevation="15dp"
-            android:scaleType="centerCrop"
+            app:cardCornerRadius="1000dp"
+            app:strokeWidth="2.5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/RoundedFullImageStyle"
-            app:strokeWidth="1dp"
-            tools:srcCompat="@tools:sample/avatars" />
+            app:layout_constraintTop_toTopOf="parent" >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/RoundedFullImageStyle"
+                    app:strokeWidth="1dp"
+                    tools:srcCompat="@tools:sample/avatars"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.circularreveal.cardview.CircularRevealCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/skill_button_1"
