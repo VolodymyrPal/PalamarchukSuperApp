@@ -170,72 +170,226 @@
                     app:fontFamily="sans-serif-medium" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+-->
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/skill_button_1"
+            android:layout_width="125dp"
+            android:layout_height="110dp"
+            android:background="@android:color/transparent"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.66"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewBox"
+            app:layout_constraintVertical_bias="0.25"
+            app:rippleColor="@color/md_theme_onSecondary">
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/skill_button_4"
-            app:layout_constraintEnd_toStartOf="@+id/skill_button_3"
-            app:layout_constraintStart_toEndOf="@+id/skill_button_2"
-            app:layout_constraintTop_toBottomOf="@+id/skill_button_1">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="100dp"
-                android:layout_height="70dp"
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="115dp"
+                android:layout_height="95dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:cardBackgroundColor="#2E004A"
-                app:cardCornerRadius="25dp" />
+                android:alpha="0.75"
+                android:elevation="0dp"
+                app:cardBackgroundColor="@color/md_theme_onSecondaryContainer"
+                app:cardCornerRadius="18dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeWidth="0dp"
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="100dp"
-                android:layout_height="70dp"
+                />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/skill_button_1_field"
+                android:layout_width="110dp"
+                android:layout_height="95dp"
                 android:layout_gravity="center"
+                android:elevation="0dp"
+                android:paddingBottom="20dp"
                 app:cardBackgroundColor="#E0BBFF"
-                app:cardCornerRadius="16dp">
+                app:cardCornerRadius="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/md_theme_primaryContainer"
+                    android:elevation="0dp"
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/store_image" />
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="85dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/skills_image"
+                        android:tint="@color/md_theme_onSecondaryContainer" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="STORE"
-                        android:textColor="#000000"
-                        android:textSize="14sp" />
+                        android:text="S K I L L S"
+                        android:textColor="@color/md_theme_onPrimaryContainer"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
-        </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/skill_button_3"
-            style="?attr/materialCardViewElevatedStyle"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/md_theme_primaryContainer"
+            android:layout_width="125dp"
+            android:layout_height="110dp"
+            android:background="@android:color/transparent"
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.66"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/skill_button_1">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="115dp"
+                android:layout_height="95dp"
+                android:layout_gravity="center"
+                android:alpha="0.75"
+                android:elevation="0dp"
+                app:cardBackgroundColor="@color/md_theme_onSecondaryContainer"
+                app:cardCornerRadius="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:strokeWidth="0dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="110dp"
+                android:layout_height="95dp"
+                android:layout_gravity="center"
+                android:elevation="0dp"
+                android:paddingBottom="20dp"
+                app:cardBackgroundColor="#E0BBFF"
+                app:cardCornerRadius="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/md_theme_primaryContainer"
+                    android:elevation="0dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="85dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/skills_image"
+                        android:tint="@color/md_theme_onSecondaryContainer" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="S K I L L S"
+                        android:textColor="@color/md_theme_onPrimaryContainer"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/skill_Button_2"
+            android:layout_width="125dp"
+            android:layout_height="110dp"
+            android:background="@android:color/transparent"
+            android:checkable="true"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.33"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toBottomOf="@+id/imageViewBox"
-            app:strokeWidth="1dp">
+            app:layout_constraintVertical_bias="0.25">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="115dp"
+                android:layout_height="95dp"
+                android:layout_gravity="center"
+                android:alpha="0.75"
+                android:elevation="0dp"
+                app:cardBackgroundColor="@color/md_theme_onSecondaryContainer"
+                app:cardCornerRadius="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeWidth="0dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="110dp"
+                android:layout_height="95dp"
+                android:layout_gravity="center"
+                android:elevation="0dp"
+                android:paddingBottom="20dp"
+                app:cardBackgroundColor="#E0BBFF"
+                app:cardCornerRadius="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/md_theme_primaryContainer"
+                    android:elevation="0dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="65dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/store_image"
+                        android:tint="@color/md_theme_onSecondaryContainer" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="S T O R E"
+                        android:textColor="@color/md_theme_onPrimaryContainer"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/skill_button_3"
+                    style="?attr/materialCardViewElevatedStyle"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginBottom="16dp"
+                    android:backgroundTint="@color/md_theme_primaryContainer"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imageViewBox"
+                    app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -264,60 +418,90 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/skill_button_4"
-            style="?attr/materialCardViewElevatedStyle"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/md_theme_primaryContainer"
-            android:checkable="true"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="10dp"
-            app:layout_constraintBottom_toBottomOf="@id/guideline3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/skill_button_1"
-            app:layout_constraintVertical_bias="1"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="95dp"
-                    android:layout_height="90dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="5dp"
-                    android:layout_weight="0.9"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/skills_image" />
-
-                <com.google.android.material.textview.MaterialTextView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1"
+                    android:layout_height="match_parent"
+                    android:background="@color/md_theme_primaryContainer"
+                    android:elevation="0dp"
                     android:gravity="center"
-                    android:text="S K I L L S"
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textStyle="bold"
-                    app:fontFamily="sans-serif-medium" />
-            </LinearLayout>
+                    android:orientation="vertical">
 
-        </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="85dp"
+                        android:layout_height="70dp"
+                        android:src="@drawable/skills_image"
+                        android:tint="@color/md_theme_onSecondaryContainer" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="S K I L L S"
+                        android:textColor="@color/md_theme_onPrimaryContainer"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/skill_button_4"
+                    style="?attr/materialCardViewElevatedStyle"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:backgroundTint="@color/md_theme_primaryContainer"
+                    android:checkable="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="10dp"
+                    app:layout_constraintBottom_toBottomOf="@id/guideline3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/skill_button_1"
+                    app:layout_constraintVertical_bias="1"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="95dp"
+                            android:layout_height="90dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:layout_weight="0.9"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/skills_image" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"
+                            android:gravity="center"
+                            android:text="S K I L L S"
+                            android:textColor="?attr/colorOnPrimaryContainer"
+                            android:textStyle="bold"
+                            app:fontFamily="sans-serif-medium" />
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+                -->
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline3"
+            android:id="@+id/guideline2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.99" />
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintGuide_begin="205dp"
+            app:layout_constraintStart_toStartOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
