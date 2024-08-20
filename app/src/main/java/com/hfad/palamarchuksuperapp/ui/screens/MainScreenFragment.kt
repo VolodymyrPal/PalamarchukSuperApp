@@ -1,11 +1,14 @@
 package com.hfad.palamarchuksuperapp.ui.screens
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.animation.doOnEnd
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
@@ -30,8 +33,10 @@ class MainScreenFragment : Fragment() {
 
     @Inject
     lateinit var preferencesRepository: PreferencesRepository
+
     @Inject
     lateinit var appImages: AppImages
+
     @Inject
     lateinit var vibe: AppVibrator
 
@@ -71,17 +76,53 @@ class MainScreenFragment : Fragment() {
             )
         }
 
-        binding.let {
-            it.skillButton1.setOnClickListener {
-                findNavController().navigate(MainScreenFragmentDirections.toSkillsFragment())
+        binding.apply {
+            skillButton1.setOnClickListener {
+                val scale = ObjectAnimator.ofPropertyValuesHolder(
+                    it,
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.2f, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.2f, 1f)
+                )
+                scale.setDuration(200)
+                scale.start()
+                scale.doOnEnd {
+                    findNavController().navigate(MainScreenFragmentDirections.toSkillsFragment())
+                    vibe.standardClickVibration()
+                }
+            }
+            skillButton2.setOnClickListener {
+                val scale = ObjectAnimator.ofPropertyValuesHolder(
+                    it,
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.2f, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.2f, 1f)
+                )
+                scale.setDuration(200)
+                scale.start()
+                scale.doOnEnd {
+                    findNavController().navigate(MainScreenFragmentDirections.actionMainScreenFragmentToStoreFragment())
+                    vibe.standardClickVibration()
+                }
+            }
+            skillButton3.setOnClickListener {
+                val scale = ObjectAnimator.ofPropertyValuesHolder(
+                    it,
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.2f, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.2f, 1f)
+                )
+                scale.setDuration(200)
+                scale.start()
                 vibe.standardClickVibration()
             }
-            it.skillButton2.setOnClickListener {
-                findNavController().navigate(MainScreenFragmentDirections.actionMainScreenFragmentToStoreFragment())
+            skillButton4.setOnClickListener {
+                val scale = ObjectAnimator.ofPropertyValuesHolder(
+                    it,
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f, 1.2f, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f, 1.2f, 1f)
+                )
+                scale.setDuration(200)
+                scale.start()
                 vibe.standardClickVibration()
             }
-            it.skillButton3.setOnClickListener { vibe.standardClickVibration() }
-            it.skillButton4.setOnClickListener { vibe.standardClickVibration() }
         }
 
         return view
