@@ -24,12 +24,11 @@
             android:layout_gravity="end|top"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:trackDecoration="@drawable/empty_drawable"
-            app:thumbIcon="@drawable/darkmod_icon_outlined"
             android:contentDescription="@string/day_night_mode_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            app:thumbIcon="@drawable/darkmod_icon_outlined"
+            app:trackDecoration="@drawable/empty_drawable" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/compose_button"
@@ -43,8 +42,8 @@
             android:inputType="text"
             android:letterSpacing="0"
             android:text="@string/compose"
+            android:textColor="@color/md_theme_onSecondaryContainer"
             android:textSize="17dp"
-            android:textColor="?attr/colorOnPrimaryFixed"
             app:borderWidth="1dp"
             app:cornerRadius="16dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,10 +56,10 @@
             android:layout_height="320dp"
             android:layout_marginTop="72dp"
             app:cardCornerRadius="1000dp"
-            app:strokeWidth="2.5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" >
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeWidth="2.5dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -77,13 +76,13 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/RoundedFullImageStyle"
                     app:strokeWidth="1dp"
-                    tools:srcCompat="@tools:sample/avatars"/>
+                    tools:srcCompat="@tools:sample/avatars" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.circularreveal.cardview.CircularRevealCardView>
 
+        <!--
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/skill_button_1"
             style="?attr/materialCardViewElevatedStyle"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -126,8 +125,8 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/skill_button_2"
             style="?attr/materialCardViewElevatedStyle"
             android:layout_width="100dp"
             android:layout_height="100dp"
