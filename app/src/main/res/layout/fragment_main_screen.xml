@@ -250,6 +250,7 @@
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
+            android:alpha="0.3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintHorizontal_bias="0.66"
@@ -291,13 +292,13 @@
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="85dp"
                         android:layout_height="70dp"
-                        android:src="@drawable/skills_image"
+                        android:src="@drawable/lock_outlined"
                         android:tint="@color/md_theme_onSecondaryContainer" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="S K I L L S"
+                        android:text="L O C K E D"
                         android:textColor="@color/md_theme_onPrimaryContainer"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -427,6 +428,7 @@
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
+            android:alpha="0.3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.33"
@@ -468,13 +470,13 @@
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="85dp"
                         android:layout_height="70dp"
-                        android:src="@drawable/skills_image"
+                        android:src="@drawable/lock_outlined"
                         android:tint="@color/md_theme_onSecondaryContainer" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="S K I L L S"
+                        android:text="L O C K E D"
                         android:textColor="@color/md_theme_onPrimaryContainer"
                         android:textSize="16sp"
                         android:textStyle="bold" />
