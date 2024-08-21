@@ -106,6 +106,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
@@ -142,6 +143,9 @@ fun StoreScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
+
+    val newState by viewModel.data.collectAsState(State.Empty())
+    viewModel.viewModelScope.launch { viewModel.refreshTrigger.refresh()  }
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -257,15 +261,38 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
+                when (newState) {
+                    is State.Processing -> {
+                        Log.d("STATE: ", "$newState")                    }
+
+                    is State.Error -> {
+                        Log.d("STATE: ", "$newState")                    }
+
+                    is State.Empty -> {
+                        Log.d("STATE: ", "$newState")                    }
+
+                    is State.Success -> {
+                        Log.d("STATE: ", "$newState")
+                    }
+
+                }
+
                 StoreScreenContent(
                     modifier = Modifier,
-                    state = uiState,
+                    state = newState,
                     onEvent = viewModel::event
                 )
+
             }
+            StoreScreenContent(
+                modifier = Modifier,
+                state = uiState,
+                onEvent = viewModel::event
+            )
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
