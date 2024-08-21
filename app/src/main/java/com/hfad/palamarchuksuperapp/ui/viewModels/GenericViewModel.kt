@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -13,12 +14,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -107,6 +105,7 @@ sealed interface DataLoader<T> {
         fetchData: suspend (State<T>) -> Result<T>,
         refreshTrigger: RefreshTrigger? = null,
         coroutineScope: CoroutineScope,
+        onErrorAction: (Throwable) -> Unit = {},
     ): Flow<State<T>>
 
 }
@@ -115,17 +114,20 @@ fun <T> DataLoader(): DataLoader<T> = DefaultDataLoader()
 
 class DefaultDataLoader<T> : DataLoader<T> {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun loadAndObserveRefreshData(
         initialData: State<T>,
         fetchData: suspend (State<T>) -> Result<T>,
         refreshTrigger: RefreshTrigger?,
         coroutineScope: CoroutineScope,
+        onErrorAction: (Throwable) -> Unit,
     ): StateFlow<State<T>> {
-        return flow {
-            val refreshEventFlow =
-                (refreshTrigger as? DefaultRefreshTrigger)?.refreshEvent ?: emptyFlow()
-            refreshEventFlow.collect {
+        return refreshEventFlow(refreshTrigger).flatMapLatest {
+            Log.d("Loader", "loadAndObserveRefreshData: $initialData")
+            flow {
+                emit(initialData)
                 val result = fetchData(initialData)
+                Log.d("DefaultDataLoader", "loadAndObserveRefreshData: $result")
                 if (initialData is State.Success) {
                     emit(initialData.copy(refreshing = true))
                     result.fold(
@@ -148,7 +150,11 @@ class DefaultDataLoader<T> : DataLoader<T> {
                     )
                 }
             }
-        }.stateIn(coroutineScope, SharingStarted.Eagerly, initialData)
+        }.distinctUntilChanged().stateIn(coroutineScope, SharingStarted.Eagerly, initialData)
+    }
+
+    private fun refreshEventFlow(refreshTrigger: RefreshTrigger?): Flow<Unit> {
+        return (refreshTrigger as? DefaultRefreshTrigger)?.refreshEvent ?: emptyFlow()
     }
 }
 
