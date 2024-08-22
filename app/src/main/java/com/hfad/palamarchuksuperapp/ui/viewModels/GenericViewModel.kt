@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,8 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -100,12 +97,14 @@ sealed interface BaseEffect
 
 sealed interface DataLoader<T> {
 
+    @Suppress("LongParameterList")
     fun loadAndObserveRefreshData(
         initialData: State<T> = State.Empty(loading = true),
         fetchData: suspend (State<T>) -> Result<T>,
         refreshTrigger: RefreshTrigger? = null,
         coroutineScope: CoroutineScope,
         onErrorAction: (Throwable) -> Unit = {},
+        onRefreshDone: () -> Unit = {},
     ): Flow<State<T>>
 
 }
@@ -114,48 +113,53 @@ fun <T> DataLoader(): DataLoader<T> = DefaultDataLoader()
 
 class DefaultDataLoader<T> : DataLoader<T> {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun loadAndObserveRefreshData(
         initialData: State<T>,
         fetchData: suspend (State<T>) -> Result<T>,
         refreshTrigger: RefreshTrigger?,
         coroutineScope: CoroutineScope,
         onErrorAction: (Throwable) -> Unit,
-    ): StateFlow<State<T>> {
-        return refreshEventFlow(refreshTrigger).flatMapLatest {
-            Log.d("Loader", "loadAndObserveRefreshData: $initialData")
-            flow {
-                emit(initialData)
-                val result = fetchData(initialData)
-                Log.d("DefaultDataLoader", "loadAndObserveRefreshData: $result")
-                if (initialData is State.Success) {
-                    emit(initialData.copy(refreshing = true))
-                    result.fold(
-                        onSuccess = { value ->
-                            emit(initialData.copy(items = value, refreshing = false))
-                        },
-                        onFailure = { error ->
-                            emit(State.Error(error))
-                        }
-                    )
-                } else {
-                    emit(State.Processing)
-                    result.fold(
-                        onSuccess = { value ->
-                            emit(State.Success(items = value, refreshing = false))
-                        },
-                        onFailure = { error ->
-                            emit(State.Error(error))
-                        }
-                    )
+        onRefreshDone: () -> Unit,
+    ): StateFlow<State<T>> = flow {
+        var lastState: State<T> = initialData
+        lastState = loadData(lastState, fetchData, onErrorAction)
+        emit(lastState)
+        refreshTrigger?.refreshEvent?.collect {
+            emit (when (lastState) {
+                is State.Success -> (lastState as State.Success<T>).copy(refreshing = true)
+                else -> lastState
+            })
+            Log.d("Asked for new data: ", "event: $it")
+            lastState = loadData(lastState, fetchData, onErrorAction)
+            emit(lastState)
+            onRefreshDone()
+        }
+    }.distinctUntilChanged().stateIn(coroutineScope, SharingStarted.Eagerly, initialData)
+
+
+    private suspend fun loadData(
+        currentState: State<T>,
+        fetchData: suspend (State<T>) -> Result<T>,
+        onErrorAction: (Throwable) -> Unit,
+    ): State<T> {
+        return fetchData(currentState).fold(
+            onSuccess = { value ->
+                when (currentState) {
+                    is State.Success -> currentState.copy(items = value, refreshing = false)
+                    else -> State.Success(items = value, refreshing = false)
+                }
+            },
+            onFailure = { error ->
+                onErrorAction(error)
+                when (currentState) {
+                    is State.Success -> State.Error(error)
+                    else -> State.Error(error)
                 }
             }
-        }.distinctUntilChanged().stateIn(coroutineScope, SharingStarted.Eagerly, initialData)
+        )
     }
 
-    private fun refreshEventFlow(refreshTrigger: RefreshTrigger?): Flow<Unit> {
-        return (refreshTrigger as? DefaultRefreshTrigger)?.refreshEvent ?: emptyFlow()
-    }
+
 }
 
 
