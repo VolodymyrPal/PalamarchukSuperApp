@@ -38,17 +38,16 @@ class StoreViewModel @Inject constructor(
         onRefreshDone = {}
     )
 
-
-    init {
-        event(Event.FetchSkills)
-        viewModelScope.launch {
-            uiState.collectLatest {
-                if (it is State.Success) {
-                    updateBasketList(it)
-                }
-            }
+    val baskList = data.map { state ->
+        when (state) {
+            is State.Success -> state.items.filter { it.quantity > 0 }
+            else -> emptyList()
         }
-    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
 
     private val _basketList = MutableStateFlow<List<ProductDomainRW>>(emptyList())
     val basketList = _basketList.stateIn(
@@ -75,12 +74,14 @@ class StoreViewModel @Inject constructor(
         when (event) {
             is Event.FetchSkills -> {
                 viewModelScope.launch {
-                    emitState(apiRepository.fetchProducts().map { it.toProductDomainRW() })
+                    refreshTrigger.refresh()
                 }
             }
 
             is Event.OnRefresh -> {
-                fetchProducts()
+                viewModelScope.launch {
+                    refreshTrigger.refresh()
+                }
             }
 
             is Event.ShowToast -> {
@@ -106,9 +107,9 @@ class StoreViewModel @Inject constructor(
     private fun setItemToBasket(product: ProductDomainRW, quantity: Int = 1) {
         try {
             viewModelScope.launch {
-                val newSkills = (uiState.first() as State.Success).items.toMutableList()
-                val product = newSkills.find { it.product.id == product.product.id }
-                newSkills.indexOf(product).let {
+                val newSkills = (data.first() as State.Success).items.toMutableList()
+                val foundProduct = newSkills.find { it.product.id == product.product.id }
+                newSkills.indexOf(foundProduct).let {
                     newSkills[it] = newSkills[it].copy(quantity = quantity)
                     emitState(newSkills)
                 }
@@ -120,7 +121,7 @@ class StoreViewModel @Inject constructor(
 
     private fun addProduct(product: ProductDomainRW, quantity: Int = 1) {
         viewModelScope.launch {
-            val newSkills = (uiState.first() as State.Success).items.toMutableList()
+            val newSkills = (data.first() as State.Success).items.toMutableList()
             val skill = newSkills.find { it.product.id == product.product.id }
             newSkills.indexOf(skill).let {
                 var newQuantity = 0
@@ -129,12 +130,12 @@ class StoreViewModel @Inject constructor(
                 }
                 newSkills[it] =
                     newSkills[it].copy(quantity = newQuantity)
-                emitState(newSkills)
+                (data as State.Success<*>).items = newSkills
             }
         }
     }
 
-    private suspend fun fetchProducts(state: State<*>) : Result<List<ProductDomainRW>> {
+    private suspend fun fetchProducts(state: State<*>): Result<List<ProductDomainRW>> {
         try {
             val products = withContext(Dispatchers.IO) {
                 apiRepository.fetchProducts()
@@ -147,30 +148,4 @@ class StoreViewModel @Inject constructor(
             return Result.failure(e)
         }
     }
-
-    private fun fetchProducts() {
-        emitState(emitProcessing = true) {
-            try {
-                val products = withContext(Dispatchers.IO) {
-                    apiRepository.fetchProducts()
-                }
-                val skills = products.map { it.toProductDomainRW() }
-                delay(2000)
-                if (Random.nextFloat() > 0.5) throw Exception("Something went wrong") //TODO
-                return@emitState if (skills.isNotEmpty()) State.Success(items = skills) else State.Empty(
-                    loading = false
-                )
-            } catch (e: Exception) {
-                State.Error(e)
-            }
-        }
-    }
-
-//    private fun getProductsAsFlow(): Flow<List<Product>> = flow {
-//        val products = apiRepository.fetchProducts()
-//        emit(products)
-//    }.flowOn(Dispatchers.IO)
-//
-
-
 }
