@@ -139,18 +139,18 @@ fun StoreScreen(
     navController: KFunction1<Routes, Unit>?,
     viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
 
     val newState by viewModel.data.collectAsState(State.Empty())
-    viewModel.viewModelScope.launch { viewModel.refreshTrigger.refresh()  }
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val myBasket by viewModel.basketList.collectAsState()
+    val myBasket by viewModel.baskList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    Log.d("Basket", "StoreScreen: $myBasket")
 
     MyNavigationDrawer(
         mainDrawerContent = {
@@ -205,11 +205,11 @@ fun StoreScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
-                            val refreshing = remember(uiState) {
-                                when (uiState) {
+                            val refreshing = remember(newState) {
+                                when (newState) {
                                     is State.Processing -> true
                                     is State.Success -> return@remember (
-                                            (uiState as State.Success).refreshing)
+                                            (newState as State.Success).refreshing)
 
                                     else -> false
                                 }
@@ -272,7 +272,7 @@ fun StoreScreen(
                         Log.d("STATE: ", "$newState")                    }
 
                     is State.Success -> {
-                        Log.d("STATE: ", "$newState")
+                        Log.d("STATE: ", "${(newState as State.Success<List<ProductDomainRW>>).refreshing}")
                     }
 
                 }
@@ -286,7 +286,7 @@ fun StoreScreen(
             }
             StoreScreenContent(
                 modifier = Modifier,
-                state = uiState,
+                state = newState,
                 onEvent = viewModel::event
             )
         }
