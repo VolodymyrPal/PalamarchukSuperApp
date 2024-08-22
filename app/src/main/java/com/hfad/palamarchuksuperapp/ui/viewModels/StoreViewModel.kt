@@ -11,8 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,15 +27,15 @@ class StoreViewModel @Inject constructor(
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     private val dataLoader: DataLoader<List<ProductDomainRW>> = DataLoader()
-    val refreshTrigger = RefreshTrigger()
-
+    private val refreshTrigger = RefreshTrigger()
 
     val data = dataLoader.loadAndObserveRefreshData(
         coroutineScope = viewModelScope,
         refreshTrigger = refreshTrigger,
-        initialData = State.Empty(),
-        fetchData = { fetchProducts(it)},
+        initialData = State.Processing,
+        fetchData = { fetchProducts(it) },
         onErrorAction = {},
+        onRefreshDone = {}
     )
 
 
