@@ -7,8 +7,6 @@ import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.common.toProductDomainRW
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
@@ -16,9 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.random.Random
 
 @Stable
 class StoreViewModel @Inject constructor(
@@ -26,19 +22,21 @@ class StoreViewModel @Inject constructor(
     val apiRepository: ProductRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
-    private val dataLoader: DataLoader<List<ProductDomainRW>> = DataLoader()
-    private val refreshTrigger = RefreshTrigger()
+    init {
+        viewModelScope.launch {
+            val a = apiRepository.fetchProducts().map { it.toProductDomainRW() }
+            emitState(a)
+        }
+    }
 
-    val data = dataLoader.loadAndObserveRefreshData(
-        coroutineScope = viewModelScope,
-        refreshTrigger = refreshTrigger,
-        initialData = State.Processing,
-        fetchData = { fetchProducts(it) },
-        onErrorAction = {},
-        onRefreshDone = {}
-    )
+    private fun onRefresh() {
+        viewModelScope.launch {
+            Log.d("called new fetch", "onRefresh")
+            emitState(apiRepository.fetchProducts().map { it.toProductDomainRW() })
+        }
+    }
 
-    val baskList = data.map { state ->
+    val baskList = uiState.map { state ->
         when (state) {
             is State.Success -> state.items.filter { it.quantity > 0 }
             else -> emptyList()
@@ -107,7 +105,7 @@ class StoreViewModel @Inject constructor(
     private fun setItemToBasket(product: ProductDomainRW, quantity: Int = 1) {
         try {
             viewModelScope.launch {
-                val newSkills = (data.first() as State.Success).items.toMutableList()
+                val newSkills = (uiState.first() as State.Success).items.toMutableList()
                 val foundProduct = newSkills.find { it.product.id == product.product.id }
                 newSkills.indexOf(foundProduct).let {
                     newSkills[it] = newSkills[it].copy(quantity = quantity)
