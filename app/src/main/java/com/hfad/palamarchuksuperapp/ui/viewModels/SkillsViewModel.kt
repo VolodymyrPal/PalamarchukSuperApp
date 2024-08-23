@@ -107,10 +107,6 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
     }
 
     fun fetchSkills() {
-//            if (uiState.value is RepoResult.Empty) {
-//                emitState(RepoResult.Success(data = repository.getSkillsFromDB().first().map {
-//                    SkillToSkillDomain.map(it)
-//                }))              FOR TESTING ONLY
         funWithState(
             onEmpty = {
                 emitState(emitProcessing = true) { current ->
@@ -199,6 +195,11 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                 viewModelScope.launch { elseAction() }
             }
         }
+    }
+
+
+    override fun refresh(): List<SkillDomainRW> {
+        return emptyList()
     }
 }
 

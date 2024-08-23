@@ -144,7 +144,7 @@ fun StoreScreen(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
 
-    val newState by viewModel.data.collectAsState(State.Empty())
+    val newState by viewModel.uiState.collectAsState(State.Empty())
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
