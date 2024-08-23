@@ -1,19 +1,15 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,8 +17,7 @@ import kotlinx.coroutines.launch
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
 
-    val exampleDataLoader = DefaultDataLoader<T>()
-
+    protected val _isRefresh = MutableStateFlow(false)
 
     private val _uiState: MutableStateFlow<State<T>> = MutableStateFlow(State.Empty(loading = true))
     override val uiState: StateFlow<State<T>> =
@@ -36,10 +31,32 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     override val effect: SharedFlow<EFFECT> =
         effectFlow.asSharedFlow()
 
-    sealed class Async<out T> {
-        object Loading : Async<Nothing>()
-        data class Error(val errorMessage: Throwable) : Async<Nothing>()
-        data class Success<out T>(val data: T) : Async<T>()
+    abstract fun refresh() : T
+
+    val state : StateFlow<State<T>> = combine(uiState, _isRefresh) { ui, isRefresh ->
+        if (isRefresh) {
+            emitRefresh(refresh())
+        }
+        when (ui) {
+            is State.Success -> {
+                emitState(ui.copy(refreshing = isRefresh))
+                ui
+            }
+            else -> {
+                 ui
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = State.Empty(loading = true)
+    )
+
+    protected fun emitRefresh(data : T) {
+        viewModelScope.launch {
+            emitState(data)
+        }
+        _isRefresh.update { false }
     }
 
     protected fun emitState(
@@ -49,11 +66,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         viewModelScope.launch {
             val current = uiState.value
             if (emitProcessing) {
-                if (current is State.Success) {
-                    _uiState.update { current.copy(refreshing = true) }
-                } else {
-                    emitProcessing()
-                }
+                emitProcessing()
             }
             _uiState.update {
                 block(current)
