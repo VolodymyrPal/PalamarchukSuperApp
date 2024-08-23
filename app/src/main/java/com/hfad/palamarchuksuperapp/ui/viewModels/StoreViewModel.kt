@@ -71,15 +71,13 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-                viewModelScope.launch {
-                    refreshTrigger.refresh()
-                }
+                onRefresh()
+                //viewModelScope.launch { emitRefresh(refresh()) }
             }
 
             is Event.OnRefresh -> {
-                viewModelScope.launch {
-                    refreshTrigger.refresh()
-                }
+                onRefresh()
+            //viewModelScope.launch { emitRefresh(refresh()) }
             }
 
             is Event.ShowToast -> {
@@ -119,7 +117,7 @@ class StoreViewModel @Inject constructor(
 
     private fun addProduct(product: ProductDomainRW, quantity: Int = 1) {
         viewModelScope.launch {
-            val newSkills = (data.first() as State.Success).items.toMutableList()
+            val newSkills = (uiState.first() as State.Success).items.toMutableList()
             val skill = newSkills.find { it.product.id == product.product.id }
             newSkills.indexOf(skill).let {
                 var newQuantity = 0
@@ -128,22 +126,12 @@ class StoreViewModel @Inject constructor(
                 }
                 newSkills[it] =
                     newSkills[it].copy(quantity = newQuantity)
-                (data as State.Success<*>).items = newSkills
+                //(data as State.Success<*>).items = newSkills
             }
         }
     }
 
-    private suspend fun fetchProducts(state: State<*>): Result<List<ProductDomainRW>> {
-        try {
-            val products = withContext(Dispatchers.IO) {
-                apiRepository.fetchProducts()
-            }
-            val skills = products.map { it.toProductDomainRW() }
-            delay(2000)
-            if (Random.nextFloat() > 0.5) throw Exception("Something went wrong") //TODO
-            return Result.success(skills)
-        } catch (e: Exception) {
-            return Result.failure(e)
-        }
+    override fun refresh(): List<ProductDomainRW> {
+        return emptyList()
     }
 }
