@@ -86,15 +86,26 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     }
 
     private fun emitEmpty() {
-        _uiState.update { State.Empty(loading = false) }
+        _uiState.update { state ->
+            if (state is State.Success) state.copy(refreshing = false) else State.Empty(loading = false)
+        }
     }
 
     private fun emitProcessing() {
-        _uiState.update { State.Processing }
+        _uiState.update { state ->
+            if (state is State.Success) {
+                state.copy(refreshing = true)
+            } else State.Processing
+        }
     }
 
     protected fun emitFailure(e: Throwable) {
-        _uiState.update { State.Error(e) }
+        _uiState.update { state ->
+            if (state is State.Success) state.copy(
+                refreshing = false,
+                message = e.message
+            ) else State.Error(e)
+        }
     }
 }
 
@@ -108,92 +119,10 @@ sealed interface BaseEvent
 
 sealed interface BaseEffect
 
-sealed interface DataLoader<T> {
-
-    @Suppress("LongParameterList")
-    fun loadAndObserveRefreshData(
-        initialData: State<T> = State.Empty(loading = true),
-        fetchData: suspend (State<T>) -> Result<T>,
-        refreshTrigger: RefreshTrigger? = null,
-        coroutineScope: CoroutineScope,
-        onErrorAction: (Throwable) -> Unit = {},
-        onRefreshDone: () -> Unit = {},
-    ): Flow<State<T>>
-
-}
-
-fun <T> DataLoader(): DataLoader<T> = DefaultDataLoader()
-
-class DefaultDataLoader<T> : DataLoader<T> {
-
-    override fun loadAndObserveRefreshData(
-        initialData: State<T>,
-        fetchData: suspend (State<T>) -> Result<T>,
-        refreshTrigger: RefreshTrigger?,
-        coroutineScope: CoroutineScope,
-        onErrorAction: (Throwable) -> Unit,
-        onRefreshDone: () -> Unit,
-    ): StateFlow<State<T>> = flow {
-        var lastState: State<T> = initialData
-        lastState = loadData(lastState, fetchData, onErrorAction)
-        emit(lastState)
-        refreshTrigger?.refreshEvent?.collect {
-            emit (when (lastState) {
-                is State.Success -> (lastState as State.Success<T>).copy(refreshing = true)
-                else -> lastState
-            })
-            Log.d("Asked for new data: ", "event: $it")
-            lastState = loadData(lastState, fetchData, onErrorAction)
-            emit(lastState)
-            onRefreshDone()
-        }
-    }.distinctUntilChanged().stateIn(coroutineScope, SharingStarted.Eagerly, initialData)
-
-
-    private suspend fun loadData(
-        currentState: State<T>,
-        fetchData: suspend (State<T>) -> Result<T>,
-        onErrorAction: (Throwable) -> Unit,
-    ): State<T> {
-        return fetchData(currentState).fold(
-            onSuccess = { value ->
-                when (currentState) {
-                    is State.Success -> currentState.copy(items = value, refreshing = false)
-                    else -> State.Success(items = value, refreshing = false)
-                }
-            },
-            onFailure = { error ->
-                onErrorAction(error)
-                when (currentState) {
-                    is State.Success -> State.Error(error)
-                    else -> State.Error(error)
-                }
-            }
-        )
-    }
-
-
-}
-
-
 sealed interface RefreshTrigger {
     suspend fun refresh()
     val refreshEvent: SharedFlow<Unit>
 }
-
-fun RefreshTrigger(): RefreshTrigger = DefaultRefreshTrigger()
-
-private class DefaultRefreshTrigger : RefreshTrigger {
-
-    private val _refreshEvent = MutableSharedFlow<Unit>()
-    override val refreshEvent = _refreshEvent.asSharedFlow()
-
-    override suspend fun refresh() {
-        _refreshEvent.emit(Unit)
-    }
-
-}
-
 
 sealed interface State<out T> {
 
