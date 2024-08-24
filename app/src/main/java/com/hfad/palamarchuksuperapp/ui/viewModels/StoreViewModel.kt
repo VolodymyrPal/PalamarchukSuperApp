@@ -24,11 +24,12 @@ class StoreViewModel @Inject constructor(
     val apiRepository: ProductRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
-    init {
+    override fun getData(): List<ProductDomainRW> {
+        var a = emptyList<ProductDomainRW>()
         viewModelScope.launch {
-            val a = apiRepository.fetchProducts().map { it.toProductDomainRW() }
-            emitState(a)
+            a = apiRepository.fetchProducts().map { it.toProductDomainRW() }
         }
+        return a
     }
 
     private fun onRefresh() {
@@ -133,6 +134,20 @@ class StoreViewModel @Inject constructor(
     }
 
     override fun refresh(): List<ProductDomainRW> {
-        return emptyList()
+        Log.d("Refresh", "refresh")
+        return List(1, init = { ProductDomainRW(
+            product = Product(
+                id = 5663,
+                title = "dicunt",
+                price = 4.5,
+                description = "montes",
+                category = "venenatis",
+                image = "posuere",
+                rating = ProductRating(
+                    rate = 6.7,
+                    count = 6809
+                )
+            ), quantity = 5482, liked = false
+        ) })
     }
 }
