@@ -3,6 +3,8 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.data.entities.Product
+import com.hfad.palamarchuksuperapp.data.entities.ProductRating
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -32,7 +34,6 @@ class StoreViewModel @Inject constructor(
     private fun onRefresh() {
         viewModelScope.launch {
             Log.d("called new fetch", "onRefresh")
-            emitState(apiRepository.fetchProducts().map { it.toProductDomainRW() })
         }
     }
 

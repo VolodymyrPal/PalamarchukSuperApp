@@ -13,6 +13,10 @@ import javax.inject.Inject
 class SkillsViewModel @Inject constructor(private val repository: SkillRepository) :
     GenericViewModel<List<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
+    override fun getData(): List<SkillDomainRW> {
+        return emptyList()
+    }
+
     sealed class Event : BaseEvent {
         object GetSkills : Event()
         data class MoveToFirstPosition(val item: SkillDomainRW) : Event()

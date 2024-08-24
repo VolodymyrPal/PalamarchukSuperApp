@@ -130,11 +130,6 @@ sealed interface BaseEvent
 
 sealed interface BaseEffect
 
-sealed interface RefreshTrigger {
-    suspend fun refresh()
-    val refreshEvent: SharedFlow<Unit>
-}
-
 sealed interface State<out T> {
 
     data object Processing : State<Nothing>
