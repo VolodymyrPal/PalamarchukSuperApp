@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -19,6 +20,12 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
     protected val _isRefresh = MutableStateFlow(false)
 
+    abstract fun getData(): T
+
+    init {
+        Log.d("generic view model", "init")
+    }
+
     private val _uiState: MutableStateFlow<State<T>> = MutableStateFlow(State.Empty(loading = true))
     override val uiState: StateFlow<State<T>> =
         _uiState.stateIn(
@@ -31,7 +38,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     override val effect: SharedFlow<EFFECT> =
         effectFlow.asSharedFlow()
 
-    abstract fun refresh() : T
+    abstract fun refresh(): T
 
     val state : StateFlow<State<T>> = combine(uiState, _isRefresh) { ui, isRefresh ->
         if (isRefresh) {
