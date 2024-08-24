@@ -40,26 +40,30 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
     abstract fun refresh(): T
 
-    val state : StateFlow<State<T>> = combine(uiState, _isRefresh) { ui, isRefresh ->
-        if (isRefresh) {
-            emitRefresh(refresh())
-        }
-        when (ui) {
-            is State.Success -> {
-                emitState(ui.copy(refreshing = isRefresh))
-                ui
+    val stateUi: StateFlow<State<T>> by lazy {
+        combine(uiState, _isRefresh) { ui, isRefresh ->
+            refresh()
+            if (isRefresh) {
+                emitRefresh(refresh())
             }
-            else -> {
-                 ui
-            }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = State.Empty(loading = true)
-    )
+            when (ui) {
+                is State.Success -> {
+                    emitState(ui.copy(refreshing = isRefresh))
+                    ui
+                }
 
-    protected fun emitRefresh(data : T) {
+                else -> {
+                    ui
+                }
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = State.Empty(loading = true)
+        )
+    }
+
+    protected fun emitRefresh(data: T) {
         viewModelScope.launch {
             emitState(data)
         }
