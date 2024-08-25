@@ -13,8 +13,8 @@ import javax.inject.Inject
 class SkillsViewModel @Inject constructor(private val repository: SkillRepository) :
     GenericViewModel<List<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
-    override fun getData(): List<SkillDomainRW> {
-        return emptyList()
+    override suspend fun getData(): suspend () -> List<SkillDomainRW> {
+        return { emptyList() }
     }
 
     sealed class Event : BaseEvent {
@@ -126,7 +126,7 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                             State.Success(
                                 items = skills.first()
                             )
-                        } else State.Empty (loading = false)
+                        } else State.Empty(loading = false)
                     } catch (e: Exception) {
                         State.Error(e)
                     }
@@ -199,11 +199,6 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
                 viewModelScope.launch { elseAction() }
             }
         }
-    }
-
-
-    override fun refresh(): List<SkillDomainRW> {
-        return emptyList()
     }
 }
 
