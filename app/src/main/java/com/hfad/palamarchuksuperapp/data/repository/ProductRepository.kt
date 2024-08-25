@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
+import com.hfad.palamarchuksuperapp.ui.common.toProductDomainRW
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -27,5 +28,6 @@ class ProductRepository @Inject constructor() : FakeStoreApi {
     }
 
     override suspend fun fetchProducts() = fakeStoreApi.fetchProducts()
+    suspend fun getProductsDomainRw() = fakeStoreApi.fetchProducts().map { it.toProductDomainRW() }
 
 }
