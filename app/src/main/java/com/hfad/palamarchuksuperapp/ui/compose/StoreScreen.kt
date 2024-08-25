@@ -146,11 +146,11 @@ fun StoreScreen(
 
     val newState by viewModel.stateUi.collectAsState(State.Empty())
 
+
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val myBasket by viewModel.baskList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    Log.d("Basket", "StoreScreen: $myBasket")
 
     MyNavigationDrawer(
         mainDrawerContent = {
@@ -272,23 +272,15 @@ fun StoreScreen(
                         Log.d("STATE: ", "$newState")                    }
 
                     is State.Success -> {
+                        StoreScreenContent(
+                            modifier = Modifier,
+                            state = newState,
+                            onEvent = viewModel::event
+                        )
                         Log.d("STATE: ", "${(newState as State.Success<List<ProductDomainRW>>).refreshing}")
                     }
-
                 }
-
-                StoreScreenContent(
-                    modifier = Modifier,
-                    state = newState,
-                    onEvent = viewModel::event
-                )
-
             }
-            StoreScreenContent(
-                modifier = Modifier,
-                state = newState,
-                onEvent = viewModel::event
-            )
         }
     }
 }
