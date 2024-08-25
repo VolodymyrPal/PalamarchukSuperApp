@@ -35,20 +35,8 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
     val stateUi: StateFlow<State<T>> by lazy {
         combine(uiState, _isRefresh) { ui, isRefresh ->
-            refresh()
-            if (isRefresh) {
-                emitRefresh(refresh())
-            }
-            when (ui) {
-                is State.Success -> {
-                    emitState(ui.copy(refreshing = isRefresh))
-                    ui
-                }
-
-                else -> {
-                    ui
-                }
-            }
+            if (isRefresh) emitRefresh()
+            ui
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
@@ -56,9 +44,17 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         )
     }
 
-    protected fun emitRefresh(data: T) {
+    protected suspend fun emitRefresh() {
+        val current = uiState.value
+        if (current is State.Success) {
+            emitState(current.copy(refreshing = true))
+        }
+        emitState(getData().invoke())
+    }
+
+    protected fun emitRefresh(data: suspend () -> T) {
         viewModelScope.launch {
-            emitState(data)
+            data()
         }
         _isRefresh.update { false }
     }
@@ -81,7 +77,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         _uiState.update { value }
     }
 
-    protected suspend fun emitState(value: T?) {
+    protected fun emitState(value: T?) {
         if (value == null) {
             emitEmpty()
         } else {
