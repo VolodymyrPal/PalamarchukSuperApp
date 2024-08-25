@@ -3,12 +3,9 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.entities.Product
-import com.hfad.palamarchuksuperapp.data.entities.ProductRating
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
-import com.hfad.palamarchuksuperapp.ui.common.toProductDomainRW
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
@@ -20,21 +17,17 @@ import javax.inject.Inject
 
 @Stable
 class StoreViewModel @Inject constructor(
-    val repository: StoreRepository,
-    val apiRepository: ProductRepository,
+    private val repository: StoreRepository,
+    private val apiRepository: ProductRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
-    override fun getData(): List<ProductDomainRW> {
-        var a = emptyList<ProductDomainRW>()
-        viewModelScope.launch {
-            a = apiRepository.fetchProducts().map { it.toProductDomainRW() }
-        }
-        return a
+    override suspend fun getData(): suspend () -> List<ProductDomainRW> {
+        return apiRepository::getProductsDomainRw
     }
 
     private fun onRefresh() {
         viewModelScope.launch {
-            Log.d("called new fetch", "onRefresh")
+            _isRefresh.update { true }
         }
     }
 
@@ -79,7 +72,7 @@ class StoreViewModel @Inject constructor(
 
             is Event.OnRefresh -> {
                 onRefresh()
-            //viewModelScope.launch { emitRefresh(refresh()) }
+                //viewModelScope.launch { emitRefresh(refresh()) }
             }
 
             is Event.ShowToast -> {
@@ -131,23 +124,5 @@ class StoreViewModel @Inject constructor(
                 //(data as State.Success<*>).items = newSkills
             }
         }
-    }
-
-    override fun refresh(): List<ProductDomainRW> {
-        Log.d("Refresh", "refresh")
-        return List(1, init = { ProductDomainRW(
-            product = Product(
-                id = 5663,
-                title = "dicunt",
-                price = 4.5,
-                description = "montes",
-                category = "venenatis",
-                image = "posuere",
-                rating = ProductRating(
-                    rate = 6.7,
-                    count = 6809
-                )
-            ), quantity = 5482, liked = false
-        ) })
     }
 }
