@@ -137,17 +137,47 @@ sealed interface BaseEvent
 
 sealed interface BaseEffect
 
-sealed interface State<out T> {
+data class MyState <out T>(
+    val loading : Boolean = true,
+    val items: T? = null,
+    val message: String? = null
+)
 
-    data object Processing : State<Nothing>
+sealed class State<out T> {
+    open val loading : Boolean = true
+    open val items: T? = null
+
+    data object Processing : State<Nothing>()
 
     data class Success<out T>(
-        val items: T,
+        override val items: T,
         val refreshing: Boolean = false,
         val message: String? = null,
-    ) : State<T>
+    ) : State<T>()
 
-    data class Error(val exception: Throwable) : State<Nothing>
+    data class Error(val exception: Throwable) : State<Nothing>()
 
-    data class Empty(val loading: Boolean = true) : State<Nothing>
+    data class Empty(override val loading: Boolean = true) : State<Nothing>()
 }
+
+
+/* Fetching data with error handling */
+//    private suspend fun <T> retryWithBackoff(
+//        times: Int = 5,
+//        initialDelay: Long = 500,
+//        maxDelay: Long = 6000,
+//        factor: Double = 2.0,
+//        block: suspend () -> T,
+//    ): T {
+//        var currentDelay = initialDelay
+//        repeat(times - 1) {
+//            try {
+//                return block()
+//            } catch (e: Exception) {
+//                Log.d("Generic VM", "Attempt ${it + 1} failed with exception: ${e.message}")
+//            }
+//            delay(currentDelay)
+//            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
+//        }
+//        return block()
+//    }
