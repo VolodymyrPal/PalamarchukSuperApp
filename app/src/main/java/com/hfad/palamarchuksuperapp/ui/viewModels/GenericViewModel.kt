@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,7 +16,12 @@ import kotlinx.coroutines.launch
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
 
-    protected val _isRefresh = MutableStateFlow(true)
+    abstract suspend fun getData(): suspend () -> T
+    abstract override fun event(event: EVENT)
+
+    private val _uiState: MutableStateFlow<State<T>> by lazy {
+        MutableStateFlow(State.Empty(loading = true))
+    }
 
     private val _uiState: MutableStateFlow<State<T>> = MutableStateFlow(State.Empty(loading = true))
     override val uiState: StateFlow<State<T>> =
@@ -25,7 +29,12 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = State.Empty(loading = true)
-        )
+        ).also {
+            viewModelScope.launch {
+                emitRefresh()
+            }
+        }
+    }
 
     private val effectFlow = MutableSharedFlow<EFFECT>()
     override val effect: SharedFlow<EFFECT> =
