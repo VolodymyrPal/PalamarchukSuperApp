@@ -144,7 +144,8 @@ fun StoreScreen(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
 
-    val newState by viewModel.stateUi.collectAsState(State.Empty())
+    //val newState by viewModel.uiState.collectAsState(State.Empty())
+    val myState by viewModel.myState.collectAsStateWithLifecycle()
 
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -205,14 +206,16 @@ fun StoreScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
-                            val refreshing = remember(newState) {
-                                when (newState) {
-                                    is State.Processing -> true
-                                    is State.Success -> return@remember (
-                                            (newState as State.Success).refreshing)
-
-                                    else -> false
-                                }
+//                            val refreshing = remember(newState) { TODO
+//                                when (newState) { TODO
+//                                    is State.Processing -> true TODO
+//                                    is State.Success -> return@remember (   TODO
+//                                            (newState as State.Success).refreshing) TODO
+//                                    else -> false TODO
+//                                } TODO
+//                            } TODO
+                            val refreshing = remember (myState) {
+                                if (myState.loading) true else false
                             }
                             if (refreshing) {
                                 CircularProgressIndicator(
@@ -261,25 +264,34 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
-                when (newState) {
-                    is State.Processing -> {
-                        Log.d("STATE: ", "$newState")                    }
-
-                    is State.Error -> {
-                        Log.d("STATE: ", "$newState")                    }
-
-                    is State.Empty -> {
-                        Log.d("STATE: ", "$newState")                    }
-
-                    is State.Success -> {
-                        StoreScreenContent(
-                            modifier = Modifier,
-                            state = newState,
-                            onEvent = viewModel::event
-                        )
-                        Log.d("STATE: ", "${(newState as State.Success<List<ProductDomainRW>>).refreshing}")
-                    }
+                myState.items?.let {
+                    StoreScreenContent(
+                        items = it,
+                        onEvent = viewModel::event,
+                        message = myState.message
+                    )
                 }
+//                when (newState) {
+//                    is State.Processing -> {
+//                        Log.d("STATE: ", "$newState")
+//                    }
+//
+//                    is State.Error -> {
+//                        Log.d("STATE: ", "$newState")
+//                    }
+//
+//                    is State.Empty -> {
+//                        Log.d("STATE: ", "$newState")
+//                    }
+//
+//                    is State.Success -> {
+//                        StoreScreenContent(
+//                            items = (newState as State.Success).items,
+//                            onEvent = viewModel::event,
+//                            message = (newState as State.Success).message,
+//                        )
+//                    }
+//            }
             }
         }
     }
@@ -290,7 +302,8 @@ fun StoreScreen(
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
-    state: State<List<ProductDomainRW>>,
+    items: List<ProductDomainRW>,
+    message : String? = null,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
@@ -313,67 +326,62 @@ fun StoreScreenContent(
             columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
             horizontalArrangement = Arrangement.Absolute.Center
         ) {
-            if (state is State.Error) {
+            if (!message.isNullOrEmpty()) {
                 item(span = { GridItemSpan(itemSpan) }) {
                     val isShown = remember { mutableStateOf(true) }
                     rememberCoroutineScope().launch {
                         delay(2000)
                         isShown.value = false
                     }
-                    if (isShown.value) Text(text = state.exception.message!!)
+                    if (isShown.value) Text(text = message)
                 }
             }
 
 
-            if (state is State.Success) {
+            item(span = { GridItemSpan(itemSpan) }) {
+                StoreLazyCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    onEvent = onEvent,
+                    productList = items.filter { items[0].product.category == it.product.category },
+                )
+            }
 
-                val productList = state.items
+            item(span = { GridItemSpan(itemSpan) }) {
 
-                item(span = { GridItemSpan(itemSpan) }) {
-                    StoreLazyCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        onEvent = onEvent,
-                        productList = productList.filter { productList[0].product.category == it.product.category },
-                    )
+                val productListInter = items.filter {
+                    items[0].product.category != it.product.category
                 }
 
-                item(span = { GridItemSpan(itemSpan) }) {
-
-                    val productListInter = productList.filter {
-                        productList[0].product.category != it.product.category
-                    }
-
-                    val finalProductList = productListInter.filter {
-                        productListInter[0].product.category == it.product.category
-                    }
-
-                    StoreLazyCard(
-                        modifier = Modifier,
-                        onEvent = onEvent,
-                        productList = finalProductList
-                    )
+                val finalProductList = productListInter.filter {
+                    productListInter[0].product.category == it.product.category
                 }
-                items(
-                    items = productList,
-                    key = { item: ProductDomainRW -> item.product.id },
-                ) { item ->
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .animateItem(),
-                        // .padding(0.dp, 0.dp, 10.dp, 10.dp),
-                        visible = true,
-                        exit = fadeOut(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        ),
-                        enter = fadeIn(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        )
-                    ) {
-                        ListItemProduct(
-                            item = item,
-                            onEvent = remember(item) { { event -> onEvent(event) } },
-                        )
-                    }
+
+                StoreLazyCard(
+                    modifier = Modifier,
+                    onEvent = onEvent,
+                    productList = finalProductList
+                )
+            }
+            items(
+                items = items,
+                key = { item: ProductDomainRW -> item.product.id },
+            ) { item ->
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .animateItem(),
+                    // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                    visible = true,
+                    exit = fadeOut(
+                        animationSpec = TweenSpec(100, 100, LinearEasing)
+                    ),
+                    enter = fadeIn(
+                        animationSpec = TweenSpec(100, 100, LinearEasing)
+                    )
+                ) {
+                    ListItemProduct(
+                        item = item,
+                        onEvent = remember(item) { { event -> onEvent(event) } },
+                    )
                 }
             }
         }
