@@ -25,12 +25,6 @@ class StoreViewModel @Inject constructor(
         return apiRepository::getProductsDomainRw
     }
 
-    private fun onRefresh() {
-        viewModelScope.launch {
-            _isRefresh.update { true }
-        }
-    }
-
     val baskList = uiState.map { state ->
         when (state) {
             is State.Success -> state.items.filter { it.quantity > 0 }
@@ -66,12 +60,12 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-                onRefresh()
+                viewModelScope.launch { emitRefresh() }
                 //viewModelScope.launch { emitRefresh(refresh()) }
             }
 
             is Event.OnRefresh -> {
-                onRefresh()
+                viewModelScope.launch { emitRefresh() }
                 //viewModelScope.launch { emitRefresh(refresh()) }
             }
 
@@ -98,7 +92,7 @@ class StoreViewModel @Inject constructor(
     private fun setItemToBasket(product: ProductDomainRW, quantity: Int = 1) {
         try {
             viewModelScope.launch {
-                val newSkills = (uiState.first() as State.Success).items.toMutableList()
+                val newSkills = (myState.first().items!!.toMutableList()) //uiState.first() as State.Success).items.toMutableList()
                 val foundProduct = newSkills.find { it.product.id == product.product.id }
                 newSkills.indexOf(foundProduct).let {
                     newSkills[it] = newSkills[it].copy(quantity = quantity)
@@ -112,7 +106,7 @@ class StoreViewModel @Inject constructor(
 
     private fun addProduct(product: ProductDomainRW, quantity: Int = 1) {
         viewModelScope.launch {
-            val newSkills = (uiState.first() as State.Success).items.toMutableList()
+            val newSkills = (myState.first().items!!.toMutableList())  //uiState.first() as State.Success).items.toMutableList()
             val skill = newSkills.find { it.product.id == product.product.id }
             newSkills.indexOf(skill).let {
                 var newQuantity = 0
