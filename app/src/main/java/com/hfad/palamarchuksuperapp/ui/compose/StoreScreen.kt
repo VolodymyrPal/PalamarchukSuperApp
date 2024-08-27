@@ -106,7 +106,6 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
@@ -139,14 +138,11 @@ fun StoreScreen(
     navController: KFunction1<Routes, Unit>?,
     viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    //val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
 
-    //val newState by viewModel.uiState.collectAsState(State.Empty())
-    val myState by viewModel.myState.collectAsStateWithLifecycle()
-
+    val myState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -206,28 +202,28 @@ fun StoreScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
-//                            val refreshing = remember(newState) { TODO
-//                                when (newState) { TODO
-//                                    is State.Processing -> true TODO
-//                                    is State.Success -> return@remember (   TODO
+//                            val refreshing = remember(newState) {
+//                                when (newState) {
+//                                    is State.Processing -> true
+//                                    is State.Success -> return@remember (
 //                                            (newState as State.Success).refreshing) TODO
-//                                    else -> false TODO
-//                                } TODO
-//                            } TODO
-                            val refreshing = remember (myState) {
-                                if (myState.loading) true else false
-                            }
-                            if (refreshing) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = Color.Yellow
-                                )
-                            } else {
+//                                    else -> false
+//                                }
+//                            }
+//                            val refreshing = remember(myState.loading) {
+//                                myState.loading
+//                            }
+//                            if (refreshing) {
+//                                CircularProgressIndicator(
+//                                    modifier = Modifier.size(24.dp),
+//                                    color = Color.Yellow
+//                                )
+//                            } else {
                                 Icon(
                                     imageVector = Icons.Filled.Menu,
                                     contentDescription = "Localized description"
                                 )
-                            }
+//                            }
                         }
                     },
                     scrollBehavior = scrollBehavior
@@ -264,34 +260,32 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
-                myState.items?.let {
-                    StoreScreenContent(
-                        items = it,
-                        onEvent = viewModel::event,
-                        message = myState.message
-                    )
-                }
-//                when (newState) {
-//                    is State.Processing -> {
-//                        Log.d("STATE: ", "$newState")
-//                    }
-//
-//                    is State.Error -> {
-//                        Log.d("STATE: ", "$newState")
-//                    }
-//
-//                    is State.Empty -> {
-//                        Log.d("STATE: ", "$newState")
-//                    }
-//
-//                    is State.Success -> {
-//                        StoreScreenContent(
-//                            items = (newState as State.Success).items,
-//                            onEvent = viewModel::event,
-//                            message = (newState as State.Success).message,
-//                        )
-//                    }
-//            }
+//                StoreScreenContent(
+//                    items = myState.items,
+//                    onEvent = viewModel::event,
+//                    message = myState.message
+//                )
+                when (myState) {
+                    is State.Processing -> {
+                        Log.d("STATE: ", "$myState")
+                    }
+
+                    is State.Error -> {
+                        Log.d("STATE: ", "$myState")
+                    }
+
+                    is State.Empty -> {
+                        Log.d("STATE: ", "$myState")
+                    }
+
+                    is State.Success -> {
+                        StoreScreenContent(
+                            items = (myState as State.Success).items,
+                            onEvent = { } ,
+                            message = (myState as State.Success).message,
+                        )
+                    }
+            }
             }
         }
     }
