@@ -296,8 +296,8 @@ fun StoreScreen(
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
-    items: List<ProductDomainRW>,
-    message : String? = null,
+    items: List<ProductDomainRW>?,
+    message: String? = null,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
@@ -332,51 +332,56 @@ fun StoreScreenContent(
             }
 
 
-            item(span = { GridItemSpan(itemSpan) }) {
-                StoreLazyCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    onEvent = onEvent,
-                    productList = items.filter { items[0].product.category == it.product.category },
-                )
-            }
-
-            item(span = { GridItemSpan(itemSpan) }) {
-
-                val productListInter = items.filter {
-                    items[0].product.category != it.product.category
-                }
-
-                val finalProductList = productListInter.filter {
-                    productListInter[0].product.category == it.product.category
-                }
-
-                StoreLazyCard(
-                    modifier = Modifier,
-                    onEvent = onEvent,
-                    productList = finalProductList
-                )
-            }
+//            item(span = { GridItemSpan(itemSpan) }) {
+//                StoreLazyCard(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    onEvent = onEvent,
+//                    productList = items.filter { items[0].product.category == it.product.category },
+//                )
+//            }
+//
+//            item(span = { GridItemSpan(itemSpan) }) {
+//
+//                val productListInter = items.filter {
+//                    items[0].product.category != it.product.category
+//                }
+//
+//                val finalProductList = productListInter.filter {
+//                    productListInter[0].product.category == it.product.category
+//                }
+//
+//                StoreLazyCard(
+//                    modifier = Modifier,
+//                    onEvent = onEvent,
+//                    productList = finalProductList
+//                )
+//            }
             items(
-                items = items,
+                items = items?: emptyList(),
                 key = { item: ProductDomainRW -> item.product.id },
             ) { item ->
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .animateItem(),
-                    // .padding(0.dp, 0.dp, 10.dp, 10.dp),
-                    visible = true,
-                    exit = fadeOut(
-                        animationSpec = TweenSpec(100, 100, LinearEasing)
-                    ),
-                    enter = fadeIn(
-                        animationSpec = TweenSpec(100, 100, LinearEasing)
-                    )
-                ) {
-                    ListItemProduct(
-                        item = item,
-                        onEvent = remember(item) { { event -> onEvent(event) } },
-                    )
-                }
+                GridItem(
+                    modifier = Modifier.animateItem(),
+                    item = item,
+                    onEvent = onEvent
+                )
+//                AnimatedVisibility(
+//                    modifier = Modifier
+//                        .animateItem(),
+//                    // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+//                    visible = true,
+//                    exit = fadeOut(
+//                        animationSpec = TweenSpec(100, 100, LinearEasing)
+//                    ),
+//                    enter = fadeIn(
+//                        animationSpec = TweenSpec(100, 100, LinearEasing)
+//                    )
+//                ) {
+//                    ListItemProduct(
+//                        item = item,
+//                        onEvent = remember(item) { { event -> onEvent(event) } },
+//                    )
+//                }
             }
         }
         PullRefreshIndicator(
@@ -384,6 +389,30 @@ fun StoreScreenContent(
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter),
             scale = true,
+        )
+    }
+}
+
+@Composable
+fun GridItem(
+    modifier: Modifier,
+    item: ProductDomainRW,
+    onEvent: (StoreViewModel.Event) -> Unit
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+        visible = true,
+        exit = fadeOut(
+            animationSpec = TweenSpec(100, 100, LinearEasing)
+        ),
+        enter = fadeIn(
+            animationSpec = TweenSpec(100, 100, LinearEasing)
+        )
+    ) {
+        ListItemProduct(
+            item = item,
+            onEvent = onEvent,
         )
     }
 }
