@@ -24,22 +24,35 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     }
 
     private val _myState : MutableStateFlow<MyState<T>> by lazy {
-        MutableStateFlow(MyState(true))
+        MutableStateFlow(MyState(false))
     }
-    val myState : StateFlow<MyState<T>> by lazy {
-        _myState.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = MyState(true)
-        ).also {
-            viewModelScope.launch {
-                _myState.update {
-                    val data = getData().invoke()
-                    MyState(items = data, loading = false, message = null)
-                }
-            }
-        }
-    }
+
+//    val forMyState : StateFlow<MyState<T>> = combine(
+//        _myState
+//    ) {
+//        Log.d("MyState", "combine: $it")
+//        MyState(loading = false, items = data, message = null)
+//    }.stateIn(
+//        scope = viewModelScope,
+//        started = SharingStarted.WhileSubscribed(),
+//        initialValue = MyState(false)
+//    )
+//
+//    val myState : StateFlow<MyState<T>> by lazy {
+//        _myState.stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5000) ,
+//            initialValue = MyState(true)
+//        ).also {
+//            viewModelScope.launch {
+//                Log.d("MyState", "init fetching data")
+//                _myState.update {
+//                    val data = getData().invoke()
+//                    MyState(items = data, loading = false, message = null)
+//                }
+//            }
+//        }
+//    }
 
     override val uiState: StateFlow<State<T>> by lazy {
         _uiState.stateIn(
@@ -58,17 +71,19 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         effectFlow.asSharedFlow()
 
     protected suspend fun emitRefresh() {
-        _uiState.update {
-            val data = getData().invoke()
-            State.Success(data, refreshing = true)
-        }
-//        emitProcessing()
-//        try {
-//            val items = getData().invoke()
-//            emitState(items)
-//        } catch (e: Exception) {
-//            emitFailure(e)
+//        _uiState.update {
+//            val data = getData().invoke()
+//            emitState(data)
+//            Log.d("refresh", "emitRefresh: $data")
+//            State.Success(data, refreshing = false)
 //        }
+        emitProcessing()
+        try {
+            val items = getData().invoke()
+            emitState(items)
+        } catch (e: Exception) {
+            emitFailure(e)
+        }
     }
 
     protected fun emitState(
@@ -93,13 +108,13 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         if (value == null) {
             emitEmpty()
         } else {
-            _myState.update {
-                MyState(items = value, loading = false, message = null)
-            }
-//            _uiState.update {
-//                if (it is State.Success) it.copy(items = value, refreshing = false)
-//                else State.Success(value, refreshing = false)
+//            _myState.update {
+//                MyState(items = value, loading = false, message = null)
 //            }
+            _uiState.update {
+                if (it is State.Success) it.copy(items = value, refreshing = false)
+                else State.Success(value, refreshing = false)
+            }
         }
     }
 
