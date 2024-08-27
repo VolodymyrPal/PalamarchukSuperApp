@@ -47,8 +47,8 @@ class StoreViewModel @Inject constructor(
         object FetchSkills : Event()
         object OnRefresh : Event()
         data class ShowToast(val message: String) : Event()
-        data class AddProduct(val product: ProductDomainRW, val quantity: Int = 1) : Event()
-        data class SetItemToBasket(val product: ProductDomainRW, val quantity: Int = 1) : Event()
+        data class AddProduct(val productId: Int, val quantity: Int = 1) : Event()
+        data class SetItemToBasket(val productId: Int, val quantity: Int = 1) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -74,11 +74,11 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                addProduct(event.product, event.quantity)
+                addProduct(event.productId, event.quantity)
             }
 
             is Event.SetItemToBasket -> {
-                setItemToBasket(event.product, event.quantity)
+                setItemToBasket(event.productId, event.quantity)
             }
         }
     }
@@ -89,11 +89,11 @@ class StoreViewModel @Inject constructor(
     }
 
 
-    private fun setItemToBasket(product: ProductDomainRW, quantity: Int = 1) {
+    private fun setItemToBasket(productId: Int, quantity: Int = 1) {
         try {
             viewModelScope.launch {
-                val newSkills = (myState.first().items!!.toMutableList()) //uiState.first() as State.Success).items.toMutableList()
-                val foundProduct = newSkills.find { it.product.id == product.product.id }
+                val newSkills = (uiState.first().items!!.toMutableList()) //uiState.first() as State.Success).items.toMutableList()
+                val foundProduct = newSkills.find { it.product.id == productId }
                 newSkills.indexOf(foundProduct).let {
                     newSkills[it] = newSkills[it].copy(quantity = quantity)
                     emitState(newSkills)
@@ -104,17 +104,18 @@ class StoreViewModel @Inject constructor(
         }
     }
 
-    private fun addProduct(product: ProductDomainRW, quantity: Int = 1) {
+    private fun addProduct(productId: Int, quantity: Int = 1) {
         viewModelScope.launch {
-            val newSkills = (myState.first().items!!.toMutableList())  //uiState.first() as State.Success).items.toMutableList()
-            val skill = newSkills.find { it.product.id == product.product.id }
+            val newSkills = (uiState.first().items!!.toMutableList())  //uiState.first() as State.Success).items.toMutableList()
+            val skill = newSkills.find { it.product.id == productId }
             newSkills.indexOf(skill).let {
                 var newQuantity = 0
-                if (newSkills[it].quantity + product.quantity >= 0) {
+                if (newSkills[it].quantity + skill?.quantity!! >= 0) {
                     newQuantity = newSkills[it].quantity + quantity
                 }
                 newSkills[it] =
                     newSkills[it].copy(quantity = newQuantity)
+                emitState(newSkills)
                 //(data as State.Success<*>).items = newSkills
             }
         }

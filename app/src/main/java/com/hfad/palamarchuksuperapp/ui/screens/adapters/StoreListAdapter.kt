@@ -165,7 +165,7 @@ class StoreListAdapter(
                 binding.quantityPlus.setOnClickListener {
                     viewModel.event(
                         event = StoreViewModel.Event.AddProduct(
-                            product = product,
+                            productId = product.product.id,
                             quantity = 1
                         )
                     )
@@ -173,7 +173,7 @@ class StoreListAdapter(
                 binding.quantityMinus.setOnClickListener {
                     viewModel.event(
                         event = StoreViewModel.Event.AddProduct(
-                            product = product,
+                            productId = product.product.id,
                             quantity = -1
                         )
                     )
@@ -212,7 +212,7 @@ class StoreListAdapter(
                     quantityPlus.setOnLongClickListener {
                         viewModel.event(
                             event = StoreViewModel.Event.SetItemToBasket(
-                                product = product,
+                                productId = product.product.id,
                                 quantity = 1
                             )
                         )
@@ -231,7 +231,7 @@ class StoreListAdapter(
                                         delay(20)
                                         viewModel.event(
                                             event = StoreViewModel.Event.AddProduct(
-                                                product = product,
+                                                productId = product.product.id,
                                                 quantity = 1
                                             )
                                         )
@@ -245,7 +245,7 @@ class StoreListAdapter(
                                 if (event.downTime - event.eventTime < ViewConfiguration.getLongPressTimeout()) {
                                     viewModel.event(
                                         event = StoreViewModel.Event.AddProduct(
-                                            product = product,
+                                            productId = product.product.id,
                                             quantity = 1
                                         )
                                     )
