@@ -463,7 +463,7 @@ fun StoreLazyCard(
                     ) {
                         ListItemProduct(
                             item = item, // TODO test rep
-                            onEvent = remember(item) { { event -> onEvent(event) } },
+                            onEvent = onEvent,
                         )
                     }
                 }
@@ -477,7 +477,6 @@ fun ListItemProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
     onEvent: (StoreViewModel.Event) -> Unit = {},
-
     ) {
     Box(modifier = modifier.size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)) {
 
@@ -502,6 +501,7 @@ fun ListItemProduct(
         Row(
             modifier = Modifier.matchParentSize()
         ) {
+            val onTapEvent = remember(item.product.id) { { onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item.product.id, quantityToBuy)) } }
             Box(modifier = Modifier
                 .weight(0.4f)
                 .fillMaxHeight()
@@ -510,12 +510,13 @@ fun ListItemProduct(
                     detectTapGestures(
                         onTap = {
                             if (quantityToBuy > 0) quantityToBuy--
-                            if (!isPressed) onEvent(
-                                StoreViewModel.Event.SetItemToBasket(
-                                    item,
-                                    quantityToBuy
-                                )
-                            )
+                            if (!isPressed) onTapEvent.invoke()
+//                            if (!isPressed) onEvent(
+//                                StoreViewModel.Event.SetItemToBasket(
+//                                    item.product.id,
+//                                    quantityToBuy
+//                                )
+//                            )
                         },
                         onPress = {
                             isPressed = true
@@ -531,12 +532,12 @@ fun ListItemProduct(
 
                                 awaitRelease()
                                 job?.cancel()
-                                onEvent(
-                                    StoreViewModel.Event.SetItemToBasket(
-                                        item,
-                                        quantityToBuy
-                                    )
-                                )
+//                                onEvent(
+//                                    StoreViewModel.Event.SetItemToBasket(
+//                                        item.product.id,
+//                                        quantityToBuy
+//                                    )
+//                                )
                                 isPressed = false
                                 isVisible = true
                             } catch (e: CancellationException) {
@@ -559,12 +560,12 @@ fun ListItemProduct(
 
                         onTap = {
                             if (quantityToBuy >= 0) quantityToBuy++
-                            if (!isPressed) onEvent(
-                                StoreViewModel.Event.SetItemToBasket(
-                                    item,
-                                    item.quantity
-                                )
-                            )
+//                            if (!isPressed) onEvent(
+//                                StoreViewModel.Event.SetItemToBasket(
+//                                    item.product.id,
+//                                    item.quantity
+//                                )
+//                            )
                         },
                         onPress = {
                             isPressed = true
@@ -580,12 +581,12 @@ fun ListItemProduct(
                             try {
                                 awaitRelease()
                                 job?.cancel()
-                                onEvent(
-                                    StoreViewModel.Event.SetItemToBasket(
-                                        item,
-                                        quantityToBuy
-                                    )
-                                )
+//                                onEvent(
+//                                    StoreViewModel.Event.SetItemToBasket(
+//                                        item.product.id,
+//                                        quantityToBuy
+//                                    )
+//                                )
                                 isPressed = false
                                 isVisible = true
                             } catch (e: CancellationException) {
@@ -869,7 +870,7 @@ fun SubDrawerContent(
                             onValueChange = { value ->
                                 onEvent.invoke(
                                     StoreViewModel.Event.SetItemToBasket(
-                                        it,
+                                        it.product.id,
                                         value
                                     )
                                 )
@@ -923,7 +924,7 @@ fun SubDrawerContent(
                                     for (item in items) {
                                         onEvent.invoke(
                                             StoreViewModel.Event.SetItemToBasket(
-                                                item,
+                                                item.product.id,
                                                 0
                                             )
                                         )
@@ -943,7 +944,7 @@ fun SubDrawerContent(
                     TextButton(
                         onClick = {
                             for (item in items) {
-                                onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item, 0))
+                                onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item.product.id, 0))
                             }
                             closeDrawerEvent()
                             showToast()
