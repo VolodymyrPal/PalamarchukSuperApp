@@ -1,7 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +15,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
@@ -37,22 +41,22 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 //        started = SharingStarted.WhileSubscribed(),
 //        initialValue = MyState(false)
 //    )
-//
-//    val myState : StateFlow<MyState<T>> by lazy {
-//        _myState.stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5000) ,
-//            initialValue = MyState(true)
-//        ).also {
-//            viewModelScope.launch {
-//                Log.d("MyState", "init fetching data")
-//                _myState.update {
-//                    val data = getData().invoke()
-//                    MyState(items = data, loading = false, message = null)
-//                }
-//            }
-//        }
-//    }
+
+    val myState : StateFlow<MyState<T>> by lazy {
+        _myState.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000) ,
+            initialValue = MyState(true)
+        ).also {
+            viewModelScope.launch {
+                Log.d("MyState", "init fetching data")
+                _myState.update {
+                    val data = getData().invoke()
+                    MyState(items = data, loading = false, message = null)
+                }
+            }
+        }
+    }
 
     override val uiState: StateFlow<State<T>> by lazy {
         _uiState.stateIn(
@@ -118,6 +122,30 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         }
     }
 
+    protected suspend fun emitSame() {
+        val data = getData().invoke() as List<ProductDomainRW>
+        val newData = data.toMutableList()
+        val random = Random.nextInt(0, 10)
+        newData[random] =
+            newData[random].copy(quantity = Random.nextInt(0, 33))
+        //(
+        val some = filterTasks(newData)
+        _myState.update { state ->
+            state.copy(items = some as T)
+        }
+    }
+
+    private fun filterTasks(products: List<ProductDomainRW>): MutableList<ProductDomainRW> {
+        val tasksToShow = ArrayList<ProductDomainRW>()
+        // We filter the tasks based on the requestType
+        for (task in products) {
+            tasksToShow.add(task)
+        }
+        return tasksToShow.toMutableList()
+    }
+
+
+
     private fun emitEmpty() {
         _uiState.update { state ->
             if (state is State.Success) state.copy(refreshing = false) else State.Empty(loading = false)
@@ -152,28 +180,47 @@ sealed interface BaseEvent
 
 sealed interface BaseEffect
 
-data class MyState <out T>(
-    val loading : Boolean = true,
+data class MyState<out T>(
+    val loading: Boolean = true,
     val items: T? = null,
-    val message: String? = null
+    val message: String? = null,
 )
+@Stable
+sealed interface State<out T> {
+    data object Processing : State<Nothing>
 
-sealed class State<out T> {
-    open val loading : Boolean = true
-    open val items: T? = null
-
-    data object Processing : State<Nothing>()
-
+    @Stable
     data class Success<out T>(
-        override val items: T,
+        @Stable val items: T,
         val refreshing: Boolean = false,
         val message: String? = null,
-    ) : State<T>()
+    ) : State<T>
 
-    data class Error(val exception: Throwable) : State<Nothing>()
+    data class Error(val exception: Throwable) : State<Nothing>
 
-    data class Empty(override val loading: Boolean = true) : State<Nothing>()
+    data class Empty( val loading: Boolean = true) : State<Nothing>
 }
+
+
+//sealed class State<out T> {
+//    open val loading: Boolean = true
+//    open val items: T? = null
+//
+//    data object Processing : State<Nothing>()
+//
+//    @Stable
+//    data class Success<out T>(
+//        override val items: T,
+//        val refreshing: Boolean = false,
+//        val message: String? = null,
+//    ) : State<T>()
+//
+//    data class Error(val exception: Throwable) : State<Nothing>()
+//
+//    data class Empty(override val loading: Boolean = true) : State<Nothing>()
+//}
+
+
 
 
 /* Fetching data with error handling */
