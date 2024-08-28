@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -70,7 +69,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -114,23 +112,20 @@ import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
-import com.hfad.palamarchuksuperapp.data.entities.Product
-import com.hfad.palamarchuksuperapp.data.entities.ProductRating
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
-import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction1
 
+@Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreScreen(
@@ -142,7 +137,8 @@ fun StoreScreen(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
 
-    val myState by viewModel.uiState.collectAsStateWithLifecycle()
+    //val myState by viewModel.uiState.collectAsStateWithLifecycle()
+    val myState by viewModel.myState.collectAsStateWithLifecycle()
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -163,7 +159,7 @@ fun StoreScreen(
                     closeDrawerEvent = {
                         coroutineScope.launch { subDrawerState.close() }
                     },
-                    onEvent = viewModel::event,
+                    onEvent = viewModel,
                     items = myBasket
                 )
             }
@@ -219,10 +215,10 @@ fun StoreScreen(
 //                                    color = Color.Yellow
 //                                )
 //                            } else {
-                                Icon(
-                                    imageVector = Icons.Filled.Menu,
-                                    contentDescription = "Localized description"
-                                )
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "Localized description"
+                            )
 //                            }
                         }
                     },
@@ -260,51 +256,52 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding()
                     )
             ) {
-//                StoreScreenContent(
-//                    items = myState.items,
-//                    onEvent = viewModel::event,
-//                    message = myState.message
-//                )
-                when (myState) {
-                    is State.Processing -> {
-                        Log.d("STATE: ", "$myState")
-                    }
-
-                    is State.Error -> {
-                        Log.d("STATE: ", "$myState")
-                    }
-
-                    is State.Empty -> {
-                        Log.d("STATE: ", "$myState")
-                    }
-
-                    is State.Success -> {
-                        StoreScreenContent(
-                            items = (myState as State.Success).items,
-                            onEvent = { } ,
-                            message = (myState as State.Success).message,
-                        )
-                    }
-            }
+                StoreScreenContent(
+                    items = myState.items,
+                    onEvent = {},
+                    message = myState.message
+                )
+//                val onEvent = { }
+//                when (myState) {
+//                    is State.Processing -> {
+//                        Log.d("STATE: ", "$myState")
+//                    }
+//
+//                    is State.Error -> {
+//                        Log.d("STATE: ", "$myState")
+//                    }
+//
+//                    is State.Empty -> {
+//                        Log.d("STATE: ", "$myState")
+//                    }
+//
+//                    is State.Success -> {
+//                        StoreScreenContent(
+//                            items = (myState as State.Success<List<ProductDomainRW>>).items,
+//                            onEvent = onEvent,//viewModel::event ,
+//                            message = (myState as State.Success).message,
+//                        )
+//                    }
+//                }
             }
         }
     }
 }
 
-
+@Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
     items: List<ProductDomainRW>?,
     message: String? = null,
-    onEvent: (StoreViewModel.Event) -> Unit,
+    onEvent: () -> Unit, // (StoreViewModel.Event) -> Unit,
 ) {
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
     val pullRefreshState =
         rememberPullRefreshState(
             refreshing = false,
-            onRefresh = { onEvent(StoreViewModel.Event.OnRefresh) }
+            onRefresh = { onEvent.invoke() } //onEvent(StoreViewModel.Event.OnRefresh) } TODO
         )
     Box(
         modifier = modifier
@@ -320,16 +317,16 @@ fun StoreScreenContent(
             columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
             horizontalArrangement = Arrangement.Absolute.Center
         ) {
-            if (!message.isNullOrEmpty()) {
-                item(span = { GridItemSpan(itemSpan) }) {
-                    val isShown = remember { mutableStateOf(true) }
-                    rememberCoroutineScope().launch {
-                        delay(2000)
-                        isShown.value = false
-                    }
-                    if (isShown.value) Text(text = message)
-                }
-            }
+//            if (!message.isNullOrEmpty()) {
+//                item(span = { GridItemSpan(itemSpan) }) {
+//                    val isShown = remember { mutableStateOf(true) }
+//                    rememberCoroutineScope().launch {
+//                        delay(10_000)
+//                        isShown.value = false
+//                    }
+//                    if (isShown.value) Text(text = message)
+//                }
+//            }
 
 
 //            item(span = { GridItemSpan(itemSpan) }) {
@@ -357,8 +354,8 @@ fun StoreScreenContent(
 //                )
 //            }
             items(
-                items = items?: emptyList(),
-                key = { item: ProductDomainRW -> item.product.id },
+                items = items ?: emptyList(),
+                //key = { item: ProductDomainRW -> item.product.id },
             ) { item ->
                 GridItem(
                     modifier = Modifier.animateItem(),
@@ -392,12 +389,12 @@ fun StoreScreenContent(
         )
     }
 }
-
+@Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
 @Composable
 fun GridItem(
     modifier: Modifier,
     item: ProductDomainRW,
-    onEvent: (StoreViewModel.Event) -> Unit
+    onEvent: () -> Unit, //(StoreViewModel.Event) -> Unit
 ) {
     AnimatedVisibility(
         modifier = modifier,
@@ -417,10 +414,11 @@ fun GridItem(
     }
 }
 
+@Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
 @Composable
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
-    onEvent: (StoreViewModel.Event) -> Unit,
+    onEvent: () -> Unit, // (StoreViewModel.Event) -> Unit,
     productList: List<ProductDomainRW>,
 ) {
     Column(
@@ -448,60 +446,58 @@ fun StoreLazyCard(
             ) {
                 items(
                     items = productList,
-                    key = { item: ProductDomainRW -> item.product.id },
+                    //key = { item: ProductDomainRW -> item.product.id },
                 ) { item ->
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .animateItem(),
-                        visible = true,
-                        exit = fadeOut(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        ),
-                        enter = fadeIn(
-                            animationSpec = TweenSpec(100, 100, LinearEasing)
-                        )
-                    ) {
+//                    AnimatedVisibility(
+//                        modifier = Modifier
+//                            .animateItem(),
+//                        visible = true,
+//                        exit = fadeOut(
+//                            animationSpec = TweenSpec(100, 100, LinearEasing)
+//                        ),
+//                        enter = fadeIn(
+//                            animationSpec = TweenSpec(100, 100, LinearEasing)
+//                        )
+//                    ) {
                         ListItemProduct(
                             item = item, // TODO test rep
                             onEvent = onEvent,
                         )
-                    }
+//                    }
                 }
             }
         }
     }
 }
 
+@Suppress("LongParameterList", "FunctionNaming", "MaxLineLength", "LongMethod", "MagicNumber", "CyclomaticComplexMethod", "SwallowedException")
 @Composable
 fun ListItemProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
-    onEvent: (StoreViewModel.Event) -> Unit = {},
-    ) {
+    onEvent: () -> Unit, //(StoreViewModel.Event) -> Unit = {},
+) {
     Box(modifier = modifier.size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)) {
 
         var isVisible by remember { mutableStateOf(false) }
         var job by remember { mutableStateOf<Job?>(null) }
         var isPressed by remember { mutableStateOf(false) }
-        var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
+        var quantityToBuy by remember { mutableIntStateOf(0) }  //mutableIntStateOf(item.quantity) }
         val scope = rememberCoroutineScope()
 
-        LaunchedEffect(item.quantity) {
-            quantityToBuy = item.quantity
-        }
-
-        LaunchedEffect(item.quantity) {
-            job?.cancelAndJoin()
-            job = launch {
-                delay(2000)
-                isVisible = false
-            }
-        }
+//        LaunchedEffect(item.quantity) { quantityToBuy = item.quantity }
+//
+//        LaunchedEffect(item.quantity) {
+//            job?.cancelAndJoin()
+//            job = launch {
+//                delay(2000)
+//                isVisible = false
+//            }
+//        }
 
         Row(
             modifier = Modifier.matchParentSize()
         ) {
-            val onTapEvent = remember(item.product.id) { { onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item.product.id, quantityToBuy)) } }
             Box(modifier = Modifier
                 .weight(0.4f)
                 .fillMaxHeight()
@@ -510,7 +506,7 @@ fun ListItemProduct(
                     detectTapGestures(
                         onTap = {
                             if (quantityToBuy > 0) quantityToBuy--
-                            if (!isPressed) onTapEvent.invoke()
+                            //if (!isPressed)  onEvent.invoke() //TODO
 //                            if (!isPressed) onEvent(
 //                                StoreViewModel.Event.SetItemToBasket(
 //                                    item.product.id,
@@ -532,6 +528,7 @@ fun ListItemProduct(
 
                                 awaitRelease()
                                 job?.cancel()
+                                //onEvent.invoke() //TODO
 //                                onEvent(
 //                                    StoreViewModel.Event.SetItemToBasket(
 //                                        item.product.id,
@@ -560,6 +557,7 @@ fun ListItemProduct(
 
                         onTap = {
                             if (quantityToBuy >= 0) quantityToBuy++
+                            //if (!isPressed) onEvent.invoke()  //TODO
 //                            if (!isPressed) onEvent(
 //                                StoreViewModel.Event.SetItemToBasket(
 //                                    item.product.id,
@@ -581,6 +579,7 @@ fun ListItemProduct(
                             try {
                                 awaitRelease()
                                 job?.cancel()
+                                //onEvent.invoke() //TODO
 //                                onEvent(
 //                                    StoreViewModel.Event.SetItemToBasket(
 //                                        item.product.id,
@@ -715,6 +714,7 @@ fun ListItemProduct(
     }
 }
 
+@Suppress("LongParameterList", "FunctionNaming", "MaxLineLength", "LongMethod", "MagicNumber", "CyclomaticComplexMethod", "SwallowedException")
 @Composable
 fun StarRatingBar(
     modifier: Modifier = Modifier,
@@ -756,27 +756,6 @@ fun StarRatingBar(
     }
 }
 
-@Preview
-@Composable
-fun ListItemProductPreview() {
-    ListItemProduct(
-        item = ProductDomainRW(
-            product = Product(
-                id = 8101,
-                title = "intellegat",
-                price = 1112.0,
-                description = "vituperatoribus",
-                category = "eripuit",
-                image = "himenaeos",
-                rating = ProductRating(
-                    rate = 102.103,
-                    count = 7238
-                )
-            )
-        )
-    )
-}
-
 @Composable
 @Preview
 fun StoreLazyListForPreview(
@@ -788,7 +767,8 @@ fun StoreLazyListForPreview(
 ) {
     StoreLazyCard(
         productList = emptyList(),
-        onEvent = {})
+        onEvent = { }
+    )
 }
 
 @Composable
@@ -808,7 +788,10 @@ fun StoreScreenPreview() {
 fun SubDrawerContent(
     modifier: Modifier = Modifier,
     closeDrawerEvent: () -> Unit = {},
-    onEvent: (StoreViewModel.Event) -> Unit = {},
+    onEvent: StoreViewModel = StoreViewModel(
+        repository = StoreRepositoryImpl(),
+        apiRepository = ProductRepository()
+    ), //(StoreViewModel.Event) -> Unit = {},
     items: List<ProductDomainRW> = emptyList(),
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -868,12 +851,12 @@ fun SubDrawerContent(
                                 .wrapContentWidth(),
                             value = it.quantity,
                             onValueChange = { value ->
-                                onEvent.invoke(
-                                    StoreViewModel.Event.SetItemToBasket(
-                                        it.product.id,
-                                        value
-                                    )
-                                )
+//                                onEvent.invoke(
+//                                    StoreViewModel.Event.SetItemToBasket(
+//                                        it.product.id, TODO
+//                                        value
+//                                    )
+//                                )
                             },
                             range = 1..99
                         )
@@ -922,12 +905,12 @@ fun SubDrawerContent(
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     for (item in items) {
-                                        onEvent.invoke(
-                                            StoreViewModel.Event.SetItemToBasket(
-                                                item.product.id,
-                                                0
-                                            )
-                                        )
+//                                        onEvent.invoke(
+//                                            StoreViewModel.Event.SetItemToBasket( TODO
+//                                                item.product.id,
+//                                                0
+//                                            )
+//                                        )
                                     }
                                     closeDrawerEvent()
                                     showToast()
@@ -944,7 +927,7 @@ fun SubDrawerContent(
                     TextButton(
                         onClick = {
                             for (item in items) {
-                                onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item.product.id, 0))
+                                // onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item.product.id, 0)) TODO
                             }
                             closeDrawerEvent()
                             showToast()
