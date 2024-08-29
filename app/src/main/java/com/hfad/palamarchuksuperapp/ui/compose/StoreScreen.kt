@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -69,6 +70,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -117,10 +119,12 @@ import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
+import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction1
@@ -136,9 +140,7 @@ fun StoreScreen(
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-
-    //val myState by viewModel.uiState.collectAsStateWithLifecycle()
-    val myState by viewModel.myState.collectAsStateWithLifecycle()
+    val myState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val mainDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -159,7 +161,7 @@ fun StoreScreen(
                     closeDrawerEvent = {
                         coroutineScope.launch { subDrawerState.close() }
                     },
-                    onEvent = viewModel,
+                    onEvent = viewModel::event,
                     items = myBasket
                 )
             }
@@ -198,28 +200,26 @@ fun StoreScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
-//                            val refreshing = remember(newState) {
-//                                when (newState) {
-//                                    is State.Processing -> true
-//                                    is State.Success -> return@remember (
-//                                            (newState as State.Success).refreshing) TODO
-//                                    else -> false
-//                                }
-//                            }
-//                            val refreshing = remember(myState.loading) {
-//                                myState.loading
-//                            }
-//                            if (refreshing) {
-//                                CircularProgressIndicator(
-//                                    modifier = Modifier.size(24.dp),
-//                                    color = Color.Yellow
-//                                )
-//                            } else {
-                            Icon(
-                                imageVector = Icons.Filled.Menu,
-                                contentDescription = "Localized description"
-                            )
-//                            }
+                            val refreshIcon = remember(myState) {
+                                when (myState) {
+                                    is State.Processing -> true
+                                    is State.Success -> return@remember (
+                                            (myState as State.Success).refreshing)
+
+                                    else -> false
+                                }
+                            }
+                            if (refreshIcon) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = Color.Yellow
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Menu,
+                                    contentDescription = "Localized description"
+                                )
+                            }
                         }
                     },
                     scrollBehavior = scrollBehavior
@@ -253,36 +253,30 @@ fun StoreScreen(
                     .fillMaxSize()
                     .padding(
                         bottom = paddingValues.calculateBottomPadding(),
-                        top = paddingValues.calculateTopPadding()
+                        top = paddingValues.calculateTopPadding(),
                     )
             ) {
-                StoreScreenContent(
-                    items = myState.items,
-                    onEvent = {},
-                    message = myState.message
-                )
-//                val onEvent = { }
-//                when (myState) {
-//                    is State.Processing -> {
-//                        Log.d("STATE: ", "$myState")
-//                    }
-//
-//                    is State.Error -> {
-//                        Log.d("STATE: ", "$myState")
-//                    }
-//
-//                    is State.Empty -> {
-//                        Log.d("STATE: ", "$myState")
-//                    }
-//
-//                    is State.Success -> {
-//                        StoreScreenContent(
-//                            items = (myState as State.Success<List<ProductDomainRW>>).items,
-//                            onEvent = onEvent,//viewModel::event ,
-//                            message = (myState as State.Success).message,
-//                        )
-//                    }
-//                }
+                when (myState) {
+                    is State.Processing -> {
+                        Log.d("STATE: ", "$myState")
+                    }
+
+                    is State.Error -> {
+                        Log.d("STATE: ", "$myState")
+                    }
+
+                    is State.Empty -> {
+                        Log.d("STATE: ", "$myState")
+                    }
+
+                    is State.Success -> {
+                        StoreScreenContent(
+                            items = (myState as State.Success<List<ProductDomainRW>>).items,
+                            onEvent = viewModel::event,
+                            message = (myState as State.Success).message,
+                        )
+                    }
+                }
             }
         }
     }
@@ -293,92 +287,91 @@ fun StoreScreen(
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
-    items: List<ProductDomainRW>?,
+    items: List<ProductDomainRW> = emptyList(),
     message: String? = null,
-    onEvent: () -> Unit, // (StoreViewModel.Event) -> Unit,
+    onEvent: (StoreViewModel.Event) -> Unit,
 ) {
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
     val pullRefreshState =
         rememberPullRefreshState(
             refreshing = false,
-            onRefresh = { onEvent.invoke() } //onEvent(StoreViewModel.Event.OnRefresh) } TODO
+            onRefresh = { onEvent(StoreViewModel.Event.OnRefresh) }
         )
     Box(
         modifier = modifier
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
             .background(color = md_theme_my_royal)
-            .padding(start = 8.dp, end = 8.dp, top = 8.dp)
+            .padding(PaddingValues(start = 8.dp, end = 8.dp))
     ) {
         LazyVerticalGrid(
-            modifier = Modifier,
             flingBehavior = ScrollableDefaults.flingBehavior(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
             horizontalArrangement = Arrangement.Absolute.Center
         ) {
-//            if (!message.isNullOrEmpty()) {
-//                item(span = { GridItemSpan(itemSpan) }) {
-//                    val isShown = remember { mutableStateOf(true) }
-//                    rememberCoroutineScope().launch {
-//                        delay(10_000)
-//                        isShown.value = false
-//                    }
-//                    if (isShown.value) Text(text = message)
-//                }
-//            }
+            if (!message.isNullOrEmpty()) {
+                item(span = { GridItemSpan(itemSpan) }) {
+                    val isShown = remember { mutableStateOf(true) }
+                    rememberCoroutineScope().launch {
+                        delay(10_000)
+                        isShown.value = false
+                    }
+                    if (isShown.value) Text(text = message)
+                }
+            }
 
 
-//            item(span = { GridItemSpan(itemSpan) }) {
-//                StoreLazyCard(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    onEvent = onEvent,
-//                    productList = items.filter { items[0].product.category == it.product.category },
-//                )
-//            }
-//
-//            item(span = { GridItemSpan(itemSpan) }) {
-//
-//                val productListInter = items.filter {
-//                    items[0].product.category != it.product.category
-//                }
-//
-//                val finalProductList = productListInter.filter {
-//                    productListInter[0].product.category == it.product.category
-//                }
-//
-//                StoreLazyCard(
-//                    modifier = Modifier,
-//                    onEvent = onEvent,
-//                    productList = finalProductList
-//                )
-//            }
+            item(span = { GridItemSpan(itemSpan) }) {
+                StoreLazyCard(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    onEvent = onEvent,
+                    productList = items.filter { items[0].product.category == it.product.category },
+                )
+            }
+
+            item(span = { GridItemSpan(itemSpan) }) {
+
+                val productListInter = items.filter {
+                    items[0].product.category != it.product.category
+                }
+
+                val finalProductList = productListInter.filter {
+                    productListInter[0].product.category == it.product.category
+                }
+
+                StoreLazyCard(
+                    modifier = Modifier,
+                    onEvent = onEvent,
+                    productList = finalProductList
+                )
+            }
             items(
-                items = items ?: emptyList(),
-                //key = { item: ProductDomainRW -> item.product.id },
+                items = items,
+                key = { item: ProductDomainRW -> item.product.id },
             ) { item ->
                 GridItem(
                     modifier = Modifier.animateItem(),
                     item = item,
                     onEvent = onEvent
                 )
-//                AnimatedVisibility(
-//                    modifier = Modifier
-//                        .animateItem(),
-//                    // .padding(0.dp, 0.dp, 10.dp, 10.dp),
-//                    visible = true,
-//                    exit = fadeOut(
-//                        animationSpec = TweenSpec(100, 100, LinearEasing)
-//                    ),
-//                    enter = fadeIn(
-//                        animationSpec = TweenSpec(100, 100, LinearEasing)
-//                    )
-//                ) {
-//                    ListItemProduct(
-//                        item = item,
-//                        onEvent = remember(item) { { event -> onEvent(event) } },
-//                    )
-//                }
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .animateItem(),
+                    // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                    visible = true,
+                    exit = fadeOut(
+                        animationSpec = TweenSpec(100, 100, LinearEasing)
+                    ),
+                    enter = fadeIn(
+                        animationSpec = TweenSpec(100, 100, LinearEasing)
+                    )
+                ) {
+                    ListItemProduct(
+                        item = item,
+                        onEvent = remember(item) { { event -> onEvent(event) } },
+                    )
+                }
             }
         }
         PullRefreshIndicator(
@@ -389,12 +382,13 @@ fun StoreScreenContent(
         )
     }
 }
+
 @Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
 @Composable
 fun GridItem(
     modifier: Modifier,
     item: ProductDomainRW,
-    onEvent: () -> Unit, //(StoreViewModel.Event) -> Unit
+    onEvent: (StoreViewModel.Event) -> Unit,
 ) {
     AnimatedVisibility(
         modifier = modifier,
@@ -418,7 +412,7 @@ fun GridItem(
 @Composable
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
-    onEvent: () -> Unit, // (StoreViewModel.Event) -> Unit,
+    onEvent: (StoreViewModel.Event) -> Unit,
     productList: List<ProductDomainRW>,
 ) {
     Column(
@@ -442,58 +436,66 @@ fun StoreLazyCard(
                 contentPadding = PaddingValues(
                     start = 12.dp,
                     end = 12.dp
-                ), // Add padding before start and after end
+                ),
             ) {
                 items(
                     items = productList,
-                    //key = { item: ProductDomainRW -> item.product.id },
+                    key = { item: ProductDomainRW -> item.product.id },
                 ) { item ->
-//                    AnimatedVisibility(
-//                        modifier = Modifier
-//                            .animateItem(),
-//                        visible = true,
-//                        exit = fadeOut(
-//                            animationSpec = TweenSpec(100, 100, LinearEasing)
-//                        ),
-//                        enter = fadeIn(
-//                            animationSpec = TweenSpec(100, 100, LinearEasing)
-//                        )
-//                    ) {
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .animateItem(),
+                        visible = true,
+                        exit = fadeOut(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        ),
+                        enter = fadeIn(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        )
+                    ) {
                         ListItemProduct(
-                            item = item, // TODO test rep
+                            item = item,
                             onEvent = onEvent,
                         )
-//                    }
+                    }
                 }
             }
         }
     }
 }
 
-@Suppress("LongParameterList", "FunctionNaming", "MaxLineLength", "LongMethod", "MagicNumber", "CyclomaticComplexMethod", "SwallowedException")
+@Suppress(
+    "LongParameterList",
+    "FunctionNaming",
+    "MaxLineLength",
+    "LongMethod",
+    "MagicNumber",
+    "CyclomaticComplexMethod",
+    "SwallowedException"
+)
 @Composable
 fun ListItemProduct(
     modifier: Modifier = Modifier,
     item: ProductDomainRW,
-    onEvent: () -> Unit, //(StoreViewModel.Event) -> Unit = {},
+    onEvent: (StoreViewModel.Event) -> Unit = {},
 ) {
     Box(modifier = modifier.size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)) {
 
         var isVisible by remember { mutableStateOf(false) }
         var job by remember { mutableStateOf<Job?>(null) }
         var isPressed by remember { mutableStateOf(false) }
-        var quantityToBuy by remember { mutableIntStateOf(0) }  //mutableIntStateOf(item.quantity) }
+        var quantityToBuy by remember { mutableIntStateOf(item.quantity) }
         val scope = rememberCoroutineScope()
 
-//        LaunchedEffect(item.quantity) { quantityToBuy = item.quantity }
-//
-//        LaunchedEffect(item.quantity) {
-//            job?.cancelAndJoin()
-//            job = launch {
-//                delay(2000)
-//                isVisible = false
-//            }
-//        }
+        LaunchedEffect(item.quantity) { quantityToBuy = item.quantity }
+
+        LaunchedEffect(item.quantity) {
+            job?.cancelAndJoin()
+            job = launch {
+                delay(2000)
+                isVisible = false
+            }
+        }
 
         Row(
             modifier = Modifier.matchParentSize()
@@ -506,13 +508,12 @@ fun ListItemProduct(
                     detectTapGestures(
                         onTap = {
                             if (quantityToBuy > 0) quantityToBuy--
-                            //if (!isPressed)  onEvent.invoke() //TODO
-//                            if (!isPressed) onEvent(
-//                                StoreViewModel.Event.SetItemToBasket(
-//                                    item.product.id,
-//                                    quantityToBuy
-//                                )
-//                            )
+                            if (!isPressed) onEvent(
+                                StoreViewModel.Event.SetItemToBasket(
+                                    item.product.id,
+                                    quantityToBuy
+                                )
+                            )
                         },
                         onPress = {
                             isPressed = true
@@ -528,13 +529,12 @@ fun ListItemProduct(
 
                                 awaitRelease()
                                 job?.cancel()
-                                //onEvent.invoke() //TODO
-//                                onEvent(
-//                                    StoreViewModel.Event.SetItemToBasket(
-//                                        item.product.id,
-//                                        quantityToBuy
-//                                    )
-//                                )
+                                onEvent(
+                                    StoreViewModel.Event.SetItemToBasket(
+                                        item.product.id,
+                                        quantityToBuy
+                                    )
+                                )
                                 isPressed = false
                                 isVisible = true
                             } catch (e: CancellationException) {
@@ -557,13 +557,12 @@ fun ListItemProduct(
 
                         onTap = {
                             if (quantityToBuy >= 0) quantityToBuy++
-                            //if (!isPressed) onEvent.invoke()  //TODO
-//                            if (!isPressed) onEvent(
-//                                StoreViewModel.Event.SetItemToBasket(
-//                                    item.product.id,
-//                                    item.quantity
-//                                )
-//                            )
+                            if (!isPressed) onEvent(
+                                StoreViewModel.Event.SetItemToBasket(
+                                    item.product.id,
+                                    item.quantity
+                                )
+                            )
                         },
                         onPress = {
                             isPressed = true
@@ -579,13 +578,12 @@ fun ListItemProduct(
                             try {
                                 awaitRelease()
                                 job?.cancel()
-                                //onEvent.invoke() //TODO
-//                                onEvent(
-//                                    StoreViewModel.Event.SetItemToBasket(
-//                                        item.product.id,
-//                                        quantityToBuy
-//                                    )
-//                                )
+                                onEvent(
+                                    StoreViewModel.Event.SetItemToBasket(
+                                        item.product.id,
+                                        quantityToBuy
+                                    )
+                                )
                                 isPressed = false
                                 isVisible = true
                             } catch (e: CancellationException) {
@@ -714,7 +712,15 @@ fun ListItemProduct(
     }
 }
 
-@Suppress("LongParameterList", "FunctionNaming", "MaxLineLength", "LongMethod", "MagicNumber", "CyclomaticComplexMethod", "SwallowedException")
+@Suppress(
+    "LongParameterList",
+    "FunctionNaming",
+    "MaxLineLength",
+    "LongMethod",
+    "MagicNumber",
+    "CyclomaticComplexMethod",
+    "SwallowedException"
+)
 @Composable
 fun StarRatingBar(
     modifier: Modifier = Modifier,
@@ -788,10 +794,7 @@ fun StoreScreenPreview() {
 fun SubDrawerContent(
     modifier: Modifier = Modifier,
     closeDrawerEvent: () -> Unit = {},
-    onEvent: StoreViewModel = StoreViewModel(
-        repository = StoreRepositoryImpl(),
-        apiRepository = ProductRepository()
-    ), //(StoreViewModel.Event) -> Unit = {},
+    onEvent: (StoreViewModel.Event) -> Unit = {},
     items: List<ProductDomainRW> = emptyList(),
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -851,12 +854,12 @@ fun SubDrawerContent(
                                 .wrapContentWidth(),
                             value = it.quantity,
                             onValueChange = { value ->
-//                                onEvent.invoke(
-//                                    StoreViewModel.Event.SetItemToBasket(
-//                                        it.product.id, TODO
-//                                        value
-//                                    )
-//                                )
+                                onEvent.invoke(
+                                    StoreViewModel.Event.SetItemToBasket(
+                                        it.product.id,
+                                        value
+                                    )
+                                )
                             },
                             range = 1..99
                         )
@@ -905,12 +908,12 @@ fun SubDrawerContent(
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     for (item in items) {
-//                                        onEvent.invoke(
-//                                            StoreViewModel.Event.SetItemToBasket( TODO
-//                                                item.product.id,
-//                                                0
-//                                            )
-//                                        )
+                                        onEvent.invoke(
+                                            StoreViewModel.Event.SetItemToBasket(
+                                                item.product.id,
+                                                0
+                                            )
+                                        )
                                     }
                                     closeDrawerEvent()
                                     showToast()
@@ -927,7 +930,12 @@ fun SubDrawerContent(
                     TextButton(
                         onClick = {
                             for (item in items) {
-                                // onEvent.invoke(StoreViewModel.Event.SetItemToBasket(item.product.id, 0)) TODO
+                                onEvent.invoke(
+                                    StoreViewModel.Event.SetItemToBasket(
+                                        item.product.id,
+                                        0
+                                    )
+                                )
                             }
                             closeDrawerEvent()
                             showToast()
