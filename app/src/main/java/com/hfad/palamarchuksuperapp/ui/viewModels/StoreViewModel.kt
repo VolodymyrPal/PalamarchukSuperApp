@@ -64,8 +64,7 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.OnRefresh -> {
-                viewModelScope.launch { emitSame() }
-                //viewModelScope.launch { emitRefresh() }
+                viewModelScope.launch { emitRefresh() }
             }
 
             is Event.ShowToast -> {
@@ -91,7 +90,8 @@ class StoreViewModel @Inject constructor(
     private fun setItemToBasket(productId: Int, quantity: Int = 1) {
         try {
             viewModelScope.launch {
-                val newSkills = ((uiState.first() as State.Success).items!!.toMutableList()) //uiState.first() as State.Success).items.toMutableList()
+                val newSkills =
+                    ((uiState.first() as State.Success).items!!.toMutableList()) //uiState.first() as State.Success).items.toMutableList()
                 val foundProduct = newSkills.find { it.product.id == productId }
                 newSkills.indexOf(foundProduct).let {
                     newSkills[it] = newSkills[it].copy(quantity = quantity)
@@ -105,7 +105,8 @@ class StoreViewModel @Inject constructor(
 
     private fun addProduct(productId: Int, quantity: Int = 1) {
         viewModelScope.launch {
-            val newSkills = (uiState.first() as State.Success).items.toMutableList()  //uiState.first() as State.Success).items.toMutableList()
+            val newSkills =
+                (uiState.first() as State.Success).items.toMutableList()  //uiState.first() as State.Success).items.toMutableList()
             val skill = newSkills.find { it.product.id == productId }
             newSkills.indexOf(skill).let {
                 var newQuantity = 0
