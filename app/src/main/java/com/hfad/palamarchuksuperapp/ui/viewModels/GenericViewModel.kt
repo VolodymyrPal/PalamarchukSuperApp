@@ -27,37 +27,6 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         MutableStateFlow(State.Empty(loading = true))
     }
 
-    private val _myState : MutableStateFlow<MyState<T>> by lazy {
-        MutableStateFlow(MyState(false))
-    }
-
-//    val forMyState : StateFlow<MyState<T>> = combine(
-//        _myState
-//    ) {
-//        Log.d("MyState", "combine: $it")
-//        MyState(loading = false, items = data, message = null)
-//    }.stateIn(
-//        scope = viewModelScope,
-//        started = SharingStarted.WhileSubscribed(),
-//        initialValue = MyState(false)
-//    )
-
-    val myState : StateFlow<MyState<T>> by lazy {
-        _myState.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000) ,
-            initialValue = MyState(true)
-        ).also {
-            viewModelScope.launch {
-                Log.d("MyState", "init fetching data")
-                _myState.update {
-                    val data = getData().invoke()
-                    MyState(items = data, loading = false, message = null)
-                }
-            }
-        }
-    }
-
     override val uiState: StateFlow<State<T>> by lazy {
         _uiState.stateIn(
             scope = viewModelScope,
@@ -75,12 +44,6 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         effectFlow.asSharedFlow()
 
     protected suspend fun emitRefresh() {
-//        _uiState.update {
-//            val data = getData().invoke()
-//            emitState(data)
-//            Log.d("refresh", "emitRefresh: $data")
-//            State.Success(data, refreshing = false)
-//        }
         emitProcessing()
         try {
             val items = getData().invoke()
@@ -112,39 +75,12 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         if (value == null) {
             emitEmpty()
         } else {
-//            _myState.update {
-//                MyState(items = value, loading = false, message = null)
-//            }
             _uiState.update {
                 if (it is State.Success) it.copy(items = value, refreshing = false)
                 else State.Success(value, refreshing = false)
             }
         }
     }
-
-    protected suspend fun emitSame() {
-        val data = getData().invoke() as List<ProductDomainRW>
-        val newData = data.toMutableList()
-        val random = Random.nextInt(0, 10)
-        newData[random] =
-            newData[random].copy(quantity = Random.nextInt(0, 33))
-        //(
-        val some = filterTasks(newData)
-        _myState.update { state ->
-            state.copy(items = some as T)
-        }
-    }
-
-    private fun filterTasks(products: List<ProductDomainRW>): MutableList<ProductDomainRW> {
-        val tasksToShow = ArrayList<ProductDomainRW>()
-        // We filter the tasks based on the requestType
-        for (task in products) {
-            tasksToShow.add(task)
-        }
-        return tasksToShow.toMutableList()
-    }
-
-
 
     private fun emitEmpty() {
         _uiState.update { state ->
@@ -180,18 +116,11 @@ sealed interface BaseEvent
 
 sealed interface BaseEffect
 
-data class MyState<out T>(
-    val loading: Boolean = true,
-    val items: T? = null,
-    val message: String? = null,
-)
-@Stable
 sealed interface State<out T> {
     data object Processing : State<Nothing>
 
-    @Stable
     data class Success<out T>(
-        @Stable val items: T,
+        val items: T,
         val refreshing: Boolean = false,
         val message: String? = null,
     ) : State<T>
@@ -200,28 +129,6 @@ sealed interface State<out T> {
 
     data class Empty( val loading: Boolean = true) : State<Nothing>
 }
-
-
-//sealed class State<out T> {
-//    open val loading: Boolean = true
-//    open val items: T? = null
-//
-//    data object Processing : State<Nothing>()
-//
-//    @Stable
-//    data class Success<out T>(
-//        override val items: T,
-//        val refreshing: Boolean = false,
-//        val message: String? = null,
-//    ) : State<T>()
-//
-//    data class Error(val exception: Throwable) : State<Nothing>()
-//
-//    data class Empty(override val loading: Boolean = true) : State<Nothing>()
-//}
-
-
-
 
 /* Fetching data with error handling */
 //    private suspend fun <T> retryWithBackoff(
