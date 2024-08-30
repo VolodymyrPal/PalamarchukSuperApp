@@ -5,6 +5,7 @@ import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.ui.common.toDomainRW
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -15,6 +16,10 @@ class SkillsViewModel @Inject constructor(private val repository: SkillRepositor
 
     override suspend fun getData(): suspend () -> List<SkillDomainRW> {
         return { emptyList() }
+    }
+
+    override suspend fun getDataFlow(): Flow<List<SkillDomainRW>> {
+        TODO("Not yet implemented")
     }
 
     sealed class Event : BaseEvent {
