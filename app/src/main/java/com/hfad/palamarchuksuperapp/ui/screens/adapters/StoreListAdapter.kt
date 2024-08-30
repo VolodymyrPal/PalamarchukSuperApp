@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductRecyclerBinding
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -54,12 +53,7 @@ class StoreListAdapter(
             }
         }
 
-        val listToSubmit = productList.toMutableList()
-        repeat(listChildRecycler.size) {
-            listToSubmit.add(0, ProductDomainRW(Product()))
-        }
-
-        submitList(listToSubmit)
+        submitList(productList)
     }
 
 
