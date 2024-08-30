@@ -5,25 +5,28 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.hfad.palamarchuksuperapp.data.database.DATABASE_STORE_NAME
-import com.hfad.palamarchuksuperapp.data.entities.Product
+import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
+import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StoreDao {
 
-    @Query("SELECT * FROM $DATABASE_STORE_NAME")
-    fun getAllProductsFromDB(): Flow<List<Product>>
+    @Query("SELECT * FROM $DATABASE_MAIN_ENTITY_PRODUCT")
+    fun getAllProductsFromDB(): Flow<List<ProductDomainRW>>
 
-    @Query(value = "DELETE FROM $DATABASE_STORE_NAME")
-    suspend fun deleteProducts()
+    @Query(value = "DELETE FROM $DATABASE_MAIN_ENTITY_PRODUCT")
+    suspend fun deleteAllProducts()
+
+    @Query("UPDATE $DATABASE_MAIN_ENTITY_PRODUCT SET quantity = :query WHERE id = :taskId")
+    suspend fun updateCompleted(taskId: String, query: Int)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertOrIgnoreProducts(products: List<Product>): List<Long>
+    suspend fun insertOrIgnoreProducts(products: List<ProductDomainRW>): List<Long>
 
     @Transaction
-    suspend fun deleteAndInsert(genreId: String? = null, movies: List<Product>) {
-        deleteProducts()
-        insertOrIgnoreProducts(movies)
+    suspend fun deleteAndInsertRefresh(products: List<ProductDomainRW>) {
+        deleteAllProducts()
+        insertOrIgnoreProducts(products)
     }
 }
