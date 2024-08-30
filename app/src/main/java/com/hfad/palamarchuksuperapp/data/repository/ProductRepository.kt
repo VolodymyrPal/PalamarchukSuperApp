@@ -28,6 +28,6 @@ class ProductRepository @Inject constructor() : FakeStoreApi {
     }
 
     override suspend fun fetchProducts() = fakeStoreApi.fetchProducts()
-    suspend fun getProductsDomainRw() = fakeStoreApi.fetchProducts().map { it.toProductDomainRW() }
+    override suspend fun getProductsDomainRw() = fakeStoreApi.fetchProducts().map { it.toProductDomainRW() }
 
 }
