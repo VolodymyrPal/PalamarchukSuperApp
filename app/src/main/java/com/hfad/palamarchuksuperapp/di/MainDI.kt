@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
+import com.hfad.palamarchuksuperapp.data.dao.StoreDao
+import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
+import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
@@ -50,13 +53,12 @@ interface AppComponent {
 }
 
 
-@Module(includes = [DatabaseModule::class, ModelsModule::class, NetworkModule::class])
-object AppModule {
+@Module(includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class])
+object AppModule
 
-}
 
 @Module
-abstract class ModelsModule {
+abstract class ViewModelsModule {
 
     @Binds
     abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
@@ -75,12 +77,16 @@ abstract class ModelsModule {
 @Module
 object NetworkModule {
     @Provides
-    fun StoreRepository(): StoreRepository {
-        return StoreRepositoryImpl()
-    }
-    @Provides
-    fun PlatziApiImpl(): FakeStoreApi {
+    fun platziApiImpl(): FakeStoreApi {
         return ProductRepository()
+    }
+
+    @Provides
+    fun provideStoreRepository(
+        storeApi: FakeStoreApi,
+        storeDao: StoreDao
+    ): StoreRepository {
+        return StoreRepositoryImpl(storeApi, storeDao)
     }
 }
 
@@ -88,9 +94,24 @@ object NetworkModule {
 object DatabaseModule {
 
     @Provides
-    fun provideSkillsRepository(): PreferencesRepository {
+    fun providePreferencesRepository(): PreferencesRepository {
         return PreferencesRepository.get()
     }
+    @Singleton
+    @Provides
+    fun provideStoreDB(context: Context): StoreDatabase {
+        return Room.databaseBuilder(
+            context = context.applicationContext,
+            klass = StoreDatabase::class.java,
+            name = DATABASE_MAIN_ENTITY_PRODUCT
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
+    @Provides
+    fun provideStoreDao(storeDatabase: StoreDatabase): StoreDao {
+        return storeDatabase.storeDao()
+    }
+
 
     @Singleton
     @Provides
@@ -114,9 +135,14 @@ object DatabaseModule {
     fun provideSkillRepository(skillsDao: SkillsDao): SkillRepository {
         return SkillsRepositoryImpl(skillsDao = skillsDao)
     }
+
 }
 
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER
+)
 @Retention(AnnotationRetention.RUNTIME)
 @MapKey
 annotation class ViewModelKey(val value: KClass<out ViewModel>)
