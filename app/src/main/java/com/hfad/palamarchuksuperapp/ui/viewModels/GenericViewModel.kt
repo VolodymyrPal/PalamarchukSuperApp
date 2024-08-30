@@ -1,11 +1,9 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
-import android.util.Log
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,12 +13,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
 
     abstract suspend fun getData(): suspend () -> T
+    abstract suspend fun getDataFlow(): Flow<T>
     abstract override fun event(event: EVENT)
 
     private val _uiState: MutableStateFlow<State<T>> by lazy {
