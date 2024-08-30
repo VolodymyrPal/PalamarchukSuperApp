@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -17,13 +19,31 @@ import javax.inject.Inject
 
 @Stable
 class StoreViewModel @Inject constructor(
-    private val repository: StoreRepository,
+    private val repository: StoreRepository?,
     private val apiRepository: ProductRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     override suspend fun getData(): suspend () -> List<ProductDomainRW> {
         return apiRepository::getProductsDomainRw
     }
+    private val dataFlow = repository!!.fetchProductsAsFlowFromDB
+
+    val myFlow = combine(
+        dataFlow, uiState
+    ) { flow, state ->
+        Log.d("TAG", "myFlow: $state")
+        emitState(flow)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = State.Empty(loading = true)
+    ).also {
+        viewModelScope.launch {
+            repository!!.upsertAll(apiRepository.getProductsDomainRw())
+        }
+    }
+
+    override suspend fun getDataFlow(): Flow<List<ProductDomainRW>> = repository!!.fetchProductsAsFlowFromDB
 
     val baskList = uiState.map { state ->
         when (state) {
