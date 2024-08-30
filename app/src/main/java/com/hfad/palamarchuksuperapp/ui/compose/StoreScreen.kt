@@ -138,6 +138,8 @@ fun StoreScreen(
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val someState by viewModel.myFlow.collectAsStateWithLifecycle()
+    Log.d("Some: ", "$someState")
 
     val myState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -320,56 +322,59 @@ fun StoreScreenContent(
                 }
             }
 
-
-            item(span = { GridItemSpan(itemSpan) }) {
-                StoreLazyCard(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    onEvent = onEvent,
-                    productList = items.filter { items[0].product.category == it.product.category },
-                )
-            }
-
-            item(span = { GridItemSpan(itemSpan) }) {
-
-                val productListInter = items.filter {
-                    items[0].product.category != it.product.category
-                }
-
-                val finalProductList = productListInter.filter {
-                    productListInter[0].product.category == it.product.category
-                }
-
-                StoreLazyCard(
-                    modifier = Modifier,
-                    onEvent = onEvent,
-                    productList = finalProductList
-                )
-            }
-            items(
-                items = items,
-                key = { item: ProductDomainRW -> item.product.id },
-            ) { item ->
-                GridItem(
-                    modifier = Modifier.animateItem(),
-                    item = item,
-                    onEvent = onEvent
-                )
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .animateItem(),
-                    // .padding(0.dp, 0.dp, 10.dp, 10.dp),
-                    visible = true,
-                    exit = fadeOut(
-                        animationSpec = TweenSpec(100, 100, LinearEasing)
-                    ),
-                    enter = fadeIn(
-                        animationSpec = TweenSpec(100, 100, LinearEasing)
+            if (items.isNotEmpty()) {
+                item(span = { GridItemSpan(itemSpan) }) {
+                    StoreLazyCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        onEvent = onEvent,
+                        productList = items.filter { items[0].product.category == it.product.category },
                     )
-                ) {
-                    ListItemProduct(
+                }
+
+                item(span = { GridItemSpan(itemSpan) }) {
+
+                    val productListInter = items.filter {
+                        items[0].product.category != it.product.category
+                    }
+
+                    val finalProductList = productListInter.filter {
+                        productListInter[0].product.category == it.product.category
+                    }
+
+                    StoreLazyCard(
+                        modifier = Modifier,
+                        onEvent = onEvent,
+                        productList = finalProductList
+                    )
+                }
+                items(
+                    items = items,
+                    key = { item: ProductDomainRW -> item.id },
+                ) { item ->
+                    GridItem(
+                        modifier = Modifier.animateItem(),
                         item = item,
-                        onEvent = remember(item) { { event -> onEvent(event) } },
+                        onEvent = onEvent
                     )
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .animateItem(),
+                        // .padding(0.dp, 0.dp, 10.dp, 10.dp),
+                        visible = true,
+                        exit = fadeOut(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        ),
+                        enter = fadeIn(
+                            animationSpec = TweenSpec(100, 100, LinearEasing)
+                        )
+                    ) {
+                        ListItemProduct(
+                            item = item,
+                            onEvent = remember(item) { { event -> onEvent(event) } },
+                        )
+                    }
                 }
             }
         }
@@ -439,7 +444,7 @@ fun StoreLazyCard(
             ) {
                 items(
                     items = productList,
-                    key = { item: ProductDomainRW -> item.product.id },
+                    key = { item: ProductDomainRW -> item.id },
                 ) { item ->
                     AnimatedVisibility(
                         modifier = Modifier
@@ -766,7 +771,7 @@ fun StarRatingBar(
 fun StoreLazyListForPreview(
     modifier: Modifier = Modifier,
     viewModel: StoreViewModel = StoreViewModel(
-        repository = StoreRepositoryImpl(),
+        repository = null,
         apiRepository = ProductRepository()
     ),
 ) {
@@ -782,7 +787,7 @@ fun StoreScreenPreview() {
     StoreScreen(
         navController = null,
         viewModel = StoreViewModel(
-            repository = StoreRepositoryImpl(),
+            repository = null,
             apiRepository = ProductRepository()
         )
     )
