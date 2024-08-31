@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,6 +20,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
     abstract suspend fun getData(): suspend () -> T
     abstract suspend fun getDataFlow(): Flow<T>
+    abstract val dataFlow : Flow<T>
     abstract override fun event(event: EVENT)
 
     private val _uiState: MutableStateFlow<State<T>> by lazy {
@@ -32,8 +34,21 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
             initialValue = State.Empty(loading = true)
         ).also {
             viewModelScope.launch {
-                emitRefresh()
+                emitSoftRefresh()
             }
+        }
+    }
+
+    val myState = combine(
+        uiState, dataFlow
+    ) {  state, dataFlow ->
+        state
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = State.Empty(loading = true)
+    ).also {
+        viewModelScope.launch {
         }
     }
 
@@ -41,7 +56,14 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     override val effect: SharedFlow<EFFECT> =
         effectFlow.asSharedFlow()
 
-    protected suspend fun emitRefresh() {
+    override fun effect(effect: EFFECT) {
+        viewModelScope.launch {
+            effectFlow.emit(effect)
+        }
+    }
+
+
+    protected suspend fun emitSoftRefresh() {
         emitProcessing()
         try {
             val items = getData().invoke()
@@ -108,6 +130,7 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
     val uiState: StateFlow<STATE>
     val effect: SharedFlow<EFFECT>
     fun event(event: EVENT)
+    fun effect(effect: EFFECT)
 }
 
 sealed interface BaseEvent
