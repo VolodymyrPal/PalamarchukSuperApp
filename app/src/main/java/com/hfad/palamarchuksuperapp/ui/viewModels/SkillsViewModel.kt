@@ -7,16 +7,21 @@ import com.hfad.palamarchuksuperapp.ui.common.toDomainRW
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SkillsViewModel @Inject constructor(private val repository: SkillRepository) :
+class SkillsViewModel @Inject constructor(
+    private val repository: SkillRepository,
+) :
     GenericViewModel<List<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
     override suspend fun getData(): suspend () -> List<SkillDomainRW> {
         return { emptyList() }
     }
+
+    override val dataFlow: Flow<List<SkillDomainRW>> = flow { emit(emptyList()) }
 
     override suspend fun getDataFlow(): Flow<List<SkillDomainRW>> {
         TODO("Not yet implemented")

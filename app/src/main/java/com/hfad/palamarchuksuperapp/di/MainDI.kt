@@ -9,7 +9,7 @@ import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
-import com.hfad.palamarchuksuperapp.data.repository.ProductRepository
+import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
@@ -78,7 +78,7 @@ abstract class ViewModelsModule {
 object NetworkModule {
     @Provides
     fun platziApiImpl(): FakeStoreApi {
-        return ProductRepository()
+        return FakeStoreApiRepository()
     }
 
     @Provides
