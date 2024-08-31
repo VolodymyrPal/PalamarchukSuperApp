@@ -17,14 +17,27 @@ class StoreRepositoryImpl @Inject constructor(
     private val storeDao: StoreDao,
 ) : StoreRepository {
 
-    override val fetchProductsAsFlowFromDB: Flow<List<ProductDomainRW>> =
-        storeDao.getAllProductsFromDB()
+    override val fetchProductsAsFlowFromDB: Flow<List<ProductDomainRW>> get() {
+        return storeDao.getAllProductsFromDB().catch { errorFlow.update { it } }
+    }
 
+    override suspend fun softRefreshProducts() {
+        storeDao.insertOrIgnoreProducts(getProductWithErrors())
+    }
 
-    override suspend fun refreshProducts() {
+    override suspend fun hardRefreshProducts() {
         storeDao.deleteAllProducts()
-        val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
-        storeDao.deleteAndInsertRefresh(storeProducts)
+        storeDao.insertOrIgnoreProducts(getProductWithErrors())
+    }
+
+    private suspend fun getProductWithErrors(): List<ProductDomainRW> {
+        return try {
+            val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
+            storeProducts
+        } catch (e: Exception) {
+            errorFlow.update { e }
+            fetchProductsAsFlowFromDB.first()
+        }
     }
 
     override suspend fun upsertAll(products: List<ProductDomainRW>) {
@@ -34,5 +47,7 @@ class StoreRepositoryImpl @Inject constructor(
     override suspend fun updateProduct(product: Product) {
         storeDao.updateCompleted(product.id.toString(), 5) //TODO
     }
+
+    override val errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
 
 }
