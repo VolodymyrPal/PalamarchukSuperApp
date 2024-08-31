@@ -20,31 +20,37 @@ import javax.inject.Inject
 
 @Stable
 class StoreViewModel @Inject constructor(
-    private val repository: StoreRepository?,
-    private val apiRepository: ProductRepository,
+    private val repository: StoreRepository,
+    private val apiRepository: FakeStoreApiRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     override suspend fun getData(): suspend () -> List<ProductDomainRW> {
         return apiRepository::getProductsDomainRw
     }
-    private val dataFlow = repository!!.fetchProductsAsFlowFromDB
+
+    override val dataFlow =
+        repository.fetchProductsAsFlowFromDB.catch { Log.d("TAG", "getDataFlow: $it") }
 
     val myFlow = combine(
-        dataFlow, uiState
-    ) { flow, state ->
-        Log.d("TAG", "myFlow: $state")
-        emitState(flow)
+        repository.fetchProductsAsFlowFromDB, repository.errorFlow
+    ) { data, error ->
+        if (error != null) {
+            event(Event.ShowToast(error.message ?: "Error"))
+            // emitFailure(error)
+        }
+        emitState(data)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = State.Empty(loading = true)
     ).also {
         viewModelScope.launch {
-            repository!!.upsertAll(apiRepository.getProductsDomainRw())
+            repository.upsertAll(apiRepository.getProductsDomainRw())
         }
     }
 
-    override suspend fun getDataFlow(): Flow<List<ProductDomainRW>> = repository!!.fetchProductsAsFlowFromDB
+    override suspend fun getDataFlow(): Flow<List<ProductDomainRW>> =
+        repository.fetchProductsAsFlowFromDB
 
     val baskList = uiState.map { state ->
         when (state) {
@@ -66,7 +72,8 @@ class StoreViewModel @Inject constructor(
 
     sealed class Event : BaseEvent {
         object FetchSkills : Event()
-        object OnRefresh : Event()
+        object OnSoftRefresh : Event()
+        object OnHardRefresh : Event()
         data class ShowToast(val message: String) : Event()
         data class AddProduct(val productId: Int, val quantity: Int = 1) : Event()
         data class SetItemToBasket(val productId: Int, val quantity: Int = 1) : Event()
@@ -82,11 +89,15 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-                viewModelScope.launch { emitRefresh() }
+                viewModelScope.launch { emitSoftRefresh() }
             }
 
-            is Event.OnRefresh -> {
-                viewModelScope.launch { emitRefresh() }
+            is Event.OnSoftRefresh -> {
+                viewModelScope.launch { repository.softRefreshProducts() }
+            }
+
+            is Event.OnHardRefresh -> {
+                viewModelScope.launch { repository.hardRefreshProducts() }
             }
 
             is Event.ShowToast -> {
