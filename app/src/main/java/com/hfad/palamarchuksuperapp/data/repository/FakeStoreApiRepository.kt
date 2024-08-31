@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Suppress("MaxLineLength")
-class ProductRepository @Inject constructor() : FakeStoreApi {
+class FakeStoreApiRepository @Inject constructor() : FakeStoreApi {
     private var fakeStoreApi: FakeStoreApi
 
     init {
@@ -27,7 +27,7 @@ class ProductRepository @Inject constructor() : FakeStoreApi {
         fakeStoreApi = retrofit.create<FakeStoreApi>()
     }
 
-    override suspend fun fetchProducts() = fakeStoreApi.fetchProducts()
+    override suspend fun fetchProducts() =  fakeStoreApi.fetchProducts()
     override suspend fun getProductsDomainRw() = fakeStoreApi.fetchProducts().map { it.toProductDomainRW() }
 
 }

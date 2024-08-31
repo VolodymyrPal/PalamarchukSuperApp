@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.flow.Flow
@@ -23,10 +22,4 @@ interface StoreDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertOrIgnoreProducts(products: List<ProductDomainRW>): List<Long>
-
-    @Transaction
-    suspend fun deleteAndInsertRefresh(products: List<ProductDomainRW>) {
-        deleteAllProducts()
-        insertOrIgnoreProducts(products)
-    }
 }
