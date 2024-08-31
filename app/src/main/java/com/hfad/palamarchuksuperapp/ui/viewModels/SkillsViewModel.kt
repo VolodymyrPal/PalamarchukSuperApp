@@ -57,6 +57,7 @@ class SkillsViewModel @Inject constructor(
 
             is Event.DeleteItem -> {
                 deleteSkill(event.item)
+                effect(Effect.Vibration)
             }
 
             is Event.EditItem -> {

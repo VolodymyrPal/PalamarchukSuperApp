@@ -165,6 +165,11 @@ class StoreFragment : Fragment() {
             is StoreViewModel.Effect.Vibration -> {
                 vibe.standardClickVibration()
             }
+
+            is StoreViewModel.Effect.ShowToastAndVibration -> {
+                vibe.standardClickVibration()
+                Toast.makeText(requireContext(), effect.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

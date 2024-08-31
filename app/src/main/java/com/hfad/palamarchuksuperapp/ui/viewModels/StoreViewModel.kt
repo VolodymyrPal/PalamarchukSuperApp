@@ -76,6 +76,7 @@ class StoreViewModel @Inject constructor(
         object OnBackPressed : Effect()
         data class ShowToast(val message: String) : Effect()
         object Vibration : Effect()
+        data class ShowToastAndVibration(val message: String) : Effect()
     }
 
     override fun event(event: Event) {
@@ -89,7 +90,7 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.ShowToast -> {
-
+                viewModelScope.launch { effect(Effect.ShowToastAndVibration(event.message)) }
             }
 
             is Event.AddProduct -> {
