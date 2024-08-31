@@ -191,7 +191,7 @@ fun StoreScreen(
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) /* do something */ }) {
+                        IconButton(onClick = {  /* do something */ }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Localized description"
@@ -199,7 +199,7 @@ fun StoreScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnRefresh) }) {
+                        IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnHardRefresh) }) {
                             val refreshIcon = remember(myState) {
                                 when (myState) {
                                     is State.Processing -> true
@@ -295,7 +295,7 @@ fun StoreScreenContent(
     val pullRefreshState =
         rememberPullRefreshState(
             refreshing = false,
-            onRefresh = { onEvent(StoreViewModel.Event.OnRefresh) }
+            onRefresh = { onEvent(StoreViewModel.Event.OnSoftRefresh) }
         )
     Box(
         modifier = modifier
@@ -769,10 +769,7 @@ fun StarRatingBar(
 @Preview
 fun StoreLazyListForPreview(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel = StoreViewModel(
-        repository = null,
-        apiRepository = ProductRepository()
-    ),
+    viewModel: StoreViewModel? = null
 ) {
     StoreLazyCard(
         productList = emptyList(),
@@ -785,10 +782,7 @@ fun StoreLazyListForPreview(
 fun StoreScreenPreview() {
     StoreScreen(
         navController = null,
-        viewModel = StoreViewModel(
-            repository = null,
-            apiRepository = ProductRepository()
-        )
+        viewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory())
     )
 }
 
