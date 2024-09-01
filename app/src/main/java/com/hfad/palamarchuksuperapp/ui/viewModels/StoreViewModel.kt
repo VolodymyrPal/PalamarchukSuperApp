@@ -31,14 +31,20 @@ class StoreViewModel @Inject constructor(
     override val dataFlow =
         repository.fetchProductsAsFlowFromDB.catch { Log.d("TAG", "getDataFlow: $it") }
 
-    val myFlow = combine(
-        repository.fetchProductsAsFlowFromDB, repository.errorFlow
-    ) { data, error ->
+    private val myFlow = combine(
+        uiState, repository.errorFlow, dataFlow
+    ) { state , error, data ->
+        when (state) {
+            is State.Success -> State.Success(items = data, message = if (error != null) error.message else "")
+            else -> State.Empty(loading = true)
+        }
         if (error != null) {
             event(Event.ShowToast(error.message ?: "Error"))
-            // emitFailure(error)
+            emitFailure(error)
+            state
+        } else {
+            state
         }
-        emitState(data)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
