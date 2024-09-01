@@ -44,8 +44,8 @@ class StoreRepositoryImpl @Inject constructor(
         storeDao.insertOrIgnoreProducts(products)
     }
 
-    override suspend fun updateProduct(product: Product) {
-        storeDao.updateCompleted(product.id.toString(), 5) //TODO
+    override suspend fun updateProduct(product: ProductDomainRW) {
+        storeDao.updateProduct(product)
     }
 
     override val errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
