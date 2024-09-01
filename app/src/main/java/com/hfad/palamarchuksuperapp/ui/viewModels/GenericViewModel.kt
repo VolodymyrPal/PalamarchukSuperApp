@@ -39,19 +39,6 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         }
     }
 
-    val myState = combine(
-        uiState, dataFlow
-    ) {  state, dataFlow ->
-        state
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = State.Empty(loading = true)
-    ).also {
-        viewModelScope.launch {
-        }
-    }
-
     private val effectFlow = MutableSharedFlow<EFFECT>()
     override val effect: SharedFlow<EFFECT> =
         effectFlow.asSharedFlow()
@@ -150,24 +137,3 @@ sealed interface State<out T> {
 
     data class Empty( val loading: Boolean = true) : State<Nothing>
 }
-
-/* Fetching data with error handling */
-//    private suspend fun <T> retryWithBackoff(
-//        times: Int = 5,
-//        initialDelay: Long = 500,
-//        maxDelay: Long = 6000,
-//        factor: Double = 2.0,
-//        block: suspend () -> T,
-//    ): T {
-//        var currentDelay = initialDelay
-//        repeat(times - 1) {
-//            try {
-//                return block()
-//            } catch (e: Exception) {
-//                Log.d("Generic VM", "Attempt ${it + 1} failed with exception: ${e.message}")
-//            }
-//            delay(currentDelay)
-//            currentDelay = (currentDelay * factor).toLong().coerceAtMost(maxDelay)
-//        }
-//        return block()
-//    }
