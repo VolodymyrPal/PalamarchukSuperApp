@@ -76,6 +76,11 @@ fun MainContent() {
                     navController = navArgClass::navigate
                 )
             }
+            composable<Routes.ChatBotScreen> {
+                ChatScreen(
+                    navController = navArgClass::navigate
+                )
+            }
         }
     }
 }
@@ -107,4 +112,7 @@ sealed interface Routes {
 
     @Serializable
     object StoreScreen : Routes
+
+    @Serializable
+    object ChatBotScreen : Routes
 }
