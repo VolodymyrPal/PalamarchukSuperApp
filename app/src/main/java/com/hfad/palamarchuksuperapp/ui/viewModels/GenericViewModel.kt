@@ -20,23 +20,39 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
     abstract suspend fun getData(): suspend () -> T
     abstract suspend fun getDataFlow(): Flow<T>
-    abstract val dataFlow : Flow<T>
+    abstract val dataFlow: Flow<T>
+    val errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
+    private val _loading = MutableStateFlow(false)
     abstract override fun event(event: EVENT)
+
 
     private val _uiState: MutableStateFlow<State<T>> by lazy {
         MutableStateFlow(State.Empty(loading = true))
     }
 
     override val uiState: StateFlow<State<T>> by lazy {
-        _uiState.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = State.Empty(loading = true)
-        ).also {
-            viewModelScope.launch {
-                emitSoftRefresh()
-            }
+        combine(dataFlow, errorFlow, _loading) { data, error, loading ->
+            State.Success(
+                items = data,
+                error = error,
+                refreshing = loading
+            )
         }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = State.Empty(loading = true)
+            )
+
+//        _uiState.stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5_000),
+//            initialValue = State.Empty(loading = true)
+//        ).also {
+//            viewModelScope.launch {
+//                emitSoftRefresh()
+//            }
+//        }
     }
 
     private val effectFlow = MutableSharedFlow<EFFECT>()
@@ -107,7 +123,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
         _uiState.update { state ->
             if (state is State.Success) state.copy(
                 refreshing = false,
-                message = e.message
+                error = e
             ) else State.Error(e)
         }
     }
@@ -130,10 +146,10 @@ sealed interface State<out T> {
     data class Success<out T>(
         val items: T,
         val refreshing: Boolean = false,
-        val message: String? = null,
+        val error: Throwable? = null,
     ) : State<T>
 
     data class Error(val exception: Throwable) : State<Nothing>
 
-    data class Empty( val loading: Boolean = true) : State<Nothing>
+    data class Empty(val loading: Boolean = true) : State<Nothing>
 }
