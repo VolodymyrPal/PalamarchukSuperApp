@@ -132,7 +132,7 @@ import kotlin.reflect.KFunction1
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    navController: KFunction1<Routes, Unit>?,
+    navController: (Routes) -> Unit?,
     viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
 ) {
     val scrollBehavior =
@@ -273,7 +273,7 @@ fun StoreScreen(
                         StoreScreenContent(
                             items = (myState as State.Success<List<ProductDomainRW>>).items,
                             onEvent = viewModel::event,
-                            message = (myState as State.Success).message,
+                            message = (myState as State.Success).error?.message,
                         )
                     }
                 }
@@ -781,7 +781,7 @@ fun StoreLazyListForPreview(
 @Preview
 fun StoreScreenPreview() {
     StoreScreen(
-        navController = null,
+        navController = {  },
         viewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory())
     )
 }

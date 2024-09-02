@@ -68,7 +68,7 @@ import kotlin.reflect.KFunction1
 fun MainScreenRow(
     modifier: Modifier = Modifier,
     actionSkillsButton: () -> Unit = {},
-    navController: KFunction1<Routes, Unit>?,
+    navController: (Routes) -> Unit?,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -195,20 +195,20 @@ fun MainScreenRow(
                         ) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.invoke(Routes.SkillScreen) },
+                                action = { navController.invoke(Routes.SkillScreen) },
                                 text = "S K I L L S"
                             )
 
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.invoke(Routes.Settings) },
+                                action = { navController.invoke(Routes.ChatBotScreen) },
                                 text = "S K I L L S"
                             )
                         }
                         Column(modifier = Modifier) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.invoke(Routes.Settings) },
+                                action = { navController.invoke(Routes.Settings) },
                                 text = "S K I L L S"
                             )
                         }
@@ -344,7 +344,7 @@ fun TopRowMainScreenPreview(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun MainScreenConstraintPreview() {
-    MainScreenRow(navController = null)
+    MainScreenRow(navController = { })
 }
 
 

@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -20,13 +19,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -38,12 +34,11 @@ import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import kotlinx.coroutines.launch
-import kotlin.reflect.KFunction1
 
 @Composable
 fun BottomNavBar(
     modifier: Modifier = Modifier,
-    navigate: KFunction1<Routes, Unit>?,
+    navigate: (Routes) -> Unit?,
 ) {
     val context: Context = LocalContext.current
     val vibe: Vibrator = remember {
@@ -188,7 +183,7 @@ fun TabBarIconView(
 @Preview
 @Composable
 fun MyNavBarPreviewElement() {
-    BottomNavBar(navigate = null)
+    BottomNavBar(navigate = {})
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

@@ -74,13 +74,12 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.reflect.KFunction1
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
 fun SkillScreen(
     modifier: Modifier = Modifier,
-    navController: KFunction1<Routes, Unit>?,
+    navController: (Routes) -> Unit?,
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
@@ -445,7 +444,7 @@ fun ListItemSkillPreview() {
 @Preview
 fun SkillScreenPreview() {
     SkillScreen(
-        navController = null,
+        navController = {},
         viewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
     )
 }
