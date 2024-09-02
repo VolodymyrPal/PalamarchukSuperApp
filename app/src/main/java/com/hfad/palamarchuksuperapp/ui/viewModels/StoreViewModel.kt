@@ -31,11 +31,11 @@ class StoreViewModel @Inject constructor(
     override val dataFlow =
         repository.fetchProductsAsFlowFromDB.catch { Log.d("TAG", "getDataFlow: $it") }
 
-    private val myFlow = combine(
+    val myFlow = combine(
         uiState, repository.errorFlow, dataFlow
     ) { state , error, data ->
         when (state) {
-            is State.Success -> State.Success(items = data, message = if (error != null) error.message else "")
+            is State.Success -> State.Success(items = data, error = error)
             else -> State.Empty(loading = true)
         }
         if (error != null) {
