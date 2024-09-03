@@ -137,8 +137,6 @@ fun StoreScreen(
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    val someState by viewModel.myFlow.collectAsStateWithLifecycle()
-    Log.d("Some: ", "$someState")
 
     val myState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -201,13 +199,7 @@ fun StoreScreen(
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnHardRefresh) }) {
                             val refreshIcon = remember(myState) {
-                                when (myState) {
-                                    is State.Processing -> true
-                                    is State.Success -> return@remember (
-                                            (myState as State.Success).refreshing)
-
-                                    else -> false
-                                }
+                                myState.loading
                             }
                             if (refreshIcon) {
                                 CircularProgressIndicator(
@@ -256,27 +248,13 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding(),
                     )
             ) {
-                when (myState) {
-                    is State.Processing -> {
-                        Log.d("STATE: ", "$myState")
-                    }
-
-                    is State.Error -> {
-                        Log.d("STATE: ", "$myState")
-                    }
-
-                    is State.Empty -> {
-                        Log.d("STATE: ", "$myState")
-                    }
-
-                    is State.Success -> {
                         StoreScreenContent(
-                            items = (myState as State.Success<List<ProductDomainRW>>).items,
+                            items = myState.items,
                             onEvent = viewModel::event,
-                            message = (myState as State.Success).error?.message,
+                            message = myState.error?.message,
                         )
-                    }
-                }
+
+
             }
         }
     }
@@ -287,7 +265,7 @@ fun StoreScreen(
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
-    items: List<ProductDomainRW> = emptyList(),
+    items: List<ProductDomainRW>? = emptyList(),
     message: String? = null,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
@@ -321,7 +299,7 @@ fun StoreScreenContent(
                 }
             }
 
-            if (items.isNotEmpty()) {
+            if (!items.isNullOrEmpty()) {
                 item(span = { GridItemSpan(itemSpan) }) {
                     StoreLazyCard(
                         modifier = Modifier
@@ -513,7 +491,7 @@ fun ListItemProduct(
                             if (quantityToBuy > 0) quantityToBuy--
                             if (!isPressed) onEvent(
                                 StoreViewModel.Event.SetItemToBasket(
-                                    item.product.id,
+                                    item,
                                     quantityToBuy
                                 )
                             )
@@ -534,7 +512,7 @@ fun ListItemProduct(
                                 job?.cancel()
                                 onEvent(
                                     StoreViewModel.Event.SetItemToBasket(
-                                        item.product.id,
+                                        item,
                                         quantityToBuy
                                     )
                                 )
@@ -562,7 +540,7 @@ fun ListItemProduct(
                             if (quantityToBuy >= 0) quantityToBuy++
                             if (!isPressed) onEvent(
                                 StoreViewModel.Event.SetItemToBasket(
-                                    item.product.id,
+                                    item,
                                     item.quantity
                                 )
                             )
@@ -583,7 +561,7 @@ fun ListItemProduct(
                                 job?.cancel()
                                 onEvent(
                                     StoreViewModel.Event.SetItemToBasket(
-                                        item.product.id,
+                                        item,
                                         quantityToBuy
                                     )
                                 )
@@ -853,7 +831,7 @@ fun SubDrawerContent(
                             onValueChange = { value ->
                                 onEvent.invoke(
                                     StoreViewModel.Event.SetItemToBasket(
-                                        it.product.id,
+                                        it,
                                         value
                                     )
                                 )
@@ -907,7 +885,7 @@ fun SubDrawerContent(
                                     for (item in items) {
                                         onEvent.invoke(
                                             StoreViewModel.Event.SetItemToBasket(
-                                                item.product.id,
+                                                item,
                                                 0
                                             )
                                         )
@@ -929,7 +907,7 @@ fun SubDrawerContent(
                             for (item in items) {
                                 onEvent.invoke(
                                     StoreViewModel.Event.SetItemToBasket(
-                                        item.product.id,
+                                        item,
                                         0
                                     )
                                 )

@@ -51,7 +51,7 @@ class StoreBasketAdapter (val viewModel: StoreViewModel)
                 quantityToBuy.setOnValueChangedListener { _, _, newVal ->
                     viewModel.event(
                         event = StoreViewModel.Event.SetItemToBasket(
-                            productId = product.product.id,
+                            productDomainRW = product,
                             quantity = newVal
                         )
                     )

@@ -94,7 +94,7 @@ class StoreFragment : Fragment() {
             stubBinding.basketRecyclerView.adapter = adapter
 
             this.lifecycleScope.launch {
-                viewModel.basketList.collectLatest {
+                viewModel.baskList.collectLatest {
                     Log.d("Basket list set data: ", "$it")
                     adapter.setData(it)
                     val summ = "%.2f".format(it.sumOf { item -> item.product.price * item.quantity } * 0.5)
@@ -133,22 +133,9 @@ class StoreFragment : Fragment() {
         state: State<List<ProductDomainRW>>,
         adapter: StoreListAdapter,
     ) {
-        when (state) {
-            is State.Success -> {
-                adapter.setData(state.items)
-            }
 
-            is State.Processing -> {
-                Log.d("HANDLE STATE: ", "$state")
-                Toast.makeText(requireContext(), "Loading", Toast.LENGTH_SHORT).show()
-            }
-
-            is State.Error -> {
-                Log.d("HANDLE STATE: ", "$state")
-                Toast.makeText(requireContext(), state.exception.message, Toast.LENGTH_SHORT).show()
-            }
-
-            is State.Empty -> adapter.setData(emptyList())
+        if (!state.items.isNullOrEmpty()) {
+            adapter.setData(state.items)
         }
     }
 

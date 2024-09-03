@@ -83,7 +83,7 @@ class StoreListChildAdapter(
             binding.quantityPlus.setOnClickListener {
                 viewModel.event(
                     event = StoreViewModel.Event.AddProduct(
-                        productId = product.product.id,
+                        productDomainRW = product,
                         quantity = 1
                     )
                 )
@@ -91,7 +91,7 @@ class StoreListChildAdapter(
             binding.quantityMinus.setOnClickListener {
                 viewModel.event(
                     event = StoreViewModel.Event.AddProduct(
-                        productId = product.product.id,
+                        productDomainRW = product,
                         quantity = -1
                     )
                 )
@@ -131,7 +131,7 @@ class StoreListChildAdapter(
                 quantityPlus.setOnLongClickListener {
                     viewModel.event(
                         event = StoreViewModel.Event.SetItemToBasket(
-                            productId = product.product.id,
+                            productDomainRW = product,
                             quantity = 1
                         )
                     )
@@ -150,7 +150,7 @@ class StoreListChildAdapter(
                                     delay(20)
                                     viewModel.event(
                                         event = StoreViewModel.Event.AddProduct(
-                                            productId = product.product.id,
+                                            productDomainRW = product,
                                             quantity = 1
                                         )
                                     )
@@ -164,7 +164,7 @@ class StoreListChildAdapter(
                             if (event.downTime - event.eventTime < ViewConfiguration.getLongPressTimeout()) {
                                 viewModel.event(
                                     event = StoreViewModel.Event.AddProduct(
-                                        productId = product.product.id,
+                                        productDomainRW = product,
                                         quantity = 1
                                     )
                                 )
