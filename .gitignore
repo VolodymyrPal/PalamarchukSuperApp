@@ -13,4 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-.services/ApiKeys.kt
+com.hfad.palamarchuksuperapp.data.services
