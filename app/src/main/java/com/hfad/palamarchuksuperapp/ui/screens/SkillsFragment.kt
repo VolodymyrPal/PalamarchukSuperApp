@@ -51,34 +51,31 @@ class SkillsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                launch { viewModel.fetchSkills() }
+                launch { viewModel}// fetchSkills() }
                 launch {
                     viewModel.uiState.collect {
-                        when (it) {
-                            is State.Empty -> {
+                        if (it.items.isNullOrEmpty()) {
                                 binding.progressBarCalories.visibility = View.GONE
                                 binding.errorEmptyText.isVisible = true
                             }
-
-                            is State.Processing -> {
+                        if (it.loading) {
                                 binding.errorEmptyText.isVisible = false
                                 binding.progressBarCalories.visibility = View.VISIBLE
                             }
 
-                            is State.Error -> {
+                        if (it.error != null){
                                 binding.progressBarCalories.visibility = View.GONE
-                                binding.errorEmptyText.text = it.exception.message
+                                binding.errorEmptyText.text = it.error.message
                                 binding.errorEmptyText.isVisible = true
                             }
-
-                            is State.Success -> {
+                        if (!it.items.isNullOrEmpty()) {
                                 binding.errorEmptyText.isVisible = false
                                 binding.progressBarCalories.visibility = View.GONE
                                 lifecycleScope.launch {
                                     adapter.setData(it.items)
                                 }
                             }
-                        }
+
                     }
                 }
             }
