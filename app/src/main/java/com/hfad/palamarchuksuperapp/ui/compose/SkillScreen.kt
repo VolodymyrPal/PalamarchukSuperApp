@@ -120,44 +120,42 @@ fun SkillScreen(
                 .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
             val state by viewModel.uiState.collectAsState()
-            viewModel.fetchSkills()
-            when (state) {
-                State.Processing -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center),
-                        )
-                    }
-                }
-
-                is State.Empty -> {
-                    Text(text = "Empty or Error. Please refresh by swipe!")
-                }
-
-
-                is State.Error -> {
-                    Text(
-                        text = "Error: ${(state as State.Error).exception}",
-                        color = Color.Red
-                    )
-                }
-
-
-                is State.Success -> {
-                    LazyList(
-                        modifier = Modifier.fillMaxSize(),
-                        item = (state as State.Success<List<SkillDomainRW>>).items,
-                        viewModel = viewModel
+            //viewModel.fetchSkills()
+            if (state.loading) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
                     )
                 }
             }
+
+            if (state.items.isNullOrEmpty()) {
+                Text(text = "No data. Please refresh by swipe!")
+            }
+
+
+            if (state.error != null) {
+                Text(
+                    text = "Error: ${state.error?.message ?: "Unknown error"}",
+                    color = Color.Red
+                )
+            }
+
+            if (!state.items.isNullOrEmpty()) {
+                LazyList(
+                    modifier = Modifier.fillMaxSize(),
+                    item = state.items?: emptyList(),
+                    viewModel = viewModel
+                )
+            }
+
         }
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End
-        ) {
-        }
+    }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End
+    ) {
     }
 }
 
