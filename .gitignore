@@ -13,7 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-java/com/hfad/palamarchuksuperapp/domain/models/ApiKeys.kt
 app/src/main/java/com/hfad/palamarchuksuperapp/domain/models/ApiKeys.kt
-app/src/main/java/com/hfad/palamarchuksuperapp/domain/models
-app
