@@ -13,4 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/src/maim/java/com/hfad/palamarchuksuperapp/data/services/ApiKeys.kt
+.services/ApiKeys.kt
