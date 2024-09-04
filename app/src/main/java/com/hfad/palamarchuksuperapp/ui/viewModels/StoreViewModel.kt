@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
+import com.hfad.palamarchuksuperapp.data.repository.OpenAIApiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class StoreViewModel @Inject constructor(
     private val repository: StoreRepository,
     private val apiRepository: FakeStoreApiRepository,
+    val gptRepository: OpenAIApiRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     override val _dataFlow = repository.fetchProductsAsFlowFromDB
