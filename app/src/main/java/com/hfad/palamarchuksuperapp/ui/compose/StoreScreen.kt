@@ -113,11 +113,13 @@ import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.services.GPTRequest
+import com.hfad.palamarchuksuperapp.data.services.GPTRequestMessage
+import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
-import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.coroutines.CancellationException
@@ -125,7 +127,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.reflect.KFunction1
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -166,7 +170,34 @@ fun StoreScreen(
         },
         subDrawerState = subDrawerState
     ) {
+        val a = viewModel.gptRepository.getGPTResponse(
+            contentType = "application/json",
+            apiKey = "Bearer $OPEN_AI_KEY",
+            body = GPTRequest(
+                messages = listOf(
+                    GPTRequestMessage(
+                        role = "user",
+                        content = "I am looking for something in the store"
+                    )
+                )
+            )
+        )
+        LaunchedEffect(Unit) {
+            a.enqueue(object : Callback<String> {
 
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    if (response.isSuccessful) {
+                        Log.d("answer:", "${response.body()}")
+                    } else {
+                        Log.d("not successful", "fuck ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.d("TAG", "onFailure: ${t.message}, $call")
+                }
+            })
+        }
         Scaffold(
             modifier = modifier
                 .fillMaxSize()
@@ -248,11 +279,11 @@ fun StoreScreen(
                         top = paddingValues.calculateTopPadding(),
                     )
             ) {
-                        StoreScreenContent(
-                            items = myState.items,
-                            onEvent = viewModel::event,
-                            message = myState.error?.message,
-                        )
+                StoreScreenContent(
+                    items = myState.items,
+                    onEvent = viewModel::event,
+                    message = myState.error?.message,
+                )
 
 
             }
@@ -747,7 +778,7 @@ fun StarRatingBar(
 @Preview
 fun StoreLazyListForPreview(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel? = null
+    viewModel: StoreViewModel? = null,
 ) {
     StoreLazyCard(
         productList = emptyList(),
@@ -759,7 +790,7 @@ fun StoreLazyListForPreview(
 @Preview
 fun StoreScreenPreview() {
     StoreScreen(
-        navController = {  },
+        navController = { },
         viewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory())
     )
 }
