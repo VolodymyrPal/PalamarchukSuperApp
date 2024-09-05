@@ -109,13 +109,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import com.aallam.openai.api.chat.ChatCompletionRequest
+import com.aallam.openai.api.chat.ChatRole
+import com.aallam.openai.api.chat.chatMessage
+import com.aallam.openai.api.http.Timeout
+import com.aallam.openai.api.model.ModelId
+import com.aallam.openai.client.OpenAI
 import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.services.GPTRequest
-import com.hfad.palamarchuksuperapp.data.services.GPTRequestMessage
-import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY
+import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY_PROJECT_API
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
@@ -127,9 +131,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -170,33 +172,52 @@ fun StoreScreen(
         },
         subDrawerState = subDrawerState
     ) {
-        val a = viewModel.gptRepository.getGPTResponse(
-            contentType = "application/json",
-            apiKey = "Bearer $OPEN_AI_KEY",
-            body = GPTRequest(
-                messages = listOf(
-                    GPTRequestMessage(
-                        role = "user",
-                        content = "I am looking for something in the store"
-                    )
-                )
-            )
-        )
         LaunchedEffect(Unit) {
-            a.enqueue(object : Callback<String> {
-
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    if (response.isSuccessful) {
-                        Log.d("answer:", "${response.body()}")
-                    } else {
-                        Log.d("not successful", "fuck ${response.code()}")
-                    }
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    Log.d("TAG", "onFailure: ${t.message}, $call")
-                }
+            val client = OpenAI(
+                token = OPEN_AI_KEY_PROJECT_API,
+                timeout = Timeout(socket = 60.seconds)
+            )
+            val modelId = ModelId("text-embedding-ada-002")
+            val chatMessages = mutableListOf(chatMessage {
+                role = ChatRole.User
+                content = "Hi, how are u?"
             })
+            val request = ChatCompletionRequest (
+                model = modelId,
+                messages = chatMessages,
+            )
+            val response = client.chatCompletion(request)
+            val message = response.choices.first().message
+            Log.d("Tag", "onResponse: $message")
+
+
+
+//            val a = viewModel.gptRepository.getGPTResponse(
+//                contentType = "application/json",
+//                apiKey = "Bearer $OPEN_AI_KEY_USER",
+//                body = GPTRequest(
+//                    messages = listOf(
+//                        GPTRequestMessage(
+//                            role = "user",
+//                            content = "I am looking for something in the store"
+//                        )
+//                    )
+//                )
+//            )
+//            a.enqueue(object : Callback<String> {
+//
+//                override fun onResponse(call: Call<String>, response: Response<String>) {
+//                    if (response.isSuccessful) {
+//                        Log.d("answer:", "${response.body()}")
+//                    } else {
+//                        Log.d("OPEN FAIL", "fuck ${response.code()}")
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<String>, t: Throwable) {
+//                    Log.d("OPEN FAIL", "onFailure: ${t.message}, $call")
+//                }
+//            })
         }
         Scaffold(
             modifier = modifier

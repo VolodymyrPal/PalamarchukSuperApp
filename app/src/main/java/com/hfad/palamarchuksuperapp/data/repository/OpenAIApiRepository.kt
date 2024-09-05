@@ -26,7 +26,7 @@ class OpenAIApiRepository @Inject constructor() : OpenAiAPI {
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .build()
             val retrofit: Retrofit =
-                Retrofit.Builder().baseUrl("https://api.openai.com/")
+                Retrofit.Builder().baseUrl("https://api.openai.com/v1/")
                     .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())  // TODO asLenient good only for testing, not production
                     .client(httpClient)
                     .build()
