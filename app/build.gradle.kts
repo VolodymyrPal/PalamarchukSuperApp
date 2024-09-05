@@ -108,5 +108,9 @@ dependencies {
 
     implementation (libs.numberpicker)
 
+    implementation ("com.aallam.openai:openai-client:3.8.2")
+    implementation("io.ktor:ktor-client-okhttp:2.3.12")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
 
 }
