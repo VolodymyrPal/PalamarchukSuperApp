@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,18 +30,26 @@ import com.hfad.palamarchuksuperapp.domain.models.GROQ_KEY
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.request.url
+import io.ktor.http.headers
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
     navController: (Routes) -> Unit?,
-    //viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(factory = LocalContext.current.appComponent.viewModelFactory()
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -65,6 +74,60 @@ fun ChatScreen(
         ) {
             var promptText: String by remember { mutableStateOf("") }
             var responseText: String by remember { mutableStateOf("") }
+
+            val client = HttpClient {
+                install(ContentNegotiation) {
+                    json(Json {
+                        prettyPrint = true
+                        isLenient = true  //TODO lenient for testing
+                    })
+                }
+            }
+
+            val message =
+                Message(role = "user", content = promptText)
+            val request = GroqRequest(messages = listOf(message), model = "llama3-8b-8192")
+
+            LaunchedEffect(Unit) {
+                try {
+                    val response = client.post (
+                        "https://api.openai.com/v1/chat/completions"
+                    ) {
+                        url()
+                        headers {
+                            append("Authorization", "Bearer $GROQ_KEY")
+                            append("Content-Type", "application/json")
+                        }
+                        setBody(request)
+                    }
+                    Log.d("TAG", "Response: ${response}")
+                } catch (e: Exception,) {
+                    Log.d("TAG", "Error: $e")
+                }
+            }
+
+//            call.enqueue(object : Callback<ChatCompletionResponse> {
+//
+//                override fun onResponse(
+//                    p0: Call<ChatCompletionResponse>,
+//                    p1: Response<ChatCompletionResponse>,
+//                ) {
+//                    if (p1.isSuccessful) {
+//                        responseText = p1.body()!!.choices[0].message.content
+//                    } else {
+//                        Log.d("TAG", "onResponseNotSuccessful: ${p1.code()}")
+//                    }
+//                }
+//
+//                override fun onFailure(
+//                    p0: Call<ChatCompletionResponse>,
+//                    p1: Throwable,
+//                ) {
+//                    Log.d("Tag", "OnFailure: $p1")
+//                }
+//            })
+
+
 
             LazyColumn(
                 modifier = Modifier,
