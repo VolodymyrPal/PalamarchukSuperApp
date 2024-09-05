@@ -7,7 +7,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface OpenAiAPI {
-    @POST("openai/v1/chat/completions/")
+    @POST("v1/chat/completions")
     fun getGPTResponse(
         @Header("Content-Type") contentType: String,
         @Header("Authorization") apiKey: String,
