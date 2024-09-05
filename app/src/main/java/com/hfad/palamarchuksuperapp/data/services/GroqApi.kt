@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Header
@@ -16,11 +17,13 @@ interface GroqApi {
     ): Call<ChatCompletionResponse>
 }
 
+@Serializable
 data class GroqRequest(
     val messages: List<Message>,
     val model: String
 )
 
+@Serializable
 @JsonClass(generateAdapter = true)
 data class ChatCompletionResponse(
     val id: String,
@@ -35,18 +38,21 @@ data class ChatCompletionResponse(
     val x_groq: XGroq
 )
 
+@Serializable
 @JsonClass(generateAdapter = true)
 data class Choice(
     val index: Int,
     val message: Message
 )
 
+@Serializable
 @JsonClass(generateAdapter = true)
 data class Message(
     val role: String,
     val content: String
 )
 
+@Serializable
 @JsonClass(generateAdapter = true)
 data class Usage(
     @Json(name = "queue_time")
@@ -65,6 +71,7 @@ data class Usage(
     val totalTime: Double
 )
 
+@Serializable
 @JsonClass(generateAdapter = true)
 data class XGroq(
     val id: String
