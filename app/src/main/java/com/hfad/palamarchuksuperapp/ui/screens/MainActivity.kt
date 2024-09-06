@@ -1,25 +1,16 @@
 package com.hfad.palamarchuksuperapp.ui.screens
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
-import com.aallam.openai.api.chat.ChatCompletionRequest
-import com.aallam.openai.api.chat.ChatRole
-import com.aallam.openai.api.chat.chatMessage
-import com.aallam.openai.api.http.Timeout
-import com.aallam.openai.api.model.ModelId
-import com.aallam.openai.client.OpenAI
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
-import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY_PROJECT_API
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,27 +33,6 @@ class MainActivity : AppCompatActivity() {
         val badge = binding.bottomNavigation.getOrCreateBadge(R.id.bnav_settings)
         badge.isVisible = true
         badge.number = 10
-
-        runBlocking {
-            OpenAI(
-                token = OPEN_AI_KEY_PROJECT_API,
-                timeout = Timeout(socket = 60.seconds)
-            ).use {
-                val modelId = ModelId("text-embedding-ada-002")
-                val chatMessages = mutableListOf(chatMessage {
-                    role = ChatRole.User
-                    content = "Hi, how are u?"
-                })
-                val request = ChatCompletionRequest(
-                    model = modelId,
-                    messages = chatMessages,
-                )
-                val response = it.chatCompletion(request)
-                val message = response.choices.first().message
-                Log.d("Tag", "onResponse: $message")
-            }
-
-        }
 
         binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
