@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,14 +16,25 @@ import coil.load
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.services.GptRequested
+import com.hfad.palamarchuksuperapp.data.services.ImageMessageRequest
+import com.hfad.palamarchuksuperapp.data.services.ImageRequest
+import com.hfad.palamarchuksuperapp.data.services.MessageRequest
+import com.hfad.palamarchuksuperapp.data.services.RequestRole
 import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
@@ -139,6 +151,55 @@ class MainScreenFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         updatePhoto()
+
+        runBlocking {
+            val client = HttpClient {
+                install(ContentNegotiation) {
+                    json(Json {
+                        classDiscriminator = "typeKtor"
+                        ignoreUnknownKeys = true
+                        encodeDefaults = true
+                        prettyPrint = true
+                        isLenient = true  //TODO lenient for testing
+                    })
+                }
+            }
+
+            //https://i.pinimg.com/236x/f0/04/f5/f004f5fb1e9aa1dcf83b383fab6fde5f.jpg
+
+            val messageRequest = MessageRequest(
+                typeText = "text",
+                text = "What is on the picture?"
+            )
+            val imageMessageRequest = ImageMessageRequest(
+                typeImage = "image_url",
+                image_url = ImageRequest("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")
+            )
+
+            val roleRequest = RequestRole(
+                role = "user",
+                content = listOf(messageRequest, imageMessageRequest)
+            )
+
+            val gptRequest = GptRequested(
+                messages = listOf(roleRequest)
+            )
+
+            val jsonRequest = Json.encodeToString(gptRequest)
+            Log.d("My Json ", jsonRequest)
+
+//            try {
+//                val response = client.post("https://api.openai.com/v1/chat/completions") {
+//                    contentType(ContentType.Application.Json)
+//                    header("Authorization", "Bearer $OPEN_AI_KEY_USER")
+//                    setBody(gptRequest)
+//                }
+//
+//                Log.d("TAG", "Response: ${response.body<String>()}")
+//            } catch (e: Exception) {
+//                Log.d("TAG", "Error: $e")
+//            }
+        }
     }
 
     override fun onDestroyView() {
