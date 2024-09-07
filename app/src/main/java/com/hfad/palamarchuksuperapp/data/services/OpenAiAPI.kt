@@ -13,20 +13,24 @@ data class GptRequested(
 @Serializable
 data class RequestRole(
     val role: String,
-    val content: List<ContentRequest>,
-    val maxTokens: Int = 50
-) // : RoleRequest()
+    val content: List<MessageRequest>,
+)
 
 @Serializable
-sealed class ContentRequest
+sealed class MessageRequest
 
+@SerialName("text")
+@Serializable
+data class TextMessageRequest (
+    val text: String? = null
+) : MessageRequest()
+
+@SerialName("image_url")
 @Serializable
 data class ImageMessageRequest (
-    @SerialName("type")
-    val typeImage: String = "image_url",
     @SerialName("image_url")
-    val image_url: ImageRequest
-) : ContentRequest()
+    val image_url: ImageRequest?,
+) : MessageRequest()
 
 @Serializable
 data class ImageRequest (
