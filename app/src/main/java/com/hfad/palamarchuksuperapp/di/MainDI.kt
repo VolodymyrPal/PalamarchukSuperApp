@@ -10,13 +10,11 @@ import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
-import com.hfad.palamarchuksuperapp.data.repository.OpenAIApiRepository
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
-import com.hfad.palamarchuksuperapp.data.services.OpenAiAPI
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
@@ -89,11 +87,6 @@ object NetworkModule {
         storeDao: StoreDao
     ): StoreRepository {
         return StoreRepositoryImpl(storeApi, storeDao)
-    }
-
-    @Provides
-    fun gptApiImpl(): OpenAiAPI {
-        return OpenAIApiRepository()
     }
 }
 
