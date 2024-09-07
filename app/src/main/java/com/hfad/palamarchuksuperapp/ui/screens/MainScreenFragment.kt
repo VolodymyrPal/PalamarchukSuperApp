@@ -172,38 +172,44 @@ class MainScreenFragment : Fragment() {
             }
 
 
-            val messageRequest = MessageRequest(
-                typeText = "text",
-                text = "What is on the picture?"
-            )
+
             val imageMessageRequest = ImageMessageRequest(
-                typeImage = "image_url",
-                image_url = ImageRequest("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")
+                image_url = ImageRequest("https://thecode.media/wp-content/uploads/2023/02/image3-1.png")
+            )
+
+
+            val systemMessageRequest = TextMessageRequest(
+                text = "Ты учитель, который называет меня Угольком. Помоги мне с изображением. Отвечай на русском."
+            )
+
+            val systemRequest = RequestRole(
+                role = "system",
+                content = listOf(systemMessageRequest)
             )
 
             val roleRequest = RequestRole(
                 role = "user",
-                content = listOf(messageRequest, imageMessageRequest)
+                content = listOf(imageMessageRequest)
             )
 
             val gptRequest = GptRequested(
-                messages = listOf(roleRequest)
+                messages = listOf(systemRequest, roleRequest)
             )
 
             val jsonRequest = Json.encodeToString(gptRequest)
             Log.d("My Json ", jsonRequest)
 
-//            try {
-//                val response = client.post("https://api.openai.com/v1/chat/completions") {
-//                    contentType(ContentType.Application.Json)
-//                    header("Authorization", "Bearer $OPEN_AI_KEY_USER")
-//                    setBody(gptRequest)
-//                }
-//
-//                Log.d("TAG", "Response: ${response.body<String>()}")
-//            } catch (e: Exception) {
-//                Log.d("TAG", "Error: $e")
-//            }
+            try {
+                val response = client.post("https://api.openai.com/v1/chat/completions") {
+                    contentType(ContentType.Application.Json)
+                    header("Authorization", "Bearer $OPEN_AI_KEY_USER")
+                    setBody(gptRequest)
+                }
+
+                Log.d("TAG", "Response: ${response.body<String>()}")
+            } catch (e: Exception) {
+                Log.d("TAG", "Error: $e")
+            }
         }
     }
 
