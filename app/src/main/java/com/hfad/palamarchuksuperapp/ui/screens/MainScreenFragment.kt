@@ -19,15 +19,22 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.services.GptRequested
 import com.hfad.palamarchuksuperapp.data.services.ImageMessageRequest
 import com.hfad.palamarchuksuperapp.data.services.ImageRequest
-import com.hfad.palamarchuksuperapp.data.services.MessageRequest
+import com.hfad.palamarchuksuperapp.data.services.TextMessageRequest
 import com.hfad.palamarchuksuperapp.data.services.RequestRole
 import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
+import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY_USER
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -156,7 +163,6 @@ class MainScreenFragment : Fragment() {
             val client = HttpClient {
                 install(ContentNegotiation) {
                     json(Json {
-                        classDiscriminator = "typeKtor"
                         ignoreUnknownKeys = true
                         encodeDefaults = true
                         prettyPrint = true
@@ -165,7 +171,6 @@ class MainScreenFragment : Fragment() {
                 }
             }
 
-            //https://i.pinimg.com/236x/f0/04/f5/f004f5fb1e9aa1dcf83b383fab6fde5f.jpg
 
             val messageRequest = MessageRequest(
                 typeText = "text",
