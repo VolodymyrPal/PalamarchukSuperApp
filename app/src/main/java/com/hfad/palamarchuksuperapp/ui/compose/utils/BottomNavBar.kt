@@ -86,7 +86,7 @@ fun BottomNavBar(
             unselectedIcon = unselectedIconHome,
             onClick = {
                 onClickVibro()
-                navigate?.invoke(Routes.MainScreenConstraint)
+                navigate.invoke(Routes.MainScreenConstraint)
             }
         )
     }
@@ -116,7 +116,7 @@ fun BottomNavBar(
             badgeAmount = 10,
             onClick = {
                 onClickVibro()
-                navigate?.invoke(Routes.Settings)
+                navigate.invoke(Routes.Settings)
             }
         )
     }
