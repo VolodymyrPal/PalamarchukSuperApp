@@ -160,18 +160,8 @@ class MainScreenFragment : Fragment() {
         updatePhoto()
 
         runBlocking {
-            val client = HttpClient {
-                install(ContentNegotiation) {
-                    json(Json {
-                        ignoreUnknownKeys = true
-                        encodeDefaults = true
-                        prettyPrint = true
-                        isLenient = true  //TODO lenient for testing
-                    })
-                }
-            }
 
-
+            val client = requireContext().appComponent.getHttpClient()
 
             val imageMessageRequest = ImageMessageRequest(
                 image_url = ImageRequest("https://thecode.media/wp-content/uploads/2023/02/image3-1.png")
@@ -198,15 +188,16 @@ class MainScreenFragment : Fragment() {
 
             val jsonRequest = Json.encodeToString(gptRequest)
             Log.d("My Json ", jsonRequest)
+            Log.d("My client", client.toString())
 
             try {
-                val response = client.post("https://api.openai.com/v1/chat/completions") {
-                    contentType(ContentType.Application.Json)
-                    header("Authorization", "Bearer $OPEN_AI_KEY_USER")
-                    setBody(gptRequest)
-                }
+//                val response = client.post("https://api.openai.com/v1/chat/completions") {
+//                    contentType(ContentType.Application.Json)
+//                    header("Authorization", "Bearer $OPEN_AI_KEY_USER")
+//                    setBody(gptRequest)
+//                }
 
-                Log.d("TAG", "Response: ${response.body<String>()}")
+              //  Log.d("TAG", "Response: ${response.body<String>()}")
             } catch (e: Exception) {
                 Log.d("TAG", "Error: $e")
             }
