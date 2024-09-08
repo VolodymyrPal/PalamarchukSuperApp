@@ -31,6 +31,12 @@ import dagger.MapKey
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.cio.endpoint
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 
@@ -44,6 +50,7 @@ interface AppComponent {
     fun appVibrator(): AppVibrator
     fun viewModelFactory(): ViewModelProvider.Factory
     fun inject(storeFragment: StoreFragment)
+    fun getHttpClient(): HttpClient
 
     @Component.Builder
     interface Builder {
@@ -87,6 +94,36 @@ object NetworkModule {
         storeDao: StoreDao
     ): StoreRepository {
         return StoreRepositoryImpl(storeApi, storeDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideHttpClient(): HttpClient {
+        return HttpClient (CIO) {
+            engine {
+                endpoint {
+                    connectTimeout = 5000        // Время ожидания подключения 5 секунд
+                    requestTimeout = 10000       // Максимальное время выполнения запроса 10 секунд
+                    keepAliveTime = 30000        // Время жизни соединения после использования 30 секунд
+                    maxConnectionsPerRoute = 10 // Максимум 10 соединений на маршрут
+                    pipelineMaxSize = 20        // Максимум 20 запросов в пайплайне
+                }
+                maxConnectionsCount = 20 // Максимум 20 соединений
+                https {
+                    trustManager // Настройки проверки сертификата, что бы не перехватывать запросы посредине
+                } // Настройки HTTPS, которые позволяют конфигурировать параметры TLS/SSL, используемые для защищенных соединений.
+                pipelining = false // Отключение пайпелинга
+                proxy // Настройки прокси
+            }
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    encodeDefaults = true
+                    prettyPrint = true
+                    isLenient = true  //TODO lenient for testing
+                })
+            }
+        }
     }
 }
 
