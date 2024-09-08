@@ -50,6 +50,14 @@ fun MainContent() {
             override fun navigate(route: Routes) {
                 navController.navigate(route)
             }
+
+            override fun popUpTo(route: Routes) {
+                navController.navigate(route) {
+                    popUpTo(Routes.MainScreenConstraint) {
+                        inclusive = true
+                    }
+                }
+            }
         }
     }
     AppTheme {
@@ -97,6 +105,7 @@ enum class ScaleTransitionDirection {
 
 interface Navigation {
     fun navigate(route: Routes)
+    fun popUpTo(route: Routes)
 }
 
 @Serializable
