@@ -18,22 +18,20 @@ class SkillsViewModel @Inject constructor(
 ) :
     GenericViewModel<List<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
-    suspend fun getData(): suspend () -> List<SkillDomainRW> {
-        return { emptyList() }
-    }
+    data class SkillState (
+        val items: List<SkillDomainRW> = emptyList(),
+        val loading: Boolean = false,
+        val error: Throwable? = null
+    ) : State <List<SkillDomainRW>>
 
-    override val uiState: StateFlow<State<List<SkillDomainRW>>> =
-        emptyFlow<State<List<SkillDomainRW>>>().stateIn(
+    override val uiState: StateFlow<SkillState> =
+        emptyFlow<SkillState>().stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = State(loading = true)
+            initialValue = SkillState(loading = true)
         )
 
     override val _dataFlow: Flow<List<SkillDomainRW>> = flow { emit(emptyList()) }
-
-    suspend fun getDataFlow(): Flow<List<SkillDomainRW>> {
-        TODO("Not yet implemented")
-    }
 
     sealed class Event : BaseEvent {
         object GetSkills : Event()
@@ -142,7 +140,7 @@ class SkillsViewModel @Inject constructor(
                     funWithState(
                         onSuccess = {
                             val newList =
-                                uiState.value.items!!.toMutableList()
+                                uiState.value.items.toMutableList()
                             val skillToChange =
                                 newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
                             if (skillToChange == null) {
