@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -19,11 +20,17 @@ class StoreViewModel @Inject constructor(
     private val apiRepository: FakeStoreApiRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
-    override val _dataFlow = repository.fetchProductsAsFlowFromDB
+    data class StoreState (
+        val items: List<ProductDomainRW> = emptyList(),
+        val loading: Boolean = false,
+        val error: Throwable? = null
+    ) : State <List<ProductDomainRW>>
 
-    override val uiState: StateFlow<State<List<ProductDomainRW>>>
+    override val _dataFlow : Flow<List<ProductDomainRW>> = repository.fetchProductsAsFlowFromDB
+
+    override val uiState: StateFlow<StoreState>
         get() = combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
-            State(
+            StoreState(
                 items = data,
                 error = error,
                 loading = loading
@@ -32,7 +39,7 @@ class StoreViewModel @Inject constructor(
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = State(loading = true)
+                initialValue = StoreState(loading = true)
             )
             .also {
                 viewModelScope.launch {
@@ -43,7 +50,7 @@ class StoreViewModel @Inject constructor(
 
 
     val baskList = uiState.map { state ->
-        if (!state.items.isNullOrEmpty()) {
+        if (state.items.isNotEmpty()) {
             state.items.filter {
                 it.quantity > 0
             }

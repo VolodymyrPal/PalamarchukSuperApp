@@ -128,13 +128,12 @@ class StoreFragment : Fragment() {
         return view
     }
 
-
     private fun handleState(
-        state: State<List<ProductDomainRW>>,
+        state: StoreViewModel.StoreState,
         adapter: StoreListAdapter,
     ) {
 
-        if (!state.items.isNullOrEmpty()) {
+        if (state.items.isNotEmpty()) {
             adapter.setData(state.items)
         }
     }
