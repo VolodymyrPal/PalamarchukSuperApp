@@ -27,15 +27,12 @@ import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY_USER
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -164,8 +161,8 @@ class MainScreenFragment : Fragment() {
             val client = requireContext().appComponent.getHttpClient()
 
             val imageMessageRequest = ImageMessageRequest(
-                image_url = ImageRequest("https://thecode.media/wp-content/uploads/2023/02/image3-1.png")
-            )
+                imageUrl = ImageRequest("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")
+                )
 
 
             val systemMessageRequest = TextMessageRequest(
@@ -190,17 +187,16 @@ class MainScreenFragment : Fragment() {
             Log.d("My Json ", jsonRequest)
             Log.d("My client", client.toString())
 
-            try {
+//            try {
 //                val response = client.post("https://api.openai.com/v1/chat/completions") {
 //                    contentType(ContentType.Application.Json)
 //                    header("Authorization", "Bearer $OPEN_AI_KEY_USER")
 //                    setBody(gptRequest)
 //                }
-
-              //  Log.d("TAG", "Response: ${response.body<String>()}")
-            } catch (e: Exception) {
-                Log.d("TAG", "Error: $e")
-            }
+//                Log.d("TAG", "Response: ${response.body<String>()}")
+//            } catch (e: Exception) {
+//                Log.d("TAG", "Error: $e")
+//            }
         }
     }
 
