@@ -29,7 +29,7 @@ data class TextMessageRequest (
 @Serializable
 data class ImageMessageRequest (
     @SerialName("image_url")
-    val image_url: ImageRequest?,
+    val imageUrl: ImageRequest?,
 ) : MessageRequest()
 
 @Serializable
