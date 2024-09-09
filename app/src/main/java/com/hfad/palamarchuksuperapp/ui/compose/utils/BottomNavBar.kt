@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +31,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
@@ -52,12 +57,19 @@ fun BottomNavBar(
         }
     }
 
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    LaunchedEffect(currentDestination) {
+        Log.d(currentDestination.toString(), "${currentDestination?.route}")
+    }
+
     @Suppress("DEPRECATION")
     fun onClickVibro() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibe.vibrate(VibrationEffect.createOneShot(2, 60))
         } else {
-            vibe.vibrate(1)
+            vibe.vibrate(2)
         }
     }
 
@@ -76,52 +88,57 @@ fun BottomNavBar(
         }
     )
 
-    val selectedIconHome = painterResource(id = R.drawable.bicon_home_black_filled)
-    val unselectedIconHome = painterResource(id = R.drawable.bicon_home_black_outlined)
-
-    val homeTab = remember {
-        TabBarItem(
-            title = "Home",
-            selectedIcon = selectedIconHome,
-            unselectedIcon = unselectedIconHome,
-            onClick = {
-                onClickVibro()
-                navigate.invoke(Routes.MainScreenConstraint)
+    val HomeTopLevelRoute = TabBarItem(
+        title = "Home",
+        name = Routes.MainScreenConstraint,
+        selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
+        unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
+        badgeAmount = 0,
+        onClick = {
+            onClickVibro()
+            navController.navigate(Routes.MainScreenConstraint) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
             }
-        )
-    }
+        }
+    )
 
-    val selectedIconCamera = painterResource(id = R.drawable.bicon_camera_filled)
-    val unselectedIconCamera = painterResource(id = R.drawable.bicon_camera_outlined)
+    val CameraTopLevelRoute = TabBarItem(
+        title = "Camera",
+        name = "Camera",
+        selectedIcon = painterResource(id = R.drawable.bicon_camera_filled),
+        unselectedIcon = painterResource(id = R.drawable.bicon_camera_outlined),
+        badgeAmount = 0,
+        onClick = {
+            onClickVibro()
+            cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
+        }
+    )
 
-    val cameraTab = remember {
-        TabBarItem(
-            title = "Camera",
-            selectedIcon = selectedIconCamera,
-            unselectedIcon = unselectedIconCamera,
-            onClick = {
-                onClickVibro()
-                cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
-            }
-        )
-    }
-    val selectedIconSettings = painterResource(id = R.drawable.bicon_settings_filled)
-    val unselectedIconSettings = painterResource(id = R.drawable.bicon_settings_outlined)
 
-    val settingsTab = remember {
-        TabBarItem(
-            "Settings",
-            selectedIcon = selectedIconSettings,
-            unselectedIcon = unselectedIconSettings,
+    val SettingTopLevelRoute = TabBarItem(
+            title = "Settings",
+            name = Routes.Settings,
+            selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
+            unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
             badgeAmount = 10,
             onClick = {
                 onClickVibro()
-                navigate.invoke(Routes.Settings)
+                navController.navigate(Routes.MainScreenConstraint) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
             }
         )
-    }
 
-    val tabBarItems = remember { listOf(homeTab, cameraTab, settingsTab) }
+
+    val tabBarItems = remember { listOf(HomeTopLevelRoute, CameraTopLevelRoute, SettingTopLevelRoute) }
     NavigationBar(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.primaryContainer
