@@ -27,72 +27,50 @@ class ComposeMainActivity : AppCompatActivity() {
     }
 }
 
+@Suppress("detekt.FunctionNaming")
 @Composable
 fun MainContent() {
     val navController = rememberNavController()
 
-    fun scaleIntoContainer(
-        direction: ScaleTransitionDirection = ScaleTransitionDirection.INWARDS,
-        initialScale: Float = if (direction == ScaleTransitionDirection.OUTWARDS) 1.5f else 0.6f,
-    ): EnterTransition {
-        return fadeIn(animationSpec = tween(100, delayMillis = 100))
-    }
+//    fun scaleIntoContainer(
+//        direction: ScaleTransitionDirection = ScaleTransitionDirection.INWARDS,
+//        initialScale: Float = if (direction == ScaleTransitionDirection.OUTWARDS) 1.5f else 0.6f,
+//    ): EnterTransition {
+//        return fadeIn(animationSpec = tween(100, delayMillis = 100))
+//    }
+//
+//    fun scaleOutOfContainer(
+//        direction: ScaleTransitionDirection = ScaleTransitionDirection.OUTWARDS,
+//        targetScale: Float = if (direction == ScaleTransitionDirection.INWARDS) 0.1f else 3.1f,
+//    ): ExitTransition {
+//        return fadeOut(tween(delayMillis = 90))
+//    }
 
-    fun scaleOutOfContainer(
-        direction: ScaleTransitionDirection = ScaleTransitionDirection.OUTWARDS,
-        targetScale: Float = if (direction == ScaleTransitionDirection.INWARDS) 0.1f else 3.1f,
-    ): ExitTransition {
-        return fadeOut(tween(delayMillis = 90))
-    }
-
-    val navArgClass by lazy {
-        object : Navigation {
-            override fun navigate(route: Routes) {
-                navController.navigate(route)
-            }
-
-            override fun popUpTo(route: Routes) {
-                navController.navigate(route) {
-                    popUpTo(Routes.MainScreenConstraint) {
-                        inclusive = true
-                    }
-                }
-            }
-        }
-    }
     AppTheme {
         NavHost(
             navController = navController,
             startDestination = Routes.MainScreenConstraint
         ) {
             composable<Routes.MainScreenConstraint> {
-                MainScreenRow(
-                    actionSkillsButton = remember { { navArgClass.navigate(Routes.Settings) } },
-                    navController = navArgClass::navigate
-                )
+                MainScreenRow(navController = navController::navigate)
             }
             composable<Routes.SkillScreen> {
-                SkillScreen(
-                    navController = navArgClass::navigate
-                )
+                SkillScreen(navController = navController::navigate)
             }
             composable<Routes.Settings> {
                 Text(text = "Settings")
             }
             composable<Routes.StoreScreen> {
-                StoreScreen(
-                    navController = navArgClass::navigate
-                )
+                StoreScreen(navController = navController::navigate)
             }
             composable<Routes.ChatBotScreen> {
-                ChatScreen(
-                    navController = navArgClass::navigate
-                )
+                ChatScreen(navController = navController::navigate)
             }
         }
     }
 }
 
+@Suppress("detekt.FunctionNaming")
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainContentPreview() {
@@ -101,11 +79,6 @@ fun MainContentPreview() {
 
 enum class ScaleTransitionDirection {
     INWARDS, OUTWARDS
-}
-
-interface Navigation {
-    fun navigate(route: Routes)
-    fun popUpTo(route: Routes)
 }
 
 @Serializable
