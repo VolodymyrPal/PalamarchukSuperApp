@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -32,8 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
@@ -43,7 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BottomNavBar(
     modifier: Modifier = Modifier,
-    navigate: (Routes) -> Unit?,
+    navController: NavHostController,
 ) {
     val context: Context = LocalContext.current
     val vibe: Vibrator = remember {
@@ -57,12 +56,10 @@ fun BottomNavBar(
         }
     }
 
-    val navController = rememberNavController()
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-    LaunchedEffect(currentDestination) {
-        Log.d(currentDestination.toString(), "${currentDestination?.route}")
-    }
+    val currentScreen = navBackStackEntry?.destination?.route
+
 
     @Suppress("DEPRECATION")
     fun onClickVibro() {
@@ -75,6 +72,21 @@ fun BottomNavBar(
 
     val appImages = remember { AppImages(context).mainImage }
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(currentScreen) {
+        selectedTabIndex = when (currentScreen) {
+            Routes.MainScreenConstraint.route -> {
+                0
+            }
+            Routes.Settings.route -> {
+                2
+            }
+            else -> {
+                3
+            }
+        }
+    }
+
     val coroutineScope = rememberCoroutineScope()
 
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -90,14 +102,14 @@ fun BottomNavBar(
 
     val HomeTopLevelRoute = TabBarItem(
         title = "Home",
-        name = Routes.MainScreenConstraint,
+        route = Routes.MainScreenConstraint,
         selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
-        badgeAmount = 0,
+        badgeAmount = null,
         onClick = {
             onClickVibro()
             navController.navigate(Routes.MainScreenConstraint) {
-                popUpTo(navController.graph.findStartDestination().id) {
+                popUpTo(navController.graph.findStartDestination().id) { //оставляет главный экран, как точку возврата
                     saveState = true
                 }
                 launchSingleTop = true
@@ -108,10 +120,10 @@ fun BottomNavBar(
 
     val CameraTopLevelRoute = TabBarItem(
         title = "Camera",
-        name = "Camera",
+        route = "Camera",
         selectedIcon = painterResource(id = R.drawable.bicon_camera_filled),
         unselectedIcon = painterResource(id = R.drawable.bicon_camera_outlined),
-        badgeAmount = 0,
+        badgeAmount = null,
         onClick = {
             onClickVibro()
             cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
@@ -121,15 +133,16 @@ fun BottomNavBar(
 
     val SettingTopLevelRoute = TabBarItem(
             title = "Settings",
-            name = Routes.Settings,
+            route = Routes.Settings,
             selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
             unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
             badgeAmount = 10,
             onClick = {
                 onClickVibro()
-                navController.navigate(Routes.MainScreenConstraint) {
-                    popUpTo(navController.graph.findStartDestination().id) {
+                navController.navigate(Routes.Settings) {
+                    popUpTo(navController.graph.findStartDestination().id) { //оставляет главный экран, как точку возврата
                         saveState = true
+                        inclusive = false
                     }
                     launchSingleTop = true
                     restoreState = true
@@ -147,8 +160,6 @@ fun BottomNavBar(
             NavigationBarItem(
                 selected = selectedTabIndex == index,
                 onClick = {
-                    onClickVibro()
-                    selectedTabIndex = index
                     tabBarItem.onClick()
                     tabBarItem.badgeAmount = null
                 },
@@ -200,7 +211,7 @@ fun TabBarIconView(
 @Preview
 @Composable
 fun MyNavBarPreviewElement() {
-    BottomNavBar(navigate = {})
+    //BottomNavBar()
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
