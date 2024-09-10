@@ -52,19 +52,19 @@ fun MainContent() {
             startDestination = Routes.MainScreenConstraint
         ) {
             composable<Routes.MainScreenConstraint> {
-                MainScreenRow(navController = navController::navigate)
+                MainScreenRow(navController = navController)
             }
             composable<Routes.SkillScreen> {
-                SkillScreen(navController = navController::navigate)
+                SkillScreen(navController = navController)
             }
             composable<Routes.Settings> {
                 Text(text = "Settings")
             }
             composable<Routes.StoreScreen> {
-                StoreScreen(navController = navController::navigate)
+                StoreScreen(navController = navController)
             }
             composable<Routes.ChatBotScreen> {
-                ChatScreen(navController = navController::navigate)
+                ChatScreen(navController = navController)
             }
         }
     }
@@ -83,14 +83,20 @@ enum class ScaleTransitionDirection {
 
 @Serializable
 sealed interface Routes {
+
+
     @Serializable
-    object Settings : Routes
+    object Settings : Routes {
+        val route = this::class.qualifiedName ?: "Settings"
+    }
 
     @Serializable
     object SkillScreen : Routes
 
     @Serializable
-    object MainScreenConstraint : Routes
+    object MainScreenConstraint : Routes {
+        val route = this::class.qualifiedName ?: "MainScreenConstraint"
+    }
 
     @Serializable
     object StoreScreen : Routes
