@@ -106,6 +106,8 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
@@ -130,7 +132,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    navController: (Routes) -> Unit?,
+    navController: NavHostController = rememberNavController(),
     viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
 ) {
     val scrollBehavior =
@@ -243,7 +245,7 @@ fun StoreScreen(
                     scrollBehavior = scrollBehavior
                 )
             },
-            bottomBar = { BottomNavBar(navigate = navController) },
+            bottomBar = { BottomNavBar(navController = navController) },
             floatingActionButton = {
                 FloatingActionButton(
                     shape = RoundedCornerShape(33),
@@ -785,7 +787,6 @@ fun StoreLazyListForPreview(
 @Preview
 fun StoreScreenPreview() {
     StoreScreen(
-        navController = { },
         viewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory())
     )
 }

@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.data.services.ChatCompletionResponse
 import com.hfad.palamarchuksuperapp.data.services.GroqApi
 import com.hfad.palamarchuksuperapp.data.services.GroqRequest
@@ -49,12 +50,12 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
-    navController: (Routes) -> Unit?,
+    navController: NavHostController,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(navigate = navController)
+            BottomNavBar(navController = navController)
         },
         floatingActionButton = {
             FloatingActionButton(

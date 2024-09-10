@@ -60,6 +60,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
@@ -69,7 +71,6 @@ import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
-import com.hfad.palamarchuksuperapp.ui.viewModels.State
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -79,7 +80,7 @@ import java.util.Locale
 @Composable
 fun SkillScreen(
     modifier: Modifier = Modifier,
-    navController: (Routes) -> Unit?,
+    navController: NavHostController = rememberNavController(),
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
@@ -87,7 +88,7 @@ fun SkillScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(navigate = navController)
+            BottomNavBar(navController = navController)
         },
         floatingActionButton = {
             val context = LocalContext.current
@@ -442,7 +443,6 @@ fun ListItemSkillPreview() {
 @Preview
 fun SkillScreenPreview() {
     SkillScreen(
-        navController = {},
         viewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
     )
 }
