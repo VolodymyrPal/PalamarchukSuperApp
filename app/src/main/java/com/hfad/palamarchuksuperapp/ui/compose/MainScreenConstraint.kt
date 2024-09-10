@@ -54,6 +54,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
@@ -62,19 +64,17 @@ import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.launch
-import kotlin.reflect.KFunction1
 
 @Composable
 fun MainScreenRow(
     modifier: Modifier = Modifier,
-    actionSkillsButton: () -> Unit = {},
-    navController: (Routes) -> Unit?,
+    navController: NavHostController = rememberNavController(),
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             BottomNavBar(
-                navigate = navController,
+                navController = navController,
             )
         }
     ) { paddingValues ->
@@ -184,7 +184,7 @@ fun MainScreenRow(
                         Column(modifier = Modifier) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController?.invoke(Routes.StoreScreen) },
+                                action = { navController.navigate(Routes.StoreScreen) },
                                 imagePath = R.drawable.store_image,
                                 text = "S T O R E"
                             )
@@ -195,20 +195,20 @@ fun MainScreenRow(
                         ) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.invoke(Routes.SkillScreen) },
+                                action = { navController.navigate(Routes.SkillScreen) },
                                 text = "S K I L L S"
                             )
 
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.invoke(Routes.ChatBotScreen) },
+                                action = { navController.navigate(Routes.ChatBotScreen) },
                                 text = "S K I L L S"
                             )
                         }
                         Column(modifier = Modifier) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.invoke(Routes.Settings) },
+                                action = { navController.navigate(Routes.Settings) },
                                 text = "S K I L L S"
                             )
                         }
@@ -344,7 +344,7 @@ fun TopRowMainScreenPreview(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun MainScreenConstraintPreview() {
-    MainScreenRow(navController = { })
+    MainScreenRow()
 }
 
 
