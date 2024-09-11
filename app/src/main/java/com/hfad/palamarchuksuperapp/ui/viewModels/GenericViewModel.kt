@@ -15,11 +15,9 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
     protected abstract val _dataFlow: Flow<T>
 
-    protected open val _errorFlow: MutableStateFlow<Exception?>
-        get() = MutableStateFlow(null)
+    protected abstract val _errorFlow: MutableStateFlow<Exception?>
 
-    protected open val _loading: MutableStateFlow<Boolean>
-        get() = MutableStateFlow(true)
+    protected open val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     abstract override fun event(event: EVENT)
     abstract override val uiState: StateFlow<State<T>>
