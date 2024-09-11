@@ -1,16 +1,20 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,16 +24,17 @@ class StoreViewModel @Inject constructor(
     private val apiRepository: FakeStoreApiRepository,
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
-    data class StoreState (
+    data class StoreState(
         val items: List<ProductDomainRW> = emptyList(),
         val loading: Boolean = false,
-        val error: Throwable? = null
-    ) : State <List<ProductDomainRW>>
+        val error: Throwable? = null,
+    ) : State<List<ProductDomainRW>>
 
-    override val _dataFlow : Flow<List<ProductDomainRW>> = repository.fetchProductsAsFlowFromDB
+    override val _dataFlow: Flow<List<ProductDomainRW>> = repository.fetchProductsAsFlowFromDB
+    override val _errorFlow: MutableStateFlow<Exception?> = repository.errorFlow
 
-    override val uiState: StateFlow<StoreState>
-        get() = combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
+    override val uiState: StateFlow<StoreState> = combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
+            Log.d("Tag", "Combine: ${data.size}, $error, $loading")
             StoreState(
                 items = data,
                 error = error,
@@ -43,8 +48,7 @@ class StoreViewModel @Inject constructor(
             )
             .also {
                 viewModelScope.launch {
-                    repository.upsertAll(apiRepository.getProductsDomainRw())
-                    _loading.value = false
+                    event(Event.OnSoftRefresh)
                 }
             }
 
@@ -83,15 +87,29 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-                viewModelScope.launch { repository.softRefreshProducts() }
+                viewModelScope.launch {
+                    repository.softRefreshProducts()
+                }
             }
 
             is Event.OnSoftRefresh -> {
-                viewModelScope.launch { repository.softRefreshProducts() }
+                _errorFlow.update { null }
+                _loading.update { true }
+                viewModelScope.launch {
+                    delay(750)
+                    repository.softRefreshProducts()
+                    _loading.update { false }
+                }
             }
 
             is Event.OnHardRefresh -> {
-                viewModelScope.launch { repository.hardRefreshProducts() }
+                _errorFlow.update { null }
+                _loading.update { true }
+                viewModelScope.launch {
+                    delay(1500)
+                    repository.hardRefreshProducts()
+                    _loading.update { false }
+                }
             }
 
             is Event.ShowToast -> {
