@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
-import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

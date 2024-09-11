@@ -1,16 +1,17 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
-import com.hfad.palamarchuksuperapp.data.entities.Product
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import kotlin.random.Random
 
 class StoreRepositoryImpl @Inject constructor(
     private val storeApi: FakeStoreApi,
@@ -33,6 +34,8 @@ class StoreRepositoryImpl @Inject constructor(
     private suspend fun getProductWithErrors(): List<ProductDomainRW> {
         return try {
             val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
+            delay(1000)
+            if (Random.nextInt(0, 100) < 33) throw Exception("Error")
             storeProducts
         } catch (e: Exception) {
             errorFlow.update { e }
