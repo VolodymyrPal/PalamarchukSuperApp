@@ -62,6 +62,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -144,6 +148,8 @@ fun StoreScreen(
     val subDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val myBasket by viewModel.baskList.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
 
     MyNavigationDrawer(
         mainDrawerContent = {
@@ -199,6 +205,7 @@ fun StoreScreen(
             modifier = modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             topBar = {
                 MediumTopAppBar(
                     colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -217,7 +224,9 @@ fun StoreScreen(
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = {  /* do something */ }) {
+                        IconButton(onClick = {
+                            navController.popBackStack()
+                        }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Localized description"
@@ -226,10 +235,7 @@ fun StoreScreen(
                     },
                     actions = {
                         IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnHardRefresh) }) {
-                            val refreshIcon = remember(myState) {
-                                myState.loading
-                            }
-                            if (refreshIcon) {
+                            if (myState.loading) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
                                     color = Color.Yellow
@@ -279,7 +285,8 @@ fun StoreScreen(
                 StoreScreenContent(
                     items = myState.items,
                     onEvent = viewModel::event,
-                    message = myState.error?.message,
+                    error = myState.error,
+                    snackBarHost = snackbarHostState,
                 )
 
 
@@ -294,8 +301,9 @@ fun StoreScreen(
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
     items: List<ProductDomainRW>? = emptyList(),
-    message: String? = null,
+    error: Throwable? = null,
     onEvent: (StoreViewModel.Event) -> Unit,
+    snackBarHost: SnackbarHostState,
 ) {
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
     val pullRefreshState =
@@ -303,6 +311,7 @@ fun StoreScreenContent(
             refreshing = false,
             onRefresh = { onEvent(StoreViewModel.Event.OnSoftRefresh) }
         )
+    val scope = rememberCoroutineScope()
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -316,15 +325,21 @@ fun StoreScreenContent(
             columns = GridCells.Adaptive(minSize = WIDTH_ITEM.dp),
             horizontalArrangement = Arrangement.Absolute.Center
         ) {
-            if (!message.isNullOrEmpty()) {
-                item(span = { GridItemSpan(itemSpan) }) {
-                    val isShown = remember { mutableStateOf(true) }
-                    rememberCoroutineScope().launch {
-                        delay(10_000)
-                        isShown.value = false
+
+            if (error != null) {
+                scope.launch {
+                    val result : SnackbarResult = snackBarHost.showSnackbar(
+                        message = "${error.message}",
+                        actionLabel = "Refresh",
+                        duration = SnackbarDuration.Indefinite
+                    )
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> onEvent(StoreViewModel.Event.OnSoftRefresh)
+                        SnackbarResult.Dismissed -> {}
                     }
-                    if (isShown.value) Text(text = message)
                 }
+            } else {
+                snackBarHost.currentSnackbarData?.dismiss()
             }
 
             if (!items.isNullOrEmpty()) {
@@ -337,6 +352,7 @@ fun StoreScreenContent(
                         productList = items.filter { items[0].product.category == it.product.category },
                     )
                 }
+
 
                 item(span = { GridItemSpan(itemSpan) }) {
 
@@ -623,7 +639,7 @@ fun ListItemProduct(
                     .data(item.product.image)
                     .placeholder(R.drawable.bicon_camera_selector)
                     .error(R.drawable.bicon_home_black_filled)
-                    .size(100)
+                    .size(33)
                     .crossfade(true)
                     .build(),
                 loading = { CircularProgressIndicator() },
