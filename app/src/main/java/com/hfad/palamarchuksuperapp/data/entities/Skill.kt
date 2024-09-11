@@ -12,8 +12,8 @@ import java.util.UUID
 @Entity(tableName = DATABASE_SKILLS_NAME)
 @TypeConverters (Converters::class)
 data class Skill(
-    @PrimaryKey(autoGenerate = true)
     @ColumnInfo (name = "id") val id: Int = 0,
+    @PrimaryKey
     @ColumnInfo (name = "uuid") val uuid: UUID = UUID.randomUUID(),
     @ColumnInfo (name = "name") val name: String = "",
     @ColumnInfo (name = "description") val description: String = "",
