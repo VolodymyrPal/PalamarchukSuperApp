@@ -45,8 +45,11 @@ class SkillsViewModel @Inject constructor(
     sealed class Event : BaseEvent {
         object GetSkills : Event()
         data class MoveToFirstPosition(val item: SkillDomainRW) : Event()
-        data class EditItem(val item: SkillDomainRW) : Event()
+        data class EditItem(val item: SkillDomainRW, val skillsChangeConst: SkillsChangeConst) :
+            Event()
+
         data class DeleteItem(val item: SkillDomainRW) : Event()
+        object DeleteAllChosen : Event()
         data class AddItem(val item: SkillDomainRW) : Event()
     }
 
@@ -78,52 +81,44 @@ class SkillsViewModel @Inject constructor(
             is Event.EditItem -> {
                 updateSkillOrAdd(event.item, SkillsChangeConst.FullSkill)
             }
+
+            Event.DeleteAllChosen -> {
+                deleteAllChosenSkill()
+            }
         }
     }
 
     fun moveToFirstPosition(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            val newSkills = uiState.first().items.toMutableList()
-            newSkills.remove(skillDomainRW)
-            newSkills.add(0, skillDomainRW)
+            val minPosition = _dataFlow.first().minOfOrNull { it.skill.position } ?: 0
+            repository.updateSkill(
+                skillDomainRW.copy(
+                    skillDomainRW.skill.copy(
+                        position = minPosition - 1
+                    )
+                )
+            )
         }
     }
 
     fun deleteSkill(skillDomainRW: SkillDomainRW) {
-        skillDomainRW.chosen = true
         viewModelScope.launch {
-//            funWithState(
-//                onSuccess = {
-//                    val newList = uiState.value.items!!.toMutableList()
-//                    newList.filter { it.chosen }.forEach {
-//                        repository.deleteSkill(it)
-//                        newList.remove(it)
-//                    }
-//                }
-//            )
+            repository.deleteSkill(skillDomainRW)
+        }
+    }
+
+    fun deleteAllChosenSkill() {
+        viewModelScope.launch {
+            _dataFlow.first().filter { it.chosen }.forEach {
+                repository.deleteSkill(it)
+            }
         }
     }
 
 
     private fun addSkill(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-//            funWithState(
-//                onSuccess = {
-//                    val newSkills = uiState.first().items!!.toMutableList()
-//                    newSkills.add(skillDomainRW)
-//
-//                    repository.addSkill(skillDomainRW)
-//                },
-//                onFailure = {
-//
-//                },
-//                onEmpty = {
-//                    repository.addSkill(skillDomainRW)
-//
-//                },
-//                onProcessing = {
-//                }
-//            )
+            repository.addSkill(skillDomainRW)
         }
     }
 
@@ -131,14 +126,11 @@ class SkillsViewModel @Inject constructor(
         viewModelScope.launch {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
-//                    funWithState(
-//                        onSuccess = {
 //                            val newSkills = uiState.first().items!!.toMutableList()
 //                            newSkills.indexOf(skillDomainRW).let {
 //                                newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
 //                            }
-//                        }
-//                    )
+
                 }
 
                 SkillsChangeConst.FullSkill -> {

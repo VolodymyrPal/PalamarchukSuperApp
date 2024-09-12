@@ -134,7 +134,7 @@ class SkillsListAdapter(
 //                }
 //            }
 
-            binding.expandDetails.post {
+            binding.expandDetails.post { // TODO Change View, not params
                 if (binding.skillDescription.layout.getEllipsisCount(1) > 0) {
                     binding.expandDetails.isEnabled = true
                     binding.expandDetails.isVisible = true
