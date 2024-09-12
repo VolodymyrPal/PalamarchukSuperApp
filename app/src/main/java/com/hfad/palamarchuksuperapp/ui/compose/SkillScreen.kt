@@ -99,7 +99,7 @@ fun SkillScreen(
                 onClick = remember {
                     {
                         val bottomSheetFragment = BottomSheetFragment(
-                            viewModel = viewModel
+                            viewModelEvent = viewModel::event
                         )
                         bottomSheetFragment.show(
                             (context as FragmentActivity).supportFragmentManager, "BSDialogFragment"
@@ -145,8 +145,8 @@ fun SkillScreen(
             if (!state.items.isNullOrEmpty()) {
                 LazyList(
                     modifier = Modifier.fillMaxSize(),
-                    item = state.items?: emptyList(),
-                    viewModel = viewModel
+                    item = state.items ?: emptyList(),
+                    viewModelEvent = viewModel::event
                 )
             }
 
@@ -161,6 +161,41 @@ fun SkillScreen(
 }
 
 @Composable
+fun LazyList(
+    modifier: Modifier = Modifier,
+    item: List<SkillDomainRW>,
+    viewModelEvent: (SkillsViewModel.Event) -> Unit,
+) {
+    LazyColumn {
+        items(
+            items = item,
+            key = { item: SkillDomainRW -> item.skill.uuid.toString() }
+        ) { item ->
+            AnimatedVisibility(
+                modifier = Modifier.animateItem(),
+                visible = item.isVisible,
+                exit = fadeOut(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                ),
+                enter = fadeIn(
+                    animationSpec = TweenSpec(100, 100, LinearEasing)
+                )
+            ) {
+                ItemListSkill(
+                    item = item,
+                    onEvent = viewModelEvent,
+                )
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.size(72.dp))
+        }
+    }
+}
+
+
+@Composable
 @Suppress(
     "detekt.FunctionNaming",
     "detekt.MaxLineLength",
@@ -172,7 +207,6 @@ fun ItemListSkill(
     modifier: Modifier = Modifier,
     item: SkillDomainRW,
     onEvent: (SkillsViewModel.Event) -> Unit,
-    viewModel: SkillsViewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -184,7 +218,12 @@ fun ItemListSkill(
                 .wrapContentHeight()
                 .then(remember(item) {
                     Modifier.clickable {
-                        viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                        onEvent.invoke(
+                            SkillsViewModel.Event.EditItem(
+                                item,
+                                SkillsChangeConst.ChooseOrNotSkill
+                            )
+                        )
                     }
                 })
         } else {
@@ -194,7 +233,12 @@ fun ItemListSkill(
                 .wrapContentHeight()
                 .then(remember(item) {
                     Modifier.clickable {
-                        viewModel.updateSkillOrAdd(item, SkillsChangeConst.ChooseOrNotSkill)
+                        onEvent.invoke(
+                            SkillsViewModel.Event.EditItem(
+                                item,
+                                SkillsChangeConst.ChooseOrNotSkill
+                            )
+                        )
                     }
                 })
         },
@@ -269,7 +313,7 @@ fun ItemListSkill(
                         onEdit = remember(item) {
                             {
                                 val bottomSheetFragment = BottomSheetFragment(
-                                    viewModel = viewModel,
+                                    viewModelEvent = onEvent,
                                     skillDomainRW = item
                                 )
                                 bottomSheetFragment.show(
@@ -278,32 +322,18 @@ fun ItemListSkill(
                                 )
                             }
                         },
-                        onDelete = remember(item) {
-                            {
-                                onEvent.invoke(
-                                    SkillsViewModel.Event.DeleteItem(
-                                        item
-                                    )
-                                )
-                            }
-                        },
-                        onMoveUp = remember(item) {
-                            {
-                                onEvent(
-                                    SkillsViewModel.Event.MoveToFirstPosition(
-                                        item
-                                    )
-                                )
-                            }
-                        },
+                        item = item,
+                        onEvent = onEvent,
                     )
 
                     Checkbox(
                         modifier = modifier,
                         onCheckedChange = {
-                            viewModel.updateSkillOrAdd(
-                                item,
-                                SkillsChangeConst.ChooseOrNotSkill
+                            onEvent.invoke(
+                                SkillsViewModel.Event.EditItem(
+                                    item,
+                                    SkillsChangeConst.ChooseOrNotSkill
+                                )
                             )
                         },
                         checked = item.chosen
@@ -367,11 +397,10 @@ fun ItemListSkill(
 fun MyDropDownMenus(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
+    item: SkillDomainRW,
+    onEvent: (SkillsViewModel.Event) -> Unit,
     modifier: Modifier = Modifier,
     onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    onMoveUp: () -> Unit,
-    onAdding: () -> Unit = {},
 ) {
     if (expanded) {
         MaterialTheme(
@@ -398,9 +427,17 @@ fun MyDropDownMenus(
                     text = { Text("Delete") },
                     onClick = remember {
                         {
-                            onDelete()
+                            onEvent.invoke(SkillsViewModel.Event.DeleteItem(item))
                             onDismissRequest()
                         }
+                    }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Delete chosen") },
+                    onClick = {
+                        onEvent.invoke(SkillsViewModel.Event.DeleteAllChosen)
+                        onDismissRequest()
                     }
                 )
 
@@ -410,7 +447,11 @@ fun MyDropDownMenus(
                     text = { Text("Move UP") },
                     onClick = remember {
                         {
-                            onMoveUp()
+                            onEvent(
+                                SkillsViewModel.Event.MoveToFirstPosition(
+                                    item
+                                )
+                            )
                             onDismissRequest()
                         }
                     }
@@ -445,39 +486,4 @@ fun SkillScreenPreview() {
     SkillScreen(
         viewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
     )
-}
-
-@Composable
-fun LazyList(
-    modifier: Modifier = Modifier,
-    item: List<SkillDomainRW>,
-    viewModel: SkillsViewModel,
-) {
-    LazyColumn {
-        items(
-            items = item,
-            key = { item: SkillDomainRW -> item.skill.uuid.toString() }
-        ) { item ->
-            AnimatedVisibility(
-                modifier = Modifier.animateItem(),
-                visible = item.isVisible,
-                exit = fadeOut(
-                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                ),
-                enter = fadeIn(
-                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                )
-            ) {
-                ItemListSkill(
-                    item = item,
-                    onEvent = remember { { event -> viewModel.event(event) } },
-                    viewModel = viewModel
-                )
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.size(72.dp))
-        }
-    }
 }
