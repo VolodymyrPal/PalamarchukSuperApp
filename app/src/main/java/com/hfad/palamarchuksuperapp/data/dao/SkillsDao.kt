@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SkillsDao {
-    @Query("SELECT * FROM $DATABASE_SKILLS_NAME")
+    @Query("SELECT * FROM $DATABASE_SKILLS_NAME ORDER BY Position ASC")
     fun getAllSkillsFromDB(): Flow<List<Skill>>
 
     @Insert
