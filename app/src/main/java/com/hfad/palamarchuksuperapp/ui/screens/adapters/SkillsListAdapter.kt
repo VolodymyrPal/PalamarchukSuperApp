@@ -71,7 +71,7 @@ class SkillsListAdapter(
                             val bottomSheetFragment =
                                 BottomSheetFragment(
                                     skill,
-                                    viewModel = myViewModel
+                                    viewModelEvent = myViewModel::event
                                 )
                             bottomSheetFragment.show(parentFragmentManager, "BSDialogFragment")
 

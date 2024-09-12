@@ -82,7 +82,7 @@ class SkillsFragment : Fragment() {
 
         binding.floatingActionButton.setOnClickListener {
             vibe.standardClickVibration()
-            val bottomSheetFragment = BottomSheetFragment(viewModel = viewModel)
+            val bottomSheetFragment = BottomSheetFragment(viewModelEvent = viewModel::event)
             bottomSheetFragment.show(parentFragmentManager, "BSDialogFragment")
         }
         return view
