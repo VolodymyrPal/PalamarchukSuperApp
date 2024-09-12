@@ -21,7 +21,7 @@ class BottomSheetFragment(
     private var skillDomainRW: SkillDomainRW = SkillDomainRW(
         Skill()
     ),
-    private var viewModel: SkillsViewModel,
+    private var viewModelEvent: (SkillsViewModel.Event) -> Unit,
 ) : BottomSheetDialogFragment() {
 
     private var _binding: ListItemBottomSheetBinding? = null
@@ -94,7 +94,12 @@ class BottomSheetFragment(
                         description = binding.skillDescriptionField.text.toString()
                     )
                 )
-                viewModel.updateSkillOrAdd(skillDomainRW, SkillsChangeConst.FullSkill)
+                viewModelEvent.invoke(
+                    SkillsViewModel.Event.EditItem(
+                        skillDomainRW,
+                        SkillsChangeConst.FullSkill
+                    )
+                )
                 this@BottomSheetFragment.dismiss()
             }
         }
