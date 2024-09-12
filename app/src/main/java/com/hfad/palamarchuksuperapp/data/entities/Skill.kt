@@ -12,12 +12,13 @@ import java.util.UUID
 @Entity(tableName = DATABASE_SKILLS_NAME)
 @TypeConverters (Converters::class)
 data class Skill(
-    @ColumnInfo (name = "id") val id: Int = 0,
-    @PrimaryKey
-    @ColumnInfo (name = "uuid") val uuid: UUID = UUID.randomUUID(),
-    @ColumnInfo (name = "name") val name: String = "",
-    @ColumnInfo (name = "description") val description: String = "",
-    @ColumnInfo (name = "studiedDate") val date: Date = Date(),
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo (name = "SkillID") val id: Int = 0,
+    @ColumnInfo (name = "SkillUUID") val uuid: UUID = UUID.randomUUID(),
+    @ColumnInfo (name = "SkillName") val name: String = "",
+    @ColumnInfo (name = "Description") val description: String = "",
+    @ColumnInfo (name = "StudiedDate") val date: Date = Date(),
+    @ColumnInfo (name = "Position") val position: Int = id
 )
 
 class Converters {
