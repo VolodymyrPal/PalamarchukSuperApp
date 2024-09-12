@@ -3,7 +3,6 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.delay
@@ -21,7 +20,7 @@ import javax.inject.Inject
 @Stable
 class StoreViewModel @Inject constructor(
     private val repository: StoreRepository,
-    private val apiRepository: FakeStoreApiRepository,
+    // private val apiRepository: FakeStoreApiRepository, Old Implementation with OkHttp with Retrofit + Moshi
 ) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     data class StoreState(
