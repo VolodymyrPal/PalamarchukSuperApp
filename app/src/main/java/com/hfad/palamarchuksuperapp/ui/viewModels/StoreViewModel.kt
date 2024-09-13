@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
@@ -33,7 +32,6 @@ class StoreViewModel @Inject constructor(
     override val _errorFlow: MutableStateFlow<Exception?> = repository.errorFlow
 
     override val uiState: StateFlow<StoreState> = combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
-            Log.d("Tag", "Combine: ${data.size}, $error, $loading")
             StoreState(
                 items = data,
                 error = error,
