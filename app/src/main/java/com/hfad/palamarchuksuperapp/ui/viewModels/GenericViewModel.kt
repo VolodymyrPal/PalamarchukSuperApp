@@ -2,20 +2,22 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.domain.models.DataError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.coroutines.launch
 
 abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
     UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
 
-    protected abstract val _dataFlow: Flow<T>
+    protected abstract val _dataFlow: Flow<Result<T, DataError>>
 
-    protected abstract val _errorFlow: MutableStateFlow<Exception?>
+    protected abstract val _errorFlow: MutableSharedFlow<Exception?>
 
     protected open val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
