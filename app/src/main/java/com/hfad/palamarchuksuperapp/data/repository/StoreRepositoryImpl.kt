@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import android.util.Log
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.DataError
@@ -7,12 +8,12 @@ import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.coroutines.flow.MutableSharedFlow
 import retrofit2.HttpException
+import java.lang.RuntimeException
+import kotlin.random.Random
 
 class StoreRepositoryImpl @Inject constructor(
     private val storeApi: FakeStoreApi,
@@ -20,7 +21,7 @@ class StoreRepositoryImpl @Inject constructor(
 ) : StoreRepository {
 
     override val fetchProductsAsFlowFromDB: Flow<List<ProductDomainRW>> =
-        storeDao.getAllProductsFromDB().catch { errorFlow.update { it } }
+        storeDao.getAllProductsFromDB()
 
     suspend fun products(): Result<Flow<List<ProductDomainRW>>, Error> {
         return try {
@@ -31,25 +32,32 @@ class StoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun softRefreshProducts() {
-        storeDao.insertOrIgnoreProducts(getProductWithErrors())
+        val productResultApi = getProductWithErrors()
+        if (productResultApi is Result.Success) {
+            storeDao.insertOrIgnoreProducts(productResultApi.data)
+        }
     }
 
     override suspend fun hardRefreshProducts() {
         storeDao.deleteAllProducts()
-        storeDao.insertOrIgnoreProducts(getProductWithErrors())
+        val productResultApi = getProductWithErrors()
+        if (productResultApi is Result.Success) {
+            storeDao.insertOrIgnoreProducts(productResultApi.data)
+        }
     }
 
-    private suspend fun getProductWithErrors() : Result<List<ProductDomainRW>, Error> { //}: List<ProductDomainRW> {
+    private suspend fun getProductWithErrors(): Result<List<ProductDomainRW>, Error> { //}: List<ProductDomainRW> {
 
         return try {
-                Result.Success(storeApi.getProductsDomainRw())
-            } catch (e: Exception) {
-                try {
-                    Result.Error(DataError.Network.InternalServerError)
-                } catch (e: Exception) {
-                    Result.Error(DataError.Local.DatabaseError)
-                }
-            }
+            val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
+            Log.d("TAG", "getProductWithErrors: $storeProducts")
+            if (Random.nextInt(0, 100) < 33) throw Exception("Error")
+            Result.Success(storeProducts)
+        } catch (e: RuntimeException) {
+            Result.Error(DataError.Local.DatabaseError)
+        } catch (e: Exception) {
+            Result.Error(DataError.Network.InternalServerError)
+        }
 
 //        return try {
 //            val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
@@ -70,6 +78,6 @@ class StoreRepositoryImpl @Inject constructor(
         storeDao.updateProduct(product)
     }
 
-    override val errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
+    override val errorFlow: MutableSharedFlow<Exception?> = MutableSharedFlow()
 
 }
