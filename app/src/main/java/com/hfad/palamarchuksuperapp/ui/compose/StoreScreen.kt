@@ -119,6 +119,7 @@ import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
@@ -288,8 +289,6 @@ fun StoreScreen(
                     error = myState.error,
                     snackBarHost = snackbarHostState,
                 )
-
-
             }
         }
     }
@@ -301,7 +300,7 @@ fun StoreScreen(
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
     items: List<ProductDomainRW>? = emptyList(),
-    error: Throwable? = null,
+    error: DataError?,
     onEvent: (StoreViewModel.Event) -> Unit,
     snackBarHost: SnackbarHostState,
 ) {
@@ -327,9 +326,19 @@ fun StoreScreenContent(
         ) {
 
             if (error != null) {
+
+                val textMessage = when (error) {
+                    is DataError.Network -> {
+                        "Network error"
+                    }
+                    else -> {
+                        "Else error"
+                    }
+                }
+
                 scope.launch {
                     val result : SnackbarResult = snackBarHost.showSnackbar(
-                        message = "${error.message}",
+                        message = textMessage,
                         actionLabel = "Refresh",
                         duration = SnackbarDuration.Indefinite
                     )
