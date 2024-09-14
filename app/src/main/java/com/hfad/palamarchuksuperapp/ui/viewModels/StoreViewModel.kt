@@ -1,12 +1,13 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -15,6 +16,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.catch
 
 @Stable
 class StoreViewModel @Inject constructor(
@@ -25,18 +29,37 @@ class StoreViewModel @Inject constructor(
     data class StoreState(
         val items: List<ProductDomainRW> = emptyList(),
         val loading: Boolean = false,
-        val error: Throwable? = null,
+        val error: DataError? = null,
     ) : State<List<ProductDomainRW>>
 
-    override val _dataFlow: Flow<List<ProductDomainRW>> = repository.fetchProductsAsFlowFromDB
-    override val _errorFlow: MutableStateFlow<Exception?> = repository.errorFlow
+    override val _dataFlow: Flow<Result<List<ProductDomainRW>, DataError>> =
+        repository.fetchProductsAsFlowFromDB
+            .map<List<ProductDomainRW>, Result<List<ProductDomainRW>, DataError>> {
+                Log.d("TAG", "uiState: $it")
+                Result.Success(it)
+            }
+            .catch {
+                Log.d("TAG", "uiState: $it")
+                emit(Result.Error(DataError.Network.InternalServerError)) }
 
-    override val uiState: StateFlow<StoreState> = combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
-            StoreState(
-                items = data,
-                error = error,
-                loading = loading
-            )
+    override val _errorFlow: MutableSharedFlow<Exception?> = repository.errorFlow
+
+    override val uiState: StateFlow<StoreState> =
+        combine(_dataFlow, _loading) { data, loading ->
+            when (data) {
+                is Result.Success -> {
+                    StoreState(
+                        items = data.data,
+                        loading = loading
+                    )
+                }
+                is Result.Error -> {
+                    StoreState(
+                        error = data.error,
+                        loading = loading
+                    )
+                }
+            }
         }
             .stateIn(
                 scope = viewModelScope,
@@ -90,7 +113,6 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.OnSoftRefresh -> {
-                _errorFlow.update { null }
                 _loading.update { true }
                 viewModelScope.launch {
                     delay(750)
@@ -100,7 +122,6 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.OnHardRefresh -> {
-                _errorFlow.update { null }
                 _loading.update { true }
                 viewModelScope.launch {
                     delay(1500)
