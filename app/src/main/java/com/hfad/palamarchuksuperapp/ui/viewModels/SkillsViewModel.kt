@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import kotlinx.coroutines.flow.Flow
@@ -8,10 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.hfad.palamarchuksuperapp.domain.models.Result
 
 class SkillsViewModel @Inject constructor(
     private val repository: SkillRepository,
@@ -24,14 +26,14 @@ class SkillsViewModel @Inject constructor(
         val error: Throwable? = null,
     ) : State<List<SkillDomainRW>>
 
-    override val _dataFlow: Flow<List<SkillDomainRW>> = repository.getSkillsFromDB()
+    override val _dataFlow: Flow<Result<List<SkillDomainRW>, DataError>> = repository.getSkillsFromDB().map { Result.Success(it) }
 
     override val _errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
 
     override val uiState: StateFlow<SkillState> =
         combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
             SkillState(
-                items = data,
+                items = (data as Result.Success).data,
                 error = error,
                 loading = loading
             )
@@ -90,14 +92,14 @@ class SkillsViewModel @Inject constructor(
 
     fun moveToFirstPosition(skillDomainRW: SkillDomainRW) {
         viewModelScope.launch {
-            val minPosition = _dataFlow.first().minOfOrNull { it.skill.position } ?: 0
-            repository.updateSkill(
-                skillDomainRW.copy(
-                    skillDomainRW.skill.copy(
-                        position = minPosition - 1
-                    )
-                )
-            )
+//            val minPosition = _dataFlow.first().minOfOrNull { it.skill.position } ?: 0
+//            repository.updateSkill(
+//                skillDomainRW.copy(
+//                    skillDomainRW.skill.copy(
+//                        position = minPosition - 1
+//                    )
+//                )
+//            )
         }
     }
 
@@ -108,11 +110,11 @@ class SkillsViewModel @Inject constructor(
     }
 
     fun deleteAllChosenSkill() {
-        viewModelScope.launch {
-            _dataFlow.first().filter { it.chosen }.forEach {
-                repository.deleteSkill(it)
-            }
-        }
+//        viewModelScope.launch {
+//            _dataFlow.first().filter { it.chosen }.forEach {
+//                repository.deleteSkill(it)
+//            }
+//        }
     }
 
 
