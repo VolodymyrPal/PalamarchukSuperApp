@@ -91,7 +91,7 @@ object NetworkModule {
     @Provides
     fun provideStoreRepository(
         storeApi: FakeStoreApi,
-        storeDao: StoreDao
+        storeDao: StoreDao,
     ): StoreRepository {
         return StoreRepositoryImpl(storeApi, storeDao)
     }
@@ -99,19 +99,21 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideHttpClient(): HttpClient {
-        return HttpClient (CIO) {
+        return HttpClient(CIO) {
             engine {
                 endpoint {
                     connectTimeout = 5000        // Время ожидания подключения 5 секунд
                     requestTimeout = 10000       // Максимальное время выполнения запроса 10 секунд
-                    keepAliveTime = 30000        // Время жизни соединения после использования 30 секунд
+                    keepAliveTime =
+                        30000        // Время жизни соединения после использования 30 секунд
                     maxConnectionsPerRoute = 10 // Максимум 10 соединений на маршрут
                     pipelineMaxSize = 20        // Максимум 20 запросов в пайплайне
                 }
                 maxConnectionsCount = 20 // Максимум 20 соединений
                 https {
                     trustManager // Настройки проверки сертификата, что бы не перехватывать запросы посредине
-                } // Настройки HTTPS, которые позволяют конфигурировать параметры TLS/SSL, используемые для защищенных соединений.
+                } // Настройки HTTPS, которые
+                // позволяют конфигурировать параметры TLS/SSL, используемые для защищенных соединений.
                 pipelining = false // Отключение пайпелинга
                 proxy // Настройки прокси
             }
@@ -134,6 +136,7 @@ object DatabaseModule {
     fun providePreferencesRepository(): PreferencesRepository {
         return PreferencesRepository.get()
     }
+
     @Singleton
     @Provides
     fun provideStoreDB(context: Context): StoreDatabase {
@@ -144,6 +147,7 @@ object DatabaseModule {
         ).fallbackToDestructiveMigration()
             .build()
     }
+
     @Provides
     fun provideStoreDao(storeDatabase: StoreDatabase): StoreDao {
         return storeDatabase.storeDao()
