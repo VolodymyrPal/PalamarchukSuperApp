@@ -16,29 +16,16 @@ import coil.load
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.services.GptRequested
-import com.hfad.palamarchuksuperapp.data.services.ImageMessageRequest
-import com.hfad.palamarchuksuperapp.data.services.ImageRequest
-import com.hfad.palamarchuksuperapp.data.services.TextMessageRequest
-import com.hfad.palamarchuksuperapp.data.services.RequestRole
+import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
-import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY_USER
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
-import io.ktor.client.call.body
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
@@ -157,46 +144,9 @@ class MainScreenFragment : Fragment() {
         updatePhoto()
 
         runBlocking {
-
-            val client = requireContext().appComponent.getHttpClient()
-
-            val imageMessageRequest = ImageMessageRequest(
-                imageUrl = ImageRequest("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")
-                )
-
-
-            val systemMessageRequest = TextMessageRequest(
-                text = "Ты учитель, который называет меня Угольком. Помоги мне с изображением. Отвечай на русском."
-            )
-
-            val systemRequest = RequestRole(
-                role = "system",
-                content = listOf(systemMessageRequest)
-            )
-
-            val roleRequest = RequestRole(
-                role = "user",
-                content = listOf(imageMessageRequest)
-            )
-
-            val gptRequest = GptRequested(
-                messages = listOf(systemRequest, roleRequest)
-            )
-
-            val jsonRequest = Json.encodeToString(gptRequest)
-            Log.d("My Json ", jsonRequest)
-            Log.d("My client", client.toString())
-
-//            try {
-//                val response = client.post("https://api.openai.com/v1/chat/completions") {
-//                    contentType(ContentType.Application.Json)
-//                    header("Authorization", "Bearer $OPEN_AI_KEY_USER")
-//                    setBody(gptRequest)
-//                }
-//                Log.d("TAG", "Response: ${response.body<String>()}")
-//            } catch (e: Exception) {
-//                Log.d("TAG", "Error: $e")
-//            }
+            val response =
+                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse()
+            Log.d("TAG", "onResume: $response")
         }
     }
 
