@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.domain.models.OPEN_AI_KEY_USER
+import com.hfad.palamarchuksuperapp.BuildConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -16,35 +16,37 @@ class OpenAIApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) {
 
-    val imageMessageRequest = ImageMessageRequest(
+    private val imageMessageRequest = ImageMessageRequest(
         imageUrl = ImageRequest("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")
     )
 
-    val systemMessageRequest = TextMessageRequest(
+    private val systemMessageRequest = TextMessageRequest(
         text = "Ты учитель, который называет меня Угольком. Помоги мне с изображением. Отвечай на русском."
     )
 
-    val systemRequest = RequestRole(
+    private val systemRequest = RequestRole(
         role = "system",
         content = listOf(systemMessageRequest)
     )
 
-    val roleRequest = RequestRole(
+    private val roleRequest = RequestRole(
         role = "user",
         content = listOf(imageMessageRequest)
     )
 
-    val gptRequest = GptRequested(
+    private val gptRequest = GptRequested(
         messages = listOf(systemRequest, roleRequest)
     )
 
-    val jsonRequest = Json.encodeToString(gptRequest)
+    private val jsonRequest = Json.encodeToString(gptRequest)
+
+    private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
 
     suspend fun sendRequestWithResponse(): String {
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
                 contentType(ContentType.Application.Json)
-                header("Authorization", "Bearer $OPEN_AI_KEY_USER")
+                header("Authorization", "Bearer $openAiKey")
                 setBody(jsonRequest)
             }
             response.body<String>()
