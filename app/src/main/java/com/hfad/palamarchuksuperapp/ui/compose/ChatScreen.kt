@@ -23,11 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.services.ChatCompletionResponse
 import com.hfad.palamarchuksuperapp.data.services.GroqApi
 import com.hfad.palamarchuksuperapp.data.services.GroqRequest
 import com.hfad.palamarchuksuperapp.data.services.Message
-import com.hfad.palamarchuksuperapp.domain.models.GROQ_KEY
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -76,33 +76,35 @@ fun ChatScreen(
             var promptText: String by remember { mutableStateOf("") }
             var responseText: String by remember { mutableStateOf("") }
 
-            val client = HttpClient {
-                install(ContentNegotiation) {
-                    json(Json {
-                        prettyPrint = true
-                        isLenient = true  //TODO lenient for testing
-                    })
+            val client = remember {
+                HttpClient {
+                    install(ContentNegotiation) {
+                        json(Json {
+                            prettyPrint = true
+                            isLenient = true  //TODO lenient for testing
+                        })
+                    }
                 }
             }
 
-            val message =
-                Message(role = "user", content = promptText)
-            val request = GroqRequest(messages = listOf(message), model = "llama3-8b-8192")
+            val message = remember { Message(role = "user", content = promptText) }
+            val request = remember { GroqRequest(messages = listOf(message), model = "llama3-8b-8192") }
 
             LaunchedEffect(Unit) {
+                val groqKey = BuildConfig.GROQ_KEY
                 try {
-                    val response = client.post (
+                    val response = client.post(
                         "https://api.openai.com/v1/chat/completions"
                     ) {
                         url()
                         headers {
-                            append("Authorization", "Bearer $GROQ_KEY")
+                            append("Authorization", "Bearer $groqKey")
                             append("Content-Type", "application/json")
                         }
                         setBody(request)
                     }
-                    Log.d("TAG", "Response: ${response}")
-                } catch (e: Exception,) {
+                    Log.d("TAG", "Response: $response")
+                } catch (e: Exception) {
                     Log.d("TAG", "Error: $e")
                 }
             }
@@ -127,7 +129,6 @@ fun ChatScreen(
 //                    Log.d("Tag", "OnFailure: $p1")
 //                }
 //            })
-
 
 
             LazyColumn(
@@ -165,7 +166,7 @@ fun ChatScreen(
                             )
 
                             val call = groqApi.getChatCompletion(
-                                apiKey = GROQ_KEY,  // Ваш API ключ
+                                apiKey = BuildConfig.GROQ_KEY,  // Ваш API ключ
                                 body = request
                             )
 
