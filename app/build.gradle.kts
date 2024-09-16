@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -11,6 +13,9 @@ android {
     namespace = "com.hfad.palamarchuksuperapp"
     compileSdk = 34
 
+    val groqKey: String = gradleLocalProperties(rootDir, providers).getProperty("GROQ_KEY")
+    val openAiKey: String = gradleLocalProperties(rootDir, providers).getProperty("OPEN_AI_KEY_USER")
+    val geminiKey: String = gradleLocalProperties(rootDir, providers).getProperty("GEMINI_AI_KEY")
 
     defaultConfig {
         applicationId = "com.hfad.palamarchuksuperapp"
@@ -19,10 +24,15 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "GROQ_KEY", groqKey)
+        buildConfigField("String", "OPEN_AI_KEY_USER", openAiKey)
+        buildConfigField("String", "GEMINI_AI_KEY", geminiKey)
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
+        buildConfig = true
         viewBinding = true
         compose = true
     }
