@@ -3,7 +3,10 @@ package com.hfad.palamarchuksuperapp.ui.screens
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +20,7 @@ import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
+import com.hfad.palamarchuksuperapp.data.services.GeminiContentBuilder
 import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
@@ -26,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 
@@ -144,8 +149,21 @@ class MainScreenFragment : Fragment() {
         updatePhoto()
 
         runBlocking {
+            val photoMi = BitmapFactory.decodeResource(resources, R.drawable.lion_jpg_21)
+            val imgByteCode = ByteArrayOutputStream().let {
+                photoMi.compress(Bitmap.CompressFormat.JPEG, 80, it)
+                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
+            }
+
+            val request = GeminiContentBuilder.Builder()
+                .image(imgByteCode)
+                .text("Hello, whats on the photo?")
+                .build()
+
             val response =
-                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse()
+                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(
+                    geminiRequest = request
+                )
             Log.d("TAG", "onResume: $response")
         }
     }
