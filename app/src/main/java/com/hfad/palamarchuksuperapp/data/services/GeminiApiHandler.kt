@@ -31,3 +31,19 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) {
         }
     }
 }
+
+class GeminiContentBuilder (val parts: List<Part>) {
+
+    class Builder {
+
+        var parts: MutableList<Part> = arrayListOf()
+
+        @JvmName("addPart") fun <T : Part> part(data: T) = apply { parts.add(data) }
+
+        @JvmName("addText") fun text(text: String) = part(TextPart(text))
+
+        @JvmName("addImage") fun image(image: Base64) = part(ImagePart(InlineData(data = image)))
+
+        fun build(): GeminiRequest = GeminiRequest(listOf(GeminiContent(parts)))
+    }
+}
