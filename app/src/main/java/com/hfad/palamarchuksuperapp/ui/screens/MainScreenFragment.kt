@@ -177,7 +177,7 @@ class MainScreenFragment : Fragment() {
 //                    geminiRequest = request
 //                )
 //            Log.d("TAG", "onResume: $response")
-        }
+//        }
     }
 
     override fun onDestroyView() {
