@@ -14,6 +14,8 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) {
     private val url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey"
 
+    val requestList: MutableList<GeminiRequest> = mutableListOf()
+
     suspend fun simpleTextRequest(text: String): String {
         val part = TextPart(text = text)
         val geminiContent = GeminiContent(listOf(part))
@@ -31,30 +33,54 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) {
     }
 
     suspend fun sendRequestWithResponse(geminiRequest: GeminiRequest): String {
-        return try {
+        try {
             val response =
                 httpClient.post(url) {
                     contentType(ContentType.Application.Json)
                     setBody(geminiRequest)
                 }
-            response.body<String>()
+            val textResponse = response.body<GeminiResponse>().candidates[0].content.parts[0].text
+//            if (response.status == HttpStatusCode.OK) {
+//                requestList.add(geminiRequest)
+//                //response.body<GeminiRequest>().let { requestList.add(it) }
+//                requestList.add(GeminiRequest(listOf(GeminiContent(listOf(TextPart(textResponse)), role = "model"))))
+//            }
+//
+//            val request = GeminiContentBuilder.Builder()
+//                .text("What was my previous questions?")
+//                .build()
+//
+//            requestList.add(request)
+//
+//            val responseTwo = httpClient.post(url) {
+//                contentType(ContentType.Application.Json)
+//                for (i in requestList) {
+//                    setBody(i)
+//                }
+//            }
+//            val textResponse2 = responseTwo.body<GeminiResponse>().candidates[0].content.parts[0].text
+//            Log.d("My list: ", "$requestList")
+            return textResponse
         } catch (e: Exception) {
-            e.message ?: "Error"
+            return e.message ?: "Error"
         }
     }
 }
 
-class GeminiContentBuilder (val parts: List<Part>) {
+class GeminiContentBuilder {
 
     class Builder {
 
-        var parts: MutableList<Part> = arrayListOf()
+        private var parts: MutableList<Part> = arrayListOf()
 
-        @JvmName("addPart") fun <T : Part> part(data: T) = apply { parts.add(data) }
+        @JvmName("addPart")
+        fun <T : Part> part(data: T) = apply { parts.add(data) }
 
-        @JvmName("addText") fun text(text: String) = part(TextPart(text))
+        @JvmName("addText")
+        fun text(text: String) = part(TextPart(text))
 
-        @JvmName("addImage") fun image(image: Base64) = part(ImagePart(InlineData(data = image)))
+        @JvmName("addImage")
+        fun image(image: Base64) = part(ImagePart(InlineData(data = image)))
 
         fun build(): GeminiRequest = GeminiRequest(listOf(GeminiContent(parts)))
     }
