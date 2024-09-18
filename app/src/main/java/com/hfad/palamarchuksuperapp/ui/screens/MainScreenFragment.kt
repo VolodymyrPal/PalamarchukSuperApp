@@ -8,17 +8,17 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.animation.doOnEnd
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
-import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GeminiContentBuilder
 import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
@@ -26,11 +26,16 @@ import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import javax.inject.Inject
 
 
@@ -148,23 +153,30 @@ class MainScreenFragment : Fragment() {
         super.onResume()
         updatePhoto()
 
-        runBlocking {
-            val photoMi = BitmapFactory.decodeResource(resources, R.drawable.lion_jpg_21)
-            val imgByteCode = ByteArrayOutputStream().let {
-                photoMi.compress(Bitmap.CompressFormat.JPEG, 80, it)
-                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
-            }
-
-            val request = GeminiContentBuilder.Builder()
-                .image(imgByteCode)
-                .text("Hello, whats on the photo?")
-                .build()
-
-            val response =
-                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(
-                    geminiRequest = request
-                )
-            Log.d("TAG", "onResume: $response")
+//        CoroutineScope(Dispatchers.IO).launch {
+//            var photoMi : Bitmap? = null
+//            try {
+//                val url = URL("https://bagrut-ru.com/wp-content/uploads/2023/06/28-1024x508.png")
+//                photoMi = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+//            } catch (e: IOException) {
+//                println(e)
+//            }
+//            Log.d("Photo: ", "$photoMi")
+//            val imgByteCode = ByteArrayOutputStream().let {
+//                photoMi?.compress(Bitmap.CompressFormat.JPEG, 80, it)
+//                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
+//            }
+//
+//            val request = GeminiContentBuilder.Builder()
+//                .image(imgByteCode)
+//                .text("It is image with math problem. Provide full answer in Russian. ")
+//                .build()
+//
+//            val response =
+//                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(
+//                    geminiRequest = request
+//                )
+//            Log.d("TAG", "onResume: $response")
         }
     }
 
