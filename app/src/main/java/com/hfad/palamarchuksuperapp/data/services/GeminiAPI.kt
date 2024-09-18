@@ -17,16 +17,17 @@ data class GeminiRequest(
 @Serializable
 data class GeminiContent(
     val parts: List<Part> = emptyList(),
+    val role : String = "user"
 )
 
 @Serializable (PartSerializer :: class)
 sealed interface Part
 
 @Serializable
-data class TextPart(val text: String = "Is my request completed?") : Part
+data class TextPart(val text: String = "Is my request completed?" ) : Part
 
 @Serializable
-data class ImagePart (val inlineData: InlineData) : Part
+data class ImagePart (val inlineData: InlineData, ) : Part
 
 @Serializable
 data class InlineData (
@@ -44,3 +45,19 @@ object PartSerializer : JsonContentPolymorphicSerializer<Part>(Part::class) {
         }
     }
 }
+
+@Serializable
+data class GeminiResponse(
+    val candidates: List<GeminiCandidate>
+)
+
+@Serializable
+data class GeminiCandidate(
+    val content: GeminiTextResponse,
+    val role: String = "model"
+)
+
+@Serializable
+data class GeminiTextResponse (
+    val parts: List<TextPart>
+)
