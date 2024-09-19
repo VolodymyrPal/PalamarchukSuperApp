@@ -317,10 +317,16 @@ fun TopRowMainScreen(
             Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
         }
 
-        FloatingActionButton(
-            modifier = Modifier.size(56.dp),
-            onClick = {
-                actionForView()
+        val scope = rememberCoroutineScope()
+
+        Switch(
+            modifier = Modifier.border(0.dp, Color.Transparent),
+            checked = dayNightMode,
+            enabled = true,
+            onCheckedChange = {
+                scope.launch {
+                    prefRepository?.setStoredNightMode(it)
+                }
             },
             shape = CircleShape,
             elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
