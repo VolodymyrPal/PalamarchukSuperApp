@@ -328,17 +328,22 @@ fun TopRowMainScreen(
                     prefRepository?.setStoredNightMode(it)
                 }
             },
-            shape = CircleShape,
-            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
-                defaultElevation = 5.dp,
-                pressedElevation = 30.dp
-            ),
-            interactionSource = remember { MutableInteractionSource() }
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
-                "Night mode",
-                //modifier = modifier.size(24.dp)
+            thumbContent = {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
+                    contentDescription = "nightMode"
+                )
+            },
+            colors = SwitchDefaults.colors(
+                uncheckedBorderColor = Color.Transparent,
+                checkedBorderColor = Color.Transparent,
+                checkedThumbColor = MaterialTheme.colorScheme.onBackground,
+                checkedTrackColor = Color.Blue,
+                checkedIconColor = Color.Yellow,
+                uncheckedThumbColor = MaterialTheme.colorScheme.onBackground,
+                uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                uncheckedIconColor = Color.White,
+
             )
         }
     }
