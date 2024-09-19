@@ -8,7 +8,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import android.util.Log
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,16 +27,18 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,10 +61,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
-import com.hfad.palamarchuksuperapp.domain.usecases.ChangeDayNightModeUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.launch
 
@@ -100,6 +103,8 @@ fun MainScreenRow(
             @Suppress("DEPRECATION")
             LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
         }
+
+        val prefRepository = remember { PreferencesRepository.get() }
 
         @Suppress("DEPRECATION")
         fun onClickVibro() {
