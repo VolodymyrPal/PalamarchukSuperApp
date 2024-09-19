@@ -345,7 +345,23 @@ fun TopRowMainScreen(
                 uncheckedIconColor = Color.White,
 
             )
-        }
+        )
+//            onClick = {
+//                actionForView()
+//            },
+//            shape = CircleShape,
+//            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
+//                defaultElevation = 5.dp,
+//                pressedElevation = 30.dp
+//            ),
+//            interactionSource = remember { MutableInteractionSource() }
+//        ) {
+//            Icon(
+//                imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
+//                "Night mode",
+//                //modifier = modifier.size(24.dp)
+//            )
+//        }
     }
 }
 
