@@ -114,6 +114,7 @@ fun MainScreenRow(
                 vibe.vibrate(1)
             }
         }
+
         val scope = rememberCoroutineScope()
 
         DisposableEffect(LocalLifecycleOwner.current) {
@@ -136,22 +137,22 @@ fun MainScreenRow(
                 verticalArrangement = Arrangement.Top
             ) {
                 item {
+                    val dayNightMode by prefRepository.storedQuery.collectAsState(false)
+                    Log.d("TAG", "MainScreen: $dayNightMode")
                     TopRowMainScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp, 16.dp, 16.dp, 0.dp),
-                        actionForNight = {
+                        actionForActivity = {
                             onClickVibro()
                             SwitchToActivityUseCase()(
                                 context as Activity,
                                 key = ActivityKey.ActivityXML
                             )
                         },
-                        actionForView = {
-                            scope.launch { ChangeDayNightModeUseCase()() }
-                            onClickVibro()
-                        },
-                        buttonColor = buttonColor
+                        prefRepository = prefRepository,
+                        buttonColor = buttonColor,
+                        dayNightMode = dayNightMode
                     )
                 }
                 item {
