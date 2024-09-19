@@ -294,8 +294,9 @@ fun ButtonToNavConstraint(
 @Composable
 fun TopRowMainScreen(
     modifier: Modifier = Modifier,
-    actionForView: () -> Unit = {},
-    actionForNight: () -> Unit = {},
+    actionForActivity: () -> Unit = {},
+    dayNightMode: Boolean = false,
+    prefRepository: PreferencesRepository? = null,
     buttonColor: ButtonColors = ButtonDefaults.buttonColors(),
 ) {
     Row(
@@ -310,7 +311,7 @@ fun TopRowMainScreen(
                 defaultElevation = 5.dp,
             ),
             onClick = {
-                actionForNight()
+                actionForActivity()
             }
         ) {
             Text(text = "xml view", style = MaterialTheme.typography.titleSmall)
