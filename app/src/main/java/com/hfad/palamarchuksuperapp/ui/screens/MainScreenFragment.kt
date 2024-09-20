@@ -31,10 +31,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.net.HttpURLConnection
 import java.net.URL
 import javax.inject.Inject
 
@@ -153,31 +151,31 @@ class MainScreenFragment : Fragment() {
         super.onResume()
         updatePhoto()
 
-//        CoroutineScope(Dispatchers.IO).launch {
-//            var photoMi : Bitmap? = null
-//            try {
-//                val url = URL("https://bagrut-ru.com/wp-content/uploads/2023/06/28-1024x508.png")
-//                photoMi = BitmapFactory.decodeStream(url.openConnection().getInputStream())
-//            } catch (e: IOException) {
-//                println(e)
-//            }
-//            Log.d("Photo: ", "$photoMi")
-//            val imgByteCode = ByteArrayOutputStream().let {
-//                photoMi?.compress(Bitmap.CompressFormat.JPEG, 80, it)
-//                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
-//            }
-//
-//            val request = GeminiContentBuilder.Builder()
-//                .image(imgByteCode)
-//                .text("It is image with math problem. Provide full answer in Russian. ")
-//                .build()
-//
-//            val response =
-//                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(
-//                    geminiRequest = request
-//                )
-//            Log.d("TAG", "onResume: $response")
-//        }
+        CoroutineScope(Dispatchers.IO).launch {
+            var photoMi : Bitmap? = null
+            try {
+                val url = URL("https://bagrut-ru.com/wp-content/uploads/2023/06/28-1024x508.png")
+                photoMi = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+            } catch (e: IOException) {
+                println(e)
+            }
+            Log.d("Photo: ", "$photoMi")
+            val imgByteCode = ByteArrayOutputStream().let {
+                photoMi?.compress(Bitmap.CompressFormat.JPEG, 80, it)
+                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
+            }
+
+            val request = GeminiContentBuilder.Builder()
+                .image(imgByteCode)
+                .text("It is image with math problem. Provide full answer in Russian. ")
+                .build()
+
+            val response =
+                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(
+                    geminiRequest = request
+                )
+            Log.d("TAG", "onResume: $response")
+        }
     }
 
     override fun onDestroyView() {
