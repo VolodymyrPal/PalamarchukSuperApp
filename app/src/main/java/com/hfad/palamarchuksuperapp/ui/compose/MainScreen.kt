@@ -40,6 +40,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -66,6 +67,7 @@ import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -318,10 +320,11 @@ fun TopRowMainScreen(
         }
 
         val scope = rememberCoroutineScope()
+        val isNight by remember (dayNightMode) { mutableStateOf(dayNightMode) }
 
         Switch(
             modifier = Modifier.border(0.dp, Color.Transparent),
-            checked = dayNightMode,
+            checked = isNight,
             enabled = true,
             onCheckedChange = {
                 scope.launch {
