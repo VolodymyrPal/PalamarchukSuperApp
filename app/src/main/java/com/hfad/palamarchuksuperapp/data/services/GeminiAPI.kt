@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.squareup.moshi.Json
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
@@ -31,7 +31,7 @@ data class ImagePart (val inlineData: InlineData, ) : Part
 
 @Serializable
 data class InlineData (
-    @Json(name = "mime_type") val mimeType: String = "image/jpeg",
+    @SerialName (value = "mime_type") val mimeType: String = "image/jpeg",
     val data: Base64)
 
 
