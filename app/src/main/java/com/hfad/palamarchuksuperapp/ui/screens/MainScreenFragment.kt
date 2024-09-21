@@ -74,7 +74,6 @@ class MainScreenFragment : Fragment() {
         binding.dayNightButton.setOnCheckedChangeListener { _, isChecked ->
             vibe.standardClickVibration()
             lifecycleScope.launch {
-                delay(200)
                 preferencesRepository.setStoredNightMode(isChecked)
             }
         }
@@ -170,10 +169,10 @@ class MainScreenFragment : Fragment() {
                 .text("It is image with math problem. Provide full answer in Russian. ")
                 .build()
 
-            val response =
-                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(
-                    geminiRequest = request
-                )
+            val response = 3
+//                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(
+//                    geminiRequest = request
+//                )
             Log.d("TAG", "onResume: $response")
         }
     }
