@@ -9,16 +9,18 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,8 +45,10 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -67,7 +71,6 @@ import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,7 +79,7 @@ fun MainScreenRow(
     navController: NavHostController = rememberNavController(),
 ) {
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         bottomBar = {
             BottomNavBar(
                 navController = navController,
@@ -117,8 +120,6 @@ fun MainScreenRow(
             }
         }
 
-        val scope = rememberCoroutineScope()
-
         DisposableEffect(LocalLifecycleOwner.current) {
             fileObserver.startWatching()
             onDispose {
@@ -129,18 +130,17 @@ fun MainScreenRow(
 
         Surface(
             color = Color.Transparent, modifier = modifier
-                .wrapContentSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
 
         ) {
             LazyColumn(
-                modifier = modifier.fillMaxSize(),
+                modifier = modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
                 item {
                     val dayNightMode by prefRepository.storedQuery.collectAsState(false)
-                    Log.d("TAG", "MainScreen: $dayNightMode")
+
                     TopRowMainScreen(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -159,9 +159,10 @@ fun MainScreenRow(
                 }
                 item {
                     Card(
-                        elevation = CardDefaults.elevatedCardElevation(10.dp),
                         modifier = modifier
-                            .size(320.dp),
+                            .size(320.dp)
+                            .border((2.5).dp, Color.Gray.copy(0.3f), CircleShape)
+                            .padding((10).dp),
                         shape = CircleShape
                     ) {
 
@@ -181,43 +182,62 @@ fun MainScreenRow(
                     }
                 }
                 item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(32.dp, 16.dp, 32.dp, 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier.defaultMinSize(minHeight = 350.dp),
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column(modifier = Modifier) {
-                            ButtonToNavConstraint(
-                                modifier = Modifier,
-                                action = { navController.navigate(Routes.StoreScreen) },
-                                imagePath = R.drawable.store_image,
-                                text = "S T O R E"
-                            )
-                        }
-                        Column(
-                            modifier = Modifier.fillParentMaxHeight(fraction = 0.39f),
-                            verticalArrangement = Arrangement.SpaceBetween
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.1f)
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.4f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
                                 action = { navController.navigate(Routes.SkillScreen) },
-                                text = "S K I L L S"
+                                text = "S K I L L S",
+                                position = Modifier.offset(15.dp, 15.dp)
                             )
 
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.navigate(Routes.ChatBotScreen) },
-                                text = "S K I L L S"
+                                action = { navController.navigate(Routes.StoreScreen) },
+                                imagePath = R.drawable.store_image,
+                                text = "S T O R E",
+                                position = Modifier.offset((-15).dp, 15.dp)
                             )
                         }
-                        Column(modifier = Modifier) {
+
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.2f))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.4f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            ButtonToNavConstraint(
+                                modifier = Modifier,
+                                action = { navController.navigate(Routes.ChatBotScreen) },
+                                text = "L O C K E D",
+                                position = Modifier.offset(15.dp, (-15).dp),
+                                enable = false
+                            )
                             ButtonToNavConstraint(
                                 modifier = Modifier,
                                 action = { navController.navigate(Routes.Settings) },
-                                text = "S K I L L S"
+                                text = "L O C K E D",
+                                position = Modifier.offset((-15).dp, (-15).dp),
+                                enable = false
                             )
                         }
                     }
@@ -228,11 +248,19 @@ fun MainScreenRow(
 }
 
 @Composable
+@Preview
+fun ButtonToScreenPreview() {
+    ButtonToNavConstraint(modifier = Modifier)
+}
+
+@Composable
 fun ButtonToNavConstraint(
     modifier: Modifier,
     action: () -> Unit = {},
     imagePath: Int = R.drawable.skills_image,
     text: String = "S K I L L S",
+    position: Modifier = Modifier.offset(15.dp, 15.dp),
+    enable: Boolean = true,
 ) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
@@ -258,14 +286,22 @@ fun ButtonToNavConstraint(
             action()
         },
         shape = RoundedCornerShape(20.dp),
-        modifier = modifier.size(HEIGHT_BIG_BUTTON.dp),
+        modifier = modifier
+            .size(WIDTH_BIG_BUTTON.dp, HEIGHT_BIG_BUTTON.dp)
+            .background(
+                MaterialTheme.colorScheme.onSecondaryContainer.copy(if (enable) 0.75f else 0.25f),
+                RoundedCornerShape(20.dp)
+            )
+            .then(position)
+            .alpha(if (enable) 1f else 0.75f),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            disabledContentColor = MaterialTheme.colorScheme.onTertiaryContainer
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-    )
-    {
+        enabled = enable
+    ) {
         Column(
             Modifier,
             verticalArrangement = Arrangement.Center,
@@ -274,7 +310,7 @@ fun ButtonToNavConstraint(
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(imagePath).build(),
                 modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp, top = 5.dp)
+                    .padding(start = 10.dp, end = 10.dp, top = 5.dp)
                     .weight(0.9f),
                 contentScale = ContentScale.FillBounds,
                 //imageVector = imageVector,
@@ -320,19 +356,22 @@ fun TopRowMainScreen(
         }
 
         val scope = rememberCoroutineScope()
-        val isNight by remember (dayNightMode) { mutableStateOf(dayNightMode) }
+
+        Log.d("TAG", "TopRow: $dayNightMode")
+        val a by rememberSaveable(dayNightMode) { mutableStateOf(dayNightMode) }
 
         Switch(
             modifier = Modifier.border(0.dp, Color.Transparent),
-            checked = isNight,
+            checked = a,
             enabled = true,
             onCheckedChange = {
                 scope.launch {
-                    prefRepository?.setStoredNightMode(it)
+                    prefRepository?.setStoredNightMode(!dayNightMode)
                 }
             },
             thumbContent = {
                 Icon(
+                    modifier = Modifier.size(SwitchDefaults.IconSize),
                     imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
                     contentDescription = "nightMode"
                 )
@@ -341,34 +380,18 @@ fun TopRowMainScreen(
                 uncheckedBorderColor = Color.Transparent,
                 checkedBorderColor = Color.Transparent,
                 checkedThumbColor = MaterialTheme.colorScheme.onBackground,
-                checkedTrackColor = Color.Blue,
-                checkedIconColor = Color.Yellow,
+                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                checkedIconColor = MaterialTheme.colorScheme.primaryContainer,
                 uncheckedThumbColor = MaterialTheme.colorScheme.onBackground,
                 uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                uncheckedIconColor = Color.White,
-
+                uncheckedIconColor = MaterialTheme.colorScheme.primaryContainer,
             )
         )
-//            onClick = {
-//                actionForView()
-//            },
-//            shape = CircleShape,
-//            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(
-//                defaultElevation = 5.dp,
-//                pressedElevation = 30.dp
-//            ),
-//            interactionSource = remember { MutableInteractionSource() }
-//        ) {
-//            Icon(
-//                imageVector = ImageVector.vectorResource(id = R.drawable.darkmod_icon_outlined),
-//                "Night mode",
-//                //modifier = modifier.size(24.dp)
-//            )
-//        }
     }
 }
 
-const val HEIGHT_BIG_BUTTON = 100
+const val HEIGHT_BIG_BUTTON = 95
+const val WIDTH_BIG_BUTTON = 110
 
 @Composable
 @Preview
