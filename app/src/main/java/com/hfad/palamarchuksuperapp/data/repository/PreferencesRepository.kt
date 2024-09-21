@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStoreFile
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -43,6 +44,7 @@ class PreferencesRepository private constructor(private val dataStore: DataStore
         dataStore.edit {
             it[NIGHT_MODE_KEY] = userNightMode
         }
+        delay(200)
         setNightMode(userNightMode)
     }
 
