@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 class StrongAlertDialog(private val context: Context) {
     private val alertBuilder = AlertDialog.Builder(context)
 
-    fun show(title: String = "StronAlertDialog", message: String = "StronAlertDialog") {
+    fun show(title: String = "StrongAlertDialog", message: String = "StrongAlertDialog") { //TODO
         alertBuilder.setTitle(title)
             .setMessage(message)
             .setCancelable(false)
