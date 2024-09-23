@@ -8,9 +8,9 @@ import androidx.appcompat.app.AlertDialog
 class StrongAlertDialog(private val context: Context) {
     private val alertBuilder = AlertDialog.Builder(context)
 
-    init {
-        alertBuilder.setTitle("Please update to the latest version")
-            .setMessage("To continue using the app, please update to the latest version.")
+    fun show(title: String = "StronAlertDialog", message: String = "StronAlertDialog") {
+        alertBuilder.setTitle(title)
+            .setMessage(message)
             .setCancelable(false)
             .setPositiveButton("Update") { _: DialogInterface, _: Int ->
                 when (context) {
