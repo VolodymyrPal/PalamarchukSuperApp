@@ -214,9 +214,11 @@ fun MainScreenRow(
                             )
                         }
 
-                        Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.2f))
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.2f)
+                        )
 
                         Row(
                             modifier = Modifier
@@ -228,6 +230,7 @@ fun MainScreenRow(
                             ButtonToNavConstraint(
                                 modifier = Modifier,
                                 action = { navController.navigate(Routes.ChatBotScreen) },
+                                imagePath = R.drawable.lock_outlined,
                                 text = "L O C K E D",
                                 position = Modifier.offset(15.dp, (-15).dp),
                                 enable = false
@@ -235,6 +238,7 @@ fun MainScreenRow(
                             ButtonToNavConstraint(
                                 modifier = Modifier,
                                 action = { navController.navigate(Routes.Settings) },
+                                imagePath = R.drawable.lock_outlined,
                                 text = "L O C K E D",
                                 position = Modifier.offset((-15).dp, (-15).dp),
                                 enable = false
@@ -357,7 +361,6 @@ fun TopRowMainScreen(
 
         val scope = rememberCoroutineScope()
 
-        Log.d("TAG", "TopRow: $dayNightMode")
         val a by rememberSaveable(dayNightMode) { mutableStateOf(dayNightMode) }
 
         Switch(
