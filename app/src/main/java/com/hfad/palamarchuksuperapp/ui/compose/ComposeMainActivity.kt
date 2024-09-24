@@ -10,8 +10,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -25,6 +29,10 @@ class ComposeMainActivity : AppCompatActivity() {
             MainContent()
         }
     }
+}
+
+val LocalNavController = compositionLocalOf<NavHostController> {
+    error("NavController not provided")
 }
 
 @Suppress("detekt.FunctionNaming")
@@ -46,25 +54,27 @@ fun MainContent() {
 //        return fadeOut(tween(delayMillis = 90))
 //    }
 
-    AppTheme {
-        NavHost(
-            navController = navController,
-            startDestination = Routes.MainScreenConstraint
-        ) {
-            composable<Routes.MainScreenConstraint> {
-                MainScreenRow(navController = navController)
-            }
-            composable<Routes.SkillScreen> {
-                SkillScreen(navController = navController)
-            }
-            composable<Routes.Settings> {
-                Text(text = "Settings")
-            }
-            composable<Routes.StoreScreen> {
-                StoreScreen(navController = navController)
-            }
-            composable<Routes.ChatBotScreen> {
-                ChatScreen(navController = navController)
+    CompositionLocalProvider(LocalNavController provides navController) {
+        AppTheme {
+            NavHost(
+                navController = LocalNavController.current,
+                startDestination = Routes.MainScreenConstraint
+            ) {
+                composable<Routes.MainScreenConstraint> {
+                    MainScreenRow()
+                }
+                composable<Routes.SkillScreen> {
+                    SkillScreen()
+                }
+                composable<Routes.Settings> {
+                    Text(text = "Settings")
+                }
+                composable<Routes.StoreScreen> {
+                    StoreScreen()
+                }
+                composable<Routes.ChatBotScreen> {
+                    ChatScreen()
+                }
             }
         }
     }
