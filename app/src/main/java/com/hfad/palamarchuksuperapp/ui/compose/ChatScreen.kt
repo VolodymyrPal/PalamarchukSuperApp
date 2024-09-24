@@ -50,12 +50,12 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
 ) {
+    val navController = LocalNavController.current
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(navController = navController)
+            BottomNavBar()
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -88,7 +88,8 @@ fun ChatScreen(
             }
 
             val message = remember { Message(role = "user", content = promptText) }
-            val request = remember { GroqRequest(messages = listOf(message), model = "llama3-8b-8192") }
+            val request =
+                remember { GroqRequest(messages = listOf(message), model = "llama3-8b-8192") }
 
             LaunchedEffect(Unit) {
                 val groqKey = BuildConfig.GROQ_KEY

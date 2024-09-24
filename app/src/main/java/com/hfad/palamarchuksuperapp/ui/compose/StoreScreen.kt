@@ -137,9 +137,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
     viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
 ) {
+    val navController = LocalNavController.current
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -331,13 +331,14 @@ fun StoreScreenContent(
                     is DataError.Network -> {
                         "Network error"
                     }
+
                     else -> {
                         "Else error"
                     }
                 }
 
                 scope.launch {
-                    val result : SnackbarResult = snackBarHost.showSnackbar(
+                    val result: SnackbarResult = snackBarHost.showSnackbar(
                         message = textMessage,
                         actionLabel = "Refresh",
                         duration = SnackbarDuration.Indefinite

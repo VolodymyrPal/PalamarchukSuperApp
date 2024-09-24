@@ -80,15 +80,15 @@ import java.util.Locale
 @Composable
 fun SkillScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
 ) {
+    val navController = LocalNavController.current
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            BottomNavBar(navController = navController)
+            BottomNavBar()
         },
         floatingActionButton = {
             val context = LocalContext.current
