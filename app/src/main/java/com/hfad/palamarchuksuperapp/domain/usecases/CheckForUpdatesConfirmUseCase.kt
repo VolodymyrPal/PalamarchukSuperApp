@@ -2,15 +2,13 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 
 import android.content.Context
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.hfad.palamarchuksuperapp.ui.reusable.StrongAlertDialog
 
 class CheckForUpdatesConfirmUseCase(private val context: Context) {
 
-    val appUpdateManager = AppUpdateManagerFactory.create(context)
-    val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+    private val appUpdateManager = AppUpdateManagerFactory.create(context)
+    private val appUpdateInfoTask = appUpdateManager.appUpdateInfo
 
     fun checkForUpdatesConfirm(): Boolean {
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
@@ -24,8 +22,5 @@ class CheckForUpdatesConfirmUseCase(private val context: Context) {
             }
         }
         return true
-    }
-
-    fun startUpdating() {
     }
 }
