@@ -57,10 +57,34 @@ class GroqApiHandler @Inject constructor(
     }
 
 
-    val call = groqApi.getChatCompletion(
-        apiKey = BuildConfig.GROQ_KEY,  // Ваш API ключ
-        body = request
-    )
+//    val call = groqApi.getChatCompletion(
+//        apiKey = BuildConfig.GROQ_KEY,  // Ваш API ключ
+//        body = request
+//    )
+
+//    call.enqueue(
+//    object : Callback<ChatCompletionResponse> {
+//
+//        override fun onResponse(
+//            p0: Call<ChatCompletionResponse>,
+//            p1: Response<ChatCompletionResponse>,
+//        ) {
+//            if (p1.isSuccessful) {
+//                responseText = p1.body()!!.choices[0].message.content
+//            } else {
+//                Log.d("TAG", "onResponseNotSuccessful: ${p1.code()}")
+//            }
+//        }
+//
+//        override fun onFailure(
+//            p0: Call<ChatCompletionResponse>,
+//            p1: Throwable,
+//        ) {
+//            Log.d("Tag", "OnFailure: $p1")
+//        }
+//    })
+}
+
 
 class GroqContentBuilder {
 
