@@ -29,18 +29,31 @@ class GroqApiHandler @Inject constructor(
         MutableStateFlow(mutableListOf(adminRoleMessage))
 
     val url = "https://api.groq.com/v1/chat/completions"
+    val url_image = "https://api.groq.com/openai/v1/chat/generate"
 
-    val promptText get() = "Some text to pass"//TODO
-
-    val message = Message(role = "user", content = promptText)
-    val request = GroqRequest(messages = listOf(message), model = "llama3-8b-8192")
-
-    suspend fun sendRequest () {
-        httpClient.post(url) {
+    suspend fun sendMessageChatImage(message: Message) {
+        chatHistory.update {
+            chatHistory.value.plus(message)
+        }
+        val request = httpClient.post(url_image) {
             header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
-            header()
+            setBody(GroqRequest(model = "123", messages = chatHistory.value))
         }
+        if (request.status == HttpStatusCode.OK) {
+            val response = request.body<ChatCompletionResponse>()
+
+            val responseMessage = GroqContentBuilder.Builder().let {
+                it.role = "assistant"
+                it.text("${response.choices[0].message.content}")
+            }.build()
+            chatHistory.update {
+                chatHistory.value.plus(responseMessage)
+            }
+        } else {
+            Log.d("TAG", "onResponseNotSuccessful: ${request.status}")
+        }
+
     }
 
 
