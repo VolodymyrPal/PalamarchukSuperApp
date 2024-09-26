@@ -2,20 +2,8 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.POST
-
-interface GroqApi {
-    @POST("openai/v1/chat/completions")
-    fun getChatCompletion(
-        @Header("Authorization") apiKey: String,
-        @Header("Content-Type") contentType: String = "application/json",
-        @Body body: GroqRequest
-    ): Call<ChatCompletionResponse>
-}
 
 @Serializable
 data class GroqRequest(
@@ -71,17 +59,9 @@ data class ChatCompletionResponse(
 )
 
 @Serializable
-@JsonClass(generateAdapter = true)
 data class Choice(
     val index: Int,
     val message: Message
-)
-
-@Serializable
-@JsonClass(generateAdapter = true)
-data class Message(
-    val role: String,
-    val content: String
 )
 
 @Serializable
