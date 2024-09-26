@@ -24,6 +24,38 @@ data class GroqRequest(
 )
 
 @Serializable
+data class Message(
+    val role: String,
+    val content: List<GroqContentType>
+)
+
+@Serializable
+sealed interface GroqContentType
+
+@SerialName("text")
+@Serializable
+data class ContentText(
+    val text: String = ""
+) : GroqContentType
+
+@Suppress("ConstructorParameterNaming")
+@SerialName("image_url")
+@Serializable
+data class ContentImage(
+    @SerialName("image_url")
+    val image_url: ImageUrl
+) : GroqContentType
+
+@Serializable
+data class ImageUrl(
+    val url: String
+) : GroqContentType
+
+
+
+
+
+@Serializable
 @JsonClass(generateAdapter = true)
 data class ChatCompletionResponse(
     val id: String,
