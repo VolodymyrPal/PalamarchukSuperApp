@@ -62,18 +62,26 @@ class GroqApiHandler @Inject constructor(
         body = request
     )
 
-    call.enqueue(object : Callback<ChatCompletionResponse> {
+class GroqContentBuilder {
 
-        override fun onResponse(
-            p0: Call<ChatCompletionResponse>,
-            p1: Response<ChatCompletionResponse>,
-        ) {
-            if (p1.isSuccessful) {
-                responseText = p1.body()!!.choices[0].message.content
-            } else {
-                Log.d("TAG", "onResponseNotSuccessful: ${p1.code()}")
-            }
-        }
+    class Builder {
+
+        private var contents: MutableList<GroqContentType> = arrayListOf()
+
+        var role = "user"
+
+        @JvmName("addPart")
+        fun <T : GroqContentType> part(data: T) = apply { contents.add(data) }
+
+        @JvmName("addText")
+        fun text(text: String) = part(ContentText(text))
+
+        @JvmName("addImage")
+        fun image(image: Base64) = part(ContentImage(image_url = ImageUrl(image)))
+
+        fun build(): Message = Message(content = contents, role = role)
+    }
+}
 
 
 
