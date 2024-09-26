@@ -3,19 +3,31 @@ package com.hfad.palamarchuksuperapp.data.services
 import android.util.Log
 import com.hfad.palamarchuksuperapp.BuildConfig
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 class GroqApiHandler @Inject constructor(
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
 ) {
-    val apiKey = BuildConfig.GROQ_KEY
+
+    private val apiKey = BuildConfig.GROQ_KEY
+    private val max_tokens: Int = 100
+    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
+        it.role = "system"
+        it.text("You are tutor and trying to solve users problem on image")
+    }.build()
+
+    private val chatHistory: MutableStateFlow<List<Message>> =
+        MutableStateFlow(mutableListOf(adminRoleMessage))
+
     val url = "https://api.groq.com/v1/chat/completions"
 
     val promptText get() = "Some text to pass"//TODO
