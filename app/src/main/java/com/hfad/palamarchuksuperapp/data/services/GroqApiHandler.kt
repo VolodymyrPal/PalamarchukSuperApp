@@ -75,11 +75,9 @@ class GroqApiHandler @Inject constructor(
             }
         }
 
-        override fun onFailure(
-            p0: Call<ChatCompletionResponse>,
-            p1: Throwable,
-        ) {
-            Log.d("Tag", "OnFailure: $p1")
-        }
-    })
+
+
+enum class Models(val value: String) {
+    GROQ_SIMPLE_TEXT("llama3-8b-8192"),
+    GROQ_IMAGE("llava-v1.5-7b-4096-preview"),
 }
