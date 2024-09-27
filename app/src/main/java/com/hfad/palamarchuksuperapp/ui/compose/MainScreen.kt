@@ -243,7 +243,7 @@ fun MainScreenRow(
                                 imagePath = R.drawable.lock_outlined,
                                 text = "L O C K E D",
                                 position = Modifier.offset(15.dp, (-15).dp),
-                                enable = false
+                                enable = true
                             )
                             ButtonToNavConstraint(
                                 modifier = Modifier,

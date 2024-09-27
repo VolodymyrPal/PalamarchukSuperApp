@@ -252,7 +252,7 @@ fun StoreScreen(
                     scrollBehavior = scrollBehavior
                 )
             },
-            bottomBar = { BottomNavBar(navController = navController) },
+            bottomBar = { BottomNavBar() },
             floatingActionButton = {
                 FloatingActionButton(
                     shape = RoundedCornerShape(33),
