@@ -1,9 +1,12 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.JsonContentPolymorphicSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 @Serializable
 data class GroqRequest(
@@ -11,18 +14,29 @@ data class GroqRequest(
     val model: String
 )
 
-@Serializable
-data class Message(
-    val role: String,
-    val content: List<GroqContentType>
-)
+@Serializable (GroqMessageSerializer::class)
+sealed interface Message
 
 @Serializable
+data class MessageChat(
+    val role: String,
+    val content: List<GroqContentType>
+) : Message
+
+@Serializable
+data class MessageText(
+    val role: String,
+    val content: String
+) : Message
+
+
+@Serializable (GroqContentSerializer::class)
 sealed interface GroqContentType
 
 @SerialName("text")
 @Serializable
 data class ContentText(
+    val type: String = "text",
     val text: String = ""
 ) : GroqContentType
 
@@ -30,6 +44,7 @@ data class ContentText(
 @SerialName("image_url")
 @Serializable
 data class ContentImage(
+    val type: String = "image_url",
     @SerialName("image_url")
     val image_url: ImageUrl
 ) : GroqContentType
@@ -40,20 +55,45 @@ data class ImageUrl(
 ) : GroqContentType
 
 
+object GroqContentSerializer : JsonContentPolymorphicSerializer<GroqContentType>(GroqContentType::class) {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<GroqContentType> {
+        val jsonObject = element.jsonObject
+        return when {
+            "text" in jsonObject -> ContentText.serializer()
+            "inlineData" in jsonObject -> ContentImage.serializer()
+            else -> throw SerializationException("Unknown Part type")
+        }
+    }
+}
+
+object GroqMessageSerializer : JsonContentPolymorphicSerializer<Message>(Message::class) {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<Message> {
+        val jsonObject = element.jsonObject
+        return when {
+            "type" in jsonObject -> MessageChat.serializer()
+            "content" in jsonObject -> MessageText.serializer()
+            else -> throw SerializationException("Unknown Part type")
+        }
+    }
+}
+
+
+
+
+
 
 
 
 @Serializable
-@JsonClass(generateAdapter = true)
 data class ChatCompletionResponse(
     val id: String,
-    @Json(name = "object")
+    @SerialName("object")
     val jObject: String,
     val created: Long,
     val model: String,
     val choices: List<Choice>,
     val usage: Usage,
-    @Json(name = "system_fingerprint")
+    @SerialName("system_fingerprint")
     val systemFingerprint: String,
     val x_groq: XGroq
 )
@@ -65,26 +105,24 @@ data class Choice(
 )
 
 @Serializable
-@JsonClass(generateAdapter = true)
 data class Usage(
-    @Json(name = "queue_time")
+    @SerialName("queue_time")
     val queueTime: Double,
-    @Json(name = "prompt_tokens")
+    @SerialName("prompt_tokens")
     val promptTokens: Int,
-    @Json(name = "prompt_time")
+    @SerialName("prompt_time")
     val promptTime: Double,
-    @Json(name = "completion_tokens")
+    @SerialName("completion_tokens")
     val completionTokens: Int,
-    @Json(name = "completion_time")
+    @SerialName("completion_time")
     val completionTime: Double,
-    @Json(name = "total_tokens")
+    @SerialName("total_tokens")
     val totalTokens: Int,
-    @Json(name = "total_time")
+    @SerialName("total_time")
     val totalTime: Double
 )
 
 @Serializable
-@JsonClass(generateAdapter = true)
 data class XGroq(
     val id: String
 )
