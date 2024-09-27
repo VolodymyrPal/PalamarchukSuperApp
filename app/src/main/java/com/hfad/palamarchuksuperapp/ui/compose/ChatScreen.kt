@@ -1,10 +1,11 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -56,39 +57,24 @@ fun ChatScreen(
 
             val myState by chatBotViewModel.message_flow.collectAsStateWithLifecycle()
 
-//            LaunchedEffect(Unit) {
-//                val groqKey = BuildConfig.GROQ_KEY
-//                try {
-//                    val response = client.post(
-//                        "https://api.openai.com/v1/chat/completions"
-//                    ) {
-//                        url()
-//                        headers {
-//                            append("Authorization", "Bearer $groqKey")
-//                            append("Content-Type", "application/json")
-//                        }
-//                        setBody(request)
-//                    }
-//                    Log.d("TAG", "Response: $response")
-//                } catch (e: Exception) {
-//                    Log.d("TAG", "Error: $e")
-//                }
-//            }
-
             LazyColumn(
                 modifier = Modifier,
                 verticalArrangement = Arrangement.Top
             ) {
-                item {
-                    TextField(
-                        value = promptText,
-                        modifier = Modifier.fillMaxWidth(),
-                        onValueChange = { text: String -> promptText = text })
+                items(myState.size) {
+                    if (myState[it] is MessageText) {
+                        Text(text = (myState[it] as MessageText).content)
+                    }
+                    if (myState[it] is MessageChat) {
+                        Text(text = ((myState[it] as MessageChat).content.first() as ContentText).text)
+                    }
+                    Spacer(modifier = Modifier.size(20.dp))
                 }
                 item {
                     Button(
                         onClick = {
                             chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
+                            promptText = ""
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -96,26 +82,11 @@ fun ChatScreen(
                     }
                 }
                 item {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1000.dp)
-                    ) {
-                        items(myState.size) {
-                            if (myState[it] is MessageText) {
-                                Text(text = (myState[it] as MessageText).content)
-                            }
-                            if (myState[it] is MessageChat) {
-                                Text(text = ((myState[it] as MessageChat).content.first() as ContentText).text)
-                            }
-                        }
-                    }
-                    Text(
-                        text = responseText,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    TextField(
+                        value = promptText,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { text: String -> promptText = text })
                 }
-
             }
         }
     }
