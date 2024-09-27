@@ -21,6 +21,7 @@ import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
 import com.hfad.palamarchuksuperapp.ui.screens.StoreFragment
+import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
@@ -75,6 +76,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(SkillsViewModel::class)
     abstract fun bindSkillsViewModel(viewModel: SkillsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChatBotViewModel::class)
+    abstract fun bindMainScreenViewModel(viewModel: ChatBotViewModel): ViewModel
 
     @Binds
     @IntoMap
