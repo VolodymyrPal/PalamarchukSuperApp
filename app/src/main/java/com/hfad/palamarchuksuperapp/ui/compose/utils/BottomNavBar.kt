@@ -113,9 +113,7 @@ fun BottomNavBar(
         onClick = {
             onClickVibro()
             navController.navigate(Routes.MainScreenConstraint) {
-                popUpTo(navController.graph.findStartDestination().id) { //оставляет главный экран, как точку возврата
-                    saveState = true
-                }
+                popUpTo(navController.graph.findStartDestination().id) //оставляет главный экран, как точку возврата
                 launchSingleTop = true
                 restoreState = true
             }
