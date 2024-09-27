@@ -1,9 +1,9 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -12,35 +12,34 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.hfad.palamarchuksuperapp.BuildConfig
-import com.hfad.palamarchuksuperapp.data.services.GroqRequest
-import com.hfad.palamarchuksuperapp.data.services.Message
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.services.ContentText
+import com.hfad.palamarchuksuperapp.data.services.MessageChat
+import com.hfad.palamarchuksuperapp.data.services.MessageText
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.request.url
-import io.ktor.http.headers
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
+import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
-    chatBotViewModel: ChatBotViewModel = ChatBotViewModel(),
+    chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
+        (LocalContext.current.appComponent.viewModelFactory()),
 ) {
+
     val navController = LocalNavController.current
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
@@ -55,61 +54,26 @@ fun ChatScreen(
             var promptText: String by remember { mutableStateOf("") }
             var responseText: String by remember { mutableStateOf("") }
 
-            val client = remember {
-                HttpClient {
-                    install(ContentNegotiation) {
-                        json(Json {
-                            prettyPrint = true
-                            isLenient = true  //TODO lenient for testing
-                        })
-                    }
-                }
-            }
+            val myState by chatBotViewModel.message_flow.collectAsStateWithLifecycle()
 
-            val message = remember { Message(role = "user", content = promptText) }
-            val request =
-                remember { GroqRequest(messages = listOf(message), model = "llama3-8b-8192") }
-
-            LaunchedEffect(Unit) {
-                val groqKey = BuildConfig.GROQ_KEY
-                try {
-                    val response = client.post(
-                        "https://api.openai.com/v1/chat/completions"
-                    ) {
-                        url()
-                        headers {
-                            append("Authorization", "Bearer $groqKey")
-                            append("Content-Type", "application/json")
-                        }
-                        setBody(request)
-                    }
-                    Log.d("TAG", "Response: $response")
-                } catch (e: Exception) {
-                    Log.d("TAG", "Error: $e")
-                }
-            }
-
-//            call.enqueue(object : Callback<ChatCompletionResponse> {
-//
-//                override fun onResponse(
-//                    p0: Call<ChatCompletionResponse>,
-//                    p1: Response<ChatCompletionResponse>,
-//                ) {
-//                    if (p1.isSuccessful) {
-//                        responseText = p1.body()!!.choices[0].message.content
-//                    } else {
-//                        Log.d("TAG", "onResponseNotSuccessful: ${p1.code()}")
+//            LaunchedEffect(Unit) {
+//                val groqKey = BuildConfig.GROQ_KEY
+//                try {
+//                    val response = client.post(
+//                        "https://api.openai.com/v1/chat/completions"
+//                    ) {
+//                        url()
+//                        headers {
+//                            append("Authorization", "Bearer $groqKey")
+//                            append("Content-Type", "application/json")
+//                        }
+//                        setBody(request)
 //                    }
+//                    Log.d("TAG", "Response: $response")
+//                } catch (e: Exception) {
+//                    Log.d("TAG", "Error: $e")
 //                }
-//
-//                override fun onFailure(
-//                    p0: Call<ChatCompletionResponse>,
-//                    p1: Throwable,
-//                ) {
-//                    Log.d("Tag", "OnFailure: $p1")
-//                }
-//            })
-
+//            }
 
             LazyColumn(
                 modifier = Modifier,
@@ -124,7 +88,7 @@ fun ChatScreen(
                 item {
                     Button(
                         onClick = {
-
+                            chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -132,6 +96,20 @@ fun ChatScreen(
                     }
                 }
                 item {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1000.dp)
+                    ) {
+                        items(myState.size) {
+                            if (myState[it] is MessageText) {
+                                Text(text = (myState[it] as MessageText).content)
+                            }
+                            if (myState[it] is MessageChat) {
+                                Text(text = ((myState[it] as MessageChat).content.first() as ContentText).text)
+                            }
+                        }
+                    }
                     Text(
                         text = responseText,
                         modifier = Modifier.fillMaxWidth()
