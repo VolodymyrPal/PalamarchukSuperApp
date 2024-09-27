@@ -58,7 +58,7 @@ class GroqApiHandler @Inject constructor(
 
             val responseMessage = GroqContentBuilder.Builder().let {
                 it.role = "assistant"
-                it.buildText("${response.choices[0].message}")
+                it.buildText("${(response.choices[0].message as MessageText).content}")
             }
             chatHistory.update {
                 chatHistory.value.plus(responseMessage)
