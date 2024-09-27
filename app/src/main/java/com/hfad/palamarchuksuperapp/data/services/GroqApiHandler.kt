@@ -12,6 +12,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class GroqApiHandler @Inject constructor(
@@ -23,66 +25,55 @@ class GroqApiHandler @Inject constructor(
     private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
         it.role = "system"
         it.text("You are tutor and trying to solve users problem on image")
-    }.build()
+    }.buildChat()
 
-    private val chatHistory: MutableStateFlow<List<Message>> =
-        MutableStateFlow(mutableListOf(adminRoleMessage))
+    val chatHistory: MutableStateFlow<List<Message>> =
+        MutableStateFlow(emptyList())
+//    MutableStateFlow(mutableListOf(adminRoleMessage))
 
-    val url = "https://api.groq.com/v1/chat/completions"
+    val url = "https://api.groq.com/openai/v1/chat/completions"
     val url_image = "https://api.groq.com/openai/v1/chat/generate"
+
 
     suspend fun sendMessageChatImage(message: Message) {
         chatHistory.update {
             chatHistory.value.plus(message)
         }
-        val request = httpClient.post(url_image) {
+        val requestBody = Json.encodeToString(
+            value = GroqRequest(
+                model = Models.GROQ_IMAGE.value,
+                messages = chatHistory.value
+            )
+        )
+        Log.d("Request Body", requestBody) // Логируем тело запроса
+
+        val request = httpClient.post(url) {
             header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
-            setBody(GroqRequest(model = "123", messages = chatHistory.value))
+            setBody(GroqRequest(model = Models.GROQ_SIMPLE_TEXT.value, messages = chatHistory.value))
         }
+        Log.d("Request", request.body<String>())
         if (request.status == HttpStatusCode.OK) {
             val response = request.body<ChatCompletionResponse>()
 
             val responseMessage = GroqContentBuilder.Builder().let {
                 it.role = "assistant"
-                it.text("${response.choices[0].message.content}")
-            }.build()
+                it.buildText("${response.choices[0].message}")
+            }
             chatHistory.update {
                 chatHistory.value.plus(responseMessage)
             }
+        } else if (request.status != HttpStatusCode.BadRequest) {
+            Log.d("TAG", "error in text ${request.status}")
+        } else if (request.status.value > 400 || request.status.value < 500) {
+            Log.d("TAG", "request error ${request.status}")
+        } else if (request.status.value > 500 || request.status.value < 600) {
+            Log.d("TAG", "server error ${request.status}")
         } else {
-            Log.d("TAG", "onResponseNotSuccessful: ${request.status}")
+            Log.d("TAG", "unknown error ${request.status}")
         }
 
     }
-
-
-//    val call = groqApi.getChatCompletion(
-//        apiKey = BuildConfig.GROQ_KEY,  // Ваш API ключ
-//        body = request
-//    )
-
-//    call.enqueue(
-//    object : Callback<ChatCompletionResponse> {
-//
-//        override fun onResponse(
-//            p0: Call<ChatCompletionResponse>,
-//            p1: Response<ChatCompletionResponse>,
-//        ) {
-//            if (p1.isSuccessful) {
-//                responseText = p1.body()!!.choices[0].message.content
-//            } else {
-//                Log.d("TAG", "onResponseNotSuccessful: ${p1.code()}")
-//            }
-//        }
-//
-//        override fun onFailure(
-//            p0: Call<ChatCompletionResponse>,
-//            p1: Throwable,
-//        ) {
-//            Log.d("Tag", "OnFailure: $p1")
-//        }
-//    })
 }
 
 
@@ -95,18 +86,20 @@ class GroqContentBuilder {
         var role = "user"
 
         @JvmName("addPart")
-        fun <T : GroqContentType> part(data: T) = apply { contents.add(data) }
+        fun <T : GroqContentType> content(data: T) = apply { contents.add(data) }
 
         @JvmName("addText")
-        fun text(text: String) = part(ContentText(text))
+        fun text(text: String) = content(ContentText(text))
 
         @JvmName("addImage")
-        fun image(image: Base64) = part(ContentImage(image_url = ImageUrl(image)))
+        fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
 
-        fun build(): Message = Message(content = contents, role = role)
+//        fun build(): MessageText = MessageText(content = contents, role = role)
+        fun buildChat(): MessageChat = MessageChat(content = contents, role = role)
+
+        fun buildText(request: String): MessageText = MessageText(content = request, role = role)
     }
 }
-
 
 
 enum class Models(val value: String) {
