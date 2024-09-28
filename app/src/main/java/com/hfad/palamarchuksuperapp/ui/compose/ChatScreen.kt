@@ -61,10 +61,16 @@ fun ChatScreen(
             ) {
                 items(myState.size) {
                     if (myState[it] is MessageText) {
-                        Text(text = (myState[it] as MessageText).content)
+                        Text(
+                            text = (myState[it] as MessageText).content,
+                            color = if ((myState[it] as MessageText).role == "user") Color.Green else Color.Blue
+                        )
                     }
                     if (myState[it] is MessageChat) {
-                        Text(text = ((myState[it] as MessageChat).content.first() as ContentText).text)
+                        Text(
+                            text = ((myState[it] as MessageChat).content.first() as ContentText).text,
+                            color = Color.Yellow
+                        )
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }
@@ -74,7 +80,7 @@ fun ChatScreen(
                             chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
                             promptText = ""
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
                     ) {
                         Text("Send message to Bot")
                     }
