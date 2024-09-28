@@ -56,7 +56,8 @@ fun ChatScreen(
 
             LazyColumn(
                 modifier = Modifier,
-                verticalArrangement = Arrangement.Top
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
             ) {
                 items(myState.size) {
                     if (myState[it] is MessageText) {
