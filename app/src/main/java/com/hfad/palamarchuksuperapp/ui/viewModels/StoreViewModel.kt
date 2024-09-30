@@ -42,7 +42,7 @@ class StoreViewModel @Inject constructor(
                 Log.d("TAG", "uiState: $it")
                 emit(Result.Error(DataError.Network.InternalServerError)) }
 
-    override val _errorFlow: MutableSharedFlow<Exception?> = repository.errorFlow
+    override val _errorFlow: MutableSharedFlow<DataError?> = repository.errorFlow
 
     override val uiState: StateFlow<StoreState> =
         combine(_dataFlow, _loading) { data, loading ->

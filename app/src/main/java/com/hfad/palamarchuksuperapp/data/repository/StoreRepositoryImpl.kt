@@ -78,6 +78,6 @@ class StoreRepositoryImpl @Inject constructor(
         storeDao.updateProduct(product)
     }
 
-    override val errorFlow: MutableSharedFlow<Exception?> = MutableSharedFlow()
+    override val errorFlow: MutableSharedFlow<DataError?> = MutableSharedFlow()
 
 }

@@ -23,12 +23,13 @@ class SkillsViewModel @Inject constructor(
     data class SkillState(
         val items: List<SkillDomainRW> = emptyList(),
         val loading: Boolean = false,
-        val error: Throwable? = null,
+        val error: DataError? = null,
     ) : State<List<SkillDomainRW>>
 
-    override val _dataFlow: Flow<Result<List<SkillDomainRW>, DataError>> = repository.getSkillsFromDB().map { Result.Success(it) }
+    override val _dataFlow: Flow<Result<List<SkillDomainRW>, DataError>> =
+        repository.getSkillsFromDB().map { Result.Success(it) }
 
-    override val _errorFlow: MutableStateFlow<Exception?> = MutableStateFlow(null)
+    override val _errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
 
     override val uiState: StateFlow<SkillState> =
         combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->

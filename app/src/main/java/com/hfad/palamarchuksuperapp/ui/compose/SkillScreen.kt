@@ -137,7 +137,7 @@ fun SkillScreen(
 
             if (state.error != null) {
                 Text(
-                    text = "Error: ${state.error?.message ?: "Unknown error"}",
+                    text = "Error: ${state.error ?: "Unknown error"}",
                     color = Color.Red
                 )
             }
