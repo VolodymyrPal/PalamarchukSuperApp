@@ -52,25 +52,31 @@ fun ChatScreen(
                 .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
             var promptText: String by remember { mutableStateOf("") }
-            val myState by chatBotViewModel.message_flow.collectAsStateWithLifecycle()
+            val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
             LazyColumn(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                items(myState.size) {
-                    if (myState[it] is MessageText) {
-                        Text(
-                            text = (myState[it] as MessageText).content,
-                            color = if ((myState[it] as MessageText).role == "user") Color.Green else Color.Blue
-                        )
-                    }
-                    if (myState[it] is MessageChat) {
-                        Text(
-                            text = ((myState[it] as MessageChat).content.first() as ContentText).text,
-                            color = Color.Yellow
-                        )
+                items(myState.listMessage.size) {
+                    when (myState.listMessage[it]) {
+                        is MessageChat -> {
+                            Text(
+                                text = ((myState.listMessage[it] as MessageChat
+                                        ).content.first() as ContentText).text,
+                                color = Color.Yellow
+                            )
+                        }
+
+                        is MessageText -> {
+                            Text(
+                                text = (myState.listMessage[it] as MessageText).content,
+                                color = if ((myState.listMessage[it]
+                                            as MessageText).role == "user"
+                                ) Color.Green else Color.Blue
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }
