@@ -56,12 +56,8 @@ class ChatBotViewModel @Inject constructor(
 
     }
 
-    val message_flow = groqApi.chatHistory
-    override val _dataFlow: Flow<Result<String, DataError>> = emptyFlow()
-    override val _errorFlow: MutableSharedFlow<Exception?>
-        get() = TODO("Not yet implemented")
-    override val uiState: StateFlow<State<String>>
-        get() = TODO("Not yet implemented")
+    override val _dataFlow: Flow<Result<List<Message>, DataError>> =  emptyFlow() //groqApi.chatHistory
+    override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
 
     override fun event(event: Event) {
         when (event) {
@@ -72,12 +68,14 @@ class ChatBotViewModel @Inject constructor(
 
     private fun sendText(text: String) {
         viewModelScope.launch {
+            isLoading.update { true }
             val request = GroqContentBuilder.Builder().let {
                 it.role = "user"
                 //it.text(text)
                 it.buildText(text)
             }
-            groqApi.sendMessageChatImage(request)
+            groqApi.getRespondChatImage(request)
+            isLoading.update { false }
         }
     }
 }
