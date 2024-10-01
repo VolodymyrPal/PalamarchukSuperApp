@@ -8,37 +8,54 @@ import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
-    private val groqApi: GroqApiHandler
+    private val groqApi: GroqApiHandler,
 ) : GenericViewModel<List<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(
         val listMessage: List<Message>,
         val isLoading: Boolean,
-        val error: DataError?
-    ): State<List<Message>>
+        val error: DataError?,
+    ) : State<List<Message>>
 
-    val isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val _dataFlow: Flow<Result<List<Message>, DataError>> = groqApi.chatHistory.map {
+        Result.Success<List<Message>, DataError>(it)
+    }.catch {
+        Result.Error<List<Message>, DataError>(DataError.Network.Unknown)
+    }
+    override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
 
     override val uiState: StateFlow<StateChat> = combine(
-        groqApi.chatHistory, isLoading
-    ) { chatHistory, isLoading ->
-        StateChat(
-            listMessage = chatHistory,
-            isLoading = isLoading,
-            error = null
-        )
-    }.stateIn(viewModelScope,
+        _dataFlow, _loading, _errorFlow
+    ) { chatHistory, isLoading, error ->
+        when (chatHistory) {
+            is Result.Success -> {
+                StateChat(
+                    listMessage = chatHistory.data,
+                    isLoading = isLoading,
+                    error = error
+                )
+            }
+            is Result.Error -> {
+                StateChat(
+                    listMessage = emptyList(),
+                    isLoading = isLoading,
+                    error = error
+                )
+            }
+        }
+    }.stateIn(
+        viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = StateChat(
             listMessage = emptyList(),
@@ -53,29 +70,25 @@ class ChatBotViewModel @Inject constructor(
     }
 
     sealed class Effect : BaseEffect {
-
     }
-
-    override val _dataFlow: Flow<Result<List<Message>, DataError>> =  emptyFlow() //groqApi.chatHistory
-    override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
 
     override fun event(event: Event) {
         when (event) {
-            is Event.SendImage -> {  }
+            is Event.SendImage -> {}
             is Event.SentText -> sendText(event.text)
         }
     }
 
     private fun sendText(text: String) {
         viewModelScope.launch {
-            isLoading.update { true }
+            _loading.update { true }
             val request = GroqContentBuilder.Builder().let {
                 it.role = "user"
                 //it.text(text)
                 it.buildText(text)
             }
             groqApi.getRespondChatImage(request)
-            isLoading.update { false }
+            _loading.update { false }
         }
     }
 }
