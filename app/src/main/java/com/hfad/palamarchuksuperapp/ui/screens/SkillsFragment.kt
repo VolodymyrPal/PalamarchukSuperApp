@@ -64,7 +64,7 @@ class SkillsFragment : Fragment() {
 
                         if (it.error != null){
                                 binding.progressBarCalories.visibility = View.GONE
-                                binding.errorEmptyText.text = it.error!!.message
+                                binding.errorEmptyText.text = it.error.toString()
                                 binding.errorEmptyText.isVisible = true
                             }
                         if (it.items.isNotEmpty()) {

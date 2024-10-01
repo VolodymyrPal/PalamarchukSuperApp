@@ -51,7 +51,6 @@ class StoreRepositoryImpl @Inject constructor(
         return try {
             val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
             Log.d("TAG", "getProductWithErrors: $storeProducts")
-            if (Random.nextInt(0, 100) < 33) throw Exception("Error")
             Result.Success(storeProducts)
         } catch (e: RuntimeException) {
             Result.Error(DataError.Local.DatabaseError)
