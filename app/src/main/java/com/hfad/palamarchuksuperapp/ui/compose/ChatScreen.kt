@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import com.hfad.palamarchuksuperapp.data.services.MessageText
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
+import kotlinx.coroutines.delay
 
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
@@ -78,7 +80,20 @@ fun ChatScreen(
                             )
                         }
                     }
+
                     Spacer(modifier = Modifier.size(20.dp))
+                }
+                item {
+                    if (myState.error != null) {
+                        val showError = remember { mutableStateOf(true) }
+                        LaunchedEffect(myState.error) {
+                            delay(2000)
+                            showError.value = false
+                        }
+                        if (showError.value) {
+                            Text(text = myState.error.toString(), color = Color.Red)
+                        }
+                    }
                 }
                 item {
                     Button(
@@ -86,7 +101,8 @@ fun ChatScreen(
                             chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
                             promptText = ""
                         },
-                        modifier = Modifier
+                        modifier = Modifier,
+                        enabled = !myState.isLoading
                     ) {
                         Text("Send message to Bot")
                     }
