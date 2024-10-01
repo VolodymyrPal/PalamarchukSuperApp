@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import android.util.Log
+import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import io.ktor.client.HttpClient
@@ -39,16 +40,13 @@ class GroqApiHandler @Inject constructor(
 
     suspend fun getRespondChatImage(message: Message) {
         try {
-            chatHistory.update {
-                chatHistory.value.plus(message)
-            }
+            chatHistory.update { chatHistory.value.plus(message) }
             val requestBody = Json.encodeToString(
                 value = GroqRequest(
                     model = Models.GROQ_IMAGE.value,
                     messages = chatHistory.value
                 )
             )
-            Log.d("Request Body", requestBody) // Логируем тело запроса
 
             val request = httpClient.post(url) {
                 header("Authorization", "Bearer $apiKey")
@@ -60,7 +58,6 @@ class GroqApiHandler @Inject constructor(
                     )
                 )
             }
-            Log.d("Request", request.body<String>())
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<ChatCompletionResponse>()
 
@@ -71,16 +68,48 @@ class GroqApiHandler @Inject constructor(
                 chatHistory.update {
                     chatHistory.value.plus(responseMessage)
                 }
-            } else if (request.status != HttpStatusCode.BadRequest) {
-                Log.d("TAG", "error in text ${request.status}")
-            } else if (request.status.value > 400 || request.status.value < 500) {
-                Log.d("TAG", "request error ${request.status}")
-            } else if (request.status.value > 500 || request.status.value < 600) {
-                Log.d("TAG", "server error ${request.status}")
             } else {
-                Log.d("TAG", "unknown error ${request.status}")
+                throw CodeError(request.status.value)
             }
         } catch (e: Exception) {
+            errorFlow.update {
+                when (e) {
+                    is HttpException -> {
+                        DataError.Network.InternalServerError
+                    }
+
+                    is CodeError -> {
+                        when (e.value) {
+                            400 -> {
+                                DataError.Network.BadRequest
+                            }
+
+                            401 -> {
+                                DataError.Network.Unauthorized
+                            }
+
+                            403 -> {
+                                DataError.Network.Forbidden
+                            }
+                            in 400..500 -> {
+                                DataError.Network.InternalServerError
+                            }
+                            in 500..600 -> {
+                                DataError.Network.Unknown
+                            }
+//                             {(itrequest.status.value > 400 || request.status.value < 500)
+//                                (request.status.value > 500 || request.status.value < 600) }
+                            else -> {
+                                DataError.Network.Unknown
+                            }
+                        }
+                    }
+
+                    else -> {
+                        DataError.Network.Unknown
+                    }
+                }
+            }
             Log.d("TAG", "Error in sendText: $e")
         }
     }
@@ -111,6 +140,7 @@ class GroqContentBuilder {
     }
 }
 
+class CodeError(val value: Int) : Exception()
 
 enum class Models(val value: String) {
     GROQ_SIMPLE_TEXT("llama3-8b-8192"),
