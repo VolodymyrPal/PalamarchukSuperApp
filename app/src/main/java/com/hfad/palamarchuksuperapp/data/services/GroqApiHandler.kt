@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.encodeToString
@@ -28,7 +29,7 @@ class GroqApiHandler @Inject constructor(
         it.text("You are tutor and trying to solve users problem on image")
     }.buildChat()
 
-    val errorFlow = MutableStateFlow<DataError?>(null)
+    val errorFlow = MutableSharedFlow<DataError?>(replay = 0)
 
     val chatHistory: MutableStateFlow<List<Message>> =
         MutableStateFlow(emptyList())
@@ -40,6 +41,7 @@ class GroqApiHandler @Inject constructor(
 
     suspend fun getRespondChatImage(message: Message) {
         try {
+            throw RuntimeException()
             chatHistory.update { chatHistory.value.plus(message) }
             val requestBody = Json.encodeToString(
                 value = GroqRequest(
@@ -72,7 +74,7 @@ class GroqApiHandler @Inject constructor(
                 throw CodeError(request.status.value)
             }
         } catch (e: Exception) {
-            errorFlow.update {
+            errorFlow.emit(
                 when (e) {
                     is HttpException -> {
                         DataError.Network.InternalServerError
@@ -91,9 +93,11 @@ class GroqApiHandler @Inject constructor(
                             403 -> {
                                 DataError.Network.Forbidden
                             }
+
                             in 400..500 -> {
                                 DataError.Network.InternalServerError
                             }
+
                             in 500..600 -> {
                                 DataError.Network.Unknown
                             }
@@ -109,8 +113,8 @@ class GroqApiHandler @Inject constructor(
                         DataError.Network.Unknown
                     }
                 }
-            }
-            Log.d("TAG", "Error in sendText: $e")
+            )
+            Log.d("Groq emiting", "$e was emited")
         }
     }
 }
