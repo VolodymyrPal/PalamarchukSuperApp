@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqContentBuilder
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -28,12 +30,23 @@ class ChatBotViewModel @Inject constructor(
         val error: DataError?,
     ) : State<List<Message>>
 
+    override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
+
+    init {
+        viewModelScope.launch {
+            _errorFlow.collectLatest {
+                effect(Effect.ShowToast(it.toString()))
+            }
+        }
+    }
+
     override val _dataFlow: Flow<Result<List<Message>, DataError>> = groqApi.chatHistory.map {
         Result.Success<List<Message>, DataError>(it)
     }.catch {
-        Result.Error<List<Message>, DataError>(DataError.Network.Unknown)
+        Log.d("_dataFlow: ", "Error")
+        groqApi.errorFlow.emit(DataError.Network.Unknown)
+        //Result.Error<List<Message>, DataError>(DataError.Network.Unknown)
     }
-    override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow, _loading, _errorFlow
@@ -70,6 +83,7 @@ class ChatBotViewModel @Inject constructor(
     }
 
     sealed class Effect : BaseEffect {
+        data class ShowToast(val text: String) : Effect()
     }
 
     override fun event(event: Event) {
