@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.DataError
@@ -24,12 +25,13 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     abstract override fun event(event: EVENT)
     abstract override val uiState: StateFlow<State<T>>
 
-    private val effectFlow = MutableSharedFlow<EFFECT>()
+    private val effectFlow = MutableSharedFlow<EFFECT>(replay = 0, extraBufferCapacity = 1)
     override val effect: SharedFlow<EFFECT> =
         effectFlow.asSharedFlow()
 
     override fun effect(effect: EFFECT) {
         viewModelScope.launch {
+            Log.d("Generic VM", "Effect was emited")
             effectFlow.emit(effect)
         }
     }
