@@ -109,6 +109,7 @@ object NetworkModule {
         return HttpClient(CIO) {
             engine {
                 endpoint {
+                    socketTimeout = 10_000
                     connectTimeout = 5000        // Время ожидания подключения 5 секунд
                     requestTimeout = 10000       // Максимальное время выполнения запроса 10 секунд
                     keepAliveTime =
