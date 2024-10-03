@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
-import android.widget.Toast
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,23 +40,19 @@ import kotlinx.coroutines.delay
 fun ChatScreen(
     modifier: Modifier = Modifier,
     chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
-        (LocalContext.current.appComponent.viewModelFactory()),
+        (factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    val context = LocalContext.current
 
-    LaunchedEffect(context) {
-        chatBotViewModel.effect.collect { effect ->
-            when (effect) {
-                is ChatBotViewModel.Effect.ShowToast -> {
-                    Toast.makeText(
-                        context,
-                        "Error :(",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
-    }
+    val effect by chatBotViewModel.effect.collectAsStateWithLifecycle(null)
+    Log.d("TAG", "EffectHandler: ${chatBotViewModel.effect}")
+
+
+//    LaunchedEffect(context) {
+//        Log.d("ChatScreen", "$context")
+//        chatBotViewModel.effect.collect { effect ->
+//
+//        }
+//    }
 
 
     Scaffold(
@@ -115,8 +111,8 @@ fun ChatScreen(
                 item {
                     Button(
                         onClick = {
-                            chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
-                            promptText = ""
+                            chatBotViewModel.effect(ChatBotViewModel.Effect.ShowToast("Error"))
+                            //chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
                         },
                         modifier = Modifier,
                         enabled = !myState.isLoading
