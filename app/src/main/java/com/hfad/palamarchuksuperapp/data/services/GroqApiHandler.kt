@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import android.util.Log
 import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.domain.models.DataError
@@ -114,7 +113,6 @@ class GroqApiHandler @Inject constructor(
                     }
                 }
             )
-            Log.d("Groq emiting", "$e was emited")
         }
     }
 }
