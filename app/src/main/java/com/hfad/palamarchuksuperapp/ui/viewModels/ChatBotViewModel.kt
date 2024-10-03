@@ -34,7 +34,7 @@ class ChatBotViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _errorFlow.collectLatest {
+            groqApi.errorFlow.collectLatest {
                 effect(Effect.ShowToast(it.toString()))
             }
         }
