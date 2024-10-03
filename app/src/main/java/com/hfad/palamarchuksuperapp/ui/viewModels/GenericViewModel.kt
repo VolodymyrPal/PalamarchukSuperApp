@@ -25,13 +25,12 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     abstract override fun event(event: EVENT)
     abstract override val uiState: StateFlow<State<T>>
 
-    private val effectFlow = MutableSharedFlow<EFFECT>(replay = 0, extraBufferCapacity = 1)
-    override val effect: SharedFlow<EFFECT> =
-        effectFlow.asSharedFlow()
+    private val effectFlow = MutableSharedFlow<EFFECT>()
+    override val effect: SharedFlow<EFFECT> = effectFlow.asSharedFlow()
 
     override fun effect(effect: EFFECT) {
         viewModelScope.launch {
-            Log.d("Generic VM", "Effect was emited")
+            Log.d("Generic VM", "Effect was $effect")
             effectFlow.emit(effect)
         }
     }
