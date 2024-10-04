@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -21,12 +22,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
@@ -60,9 +59,12 @@ fun BottomNavBar(
         }
     }
 
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = navBackStackEntry?.destination?.route
+
+    val currentScreen = remember(navBackStackEntry?.destination) {
+            navBackStackEntry?.destination?.route ?: Routes.MainScreenConstraint.route
+        }
+    Log.d("Current screen: ", currentScreen)
 
 
     @Suppress("DEPRECATION")
@@ -74,21 +76,23 @@ fun BottomNavBar(
         }
     }
 
-    val appImages = remember { AppImages(context).mainImage }
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    val appImages = remember(context) { AppImages(context).mainImage }
+    val selectedTabIndex by remember(currentScreen) {
+        mutableIntStateOf(
+            when (currentScreen) {
+                Routes.MainScreenConstraint.route -> {
+                    0
+                }
 
-    LaunchedEffect(currentScreen) {
-        selectedTabIndex = when (currentScreen) {
-            Routes.MainScreenConstraint.route -> {
-                0
+                Routes.Settings.route -> {
+                    2
+                }
+
+                else -> {
+                    3
+                }
             }
-            Routes.Settings.route -> {
-                2
-            }
-            else -> {
-                3
-            }
-        }
+        )
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -134,28 +138,30 @@ fun BottomNavBar(
 
 
     val SettingTopLevelRoute = TabBarItem(
-            title = "Settings",
-            route = Routes.Settings,
-            selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
-            unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
-            badgeAmount = 10,
-            onClick = {
-                onClickVibro()
-                navController.navigate(Routes.Settings) {
-                    popUpTo(navController.graph.findStartDestination().id) { //оставляет главный экран, как точку возврата
-                        saveState = true
-                        inclusive = false
-                    }
-                    launchSingleTop = true
-                    restoreState = true
+        title = "Settings",
+        route = Routes.Settings,
+        selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
+        unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
+        badgeAmount = 10,
+        onClick = {
+            onClickVibro()
+            navController.navigate(Routes.Settings) {
+                popUpTo(navController.graph.findStartDestination().id) { //оставляет главный экран, как точку возврата
+                    saveState = true
+                    inclusive = false
                 }
+                launchSingleTop = true
+                restoreState = true
             }
-        )
+        }
+    )
+    val tabBarItems =
+        remember { listOf(HomeTopLevelRoute, CameraTopLevelRoute, SettingTopLevelRoute) }
 
-
-    val tabBarItems = remember { listOf(HomeTopLevelRoute, CameraTopLevelRoute, SettingTopLevelRoute) }
     NavigationBar(
-        modifier = modifier.padding(bottom = 25.dp, start = 25.dp, end = 25.dp).clip(RoundedCornerShape(25)),
+        modifier = modifier
+            .padding(bottom = 25.dp, start = 25.dp, end = 25.dp)
+            .clip(RoundedCornerShape(25)),
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         tabBarItems.forEachIndexed { index, tabBarItem ->
@@ -200,10 +206,9 @@ fun TabBarIconView(
         }
     }) {
         Icon(
-            if (isSelected) {
-                selectedIcon
-            } else {
-                unselectedIcon
+            when (isSelected) {
+                false -> unselectedIcon
+                true -> selectedIcon
             }, title
         )
     }
