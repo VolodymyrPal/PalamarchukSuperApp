@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,17 +42,17 @@ fun ChatScreen(
     chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
         (factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
+    val context = LocalContext.current
 
-    val effect by chatBotViewModel.effect.collectAsStateWithLifecycle(null)
-    Log.d("TAG", "EffectHandler: ${chatBotViewModel.effect}")
-
-
-//    LaunchedEffect(context) {
-//        Log.d("ChatScreen", "$context")
-//        chatBotViewModel.effect.collect { effect ->
-//
-//        }
-//    }
+    LaunchedEffect(Unit) {
+        chatBotViewModel.effect.collect { effect ->
+            when (effect) {
+                is ChatBotViewModel.Effect.ShowToast -> {
+                    Toast.makeText(context, effect.text, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
 
     Scaffold(
