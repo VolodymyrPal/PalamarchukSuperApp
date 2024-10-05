@@ -1,6 +1,7 @@
 package com.example.compose
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.MaterialTheme
@@ -8,6 +9,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -90,10 +92,6 @@ fun AppTheme(
     } else {
         DarkColors
     }
-//    CompositionLocalProvider(
-//        LocalRippleTheme provides RippleCustomTheme,
-//        content = content
-//    )
 
     MaterialTheme(
         colorScheme = colors,
@@ -103,8 +101,13 @@ fun AppTheme(
         ) {
         ProvideTextStyle(
             value = TextStyle(color = Color.Black),
-            content = content
         )
+        {
+            CompositionLocalProvider(
+                LocalRippleTheme provides RippleCustomTheme,
+                content = content
+            )
+        }
     }
 }
 
@@ -114,10 +117,18 @@ private object RippleCustomTheme : RippleTheme {
     override fun defaultColor(): Color = MaterialTheme.colorScheme.primary
 
     @Composable
-    override fun rippleAlpha(): RippleAlpha {
-        return RippleTheme.defaultRippleAlpha(
-            Color.Black,
-            lightTheme = true
-        )
-    }
+    override fun rippleAlpha(): RippleAlpha = RippleAlpha(
+        draggedAlpha = 1f,
+        focusedAlpha = 1f,
+        hoveredAlpha = 1f,
+        pressedAlpha = 1f
+    )
+
+//    @Composable
+//    override fun rippleAlpha(): RippleAlpha {
+//        return RippleTheme.defaultRippleAlpha(
+//            Color.Black,
+//            lightTheme = true
+//        )
+//    }
 }
