@@ -85,8 +85,9 @@ class ChatBotViewModel @Inject constructor(
     )
 
     sealed class Event : BaseEvent {
-        object SendImage : Event()
+        data class SendImage(val text: String, val image: String) : Event()
         data class SentText(val text: String) : Event()
+        data class ShowToast(val message: String) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -95,8 +96,23 @@ class ChatBotViewModel @Inject constructor(
 
     override fun event(event: Event) {
         when (event) {
-            is Event.SendImage -> {}
+            is Event.SendImage -> sendImage(event.text, event.image)
             is Event.SentText -> sendText(event.text)
+            is Event.ShowToast -> showToast(event.message)
+        }
+    }
+
+    private fun sendImage(text: String, image: String) {
+        viewModelScope.launch {
+            _loading.update { true }
+            val request = GroqContentBuilder.Builder().let {
+                it.role = "user"
+                it.text(text)
+                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg")
+                it.buildChat()
+            }
+            groqApi.getRespondChatImage(request)
+            _loading.update { false }
         }
     }
 
@@ -110,6 +126,12 @@ class ChatBotViewModel @Inject constructor(
             }
             groqApi.getRespondChatImage(request)
             _loading.update { false }
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            effect(Effect.ShowToast(message))
         }
     }
 }
