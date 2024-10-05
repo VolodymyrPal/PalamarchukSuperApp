@@ -16,4 +16,6 @@ sealed interface DataError : Error {
         DatabaseError, // ошибка базы данных
         Unknown // неизвестная ошибка
     }
+    data class CustomError (val errorText: String): DataError
+
 }
