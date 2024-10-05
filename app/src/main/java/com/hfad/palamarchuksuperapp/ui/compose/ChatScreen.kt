@@ -32,7 +32,6 @@ import com.hfad.palamarchuksuperapp.data.services.MessageText
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
-import kotlinx.coroutines.delay
 
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
@@ -96,23 +95,32 @@ fun ChatScreen(
 
                     Spacer(modifier = Modifier.size(20.dp))
                 }
-                item {
-                    if (myState.error != null) {
-                        val showError = remember { mutableStateOf(true) }
-                        LaunchedEffect(myState.error) {
-                            delay(2000)
-                            showError.value = false
-                        }
-                        if (showError.value) {
-                            Text(text = myState.error.toString(), color = Color.Red)
-                        }
-                    }
-                }
+//                item {
+//                    if (myState.error != null) {
+//                        val showError = remember { mutableStateOf(true) }
+//                        LaunchedEffect(myState.error) {
+//                            delay(2000)
+//                            showError.value = false
+//                        }
+//                        if (showError.value) {
+//                            Text(text = myState.error.toString(), color = Color.Red)
+//                        }
+//                    }
+//                }
                 item {
                     Button(
                         onClick = {
-                            chatBotViewModel.effect(ChatBotViewModel.Effect.ShowToast("Error"))
-                            //chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
+                            if (promptText.isNotBlank()) {
+                                chatBotViewModel.event(
+                                    ChatBotViewModel.Event.SendImage(
+                                        promptText,
+                                        image = "https://s7d2.scene7.com/is/image/TWCNews/SINGLE_SUNFLOWER_8.13.21"
+                                    )
+                                )
+                                promptText = ""
+                            } else {
+                                chatBotViewModel.event(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+                            }
                         },
                         modifier = Modifier,
                         enabled = !myState.isLoading
