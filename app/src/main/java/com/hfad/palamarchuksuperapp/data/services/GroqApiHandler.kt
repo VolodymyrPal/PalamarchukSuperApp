@@ -40,7 +40,6 @@ class GroqApiHandler @Inject constructor(
 
     suspend fun getRespondChatImage(message: Message) {
         try {
-            throw RuntimeException()
             chatHistory.update { chatHistory.value.plus(message) }
             val requestBody = Json.encodeToString(
                 value = GroqRequest(
@@ -54,11 +53,12 @@ class GroqApiHandler @Inject constructor(
                 contentType(ContentType.Application.Json)
                 setBody(
                     GroqRequest(
-                        model = Models.GROQ_SIMPLE_TEXT.value,
+                        model = Models.GROQ_IMAGE.value,
                         messages = chatHistory.value
                     )
                 )
             }
+            Log.d("Request: ", "${Json.encodeToString(request)}")
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<ChatCompletionResponse>()
 
@@ -66,6 +66,7 @@ class GroqApiHandler @Inject constructor(
                     it.role = "assistant"
                     it.buildText((response.choices[0].message as MessageText).content)
                 }
+                Log.d("Groq response:", "${request.body<String>()}")
                 chatHistory.update {
                     chatHistory.value.plus(responseMessage)
                 }
@@ -100,8 +101,6 @@ class GroqApiHandler @Inject constructor(
                             in 500..600 -> {
                                 DataError.Network.Unknown
                             }
-//                             {(itrequest.status.value > 400 || request.status.value < 500)
-//                                (request.status.value > 500 || request.status.value < 600) }
                             else -> {
                                 DataError.Network.Unknown
                             }
@@ -135,7 +134,7 @@ class GroqContentBuilder {
         @JvmName("addImage")
         fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
 
-        //        fun build(): MessageText = MessageText(content = contents, role = role)
+        //fun build(): MessageText = MessageText(content = contents, role = role)
         fun buildChat(): MessageChat = MessageChat(content = contents, role = role)
 
         fun buildText(request: String): MessageText = MessageText(content = request, role = role)
@@ -146,5 +145,5 @@ class CodeError(val value: Int) : Exception()
 
 enum class Models(val value: String) {
     GROQ_SIMPLE_TEXT("llama3-8b-8192"),
-    GROQ_IMAGE("llava-v1.5-7b-4096-preview"),
+    GROQ_IMAGE("llama-3.2-11b-vision-preview"),
 }
