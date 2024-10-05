@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
+import android.util.Log
 import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.domain.models.DataError
@@ -34,8 +35,7 @@ class GroqApiHandler @Inject constructor(
         MutableStateFlow(emptyList())
 //    MutableStateFlow(mutableListOf(adminRoleMessage))
 
-    val url = "https://api.groq.com/openai/v1/chat/completions"
-    val url_image = "https://api.groq.com/openai/v1/chat/generate"
+    private val url = "https://api.groq.com/openai/v1/chat/completions"
 
 
     suspend fun getRespondChatImage(message: Message) {
