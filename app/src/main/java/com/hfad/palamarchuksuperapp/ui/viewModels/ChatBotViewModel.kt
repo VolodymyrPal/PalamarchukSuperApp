@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -34,8 +33,15 @@ class ChatBotViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            groqApi.errorFlow.collectLatest {
-                effect(Effect.ShowToast(it.toString()))
+            groqApi.errorFlow.collect { error ->
+                when (error) {
+                    is DataError.CustomError -> {
+                        effect(Effect.ShowToast(error.errorText))
+                    }
+                    else -> {
+                        effect(Effect.ShowToast(error.toString()))
+                    }
+                }
             }
         }
     }
@@ -59,6 +65,7 @@ class ChatBotViewModel @Inject constructor(
                     error = error
                 )
             }
+
             is Result.Error -> {
                 StateChat(
                     listMessage = emptyList(),
