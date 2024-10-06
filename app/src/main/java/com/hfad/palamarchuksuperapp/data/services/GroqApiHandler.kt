@@ -129,7 +129,7 @@ class GroqContentBuilder {
         fun <T : GroqContentType> content(data: T) = apply { contents.add(data) }
 
         @JvmName("addText")
-        fun text(text: String) = content(ContentText(text))
+        fun text(text: String) = content(ContentText(text = text))
 
         @JvmName("addImage")
         fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
