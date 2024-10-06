@@ -47,6 +47,7 @@ class GroqApiHandler @Inject constructor(
                     messages = chatHistory.value
                 )
             )
+            Log.d("Groq request: ", requestBody)
 
             val request = httpClient.post(url) {
                 header("Authorization", "Bearer $apiKey")
@@ -58,7 +59,6 @@ class GroqApiHandler @Inject constructor(
                     )
                 )
             }
-            Log.d("Request: ", "${Json.encodeToString(request)}")
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<ChatCompletionResponse>()
 
