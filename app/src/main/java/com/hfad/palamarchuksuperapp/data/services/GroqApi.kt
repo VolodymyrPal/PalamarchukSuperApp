@@ -52,7 +52,7 @@ data class ContentImage(
 @Serializable
 data class ImageUrl(
     val url: String
-) : GroqContentType
+)
 
 
 object GroqContentSerializer : JsonContentPolymorphicSerializer<GroqContentType>(GroqContentType::class) {
