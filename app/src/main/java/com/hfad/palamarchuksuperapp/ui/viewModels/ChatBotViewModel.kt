@@ -7,6 +7,7 @@ import com.hfad.palamarchuksuperapp.data.services.GroqContentBuilder
 import com.hfad.palamarchuksuperapp.data.services.Message
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -50,8 +51,7 @@ class ChatBotViewModel @Inject constructor(
         Result.Success<List<Message>, DataError>(it)
     }.catch {
         Log.d("_dataFlow: ", "Error")
-        groqApi.errorFlow.emit(DataError.Network.Unknown)
-        //Result.Error<List<Message>, DataError>(DataError.Network.Unknown)
+        groqApi.errorFlow.emit(DataError.CustomError("Error in collecting"))
     }
 
     override val uiState: StateFlow<StateChat> = combine(
@@ -105,14 +105,17 @@ class ChatBotViewModel @Inject constructor(
     private fun sendImage(text: String, image: String) {
         viewModelScope.launch {
             _loading.update { true }
-            val request = GroqContentBuilder.Builder().let {
-                it.role = "user"
-                it.text(text)
-                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg")
-                it.buildChat()
-            }
-            groqApi.getRespondChatImage(request)
+            Log.d("sendImage first: ", "${_loading.value}")
+//            val request = GroqContentBuilder.Builder().let {
+//                it.role = "user"
+//                it.text(text)
+//                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg")
+//                it.buildChat()
+//            }
+//            groqApi.getRespondChatImage(request)
+            delay(1500)
             _loading.update { false }
+            Log.d("sendImage second: ", "${_loading.value}")
         }
     }
 
