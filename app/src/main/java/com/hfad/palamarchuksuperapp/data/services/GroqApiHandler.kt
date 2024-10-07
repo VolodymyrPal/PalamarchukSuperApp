@@ -41,13 +41,14 @@ class GroqApiHandler @Inject constructor(
     suspend fun getRespondChatImage(message: Message) {
         try {
             chatHistory.update { chatHistory.value.plus(message) }
+            Log.d("Groq message: ", chatHistory.value.toString())
+
             val requestBody = Json.encodeToString(
                 value = GroqRequest(
                     model = Models.GROQ_IMAGE.value,
                     messages = chatHistory.value
                 )
             )
-            Log.d("Groq request: ", requestBody)
 
             val request = httpClient.post(url) {
                 header("Authorization", "Bearer $apiKey")
@@ -66,7 +67,8 @@ class GroqApiHandler @Inject constructor(
                     it.role = "assistant"
                     it.buildText((response.choices[0].message as MessageText).content)
                 }
-                Log.d("Groq response:", "${request.body<String>()}")
+                Log.d("Groq response:", request.body<String>())
+
                 chatHistory.update {
                     chatHistory.value.plus(responseMessage)
                 }
@@ -101,6 +103,7 @@ class GroqApiHandler @Inject constructor(
                             in 500..600 -> {
                                 DataError.Network.Unknown
                             }
+
                             else -> {
                                 DataError.Network.Unknown
                             }
