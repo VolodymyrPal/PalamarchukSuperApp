@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -26,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.services.ContentImage
 import com.hfad.palamarchuksuperapp.data.services.ContentText
 import com.hfad.palamarchuksuperapp.data.services.MessageChat
 import com.hfad.palamarchuksuperapp.data.services.MessageText
@@ -76,11 +80,25 @@ fun ChatScreen(
                 items(myState.listMessage.size) {
                     when (myState.listMessage[it]) {
                         is MessageChat -> {
-                            Text(
-                                text = ((myState.listMessage[it] as MessageChat
-                                        ).content.first() as ContentText).text,
-                                color = Color.Yellow
-                            )
+                            val content = (myState.listMessage[it] as MessageChat).content
+                            for (messages in content) {
+                                Log.d("Messages: ", "$messages")
+                                when (messages) {
+                                    is ContentText -> {
+                                        Text(
+                                            text = messages.text,
+                                            color = Color.Green
+                                        )
+                                    }
+
+                                    is ContentImage -> {
+                                        Text(
+                                            text = messages.image_url.url,
+                                            color = Color.Yellow
+                                        )
+                                    }
+                                }
+                            }
                         }
 
                         is MessageText -> {
