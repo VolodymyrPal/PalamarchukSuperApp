@@ -10,9 +10,9 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -31,6 +31,7 @@ class ChatBotViewModel @Inject constructor(
     ) : State<List<Message>>
 
     override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
+    override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
@@ -49,14 +50,16 @@ class ChatBotViewModel @Inject constructor(
 
     override val _dataFlow: Flow<Result<List<Message>, DataError>> = groqApi.chatHistory.map {
         Result.Success<List<Message>, DataError>(it)
-    }.catch {
-        Log.d("_dataFlow: ", "Error")
-        groqApi.errorFlow.emit(DataError.CustomError("Error in collecting"))
     }
+
+    val dataFlow: MutableStateFlow<Result<List<Message>, DataError>> = MutableStateFlow(Result.Success(
+        emptyList()
+    ))
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow, _loading, _errorFlow
     ) { chatHistory, isLoading, error ->
+        Log.d("Ui state flow: ", "$chatHistory, $isLoading, $error")
         when (chatHistory) {
             is Result.Success -> {
                 StateChat(
@@ -76,7 +79,7 @@ class ChatBotViewModel @Inject constructor(
         }
     }.stateIn(
         viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
+        started = SharingStarted.WhileSubscribed(5000),
         initialValue = StateChat(
             listMessage = emptyList(),
             isLoading = false,
@@ -106,13 +109,13 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.update { true }
             Log.d("sendImage first: ", "${_loading.value}")
-//            val request = GroqContentBuilder.Builder().let {
-//                it.role = "user"
-//                it.text(text)
-//                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg")
-//                it.buildChat()
-//            }
-//            groqApi.getRespondChatImage(request)
+            val request = GroqContentBuilder.Builder().let {
+                it.role = "user"
+                it.text(text)
+                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg")
+                it.buildChat()
+            }
+            groqApi.getRespondChatImage(request)
             delay(1500)
             _loading.update { false }
             Log.d("sendImage second: ", "${_loading.value}")
