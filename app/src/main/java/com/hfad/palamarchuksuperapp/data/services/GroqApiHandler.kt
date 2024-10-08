@@ -55,26 +55,26 @@ class GroqApiHandler @Inject constructor(
                 contentType(ContentType.Application.Json)
                 setBody(
                     GroqRequest(
-                        model = Models.GROQ_IMAGE.value,
+                        model = Models.GROQ_SIMPLE_TEXT.value,
                         messages = chatHistory.value
                     )
                 )
             }
-            if (request.status == HttpStatusCode.OK) {
-                val response = request.body<ChatCompletionResponse>()
-
-                val responseMessage = GroqContentBuilder.Builder().let {
-                    it.role = "assistant"
-                    it.buildText((response.choices[0].message as MessageText).content)
-                }
-                Log.d("Groq response:", request.body<String>())
-
-                chatHistory.update {
-                    chatHistory.value.plus(responseMessage)
-                }
-            } else {
-                throw CodeError(request.status.value)
-            }
+//            if (request.status == HttpStatusCode.OK) {
+//                val response = request.body<ChatCompletionResponse>()
+//
+//                val responseMessage = GroqContentBuilder.Builder().let {
+//                    it.role = "assistant"
+//                    it.buildText((response.choices[0].message as MessageText).content)
+//                }
+//                Log.d("Groq response:", request.body<String>())
+//
+//                chatHistory.update {
+//                    chatHistory.value.plus(responseMessage)
+//                }
+//            } else {
+//                throw CodeError(request.status.value)
+//            }
         } catch (e: Exception) {
             errorFlow.emit(
                 when (e) {
