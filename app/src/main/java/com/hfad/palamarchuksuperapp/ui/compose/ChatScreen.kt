@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,11 +30,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.services.ContentImage
 import com.hfad.palamarchuksuperapp.data.services.ContentText
+import com.hfad.palamarchuksuperapp.data.services.Message
 import com.hfad.palamarchuksuperapp.data.services.MessageChat
 import com.hfad.palamarchuksuperapp.data.services.MessageText
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
+import kotlinx.coroutines.delay
 
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
@@ -69,9 +70,11 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(bottom = paddingValues.calculateBottomPadding())
         ) {
-            var promptText: String by remember { mutableStateOf("") }
             val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
+            Log.d("uiState: ", "$myState, $chatBotViewModel ")
+
+            var promptText: String by remember { mutableStateOf("") }
             LazyColumn(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,25 +83,11 @@ fun ChatScreen(
                 items(myState.listMessage.size) {
                     when (myState.listMessage[it]) {
                         is MessageChat -> {
-                            val content = (myState.listMessage[it] as MessageChat).content
-                            for (messages in content) {
-                                Log.d("Messages: ", "$messages")
-                                when (messages) {
-                                    is ContentText -> {
-                                        Text(
-                                            text = messages.text,
-                                            color = Color.Green
-                                        )
-                                    }
-
-                                    is ContentImage -> {
-                                        Text(
-                                            text = messages.image_url.url,
-                                            color = Color.Yellow
-                                        )
-                                    }
-                                }
-                            }
+                            Text(
+                                text = ((myState.listMessage[it] as MessageChat
+                                        ).content.first() as ContentText).text,
+                                color = Color.Yellow
+                            )
                         }
 
                         is MessageText -> {
@@ -113,32 +102,22 @@ fun ChatScreen(
 
                     Spacer(modifier = Modifier.size(20.dp))
                 }
-//                item {
-//                    if (myState.error != null) {
-//                        val showError = remember { mutableStateOf(true) }
-//                        LaunchedEffect(myState.error) {
-//                            delay(2000)
-//                            showError.value = false
-//                        }
-//                        if (showError.value) {
-//                            Text(text = myState.error.toString(), color = Color.Red)
-//                        }
-//                    }
-//                }
+                item {
+                    if (myState.error != null) {
+                        val showError = remember { mutableStateOf(true) }
+                        LaunchedEffect(myState.error) {
+                            delay(2000)
+                            showError.value = false
+                        }
+                        if (showError.value) {
+                            Text(text = myState.error.toString(), color = Color.Red)
+                        }
+                    }
+                }
                 item {
                     Button(
                         onClick = {
-                            if (promptText.isNotBlank()) {
-                                chatBotViewModel.event(
-                                    ChatBotViewModel.Event.SendImage(
-                                        promptText,
-                                        image = "https://s7d2.scene7.com/is/image/TWCNews/SINGLE_SUNFLOWER_8.13.21"
-                                    )
-                                )
-                                promptText = ""
-                            } else {
-                                chatBotViewModel.event(ChatBotViewModel.Event.ShowToast("Please enter a message"))
-                            }
+                            chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
                         },
                         modifier = Modifier,
                         enabled = !myState.isLoading
@@ -153,6 +132,105 @@ fun ChatScreen(
                         onValueChange = { text: String -> promptText = text })
                 }
             }
+
+
+//            LazyChatScreen(
+//                modifier = Modifier,
+//                messagesList = myState.listMessage,
+//                loading = myState.isLoading,
+//                event = chatBotViewModel :: event
+//            )
+        }
+    }
+}
+
+@Composable
+fun LazyChatScreen(
+    modifier: Modifier = Modifier,
+    messagesList: List<Message>? = null,
+    loading: Boolean = false,
+    event: ((ChatBotViewModel.Event) -> Unit)? = null
+) {
+    var promptText: String by remember { mutableStateOf("") }
+    LazyColumn(
+        modifier = Modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom,
+    ) {
+        items(messagesList!!.size) {
+            when (messagesList[it]) {
+                is MessageChat -> {
+                    val content = (messagesList[it] as MessageChat).content
+                    for (messages in content) {
+                        Log.d("Messages: ", "$messages")
+                        when (messages) {
+                            is ContentText -> {
+                                Text(
+                                    text = messages.text,
+                                    color = Color.Green
+                                )
+                            }
+
+                            is ContentImage -> {
+                                Text(
+                                    text = messages.image_url.url,
+                                    color = Color.Yellow
+                                )
+                            }
+                        }
+                    }
+                }
+
+                is MessageText -> {
+                    Text(
+                        text = (messagesList[it] as MessageText).content,
+                        color = if ((messagesList[it]
+                                    as MessageText).role == "user"
+                        ) Color.Green else Color.Blue
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.size(20.dp))
+        }
+//                item {
+//                    if (myState.error != null) {
+//                        val showError = remember { mutableStateOf(true) }
+//                        LaunchedEffect(myState.error) {
+//                            delay(2000)
+//                            showError.value = false
+//                        }
+//                        if (showError.value) {
+//                            Text(text = myState.error.toString(), color = Color.Red)
+//                        }
+//                    }
+//                }
+        item {
+            Button(
+                onClick = {
+                    if (promptText.isNotBlank()) {
+                        event?.invoke(
+                            ChatBotViewModel.Event.SentText(
+                                promptText,
+                                //image = "https://s7d2.scene7.com/is/image/TWCNews/SINGLE_SUNFLOWER_8.13.21"
+                            )
+                        )
+                        promptText = ""
+                    } else {
+                        event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+                    }
+                },
+                modifier = Modifier,
+                enabled = loading.not()
+            ) {
+                Text("Send message to Bot")
+            }
+        }
+        item {
+            TextField(
+                value = promptText,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = { text: String -> promptText = text })
         }
     }
 }
