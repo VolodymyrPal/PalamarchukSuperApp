@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +35,6 @@ import com.hfad.palamarchuksuperapp.data.services.MessageText
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
-import kotlinx.coroutines.delay
 
 
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
@@ -72,74 +70,12 @@ fun ChatScreen(
         ) {
             val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
-            Log.d("uiState: ", "$myState, $chatBotViewModel ")
-
-            var promptText: String by remember { mutableStateOf("") }
-            LazyColumn(
+            LazyChatScreen(
                 modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom,
-            ) {
-                items(myState.listMessage.size) {
-                    when (myState.listMessage[it]) {
-                        is MessageChat -> {
-                            Text(
-                                text = ((myState.listMessage[it] as MessageChat
-                                        ).content.first() as ContentText).text,
-                                color = Color.Yellow
-                            )
-                        }
-
-                        is MessageText -> {
-                            Text(
-                                text = (myState.listMessage[it] as MessageText).content,
-                                color = if ((myState.listMessage[it]
-                                            as MessageText).role == "user"
-                                ) Color.Green else Color.Blue
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.size(20.dp))
-                }
-                item {
-                    if (myState.error != null) {
-                        val showError = remember { mutableStateOf(true) }
-                        LaunchedEffect(myState.error) {
-                            delay(2000)
-                            showError.value = false
-                        }
-                        if (showError.value) {
-                            Text(text = myState.error.toString(), color = Color.Red)
-                        }
-                    }
-                }
-                item {
-                    Button(
-                        onClick = {
-                            chatBotViewModel.event(ChatBotViewModel.Event.SentText(promptText))
-                        },
-                        modifier = Modifier,
-                        enabled = !myState.isLoading
-                    ) {
-                        Text("Send message to Bot")
-                    }
-                }
-                item {
-                    TextField(
-                        value = promptText,
-                        modifier = Modifier.fillMaxWidth(),
-                        onValueChange = { text: String -> promptText = text })
-                }
-            }
-
-
-//            LazyChatScreen(
-//                modifier = Modifier,
-//                messagesList = myState.listMessage,
-//                loading = myState.isLoading,
-//                event = chatBotViewModel :: event
-//            )
+                messagesList = myState.listMessage,
+                loading = myState.isLoading,
+                event = chatBotViewModel :: event
+            )
         }
     }
 }
