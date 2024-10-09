@@ -9,10 +9,10 @@ import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -25,9 +25,9 @@ class ChatBotViewModel @Inject constructor(
 ) : GenericViewModel<List<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(
-        val listMessage: List<Message>,
-        val isLoading: Boolean,
-        val error: DataError?,
+        val listMessage: List<Message> = emptyList(),
+        val isLoading: Boolean = false,
+        val error: DataError? = null,
     ) : State<List<Message>>
 
     override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
@@ -40,6 +40,7 @@ class ChatBotViewModel @Inject constructor(
                     is DataError.CustomError -> {
                         effect(Effect.ShowToast(error.errorText))
                     }
+
                     else -> {
                         effect(Effect.ShowToast(error.toString()))
                     }
@@ -59,13 +60,12 @@ class ChatBotViewModel @Inject constructor(
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow, _loading, _errorFlow
     ) { chatHistory, isLoading, error ->
-        Log.d("Ui state flow: ", "$chatHistory, $isLoading, $error")
         when (chatHistory) {
             is Result.Success -> {
                 StateChat(
                     listMessage = chatHistory.data,
                     isLoading = isLoading,
-                    error = error
+                    error = null
                 )
             }
 
@@ -73,7 +73,7 @@ class ChatBotViewModel @Inject constructor(
                 StateChat(
                     listMessage = emptyList(),
                     isLoading = isLoading,
-                    error = error
+                    error = null
                 )
             }
         }
