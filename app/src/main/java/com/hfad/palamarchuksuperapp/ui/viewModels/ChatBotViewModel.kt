@@ -30,7 +30,7 @@ class ChatBotViewModel @Inject constructor(
         val error: DataError? = null,
     ) : State<List<Message>>
 
-    override val _errorFlow: MutableSharedFlow<DataError?> = groqApi.errorFlow
+    override val _errorFlow: MutableStateFlow<DataError?> = groqApi.errorFlow
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
@@ -49,13 +49,13 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    override val _dataFlow: Flow<Result<List<Message>, DataError>> = groqApi.chatHistory.map {
-        Result.Success<List<Message>, DataError>(it)
-    }
+    override val _dataFlow: Flow<Result<List<Message>, DataError>> =
+        groqApi.chatHistory.map<List<Message>, Result<List<Message>, DataError>> {
+            Result.Success(it)
+        }.catch {
+            emit(Result.Error(DataError.CustomError(it.message ?: "Error")))
+        }
 
-    val dataFlow: MutableStateFlow<Result<List<Message>, DataError>> = MutableStateFlow(Result.Success(
-        emptyList()
-    ))
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow, _loading, _errorFlow
