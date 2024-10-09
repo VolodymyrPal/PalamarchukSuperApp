@@ -18,7 +18,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
 
     protected abstract val _dataFlow: Flow<Result<T, DataError>>
 
-    protected abstract val _errorFlow: MutableSharedFlow<DataError?>
+    protected abstract val _errorFlow: MutableStateFlow<DataError?>
 
     protected open val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
