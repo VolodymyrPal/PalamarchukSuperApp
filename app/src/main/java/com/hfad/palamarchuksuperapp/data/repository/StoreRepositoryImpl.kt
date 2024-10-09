@@ -10,10 +10,9 @@ import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import retrofit2.HttpException
 import java.lang.RuntimeException
-import kotlin.random.Random
 
 class StoreRepositoryImpl @Inject constructor(
     private val storeApi: FakeStoreApi,
@@ -77,6 +76,6 @@ class StoreRepositoryImpl @Inject constructor(
         storeDao.updateProduct(product)
     }
 
-    override val errorFlow: MutableSharedFlow<DataError?> = MutableSharedFlow()
+    override val errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
 
 }
