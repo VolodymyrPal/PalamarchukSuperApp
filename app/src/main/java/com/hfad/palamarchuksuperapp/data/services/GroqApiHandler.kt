@@ -12,7 +12,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.encodeToString
@@ -29,7 +28,7 @@ class GroqApiHandler @Inject constructor(
         it.text("You are tutor and trying to solve users problem on image")
     }.buildChat()
 
-    val errorFlow = MutableSharedFlow<DataError?>(replay = 0)
+    val errorFlow = MutableStateFlow<DataError?>(null)
 
     val chatHistory: MutableStateFlow<List<Message>> =
         MutableStateFlow(emptyList())
@@ -60,21 +59,21 @@ class GroqApiHandler @Inject constructor(
                     )
                 )
             }
-//            if (request.status == HttpStatusCode.OK) {
-//                val response = request.body<ChatCompletionResponse>()
-//
-//                val responseMessage = GroqContentBuilder.Builder().let {
-//                    it.role = "assistant"
-//                    it.buildText((response.choices[0].message as MessageText).content)
-//                }
-//                Log.d("Groq response:", request.body<String>())
-//
-//                chatHistory.update {
-//                    chatHistory.value.plus(responseMessage)
-//                }
-//            } else {
-//                throw CodeError(request.status.value)
-//            }
+            if (request.status == HttpStatusCode.OK) {
+                val response = request.body<ChatCompletionResponse>()
+
+                val responseMessage = GroqContentBuilder.Builder().let {
+                    it.role = "assistant"
+                    it.buildText((response.choices[0].message as MessageText).content)
+                }
+                Log.d("Groq response:", request.body<String>())
+
+                chatHistory.update {
+                    chatHistory.value.plus(responseMessage)
+                }
+            } else {
+                throw CodeError(request.status.value)
+            }
         } catch (e: Exception) {
             errorFlow.emit(
                 when (e) {
