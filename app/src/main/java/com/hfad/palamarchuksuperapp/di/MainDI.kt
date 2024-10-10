@@ -110,7 +110,7 @@ object NetworkModule {
             engine {
                 endpoint {
                     socketTimeout = 10_000
-                    connectTimeout = 5000        // Время ожидания подключения 5 секунд
+                    connectTimeout = 10000        // Время ожидания подключения 10 секунд
                     requestTimeout = 10000       // Максимальное время выполнения запроса 10 секунд
                     keepAliveTime =
                         30000        // Время жизни соединения после использования 30 секунд
