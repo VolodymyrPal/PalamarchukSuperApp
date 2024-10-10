@@ -22,7 +22,7 @@ class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) {
     private val apiKey = BuildConfig.GROQ_KEY
-    private val max_tokens: Int = 100
+    private val max_tokens = 200
     private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
         it.role = "system"
         it.text("You are tutor and trying to solve users problem on image")
@@ -45,7 +45,8 @@ class GroqApiHandler @Inject constructor(
             val requestBody = Json.encodeToString(
                 value = GroqRequest(
                     model = Models.GROQ_IMAGE.value,
-                    messages = chatHistory.value
+                    messages = chatHistory.value,
+                    maxTokens = max_tokens
                 )
             )
 
@@ -54,12 +55,17 @@ class GroqApiHandler @Inject constructor(
                 contentType(ContentType.Application.Json)
                 setBody(
                     GroqRequest(
-                        model = Models.GROQ_SIMPLE_TEXT.value,
-                        messages = chatHistory.value
+                        model = if (chatHistory.value.any { it is MessageChat })
+                            Models.GROQ_IMAGE.value else Models.GROQ_SIMPLE_TEXT.value,
+                        messages = chatHistory.value,
+                        maxTokens = max_tokens
                     )
                 )
             }
+            Log.d("Groq response:", request.body<String>())
+
             if (request.status == HttpStatusCode.OK) {
+
                 val response = request.body<ChatCompletionResponse>()
 
                 val responseMessage = GroqContentBuilder.Builder().let {
@@ -84,33 +90,40 @@ class GroqApiHandler @Inject constructor(
                     is CodeError -> {
                         when (e.value) {
                             400 -> {
-                                DataError.Network.BadRequest
+                                //DataError.Network.BadRequest
+                                DataError.CustomError(e.value.toString())
                             }
 
                             401 -> {
-                                DataError.Network.Unauthorized
+                                DataError.CustomError(e.value.toString())
+                                //DataError.Network.Unauthorized
                             }
 
                             403 -> {
-                                DataError.Network.Forbidden
+                                //DataError.Network.Forbidden
+                                DataError.CustomError(e.value.toString())
+
                             }
 
                             in 400..500 -> {
-                                DataError.Network.InternalServerError
+                                DataError.CustomError(e.value.toString())
+                                //DataError.Network.InternalServerError
                             }
 
                             in 500..600 -> {
-                                DataError.Network.Unknown
+                                DataError.CustomError(e.value.toString())
+                                //DataError.Network.Unknown
                             }
 
                             else -> {
-                                DataError.Network.Unknown
+                                DataError.CustomError(e.value.toString())
+                                //DataError.Network.Unknown
                             }
                         }
                     }
 
                     else -> {
-                        DataError.Network.Unknown
+                        DataError.CustomError(e.toString())
                     }
                 }
             )
