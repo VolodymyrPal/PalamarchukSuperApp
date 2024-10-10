@@ -1,13 +1,11 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqContentBuilder
 import com.hfad.palamarchuksuperapp.data.services.Message
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -65,7 +63,7 @@ class ChatBotViewModel @Inject constructor(
                 StateChat(
                     listMessage = chatHistory.data,
                     isLoading = isLoading,
-                    error = null
+                    error = error
                 )
             }
 
@@ -73,7 +71,7 @@ class ChatBotViewModel @Inject constructor(
                 StateChat(
                     listMessage = emptyList(),
                     isLoading = isLoading,
-                    error = null
+                    error = error
                 )
             }
         }
@@ -89,7 +87,7 @@ class ChatBotViewModel @Inject constructor(
 
     sealed class Event : BaseEvent {
         data class SendImage(val text: String, val image: String) : Event()
-        data class SentText(val text: String) : Event()
+        data class SendText(val text: String) : Event()
         data class ShowToast(val message: String) : Event()
     }
 
@@ -100,25 +98,27 @@ class ChatBotViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.SendImage -> sendImage(event.text, event.image)
-            is Event.SentText -> sendText(event.text)
+            is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
         }
     }
 
-    private fun sendImage(text: String, image: String) {
+    private fun sendImage(text: String, imageUrl: String) {
         viewModelScope.launch {
             _loading.update { true }
-            Log.d("sendImage first: ", "${_loading.value}")
             val request = GroqContentBuilder.Builder().let {
                 it.role = "user"
+                if (imageUrl.isNotBlank()) {
                 it.text(text)
-                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg")
+                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg") //imageUrl)
                 it.buildChat()
+                } else {
+                    it.text(text)
+                    it.buildText(text)
+                }
             }
             groqApi.getRespondChatImage(request)
-            delay(1500)
             _loading.update { false }
-            Log.d("sendImage second: ", "${_loading.value}")
         }
     }
 
