@@ -11,7 +11,9 @@ import kotlinx.serialization.json.jsonObject
 @Serializable
 data class GroqRequest(
     val messages: List<Message>,
-    val model: String
+    val model: String,
+    @SerialName("max_tokens")
+    val maxTokens: Int
 )
 
 @Serializable (GroqMessageSerializer::class)
