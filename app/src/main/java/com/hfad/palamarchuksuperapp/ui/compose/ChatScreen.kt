@@ -74,7 +74,7 @@ fun ChatScreen(
                 modifier = Modifier,
                 messagesList = myState.listMessage,
                 loading = myState.isLoading,
-                event = chatBotViewModel :: event
+                event = chatBotViewModel::event
             )
         }
     }
@@ -85,7 +85,7 @@ fun LazyChatScreen(
     modifier: Modifier = Modifier,
     messagesList: List<Message>? = null,
     loading: Boolean = false,
-    event: ((ChatBotViewModel.Event) -> Unit)? = null
+    event: ((ChatBotViewModel.Event) -> Unit)? = null,
 ) {
     var promptText: String by remember { mutableStateOf("") }
     LazyColumn(
@@ -98,7 +98,6 @@ fun LazyChatScreen(
                 is MessageChat -> {
                     val content = (messagesList[it] as MessageChat).content
                     for (messages in content) {
-                        Log.d("Messages: ", "$messages")
                         when (messages) {
                             is ContentText -> {
                                 Text(
@@ -129,26 +128,14 @@ fun LazyChatScreen(
 
             Spacer(modifier = Modifier.size(20.dp))
         }
-//                item {
-//                    if (myState.error != null) {
-//                        val showError = remember { mutableStateOf(true) }
-//                        LaunchedEffect(myState.error) {
-//                            delay(2000)
-//                            showError.value = false
-//                        }
-//                        if (showError.value) {
-//                            Text(text = myState.error.toString(), color = Color.Red)
-//                        }
-//                    }
-//                }
         item {
             Button(
                 onClick = {
                     if (promptText.isNotBlank()) {
                         event?.invoke(
-                            ChatBotViewModel.Event.SentText(
+                            ChatBotViewModel.Event.SendImage(
                                 promptText,
-                                //image = "https://s7d2.scene7.com/is/image/TWCNews/SINGLE_SUNFLOWER_8.13.21"
+                                image = "https://n1s1.hsmedia.ru/b3/10/ae/b310ae7a1baeaec4df75db18b5465ebc/1501x843_0x4U9bTTLH_1708972820638352229.jpg"
                             )
                         )
                         promptText = ""
@@ -159,7 +146,27 @@ fun LazyChatScreen(
                 modifier = Modifier,
                 enabled = loading.not()
             ) {
-                Text("Send message to Bot")
+                Text("Send photoMessage to Bot")
+            }
+        }
+        item {
+            Button(
+                onClick = {
+                    if (promptText.isNotBlank()) {
+                        event?.invoke(
+                            ChatBotViewModel.Event.SendText(
+                                promptText,
+                            )
+                        )
+                        promptText = ""
+                    } else {
+                        event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+                    }
+                },
+                modifier = Modifier,
+                enabled = loading.not()
+            ) {
+                Text("Send textMessage to Bot")
             }
         }
         item {
