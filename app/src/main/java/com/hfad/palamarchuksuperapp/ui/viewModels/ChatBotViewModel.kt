@@ -110,7 +110,7 @@ class ChatBotViewModel @Inject constructor(
                 it.role = "user"
                 if (imageUrl.isNotBlank()) {
                 it.text(text)
-                it.image("https://i.pinimg.com/736x/f7/f5/e6/f7f5e629f2f648dd12f60d2189f8d6cc.jpg") //imageUrl)
+                it.image("https://imo10.labirint.ru/books/248689/ph_04.jpg/1920-0") //imageUrl)
                 it.buildChat()
                 } else {
                     it.text(text)
