@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -102,14 +101,14 @@ fun LazyChatScreen(
                             is ContentText -> {
                                 Text(
                                     text = messages.text,
-                                    color = Color.Green
+                                    color = Color.DarkGray
                                 )
                             }
 
                             is ContentImage -> {
                                 Text(
                                     text = messages.image_url.url,
-                                    color = Color.Yellow
+                                    color = Color.Black
                                 )
                             }
                         }
