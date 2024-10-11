@@ -25,9 +25,9 @@ class GroqApiHandler @Inject constructor(
     private val max_tokens = 200
     private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
         it.role = "system"
-        it.text("You are tutor and trying to solve users problem on image")
-    }.buildChat()
-
+        it.buildText("You are math tutor. User send you image with sample. " +
+                "Please provide answer and solve this sample.")
+    }
     val errorFlow = MutableStateFlow<DataError?>(null)
 
     val chatHistory: MutableStateFlow<List<Message>> =
