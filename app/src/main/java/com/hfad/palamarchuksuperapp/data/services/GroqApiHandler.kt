@@ -22,7 +22,7 @@ class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) {
     private val apiKey = BuildConfig.GROQ_KEY
-    private val max_tokens = 200
+    private val max_tokens = 1024
     private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
         it.role = "system"
         it.buildText("You are math tutor. User send you image with sample. " +
@@ -32,7 +32,7 @@ class GroqApiHandler @Inject constructor(
 
     val chatHistory: MutableStateFlow<List<Message>> =
         MutableStateFlow(emptyList())
-//    MutableStateFlow(mutableListOf(adminRoleMessage))
+        //MutableStateFlow(mutableListOf(adminRoleMessage))
 
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
