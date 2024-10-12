@@ -3,7 +3,7 @@ agp = "8.7.0"
 appUpdate = "2.1.0"
 converterMoshi = "2.9.0"
 datastorePreferences = "1.1.1"
-kotlin = "2.0.0"
+kotlin = "2.0.20"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -15,14 +15,16 @@ activity = "1.9.2"
 constraintlayout = "2.1.4"
 lifecycle = "2.8.6"
 moshiKotlin = "1.15.1"
-nav_version = "2.8.1"
-fragment_version = "1.8.3"
-databindingRuntime = "8.6.1"
+moshiKotlinCodegen = "1.15.1"
+nav_version = "2.8.2"
+fragment_version = "1.8.4"
+databindingRuntime = "8.7.0"
 dagger = "2.51.1"
 numberpicker = "1.0.3"
 retrofit = "2.11.0"
 serialization = "1.7.0"
 room_version = "2.6.1"
+ksp = "2.0.20-1.0.24"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +47,7 @@ compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", name =
 compose-material3 = { module = "androidx.compose.material3:material3", name = "material3" }
 activity-compose = { module = "androidx.activity:activity-compose", name = "activity-compose", version.ref = "activity" }
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
+moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
 numberpicker = { module = "com.chargemap.compose:numberpicker", version.ref = "numberpicker" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 viemodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
@@ -64,10 +67,10 @@ androidx-databinding-runtime = { group = "androidx.databinding", name = "databin
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
 
-coil-compose = { group = "io.coil-kt", name = "coil-compose", version = "2.6.0" }
-coil = { group = "io.coil-kt", name = "coil", version = "2.6.0" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version = "2.7.0" }
+coil = { group = "io.coil-kt", name = "coil", version = "2.7.0" }
 zelory-compressor = { group = "id.zelory", name = "compressor", version = "3.0.1" }
-compose-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version = "1.0.0-beta01" }
+compose-tracing = { group = "androidx.compose.runtime", name = "runtime-tracing", version = "1.7.3" }
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 room = { module = "androidx.room:room-runtime", name = "room-runtime", version.ref = "room_version" }
@@ -80,4 +83,5 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 safeargsKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "nav_version" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
