@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.rememberAsyncImagePainter
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
@@ -62,8 +63,8 @@ fun BottomNavBar(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     val currentScreen = remember(navBackStackEntry?.destination) {
-            navBackStackEntry?.destination?.route ?: Routes.MainScreenConstraint.route
-        }
+        navBackStackEntry?.destination?.route ?: Routes.MainScreenConstraint.route
+    }
     Log.d("Current screen: ", currentScreen)
 
 
@@ -107,6 +108,10 @@ fun BottomNavBar(
             }
         }
     )
+
+    val selectedHomeIcon = rememberAsyncImagePainter(R.drawable.bicon_home_black_filled)
+    val unSelectedHomeIcon = rememberAsyncImagePainter(R.drawable.bicon_home_black_outlined)
+
 
     val HomeTopLevelRoute = TabBarItem(
         title = "Home",
