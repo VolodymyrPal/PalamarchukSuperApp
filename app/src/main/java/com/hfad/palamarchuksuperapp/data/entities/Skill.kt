@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.entities
 
+import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,6 +12,7 @@ import java.util.UUID
 
 @Entity(tableName = DATABASE_SKILLS_NAME)
 @TypeConverters (Converters::class)
+@Stable
 data class Skill(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo (name = "SkillID") val id: Int = 0,
