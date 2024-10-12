@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.safeargsKotlin)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
 }
@@ -98,7 +98,7 @@ dependencies {
     implementation(libs.recyclerview.selection)
 
     implementation(libs.dagger)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 
     implementation(libs.coil)
     implementation(libs.coil.compose)
@@ -112,15 +112,15 @@ dependencies {
     implementation(libs.room.ktx)
     annotationProcessor(libs.room.annotation)
     //noinspection KaptUsageInsteadOfKsp
-    kapt(libs.room.annotation)
+    ksp(libs.room.annotation)
 
     implementation(libs.retrofit)
     implementation(libs.moshi.kotlin)
     implementation(libs.converter.moshi)
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
+    ksp(libs.moshi.kotlin.codegen)
 
 
-    implementation (libs.numberpicker)
+    implementation(libs.numberpicker)
 
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.content.negotiation)
