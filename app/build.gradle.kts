@@ -128,4 +128,6 @@ dependencies {
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
 
+    implementation(libs.kotlinx.collections.immutable) // Immutable collection for better compose handling
+
 }
