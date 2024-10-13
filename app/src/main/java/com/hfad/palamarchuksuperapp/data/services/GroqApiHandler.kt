@@ -41,7 +41,7 @@ class GroqApiHandler @Inject constructor(
 
     suspend fun getRespondChatImage(message: Message) {
         try {
-            chatHistory.update { chatHistory.value.plus(message) }
+            chatHistory.update { chatHistory.value.add(message) }
             Log.d("Groq message: ", chatHistory.value.toString())
 
             val requestBody = Json.encodeToString(
@@ -74,11 +74,8 @@ class GroqApiHandler @Inject constructor(
                     it.role = "assistant"
                     it.buildText((response.choices[0].message as MessageText).content)
                 }
-                Log.d("Groq response:", request.body<String>())
 
-                chatHistory.update {
-                    chatHistory.value.plus(responseMessage)
-                }
+                chatHistory.update { chatHistory.value.add(responseMessage) }
             } else {
                 throw CodeError(request.status.value)
             }
