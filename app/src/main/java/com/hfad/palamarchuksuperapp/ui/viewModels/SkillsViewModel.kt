@@ -23,7 +23,7 @@ class SkillsViewModel @Inject constructor(
     GenericViewModel<PersistentList<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
     data class SkillState(
-        val items: PersistentList<SkillDomainRW>? = persistentListOf(),
+        val items: PersistentList<SkillDomainRW> = persistentListOf(),
         val loading: Boolean = false,
         val error: DataError? = null,
     ) : State<PersistentList<SkillDomainRW>>
@@ -35,11 +35,21 @@ class SkillsViewModel @Inject constructor(
 
     override val uiState: StateFlow<SkillState> =
         combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
-            SkillState(
-                items = (data as Result.Success).data,
-                error = error,
-                loading = loading
-            )
+            when (data) {
+                is Result.Error -> {
+                    SkillState(
+                        items = data.data?: persistentListOf(),
+                        error = data.error,
+                        loading = loading
+                    )
+                }
+                is Result.Success -> {
+                    SkillState(
+                        items = data.data,
+                        loading = loading
+                    )
+                }
+            }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
