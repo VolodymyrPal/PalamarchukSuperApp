@@ -12,6 +12,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.encodeToString
@@ -30,8 +32,8 @@ class GroqApiHandler @Inject constructor(
     }
     val errorFlow = MutableStateFlow<DataError?>(null)
 
-    val chatHistory: MutableStateFlow<List<Message>> =
-        MutableStateFlow(emptyList())
+    val chatHistory: MutableStateFlow<PersistentList<Message>> =
+        MutableStateFlow(persistentListOf())
         //MutableStateFlow(mutableListOf(adminRoleMessage))
 
     private val url = "https://api.groq.com/openai/v1/chat/completions"

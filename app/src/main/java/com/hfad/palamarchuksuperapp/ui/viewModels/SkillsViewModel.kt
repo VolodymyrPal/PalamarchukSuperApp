@@ -14,19 +14,21 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 
 class SkillsViewModel @Inject constructor(
     private val repository: SkillRepository,
 ) :
-    GenericViewModel<List<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
+    GenericViewModel<PersistentList<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
     data class SkillState(
-        val items: List<SkillDomainRW> = emptyList(),
+        val items: PersistentList<SkillDomainRW>? = persistentListOf(),
         val loading: Boolean = false,
         val error: DataError? = null,
-    ) : State<List<SkillDomainRW>>
+    ) : State<PersistentList<SkillDomainRW>>
 
-    override val _dataFlow: Flow<Result<List<SkillDomainRW>, DataError>> =
+    override val _dataFlow: Flow<Result<PersistentList<SkillDomainRW>, DataError>> =
         repository.getSkillsFromDB().map { Result.Success(it) }
 
     override val _errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)

@@ -6,6 +6,8 @@ import com.hfad.palamarchuksuperapp.data.services.GroqContentBuilder
 import com.hfad.palamarchuksuperapp.data.services.Message
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,13 +22,13 @@ import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
     private val groqApi: GroqApiHandler,
-) : GenericViewModel<List<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+) : GenericViewModel<PersistentList<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(
-        val listMessage: List<Message> = emptyList(),
+        val listMessage: PersistentList<Message> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: DataError? = null,
-    ) : State<List<Message>>
+    ) : State<PersistentList<Message>>
 
     override val _errorFlow: MutableStateFlow<DataError?> = groqApi.errorFlow
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -47,8 +49,8 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    override val _dataFlow: Flow<Result<List<Message>, DataError>> =
-        groqApi.chatHistory.map<List<Message>, Result<List<Message>, DataError>> {
+    override val _dataFlow: Flow<Result<PersistentList<Message>, DataError>> =
+        groqApi.chatHistory.map<PersistentList<Message>, Result<PersistentList<Message>, DataError>> {
             Result.Success(it)
         }.catch {
             emit(Result.Error(DataError.CustomError(it.message ?: "Error")))
@@ -69,7 +71,7 @@ class ChatBotViewModel @Inject constructor(
 
             is Result.Error -> {
                 StateChat(
-                    listMessage = emptyList(),
+                    listMessage = persistentListOf(),
                     isLoading = isLoading,
                     error = error
                 )
@@ -79,7 +81,7 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = StateChat(
-            listMessage = emptyList(),
+            listMessage = persistentListOf(),
             isLoading = false,
             error = null
         )

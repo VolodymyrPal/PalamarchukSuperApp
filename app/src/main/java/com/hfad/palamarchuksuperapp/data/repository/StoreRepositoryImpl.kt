@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import android.util.Log
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.DataError
@@ -10,7 +9,10 @@ import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.lang.RuntimeException
 
@@ -19,10 +21,10 @@ class StoreRepositoryImpl @Inject constructor(
     private val storeDao: StoreDao,
 ) : StoreRepository {
 
-    override val fetchProductsAsFlowFromDB: Flow<List<ProductDomainRW>> =
-        storeDao.getAllProductsFromDB()
+    override val fetchProductsAsFlowFromDB: Flow<PersistentList<ProductDomainRW>> =
+        storeDao.getAllProductsFromDB().map { list -> list.toPersistentList() }
 
-    suspend fun products(): Result<Flow<List<ProductDomainRW>>, Error> {
+    suspend fun products(): Result<Flow<PersistentList<ProductDomainRW>>, Error> {
         return try {
             Result.Success(fetchProductsAsFlowFromDB)
         } catch (e: HttpException) {
@@ -45,11 +47,11 @@ class StoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getProductWithErrors(): Result<List<ProductDomainRW>, Error> { //}: List<ProductDomainRW> {
+    private suspend fun getProductWithErrors(): Result<PersistentList<ProductDomainRW>, Error> { //}: List<ProductDomainRW> {
 
         return try {
-            val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
-            Log.d("TAG", "getProductWithErrors: $storeProducts")
+            val storeProducts: PersistentList<ProductDomainRW> = storeApi.getProductsDomainRw().toPersistentList()
+
             Result.Success(storeProducts)
         } catch (e: RuntimeException) {
             Result.Error(DataError.Local.DatabaseError)
@@ -68,7 +70,7 @@ class StoreRepositoryImpl @Inject constructor(
 //        }
     }
 
-    override suspend fun upsertAll(products: List<ProductDomainRW>) {
+    override suspend fun upsertAll(products: PersistentList<ProductDomainRW>) {
         storeDao.insertOrIgnoreProducts(products)
     }
 

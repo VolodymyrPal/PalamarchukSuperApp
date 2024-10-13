@@ -5,6 +5,9 @@ import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.ui.common.toDomainRW
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -15,8 +18,8 @@ class SkillsRepositoryImpl @Inject constructor(
     private val skillsDao: SkillsDao,
 ) : SkillRepository {
 
-    override fun getSkillsFromDB(): Flow<List<SkillDomainRW>> =
-        skillsDao.getAllSkillsFromDB().map { list -> list.map { it.toDomainRW() } }
+    override fun getSkillsFromDB(): Flow<PersistentList<SkillDomainRW>> =
+        skillsDao.getAllSkillsFromDB().map { list -> list.map { it.toDomainRW() }.toPersistentList() }
 
 
     override suspend fun deleteSkill(skill: SkillDomainRW) =
@@ -29,7 +32,7 @@ class SkillsRepositoryImpl @Inject constructor(
 }
 
 class SkillsRepositoryImplForPreview : SkillRepository {
-    override fun getSkillsFromDB(): Flow<List<SkillDomainRW>> {
+    override fun getSkillsFromDB(): Flow<PersistentList<SkillDomainRW>> {
         val one = SkillDomainRW(
             Skill(name = "some skills", description = "One, Two, Three", uuid = UUID.randomUUID())
         )
@@ -117,7 +120,7 @@ class SkillsRepositoryImplForPreview : SkillRepository {
             )
         )
         val _skillsList = MutableStateFlow(
-            listOf(
+            persistentListOf(
                 one,
                 two,
                 three,

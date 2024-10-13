@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 
@@ -23,17 +25,17 @@ import kotlinx.coroutines.flow.catch
 class StoreViewModel @Inject constructor(
     private val repository: StoreRepository,
     // private val apiRepository: FakeStoreApiRepository, Old Implementation with OkHttp with Retrofit + Moshi
-) : GenericViewModel<List<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
+) : GenericViewModel<PersistentList<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     data class StoreState(
-        val items: List<ProductDomainRW> = emptyList(),
+        val items: PersistentList<ProductDomainRW> = persistentListOf(),
         val loading: Boolean = false,
         val error: DataError? = null,
-    ) : State<List<ProductDomainRW>>
+    ) : State<PersistentList<ProductDomainRW>>
 
-    override val _dataFlow: Flow<Result<List<ProductDomainRW>, DataError>> =
+    override val _dataFlow: Flow<Result<PersistentList<ProductDomainRW>, DataError>> =
         repository.fetchProductsAsFlowFromDB
-            .map<List<ProductDomainRW>, Result<List<ProductDomainRW>, DataError>> {
+            .map<PersistentList<ProductDomainRW>, Result<PersistentList<ProductDomainRW>, DataError>> {
                 Result.Success(it)
             }
             .catch {

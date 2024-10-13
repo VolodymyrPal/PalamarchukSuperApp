@@ -18,6 +18,7 @@ import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
 import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
+import kotlinx.collections.immutable.PersistentList
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -29,7 +30,7 @@ class SkillsListAdapter(
 
     private val asyncListDiffer = AsyncListDiffer(this, SkillDiffItemCallback())
 
-    fun setData(skillList: List<SkillDomainRW>) {
+    fun setData(skillList: PersistentList<SkillDomainRW>) {
         asyncListDiffer.submitList(skillList)
     }
 
