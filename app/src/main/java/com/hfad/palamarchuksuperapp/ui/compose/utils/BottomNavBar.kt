@@ -62,9 +62,18 @@ fun BottomNavBar(
     }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val previousScreen = remember { mutableStateOf(Routes.MainScreenConstraint.route) }
+
 
     val currentScreen = remember(navBackStackEntry?.destination) {
-        navBackStackEntry?.destination?.route ?: Routes.MainScreenConstraint.route
+        if (navBackStackEntry?.destination == null) {
+            previousScreen.value
+        } else {
+            Log.d("Current screen: ", navBackStackEntry?.destination?.route!!)
+            val screen = navBackStackEntry?.destination?.route!!
+            previousScreen.value = screen
+            screen
+        }
     }
 
     @Suppress("DEPRECATION")
