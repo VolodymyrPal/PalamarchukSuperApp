@@ -10,6 +10,7 @@ import android.os.VibratorManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,25 +23,25 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import coil.compose.rememberAsyncImagePainter
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import com.hfad.palamarchuksuperapp.ui.compose.LocalNavController
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,8 +66,6 @@ fun BottomNavBar(
     val currentScreen = remember(navBackStackEntry?.destination) {
         navBackStackEntry?.destination?.route ?: Routes.MainScreenConstraint.route
     }
-    Log.d("Current screen: ", currentScreen)
-
 
     @Suppress("DEPRECATION")
     fun onClickVibro() {
@@ -77,9 +76,9 @@ fun BottomNavBar(
         }
     }
 
-    val appImages = remember(context) { AppImages(context).mainImage }
+    val appImages = remember { AppImages(context).mainImage }
     val selectedTabIndex by remember(currentScreen) {
-        mutableIntStateOf(
+        derivedStateOf {
             when (currentScreen) {
                 Routes.MainScreenConstraint.route -> {
                     0
@@ -93,7 +92,7 @@ fun BottomNavBar(
                     3
                 }
             }
-        )
+        }
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -109,15 +108,11 @@ fun BottomNavBar(
         }
     )
 
-    val selectedHomeIcon = rememberAsyncImagePainter(R.drawable.bicon_home_black_filled)
-    val unSelectedHomeIcon = rememberAsyncImagePainter(R.drawable.bicon_home_black_outlined)
-
-
     val HomeTopLevelRoute = TabBarItem(
         title = "Home",
         route = Routes.MainScreenConstraint,
-        selectedIcon = painterResource(id = R.drawable.bicon_home_black_filled),
-        unselectedIcon = painterResource(id = R.drawable.bicon_home_black_outlined),
+        selectedIcon = R.drawable.bicon_home_black_filled,
+        unselectedIcon = R.drawable.bicon_home_black_outlined,
         badgeAmount = null,
         onClick = {
             onClickVibro()
@@ -132,8 +127,8 @@ fun BottomNavBar(
     val CameraTopLevelRoute = TabBarItem(
         title = "Camera",
         route = "Camera",
-        selectedIcon = painterResource(id = R.drawable.bicon_camera_filled),
-        unselectedIcon = painterResource(id = R.drawable.bicon_camera_outlined),
+        selectedIcon = R.drawable.bicon_camera_filled,
+        unselectedIcon = R.drawable.bicon_camera_outlined,
         badgeAmount = null,
         onClick = {
             onClickVibro()
@@ -145,8 +140,8 @@ fun BottomNavBar(
     val SettingTopLevelRoute = TabBarItem(
         title = "Settings",
         route = Routes.Settings,
-        selectedIcon = painterResource(id = R.drawable.bicon_settings_filled),
-        unselectedIcon = painterResource(id = R.drawable.bicon_settings_outlined),
+        selectedIcon = R.drawable.bicon_settings_filled,
+        unselectedIcon = R.drawable.bicon_settings_outlined,
         badgeAmount = 10,
         onClick = {
             onClickVibro()
@@ -161,7 +156,7 @@ fun BottomNavBar(
         }
     )
     val tabBarItems =
-        remember { listOf(HomeTopLevelRoute, CameraTopLevelRoute, SettingTopLevelRoute) }
+        remember { persistentListOf(HomeTopLevelRoute, CameraTopLevelRoute, SettingTopLevelRoute) }
 
     NavigationBar(
         modifier = modifier
@@ -171,10 +166,10 @@ fun BottomNavBar(
     ) {
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
-                selected = selectedTabIndex == index,
+                selected = false, //selectedTabIndex == index,
                 onClick = {
                     tabBarItem.onClick()
-                    tabBarItem.badgeAmount = null
+                    //tabBarItem.badgeAmount = null
                 },
 
                 icon = {
@@ -197,8 +192,8 @@ fun BottomNavBar(
 @Composable
 fun TabBarIconView(
     isSelected: Boolean,
-    selectedIcon: Painter,
-    unselectedIcon: Painter,
+    @DrawableRes selectedIcon: Int,
+    @DrawableRes unselectedIcon: Int,
     title: String,
     badgeAmount: Int?,
 ) {
@@ -212,8 +207,8 @@ fun TabBarIconView(
     }) {
         Icon(
             when (isSelected) {
-                false -> unselectedIcon
-                true -> selectedIcon
+                false -> painterResource(unselectedIcon)
+                true -> painterResource(selectedIcon)
             }, title
         )
     }
