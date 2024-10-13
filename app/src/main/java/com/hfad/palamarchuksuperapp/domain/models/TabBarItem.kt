@@ -1,14 +1,14 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.painter.Painter
 
 @Stable
 data class TabBarItem <T: Any>(
     val title: String,
     val route: T,
-    val selectedIcon: Painter,
-    val unselectedIcon: Painter,
+    @DrawableRes val selectedIcon: Int,
+    @DrawableRes val unselectedIcon: Int,
     var badgeAmount: Int? = null,
     val onClick: () -> Unit = {}
 )
