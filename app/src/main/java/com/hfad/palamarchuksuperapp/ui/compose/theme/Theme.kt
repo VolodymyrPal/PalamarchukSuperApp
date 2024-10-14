@@ -82,6 +82,7 @@ private val DarkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -92,6 +93,17 @@ fun AppTheme(
     } else {
         DarkColors
     }
+    val MyRippleConfiguration =
+        RippleConfiguration(
+            color = colors.primary,
+            rippleAlpha = RippleAlpha(
+                1f,
+                1f,
+                1f,
+                1f
+            )
+        )
+
 
     MaterialTheme(
         colorScheme = colors,
@@ -104,7 +116,7 @@ fun AppTheme(
         )
         {
             CompositionLocalProvider(
-                LocalRippleTheme provides RippleCustomTheme,
+                LocalRippleConfiguration provides MyRippleConfiguration,
                 content = content
             )
         }
