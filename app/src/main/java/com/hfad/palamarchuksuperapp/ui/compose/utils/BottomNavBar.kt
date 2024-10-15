@@ -31,10 +31,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.compose.Routes
@@ -48,22 +50,27 @@ import kotlinx.coroutines.launch
 fun BottomNavBar(
     modifier: Modifier = Modifier,
 ) {
-    val navController = LocalNavController.current
+
+    val navController: NavHostController =
+        if (LocalInspectionMode.current)
+            NavHostController(LocalContext.current) // If preview - create Mock object for NavHostController
+        else LocalNavController.current
+
     val context: Context = LocalContext.current
+
     val vibe: Vibrator = remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
                 context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
         } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
+            @Suppress("DEPRECATION") context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
         }
     }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val previousScreen = remember { mutableStateOf(Routes.MainScreenConstraint.route) }
 
+    val previousScreen = remember { mutableStateOf(Routes.MainScreenConstraint.route) }
 
     val currentScreen = remember(navBackStackEntry?.destination) {
         if (navBackStackEntry?.destination == null) {
@@ -114,11 +121,9 @@ fun BottomNavBar(
                     appImages.updateMainPhoto()
                 }
             }
-        }
-    )
+        })
 
-    val HomeTopLevelRoute = TabBarItem(
-        title = "Home",
+    val HomeTopLevelRoute = TabBarItem(title = "Home",
         route = Routes.MainScreenConstraint,
         selectedIcon = R.drawable.bicon_home_black_filled,
         unselectedIcon = R.drawable.bicon_home_black_outlined,
@@ -130,11 +135,9 @@ fun BottomNavBar(
                 launchSingleTop = true
                 restoreState = true
             }
-        }
-    )
+        })
 
-    val CameraTopLevelRoute = TabBarItem(
-        title = "Camera",
+    val CameraTopLevelRoute = TabBarItem(title = "Camera",
         route = "Camera",
         selectedIcon = R.drawable.bicon_camera_filled,
         unselectedIcon = R.drawable.bicon_camera_outlined,
@@ -142,12 +145,10 @@ fun BottomNavBar(
         onClick = {
             onClickVibro()
             cameraLauncher.launch(appImages.getIntentToUpdatePhoto())
-        }
-    )
+        })
 
 
-    val SettingTopLevelRoute = TabBarItem(
-        title = "Settings",
+    val SettingTopLevelRoute = TabBarItem(title = "Settings",
         route = Routes.Settings,
         selectedIcon = R.drawable.bicon_settings_filled,
         unselectedIcon = R.drawable.bicon_settings_outlined,
@@ -162,8 +163,7 @@ fun BottomNavBar(
                 launchSingleTop = true
                 restoreState = true
             }
-        }
-    )
+        })
     val tabBarItems =
         remember { persistentListOf(HomeTopLevelRoute, CameraTopLevelRoute, SettingTopLevelRoute) }
 
@@ -175,7 +175,7 @@ fun BottomNavBar(
     ) {
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
-                selected = false, //selectedTabIndex == index,
+                selected = true,//selectedTabIndex == index,
                 onClick = {
                     tabBarItem.onClick()
                     //tabBarItem.badgeAmount = null
