@@ -153,7 +153,7 @@ fun LazyChatScreen(
                                 Text(
                                     modifier = Modifier,
                                     text = messages.text,
-                                    color = Color.DarkGray
+                                    color = Color.DarkGray,
                                     textAlign = if (isUser.value) TextAlign.End else TextAlign.Start
                                 )
                             }
@@ -183,52 +183,98 @@ fun LazyChatScreen(
 
             Spacer(modifier = Modifier.size(20.dp))
         }
+
+//        item {
+//            Button(
+//                onClick = {
+//                    if (promptText.isNotBlank()) {
+//                        event?.invoke(
+//                            ChatBotViewModel.Event.SendImage(
+//                                promptText,
+//                                image = "https://n1s1.hsmedia.ru/b3/10/ae/b310ae7a1baeaec4df75db18b5465ebc/1501x843_0x4U9bTTLH_1708972820638352229.jpg"
+//                            )
+//                        )
+//                        promptText = ""
+//                    } else {
+//                        event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+//                    }
+//                },
+//                modifier = Modifier,
+//                enabled = loading.not()
+//            ) {
+//                Text("Send photoMessage to Bot")
+//            }
+//        }
         item {
-            Button(
-                onClick = {
-                    if (promptText.isNotBlank()) {
-                        event?.invoke(
-                            ChatBotViewModel.Event.SendImage(
-                                promptText,
-                                image = "https://n1s1.hsmedia.ru/b3/10/ae/b310ae7a1baeaec4df75db18b5465ebc/1501x843_0x4U9bTTLH_1708972820638352229.jpg"
-                            )
-                        )
-                        promptText = ""
-                    } else {
-                        event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
-                    }
-                },
-                modifier = Modifier,
-                enabled = loading.not()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Send photoMessage to Bot")
-            }
-        }
-        item {
-            Button(
-                onClick = {
-                    if (promptText.isNotBlank()) {
-                        event?.invoke(
-                            ChatBotViewModel.Event.SendText(
-                                promptText,
-                            )
-                        )
-                        promptText = ""
-                    } else {
-                        event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+                IconButton(
+                    modifier = Modifier.weight(0.15f),
+                    colors = IconButtonColors(
+                        Color.Transparent,
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        Color.Transparent,
+                        Color.Transparent
+                    ),
+                    onClick = {
+
                     }
-                },
-                modifier = Modifier,
-                enabled = loading.not()
-            ) {
-                Text("Send textMessage to Bot")
+                ) {
+                    Icon(
+                        modifier = Modifier,
+                        imageVector = Icons.AutoMirrored.Rounded.List,
+                        contentDescription = "Add image",
+                    )
+                }
+                TextField(
+                    value = promptText,
+                    modifier = Modifier.weight(0.7f),
+                    onValueChange = { text: String -> promptText = text },
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        focusedTextColor = Color.Red,
+                        unfocusedTextColor = Color.Red,
+                    ),
+                    maxLines = 3,
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
+                )
+                IconButton(
+                    modifier = Modifier.weight(0.15f),
+                    colors = IconButtonColors(
+                        Color.Transparent,
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                        Color.Transparent,
+                        Color.Transparent
+                    ),
+                    onClick = {
+                        if (promptText.isNotBlank()) {
+                            event?.invoke(
+                                ChatBotViewModel.Event.SendText(
+                                    promptText,
+                                )
+                            )
+                            promptText = ""
+                        } else {
+                            event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+                        }
+                    },
+                    enabled = loading.not()
+                ) {
+                    Icon(
+                        modifier = Modifier,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Send",
+                    )
+                }
             }
-        }
-        item {
-            TextField(
-                value = promptText,
-                modifier = Modifier.fillMaxWidth(),
-                onValueChange = { text: String -> promptText = text })
         }
     }
 }
