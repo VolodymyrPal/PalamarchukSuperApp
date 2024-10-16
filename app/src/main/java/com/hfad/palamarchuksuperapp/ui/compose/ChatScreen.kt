@@ -101,9 +101,13 @@ fun ChatScreen(
         }
     ) { paddingValues ->
         Surface(
-            color = Color.Transparent, modifier = modifier
+            color = Color.Transparent,
+            modifier = modifier
                 .fillMaxSize()
-                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(
+                    bottom = paddingValues.calculateBottomPadding(),
+                    top = paddingValues.calculateTopPadding()
+                )
         ) {
             val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
