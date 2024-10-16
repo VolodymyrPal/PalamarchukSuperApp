@@ -124,33 +124,45 @@ fun ChatScreen(
 @Composable
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
-    messagesList: List<Message>? = null,
+    messagesList: List<Message> = emptyList(),
     loading: Boolean = false,
     event: ((ChatBotViewModel.Event) -> Unit)? = null,
 ) {
     var promptText: String by remember { mutableStateOf("") }
+    val state = rememberLazyListState()
     LazyColumn(
-        modifier = Modifier,
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom,
+        state = state,
+        contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
-        items(messagesList!!.size) {
+        items(messagesList.size) {
+            LaunchedEffect(messagesList.size) {
+                launch {
+                    state.animateScrollToItem(messagesList.lastIndex + 3)
+                }
+            }
             when (messagesList[it]) {
                 is MessageChat -> {
+                    val isUser = remember { mutableStateOf((messagesList[it] as MessageChat).role == "user") }
                     val content = (messagesList[it] as MessageChat).content
                     for (messages in content) {
                         when (messages) {
                             is ContentText -> {
                                 Text(
+                                    modifier = Modifier,
                                     text = messages.text,
                                     color = Color.DarkGray
+                                    textAlign = if (isUser.value) TextAlign.End else TextAlign.Start
                                 )
                             }
 
                             is ContentImage -> {
                                 Text(
                                     text = messages.image_url.url,
-                                    color = Color.Black
+                                    color = Color.Black,
+                                    textAlign = if (isUser.value) TextAlign.End else TextAlign.Start
                                 )
                             }
                         }
@@ -158,11 +170,13 @@ fun LazyChatScreen(
                 }
 
                 is MessageText -> {
+                    val isUser = remember { mutableStateOf((messagesList[it] as MessageText).role == "user") }
                     Text(
                         text = (messagesList[it] as MessageText).content,
                         color = if ((messagesList[it]
                                     as MessageText).role == "user"
-                        ) Color.Green else Color.Blue
+                        ) Color.Green else Color.Blue,
+                        textAlign = if (isUser.value) TextAlign.End else TextAlign.Start
                     )
                 }
             }
