@@ -119,7 +119,7 @@ class ChatBotViewModel @Inject constructor(
                     it.buildText(text)
                 }
             }
-            groqApi.getRespondChatImage(request)
+            groqApi.getRespondChatOrImage(request)
             _loading.update { false }
         }
     }
@@ -129,10 +129,10 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { true }
             val request = GroqContentBuilder.Builder().let {
                 it.role = "user"
-                //it.text(text)
+                it.text(text)
                 it.buildText(text)
             }
-            groqApi.getRespondChatImage(request)
+            groqApi.getRespondChatOrImage(request)
             _loading.update { false }
         }
     }
