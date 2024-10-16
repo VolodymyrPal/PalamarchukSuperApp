@@ -76,7 +76,6 @@ fun BottomNavBar(
         if (navBackStackEntry?.destination == null) {
             previousScreen.value
         } else {
-            Log.d("Current screen: ", navBackStackEntry?.destination?.route!!)
             val screen = navBackStackEntry?.destination?.route!!
             previousScreen.value = screen
             screen
@@ -169,13 +168,14 @@ fun BottomNavBar(
 
     NavigationBar(
         modifier = modifier
-            .padding(bottom = 25.dp, start = 25.dp, end = 25.dp)
+            .padding(bottom = 5.dp, start = 5.dp, end = 5.dp)
             .clip(RoundedCornerShape(25)),
-        containerColor = MaterialTheme.colorScheme.primaryContainer
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
     ) {
+
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
-                selected = true,//selectedTabIndex == index,
+                selected = selectedTabIndex == index,
                 onClick = {
                     tabBarItem.onClick()
                     //tabBarItem.badgeAmount = null
@@ -191,7 +191,13 @@ fun BottomNavBar(
                     )
                 },
                 alwaysShowLabel = true,
-                label = { Text(text = tabBarItem.title, modifier = Modifier) },
+                label = {
+                    Text(
+                        text = tabBarItem.title,
+                        modifier = Modifier,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
                 modifier = Modifier
             )
         }
