@@ -278,3 +278,13 @@ fun LazyChatScreen(
         }
     }
 }
+
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun ChatScreenPreview() {
+    ChatScreen(
+        modifier = Modifier.fillMaxSize(),
+        chatBotViewModel = ChatBotViewModel(groqApi = GroqApiHandler(httpClient = HttpClient()))
+    )
+}
