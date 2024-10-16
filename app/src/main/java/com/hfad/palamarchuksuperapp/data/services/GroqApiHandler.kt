@@ -39,7 +39,7 @@ class GroqApiHandler @Inject constructor(
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
 
-    suspend fun getRespondChatImage(message: Message) {
+    suspend fun getRespondChatOrImage(message: Message) {
         try {
             chatHistory.update { chatHistory.value.add(message) }
             Log.d("Groq message: ", chatHistory.value.toString())
