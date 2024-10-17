@@ -236,24 +236,12 @@ fun LazyChatScreen(
 //            }
 //        }
         item {
-            Row(
+            RequestPanel(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    modifier = Modifier.weight(0.15f),
-                    colors = IconButtonColors(
-                        Color.Transparent,
-                        MaterialTheme.colorScheme.onPrimaryContainer,
-                        Color.Transparent,
-                        Color.Transparent
-                    ),
-                    onClick = {
                 onEvent = event,
                 loading = loading
             )
@@ -290,58 +278,99 @@ fun MessageBox(
     }
 }
 
-                    }
-                ) {
-                    Icon(
-                        modifier = Modifier,
-                        imageVector = Icons.AutoMirrored.Rounded.List,
-                        contentDescription = "Add image",
-                    )
-                }
-                TextField(
-                    value = promptText,
-                    modifier = Modifier.weight(0.7f),
-                    onValueChange = { text: String -> promptText = text },
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        focusedTextColor = Color.Red,
-                        unfocusedTextColor = Color.Red,
-                    ),
-                    maxLines = 3,
-                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
-                )
-                IconButton(
-                    modifier = Modifier.weight(0.15f),
-                    colors = IconButtonColors(
-                        Color.Transparent,
-                        MaterialTheme.colorScheme.onPrimaryContainer,
-                        Color.Transparent,
-                        Color.Transparent
-                    ),
-                    onClick = {
-                        if (promptText.isNotBlank()) {
-                            event?.invoke(
-                                ChatBotViewModel.Event.SendText(
-                                    promptText,
-                                )
-                            )
-                            promptText = ""
-                        } else {
-                            event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
-                        }
-                    },
-                    enabled = loading.not()
-                ) {
-                    Icon(
-                        modifier = Modifier,
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Send",
-                    )
-                }
+@Composable
+fun RequestPanel(
+    modifier: Modifier = Modifier,
+    onEvent: (ChatBotViewModel.Event) -> Unit = {},
+    loading: Boolean = false,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            modifier = Modifier.weight(0.1f),
+            colors = IconButtonColors(
+                Color.Transparent,
+                MaterialTheme.colorScheme.onPrimaryContainer,
+                Color.Transparent,
+                Color.Transparent
+            ),
+            onClick = {
+
             }
+        ) {
+            Icon(
+                modifier = Modifier,
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add image",
+            )
+        }
+        var promptText by remember { mutableStateOf("") }
+        TextField(
+            value = promptText,
+            modifier = Modifier.weight(0.8f),
+            onValueChange = { text: String -> promptText = text },
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                focusedTextColor = Color.Red,
+                unfocusedTextColor = Color.Red,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent
+            ),
+
+            placeholder = {
+                if (promptText.isBlank()) Text(
+                    "Enter a message",
+                    color = Color.Gray.copy(alpha = 0.5f)
+                )
+            },
+            maxLines = 3,
+            textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
+        )
+        IconButton(
+            modifier = Modifier.weight(0.10f),
+            colors = IconButtonColors(
+                Color.Transparent,
+                MaterialTheme.colorScheme.onPrimaryContainer,
+                Color.Transparent,
+                Color.Transparent
+            ),
+            onClick = {
+                if (promptText.isNotBlank()) {
+                    onEvent.invoke(
+                        ChatBotViewModel.Event.SendText(
+                            promptText,
+                        )
+                    )
+                    promptText = ""
+                } else {
+                    onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+                }
+            },
+            enabled = loading.not()
+        ) {
+            Icon(
+                modifier = Modifier,
+                imageVector = Icons.AutoMirrored.Rounded.Send,
+                contentDescription = "Send",
+            )
         }
     }
+}
+
+@Preview
+@Composable
+fun RequestPanelPreview() {
+    RequestPanel(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer),
+    )
 }
 
 
