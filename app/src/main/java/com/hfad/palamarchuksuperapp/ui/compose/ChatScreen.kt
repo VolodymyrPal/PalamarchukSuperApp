@@ -161,9 +161,8 @@ fun LazyChatScreen(
     modifier: Modifier = Modifier,
     messagesList: List<Message> = emptyList(),
     loading: Boolean = false,
-    event: ((ChatBotViewModel.Event) -> Unit)? = null,
+    event: (ChatBotViewModel.Event) -> Unit = {},
 ) {
-    var promptText: String by remember { mutableStateOf("") }
     val state = rememberLazyListState()
     LazyColumn(
         modifier = modifier,
@@ -180,24 +179,22 @@ fun LazyChatScreen(
             }
             when (messagesList[it]) {
                 is MessageChat -> {
-                    val isUser = remember { mutableStateOf((messagesList[it] as MessageChat).role == "user") }
+                    val isUser =
+                        remember { mutableStateOf((messagesList[it] as MessageChat).role == "user") }
                     val content = (messagesList[it] as MessageChat).content
                     for (messages in content) {
                         when (messages) {
                             is ContentText -> {
-                                Text(
-                                    modifier = Modifier,
+                                MessageBox(
                                     text = messages.text,
-                                    color = Color.DarkGray,
-                                    textAlign = if (isUser.value) TextAlign.End else TextAlign.Start
+                                    isUser = isUser.value
                                 )
                             }
 
                             is ContentImage -> {
-                                Text(
+                                MessageBox(
                                     text = messages.image_url.url,
-                                    color = Color.Black,
-                                    textAlign = if (isUser.value) TextAlign.End else TextAlign.Start
+                                    isUser = isUser.value
                                 )
                             }
                         }
@@ -205,13 +202,11 @@ fun LazyChatScreen(
                 }
 
                 is MessageText -> {
-                    val isUser = remember { mutableStateOf((messagesList[it] as MessageText).role == "user") }
-                    Text(
+                    val isUser =
+                        remember { mutableStateOf((messagesList[it] as MessageText).role == "user") }
+                    MessageBox(
                         text = (messagesList[it] as MessageText).content,
-                        color = if ((messagesList[it]
-                                    as MessageText).role == "user"
-                        ) Color.Green else Color.Blue,
-                        textAlign = if (isUser.value) TextAlign.End else TextAlign.Start
+                        isUser = isUser.value
                     )
                 }
             }
@@ -259,6 +254,41 @@ fun LazyChatScreen(
                         Color.Transparent
                     ),
                     onClick = {
+                onEvent = event,
+                loading = loading
+            )
+        }
+    }
+}
+
+@Composable
+fun MessageBox(
+    modifier: Modifier = Modifier,
+    text: String = "",
+    isUser: Boolean = true,
+) {
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            modifier = modifier
+                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                .fillMaxWidth(0.8f)
+                .wrapContentSize(Alignment.CenterEnd)
+                .sizeIn(minWidth = 50.dp)
+                .background(
+                    if (isUser) MaterialTheme.colorScheme.primaryContainer
+                    else Color.Transparent,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .padding(15.dp, 5.dp, 15.dp, 5.dp),
+            text = text,
+            color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
+            else MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Start
+        )
+    }
+}
 
                     }
                 ) {
