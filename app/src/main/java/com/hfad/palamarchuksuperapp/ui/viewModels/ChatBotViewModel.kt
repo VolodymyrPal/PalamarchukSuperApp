@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.data.services.GroqContentBuilder
 import com.hfad.palamarchuksuperapp.data.services.Message
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,7 @@ import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
     private val groqApi: GroqApiHandler,
+    private val chatAiRepository: ChatAiRepository,
 ) : GenericViewModel<PersistentList<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(
@@ -142,4 +144,16 @@ class ChatBotViewModel @Inject constructor(
             effect(Effect.ShowToast(message))
         }
     }
+
+    private fun changeAIModel(model: AIModel) {
+        viewModelScope.launch {
+
+        }
+    }
+}
+
+enum class AIModel{
+    GROQ_AI,
+    GPT_AI,
+    GEMINI_AI,
 }
