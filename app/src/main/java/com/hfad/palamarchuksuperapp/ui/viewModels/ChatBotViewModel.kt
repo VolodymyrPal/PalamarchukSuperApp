@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
     private val groqApi: GroqApiHandler,
-    private val chatAiRepository: ChatAiRepository,
+    private val chatAiRepository: ChatAiRepository?,
 ) : GenericViewModel<PersistentList<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(

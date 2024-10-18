@@ -94,8 +94,11 @@ fun ChatScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 navigationIcon = {
+                    val navController = LocalNavController.current
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            navController.popBackStack()
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -267,7 +270,7 @@ fun MessageBox(
                 .background(
                     if (isUser) MaterialTheme.colorScheme.primaryContainer
                     else Color.Transparent,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp, 10.dp, if (isUser) 0.dp else 10.dp, 10.dp)
                 )
                 .padding(15.dp, 5.dp, 15.dp, 5.dp),
             text = text,
@@ -290,7 +293,9 @@ fun RequestPanel(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            modifier = Modifier.weight(0.1f),
+            modifier = Modifier
+                .weight(0.1f)
+                .align(Alignment.Bottom),
             colors = IconButtonColors(
                 Color.Transparent,
                 MaterialTheme.colorScheme.onPrimaryContainer,
@@ -331,7 +336,9 @@ fun RequestPanel(
             textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
         )
         IconButton(
-            modifier = Modifier.weight(0.10f),
+            modifier = Modifier
+                .weight(0.1f)
+                .align(Alignment.Bottom),
             colors = IconButtonColors(
                 Color.Transparent,
                 MaterialTheme.colorScheme.onPrimaryContainer,
@@ -379,6 +386,9 @@ fun RequestPanelPreview() {
 fun ChatScreenPreview() {
     ChatScreen(
         modifier = Modifier.fillMaxSize(),
-        chatBotViewModel = ChatBotViewModel(groqApi = GroqApiHandler(httpClient = HttpClient()))
+        chatBotViewModel = ChatBotViewModel(
+            groqApi = GroqApiHandler(httpClient = HttpClient()),
+            chatAiRepository = null
+        )
     )
 }
