@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.data.services
 import android.util.Log
 import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
+import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
