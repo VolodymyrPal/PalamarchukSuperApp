@@ -19,8 +19,7 @@ import coil.load
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
-import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
-import com.hfad.palamarchuksuperapp.data.services.GeminiContentBuilder
+import com.hfad.palamarchuksuperapp.data.services.GeminiRequestBuilder
 import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
@@ -28,7 +27,6 @@ import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -164,10 +162,10 @@ class MainScreenFragment : Fragment() {
                 Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
             }
 
-            val request = GeminiContentBuilder.Builder()
+            val request = GeminiRequestBuilder.Builder()
                 .image(imgByteCode)
                 .text("It is image with math problem. Provide full answer in Russian. ")
-                .build()
+                .buildSingleRequest()
 
             val response = 3
 //                GeminiApiHandler(context?.applicationContext?.appComponent?.getHttpClient()!!).sendRequestWithResponse(

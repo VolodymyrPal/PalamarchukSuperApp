@@ -4,6 +4,7 @@ import android.util.Log
 import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
-) {
+) : AiModelHandler {
     private val apiKey = BuildConfig.GROQ_KEY
     private val max_tokens = 1024
     private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
@@ -37,6 +38,10 @@ class GroqApiHandler @Inject constructor(
         //MutableStateFlow(mutableListOf(adminRoleMessage))
 
     private val url = "https://api.groq.com/openai/v1/chat/completions"
+
+    override suspend fun getResponse(messageList: PersistentList<MessageAI>): MessageAI {
+        return MessageAI("","")
+    }
 
 
     suspend fun getRespondChatOrImage(message: Message) {
@@ -158,6 +163,6 @@ class GroqContentBuilder {
 class CodeError(val value: Int) : Exception()
 
 enum class Models(val value: String) {
-    GROQ_SIMPLE_TEXT("llama3-8b-8192"),
+    GROQ_SIMPLE_TEXT("llama3-groq-8b-8192-tool-use-preview"),
     GROQ_IMAGE("llama-3.2-11b-vision-preview"),
 }
