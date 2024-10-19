@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,7 +30,9 @@ sealed interface Part
 data class TextPart(val text: String = "Is my request completed?") : Part
 
 @Serializable
-data class ImagePart(val inlineData: InlineData) : Part
+
+data class ImagePart(
+    @SerialName(value = "inline_data") val inlineData: InlineData) : Part
 
 @Serializable
 data class InlineData(
