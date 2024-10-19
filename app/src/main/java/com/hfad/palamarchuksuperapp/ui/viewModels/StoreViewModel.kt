@@ -18,6 +18,7 @@ import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 
@@ -68,7 +69,7 @@ class StoreViewModel @Inject constructor(
                 initialValue = StoreState(loading = true)
             )
             .also {
-                viewModelScope.launch {
+                viewModelScope.launch (Dispatchers.IO) {
                     event(Event.OnSoftRefresh)
                 }
             }

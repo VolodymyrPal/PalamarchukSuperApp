@@ -37,8 +37,9 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) {
         }
     }
 
-    suspend fun sendRequestWithResponse(geminiRequest: GeminiRequest): String {
+    suspend fun sendRequestWithResponse(geminiRequest: GeminiRequest): MessageAI {
         try {
+            Log.d("Request: ", Json.encodeToString(geminiRequest))
             val response =
                 httpClient.post(url) {
                     contentType(ContentType.Application.Json)
