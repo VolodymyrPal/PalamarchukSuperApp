@@ -1,12 +1,18 @@
 package com.hfad.palamarchuksuperapp.data.services
 
+import android.util.Log
 import com.hfad.palamarchuksuperapp.BuildConfig
+import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) {
@@ -14,7 +20,6 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) {
     private val url =
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey"
 
-    val requestList: MutableList<GeminiRequest> = mutableListOf()
 
     suspend fun simpleTextRequest(text: String): String {
         val part = TextPart(text = text)
@@ -39,30 +44,15 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) {
                     contentType(ContentType.Application.Json)
                     setBody(geminiRequest)
                 }
+            Log.d("Get response: ", "${response.body<String>()}")
             val textResponse = response.body<GeminiResponse>().candidates[0].content.parts[0].text
-//            if (response.status == HttpStatusCode.OK) {
-//                requestList.add(geminiRequest)
-//                //response.body<GeminiRequest>().let { requestList.add(it) }
-//                requestList.add(GeminiRequest(listOf(GeminiContent(listOf(TextPart(textResponse)), role = "model"))))
-//            }
-//
-//            val request = GeminiContentBuilder.Builder()
-//                .text("What was my previous questions?")
-//                .build()
-//
-//            requestList.add(request)
-//
-//            val responseTwo = httpClient.post(url) {
-//                contentType(ContentType.Application.Json)
-//                for (i in requestList) {
-//                    setBody(i)
-//                }
-//            }
-//            val textResponse2 = responseTwo.body<GeminiResponse>().candidates[0].content.parts[0].text
-//            Log.d("My list: ", "$requestList")
-            return textResponse
+            if (response.status == HttpStatusCode.OK) {
+                return MessageAI(role = "model", content = textResponse, type = MessageType.TEXT)
+            } else { // TODO better handling request
+                return MessageAI(role = "system", content = "error", type = MessageType.TEXT)
+            }
         } catch (e: Exception) {
-            return e.message ?: "Error"
+            return MessageAI(e.message ?: "Error")
         }
     }
 }
