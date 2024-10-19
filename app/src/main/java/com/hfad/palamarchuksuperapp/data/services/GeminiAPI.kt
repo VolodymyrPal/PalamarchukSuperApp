@@ -68,25 +68,36 @@ data class GeminiTextResponse(
     val parts: List<TextPart>,
 )
 
-class GeminiRequestBuilder {
+class GeminiBuilder {
 
-    class Builder {
+    class RequestBuilder {
 
         private var parts: MutableList<Part> = arrayListOf()
+        private var contents: MutableList<GeminiContent> = arrayListOf()
+
+        @JvmName("addContentText")
+        fun contentText(role: String, content: String) = apply {
+            contents.add(GeminiContent(listOf(TextPart(text = content)), role = role))
+        }
+
+        @JvmName("addContent")
+        fun contentImage(role: String, content: Base64) = apply {
+            contents.add(GeminiContent(listOf(ImagePart(InlineData(data = content))), role = role))
+        }
 
         @JvmName("addPart")
         fun <T : Part> part(data: T) = apply { parts.add(data) }
 
         @JvmName("addText")
-        fun text(text: String) = part(TextPart(text))
+        fun text(text: String)  = part(TextPart(text))
 
         @JvmName("addImage")
         fun image(image: Base64) = part(ImagePart(InlineData(data = image)))
 
-        fun buildChatRequest(): GeminiRequest =
-            GeminiRequest(listOf(GeminiContent(parts, role = "user")))
-
         fun buildSingleRequest(): GeminiRequest = GeminiRequest(listOf(GeminiContent(parts)))
+
+        fun buildChatRequest(): GeminiRequest = GeminiRequest(contents)
+
     }
 }
 
