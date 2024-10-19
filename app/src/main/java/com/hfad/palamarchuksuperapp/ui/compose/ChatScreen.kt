@@ -167,9 +167,16 @@ fun LazyChatScreen(
     loading: Boolean = false,
     event: (ChatBotViewModel.Event) -> Unit = {},
 ) {
+    val brush = Brush.verticalGradient(
+        listOf(
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
+        )
+    )
     val state = rememberLazyListState()
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.background(brush),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom,
         state = state,
