@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -150,7 +151,7 @@ fun ChatScreen(
             val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
             LazyChatScreen(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxWidth(),
                 messagesList = myState.listMessage,
                 loading = myState.isLoading,
                 event = chatBotViewModel::event
@@ -265,7 +266,7 @@ fun MessageBox(
             modifier = modifier
                 .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                 .fillMaxWidth(0.8f)
-                .wrapContentSize(Alignment.CenterEnd)
+                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                 .sizeIn(minWidth = 50.dp)
                 .background(
                     if (isUser) MaterialTheme.colorScheme.primaryContainer
