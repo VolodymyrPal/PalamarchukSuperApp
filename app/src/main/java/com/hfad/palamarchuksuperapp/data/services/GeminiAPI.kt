@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -101,7 +102,7 @@ class GeminiBuilder {
     }
 }
 
-fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
+fun List<MessageAI>.toGeminiRequest(model: AiModels): GeminiRequest {
     val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {
