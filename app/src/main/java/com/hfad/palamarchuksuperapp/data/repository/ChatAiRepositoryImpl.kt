@@ -59,4 +59,23 @@ class ChatAiRepositoryImpl @Inject constructor(
 
 }
 
+interface AiModels {
+
+    val value: String
+
+    enum class GroqModels(override val value: String) : AiModels {
+        BASE_IMAGE_MODEL("llama-3.2-11b-vision-preview"),
+        TEXT_MODEL("llama3-groq-8b-8192-tool-use-preview"),
+    }
+
+    enum class GeminiModels(override val value: String) : AiModels {
+        BASE_MODEL("gemini-1.5-flash"),
+        GEMINI_IMAGE("")
+    }
+
+    enum class OpenAIModels(override val value: String) : AiModels {
+        BASE_MODEL(""),
+        OPENAI_IMAGE("")
+    }
+
 }

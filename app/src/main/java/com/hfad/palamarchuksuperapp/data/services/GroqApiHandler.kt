@@ -162,8 +162,3 @@ class GroqContentBuilder {
 }
 
 class CodeError(val value: Int) : Exception()
-
-enum class Models(val value: String) {
-    GROQ_SIMPLE_TEXT("llama3-groq-8b-8192-tool-use-preview"),
-    GROQ_IMAGE("llama-3.2-11b-vision-preview"),
-}
