@@ -4,6 +4,7 @@ import android.util.Log
 import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -15,11 +16,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class GroqApiHandler @Inject constructor(
@@ -29,47 +26,30 @@ class GroqApiHandler @Inject constructor(
     private val max_tokens = 1024
     private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
         it.role = "system"
-        it.buildText("You are math tutor. User send you image with sample. " +
-                "Please provide answer and solve this sample.")
+        it.buildText(
+            "You are math tutor. User send you image with sample. " +
+                    "Please provide answer and solve this sample."
+        )
     }
     val errorFlow = MutableStateFlow<DataError?>(null)
 
-    val chatHistory: MutableStateFlow<PersistentList<Message>> =
-        MutableStateFlow(persistentListOf())
-        //MutableStateFlow(mutableListOf(adminRoleMessage))
-
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
-    override suspend fun getResponse(messageList: PersistentList<MessageAI>): MessageAI {
-        return MessageAI("","")
-    }
+    override suspend fun getResponse(
+        messageList: PersistentList<MessageAI>,
+        model: AiModels?,
+    ): MessageAI {
 
-
-    suspend fun getRespondChatOrImage(message: Message) {
-        try {
-            chatHistory.update { chatHistory.value.add(message) }
-            Log.d("Groq message: ", chatHistory.value.toString())
-
-            val requestBody = Json.encodeToString(
-                value = GroqRequest(
-                    model = Models.GROQ_IMAGE.value,
-                    messages = chatHistory.value,
-                    maxTokens = max_tokens
-                )
+        val request = httpClient.post(url) {
+            header("Authorization", "Bearer $apiKey")
+            contentType(ContentType.Application.Json)
+            setBody(
+                ""
+              // messageList.toGroqRequest(model ?: AiModels.GroqModels.GROQ_IMAGE) // TODO logic for different models
             )
+        }
+        try {
 
-            val request = httpClient.post(url) {
-                header("Authorization", "Bearer $apiKey")
-                contentType(ContentType.Application.Json)
-                setBody(
-                    GroqRequest(
-                        model = if (chatHistory.value.any { it is MessageChat })
-                            Models.GROQ_IMAGE.value else Models.GROQ_SIMPLE_TEXT.value,
-                        messages = chatHistory.value,
-                        maxTokens = max_tokens
-                    )
-                )
-            }
             Log.d("Groq response:", request.body<String>())
 
             if (request.status == HttpStatusCode.OK) {
@@ -81,7 +61,6 @@ class GroqApiHandler @Inject constructor(
                     it.buildText((response.choices[0].message as MessageText).content)
                 }
 
-                chatHistory.update { chatHistory.value.add(responseMessage) }
             } else {
                 throw CodeError(request.status.value)
             }
@@ -133,6 +112,8 @@ class GroqApiHandler @Inject constructor(
                 }
             )
         }
+
+        return MessageAI("", "")
     }
 }
 
