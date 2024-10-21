@@ -42,6 +42,20 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
         }
     }
 
+    suspend fun getAvailableModels(): List<AiModels.GeminiModels> {
+        val response =
+            httpClient.post(getUrl()) {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    "https://generativelanguage.googleapis.com/v1beta/models/" +
+                            "${AiModels.GeminiModels.BASE_MODEL}?key=$apiKey"
+                )
+            }
+        Log.d("Get response: ", "${response.body<String>()}")
+        return listOf(
+            AiModels.GeminiModels.BASE_MODEL)
+    }
+
     suspend fun sendRequestWithResponse(geminiRequest: GeminiRequest): MessageAI {
         try {
             Log.d("Request: ", Json.encodeToString(geminiRequest))
