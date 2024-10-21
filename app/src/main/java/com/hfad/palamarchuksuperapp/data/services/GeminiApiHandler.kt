@@ -32,7 +32,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
         val geminiRequest = GeminiRequest(listOf(geminiContent))
 
         return try {
-            val response = httpClient.post(url) {
+            val response = httpClient.post(getUrl()) {
                 contentType(ContentType.Application.Json)
                 setBody(geminiRequest)
             }
