@@ -23,9 +23,8 @@ import javax.inject.Inject
 
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
-    private val url =
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey"
-
+    private fun getUrl(model: AiModels = AiModels.GeminiModels.BASE_MODEL, key: String = apiKey) =
+        "https://generativelanguage.googleapis.com/v1beta/models/${model.value}:generateContent?key=$key"
 
     suspend fun simpleTextRequest(text: String): String {
         val part = TextPart(text = text)
