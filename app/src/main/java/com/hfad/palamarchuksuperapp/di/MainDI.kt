@@ -39,6 +39,10 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.cio.endpoint
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
@@ -97,7 +101,7 @@ abstract class ViewModelsModule {
 object NetworkModule {
     @Provides
     fun platziApiImpl(): FakeStoreApi {
-        return FakeStoreApiRepository()
+        return FakeStoreApiRepository(provideHttpClient())
     }
 
     @Provides
@@ -112,6 +116,10 @@ object NetworkModule {
     @Provides
     fun provideHttpClient(): HttpClient {
         return HttpClient(CIO) {
+            install(Logging) {
+                logger = Logger.SIMPLE
+                level = LogLevel.ALL
+            }
             engine {
                 endpoint {
                     socketTimeout = 10_000
