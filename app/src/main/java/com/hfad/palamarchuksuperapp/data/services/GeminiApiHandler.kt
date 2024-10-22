@@ -23,9 +23,8 @@ import javax.inject.Inject
 
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
-    private val url =
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey"
-
+    private fun getUrl(model: AiModels = AiModels.GeminiModels.BASE_MODEL, key: String = apiKey) =
+        "https://generativelanguage.googleapis.com/v1beta/models/${model.value}:generateContent?key=$key"
 
     suspend fun simpleTextRequest(text: String): String {
         val part = TextPart(text = text)
@@ -33,7 +32,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
         val geminiRequest = GeminiRequest(listOf(geminiContent))
 
         return try {
-            val response = httpClient.post(url) {
+            val response = httpClient.post(getUrl()) {
                 contentType(ContentType.Application.Json)
                 setBody(geminiRequest)
             }
@@ -43,11 +42,25 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
         }
     }
 
+    suspend fun getAvailableModels(): List<AiModels.GeminiModels> {
+        val response =
+            httpClient.post(getUrl()) {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    "https://generativelanguage.googleapis.com/v1beta/models/" +
+                            "${AiModels.GeminiModels.BASE_MODEL}?key=$apiKey"
+                )
+            }
+        Log.d("Get response: ", "${response.body<String>()}")
+        return listOf(
+            AiModels.GeminiModels.BASE_MODEL)
+    }
+
     suspend fun sendRequestWithResponse(geminiRequest: GeminiRequest): MessageAI {
         try {
             Log.d("Request: ", Json.encodeToString(geminiRequest))
             val response =
-                httpClient.post(url) {
+                httpClient.post(getUrl()) {
                     contentType(ContentType.Application.Json)
                     setBody(geminiRequest)
                 }
@@ -64,13 +77,12 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
     }
 
 
-
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
         model: AiModels?,
     ): MessageAI {
 
-        val request = httpClient.post(url) {
+        val request = httpClient.post(getUrl(model = model ?: AiModels.GeminiModels.BASE_MODEL)) {
             header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
             setBody(
@@ -94,52 +106,52 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
                 throw CodeError(request.status.value)
             }
         } catch (e: Exception) {
-            errorFlow.emit(
-                when (e) {
-                    is HttpException -> {
-                        DataError.Network.InternalServerError
-                    }
-
-                    is CodeError -> {
-                        when (e.value) {
-                            400 -> {
-                                //DataError.Network.BadRequest
-                                DataError.CustomError(e.value.toString())
-                            }
-
-                            401 -> {
-                                DataError.CustomError(e.value.toString())
-                                //DataError.Network.Unauthorized
-                            }
-
-                            403 -> {
-                                //DataError.Network.Forbidden
-                                DataError.CustomError(e.value.toString())
-
-                            }
-
-                            in 400..500 -> {
-                                DataError.CustomError(e.value.toString())
-                                //DataError.Network.InternalServerError
-                            }
-
-                            in 500..600 -> {
-                                DataError.CustomError(e.value.toString())
-                                //DataError.Network.Unknown
-                            }
-
-                            else -> {
-                                DataError.CustomError(e.value.toString())
-                                //DataError.Network.Unknown
-                            }
-                        }
-                    }
-
-                    else -> {
-                        DataError.CustomError(e.toString())
-                    }
-                }
-            )
+//            errorFlow.emit(
+//                when (e) {
+//                    is HttpException -> {
+//                        DataError.Network.InternalServerError
+//                    }
+//
+//                    is CodeError -> {
+//                        when (e.value) {
+//                            400 -> {
+//                                //DataError.Network.BadRequest
+//                                DataError.CustomError(e.value.toString())
+//                            }
+//
+//                            401 -> {
+//                                DataError.CustomError(e.value.toString())
+//                                //DataError.Network.Unauthorized
+//                            }
+//
+//                            403 -> {
+//                                //DataError.Network.Forbidden
+//                                DataError.CustomError(e.value.toString())
+//
+//                            }
+//
+//                            in 400..500 -> {
+//                                DataError.CustomError(e.value.toString())
+//                                //DataError.Network.InternalServerError
+//                            }
+//
+//                            in 500..600 -> {
+//                                DataError.CustomError(e.value.toString())
+//                                //DataError.Network.Unknown
+//                            }
+//
+//                            else -> {
+//                                DataError.CustomError(e.value.toString())
+//                                //DataError.Network.Unknown
+//                            }
+//                        }
+//                    }
+//
+//                    else -> {
+//                        DataError.CustomError(e.toString())
+//                    }
+//                }
+//            )
         }
 
         return MessageAI("", "")

@@ -40,7 +40,7 @@ class StoreViewModel @Inject constructor(
                 Result.Success(it)
             }
             .catch {
-                emit(Result.Error(DataError.Network.InternalServerError))
+                effect(Effect.ShowToast(it.message ?: "Error. Please provide info to developer"))
             }
 
     override val _errorFlow: MutableStateFlow<DataError?> = repository.errorFlow
@@ -69,7 +69,7 @@ class StoreViewModel @Inject constructor(
                 initialValue = StoreState(loading = true)
             )
             .also {
-                viewModelScope.launch (Dispatchers.IO) {
+                viewModelScope.launch(Dispatchers.IO) {
                     event(Event.OnSoftRefresh)
                 }
             }

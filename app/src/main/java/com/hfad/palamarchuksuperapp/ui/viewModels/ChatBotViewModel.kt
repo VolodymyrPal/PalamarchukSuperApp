@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -52,11 +53,12 @@ class ChatBotViewModel @Inject constructor(
     }
 
     override val _dataFlow: Flow<Result<PersistentList<Message>, DataError>> =
-        groqApi.chatHistory.map<PersistentList<Message>, Result<PersistentList<Message>, DataError>> {
-            Result.Success(it)
-        }.catch {
-            emit(Result.Error(DataError.CustomError(it.message ?: "Error")))
-        }
+        emptyFlow()
+//        groqApi.chatHistory.map<PersistentList<Message>, Result<PersistentList<Message>, DataError>> {
+//            Result.Success(it)
+//        }.catch {
+//            emit(Result.Error(DataError.CustomError(it.message ?: "Error")))
+//        }
 
 
     override val uiState: StateFlow<StateChat> = combine(
@@ -121,7 +123,7 @@ class ChatBotViewModel @Inject constructor(
                     it.buildText(text)
                 }
             }
-            groqApi.getRespondChatOrImage(request)
+            //groqApi.getRespondChatOrImage(request)
             _loading.update { false }
         }
     }
@@ -134,7 +136,7 @@ class ChatBotViewModel @Inject constructor(
                 it.text(text)
                 it.buildText(text)
             }
-            groqApi.getRespondChatOrImage(request)
+            //groqApi.getRespondChatOrImage(request)
             _loading.update { false }
         }
     }

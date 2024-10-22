@@ -102,7 +102,7 @@ class GeminiBuilder {
     }
 }
 
-fun List<MessageAI>.toGeminiRequest(model: AiModels): GeminiRequest {
+fun List<MessageAI>.toGeminiRequest(model: AiModels? = null): GeminiRequest {
     val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {

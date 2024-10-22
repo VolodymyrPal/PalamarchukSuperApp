@@ -114,7 +114,6 @@ dependencies {
     //noinspection KaptUsageInsteadOfKsp
     ksp(libs.room.annotation)
 
-    implementation(libs.retrofit)
     implementation(libs.moshi.kotlin)
     implementation(libs.converter.moshi)
     ksp(libs.moshi.kotlin.codegen)
@@ -129,5 +128,8 @@ dependencies {
     implementation(libs.app.update.ktx)
 
     implementation(libs.kotlinx.collections.immutable) // Immutable collection for better compose handling
+
+    implementation("androidx.compose.animation:animation:1.7.4")
+    implementation("io.ktor:ktor-client-logging:2.3.12")
 
 }
