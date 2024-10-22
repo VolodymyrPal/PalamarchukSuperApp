@@ -36,17 +36,17 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     }
 
-    private fun sendRequestToAI(message: String) {
+    private suspend fun sendRequestToAI(message: String) {
 
-        when (currentModel) {
-            is AiModels.GroqModels -> groqApiHandler.getRespondChatOrImage(message)
-
-            is AiModels.GeminiModels,
-                -> geminiApiHandler.sendRequestWithResponse(message)
-
-            is AiModels.OpenAIModels,
-                -> openAIApiHandler.sendRequestWithResponse(message)
-        }
+//        when (currentModel) {
+//            is AiModels.GroqModels -> groqApiHandler.getRespondChatOrImage(message)
+//
+//            is AiModels.GeminiModels,
+//                -> geminiApiHandler.sendRequestWithResponse(message)
+//
+//            is AiModels.OpenAIModels,
+//                -> openAIApiHandler.sendRequestWithResponse(message)
+//        }
 
         val aiMessage = MessageAI(role = "assistant", content = message)
 
