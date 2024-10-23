@@ -69,7 +69,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
             if (response.status == HttpStatusCode.OK) {
                 return MessageAI(role = "model", content = textResponse, type = MessageType.TEXT)
             } else { // TODO better handling request
-                return MessageAI(role = "system", content = "error", type = MessageType.TEXT)
+                return MessageAI(role = "model", content = "error", type = MessageType.TEXT)
             }
         } catch (e: Exception) {
             return MessageAI(e.message ?: "Error")
