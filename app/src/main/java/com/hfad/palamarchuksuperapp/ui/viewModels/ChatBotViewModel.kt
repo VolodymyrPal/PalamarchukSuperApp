@@ -1,9 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
-import com.hfad.palamarchuksuperapp.data.services.GroqContentBuilder
-import com.hfad.palamarchuksuperapp.data.services.Message
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
@@ -13,9 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,14 +23,14 @@ import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
     private val groqApi: GroqApiHandler,
-    private val chatAiRepository: ChatAiRepository?,
-) : GenericViewModel<PersistentList<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+    private val chatAiRepository: ChatAiRepository,
+) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(
-        val listMessage: PersistentList<Message> = persistentListOf(),
+        val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: DataError? = null,
-    ) : State<PersistentList<Message>>
+    ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<DataError?> = groqApi.errorFlow
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -52,14 +51,8 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    override val _dataFlow: Flow<Result<PersistentList<Message>, DataError>> =
-        emptyFlow()
-//        groqApi.chatHistory.map<PersistentList<Message>, Result<PersistentList<Message>, DataError>> {
-//            Result.Success(it)
-//        }.catch {
-//            emit(Result.Error(DataError.CustomError(it.message ?: "Error")))
-//        }
-
+    override val _dataFlow: Flow<Result<PersistentList<MessageAI>, DataError>> =
+        chatAiRepository.chatAiChatFlow.map { Result.Success(it) }
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow, _loading, _errorFlow
@@ -112,18 +105,11 @@ class ChatBotViewModel @Inject constructor(
     private fun sendImage(text: String, imageUrl: String) {
         viewModelScope.launch {
             _loading.update { true }
-            val request = GroqContentBuilder.Builder().let {
-                it.role = "user"
-                if (imageUrl.isNotBlank()) {
-                it.text(text)
-                it.image("https://imo10.labirint.ru/books/248689/ph_04.jpg/1920-0") //imageUrl)
-                it.buildChat()
-                } else {
-                    it.text(text)
-                    it.buildText(text)
-                }
-            }
-            //groqApi.getRespondChatOrImage(request)
+            chatAiRepository.getRespondChatOrImage(
+                MessageAI(
+                    role = "user", content = text, type = MessageType.TEXT
+                )
+            )
             _loading.update { false }
         }
     }
@@ -131,12 +117,11 @@ class ChatBotViewModel @Inject constructor(
     private fun sendText(text: String) {
         viewModelScope.launch {
             _loading.update { true }
-            val request = GroqContentBuilder.Builder().let {
-                it.role = "user"
-                it.text(text)
-                it.buildText(text)
-            }
-            //groqApi.getRespondChatOrImage(request)
+            chatAiRepository.getRespondChatOrImage(
+                MessageAI(
+                    role = "user", content = text, type = MessageType.TEXT
+                )
+            )
             _loading.update { false }
         }
     }
@@ -147,15 +132,9 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun changeAIModel(model: AIModel) {
+    private fun changeAIModel(model: AiModels) {
         viewModelScope.launch {
 
         }
     }
-}
-
-enum class AIModel{
-    GROQ_AI,
-    GPT_AI,
-    GEMINI_AI,
 }

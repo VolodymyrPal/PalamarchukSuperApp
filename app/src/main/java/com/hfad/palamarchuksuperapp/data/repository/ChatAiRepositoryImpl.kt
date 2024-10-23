@@ -4,6 +4,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
+import com.hfad.palamarchuksuperapp.data.services.toGeminiRequest
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
@@ -24,37 +25,40 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override val errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
 
-    override suspend fun getRespondChatOrImage(message: String) {
-        val userMessage = MessageAI(role = "user", content = message)
+    override suspend fun getRespondChatOrImage(message: MessageAI) {
         try {
-
-
-            chatAiChatFlow.update { chatAiChatFlow.value.add(userMessage) }
+            chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
+            sendRequestToAI()
         } catch (e: Exception) {
             errorFlow.emit(DataError.CustomError(e.message ?: "Error"))
         }
 
     }
 
-    private suspend fun sendRequestToAI(message: String) {
+    private suspend fun sendRequestToAI() {
+        val response = when (currentModel) {
+            is AiModels.GroqModels -> {
+                groqApiHandler.getResponse(chatAiChatFlow.value)
+            }
 
-//        when (currentModel) {
-//            is AiModels.GroqModels -> groqApiHandler.getRespondChatOrImage(message)
-//
-//            is AiModels.GeminiModels,
-//                -> geminiApiHandler.sendRequestWithResponse(message)
-//
-//            is AiModels.OpenAIModels,
-//                -> openAIApiHandler.sendRequestWithResponse(message)
-//        }
+            is AiModels.GeminiModels -> {
+                geminiApiHandler.sendRequestWithResponse(chatAiChatFlow.value.toGeminiRequest()) //TODO request
+            }
 
-        val aiMessage = MessageAI(role = "assistant", content = message)
 
-        chatAiChatFlow.update { chatAiChatFlow.value.add(aiMessage) }
+            is AiModels.OpenAIModels,
+                -> { openAIApiHandler.sendRequestWithResponse()
+                MessageAI()} //TODO request
+            else -> {
+                MessageAI()
+            }
+        }
+
+        chatAiChatFlow.update { chatAiChatFlow.value.add(response) }
 
     }
 
-    private val currentModel: AiModels = AiModels.GroqModels.BASE_IMAGE_MODEL
+    private val currentModel: AiModels = AiModels.GeminiModels.BASE_MODEL
 
 
 }
