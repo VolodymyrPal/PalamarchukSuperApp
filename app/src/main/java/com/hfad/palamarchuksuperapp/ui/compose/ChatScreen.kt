@@ -1,6 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,16 +56,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.services.ContentImage
-import com.hfad.palamarchuksuperapp.data.services.ContentText
+import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
+import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
-import com.hfad.palamarchuksuperapp.data.services.Message
-import com.hfad.palamarchuksuperapp.data.services.MessageChat
-import com.hfad.palamarchuksuperapp.data.services.MessageText
+import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import io.ktor.client.HttpClient
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 
@@ -163,7 +170,7 @@ fun ChatScreen(
 @Composable
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
-    messagesList: List<Message> = emptyList(),
+    messagesList: PersistentList<MessageAI> = persistentListOf(),
     loading: Boolean = false,
     event: (ChatBotViewModel.Event) -> Unit = {},
 ) {
@@ -188,38 +195,48 @@ fun LazyChatScreen(
                     state.animateScrollToItem(messagesList.lastIndex + 3)
                 }
             }
-            when (messagesList[it]) {
-                is MessageChat -> {
-                    val isUser =
-                        remember { mutableStateOf((messagesList[it] as MessageChat).role == "user") }
-                    val content = (messagesList[it] as MessageChat).content
-                    for (messages in content) {
-                        when (messages) {
-                            is ContentText -> {
-                                MessageBox(
-                                    text = messages.text,
-                                    isUser = isUser.value
-                                )
-                            }
-
-                            is ContentImage -> {
-                                MessageBox(
-                                    text = messages.image_url.url,
-                                    isUser = isUser.value
-                                )
-                            }
-                        }
-                    }
-                }
-
-                is MessageText -> {
-                    val isUser =
-                        remember { mutableStateOf((messagesList[it] as MessageText).role == "user") }
+            when (messagesList[it].type) {
+                MessageType.TEXT -> {
                     MessageBox(
-                        text = (messagesList[it] as MessageText).content,
-                        isUser = isUser.value
+                        text = messagesList[it].content,
+                        isUser = messagesList[it].role == "user"
                     )
                 }
+                MessageType.IMAGE -> {
+                    AsyncImage(model = messagesList[it].content, contentDescription = null)
+                }
+
+//                is MessageChat -> {
+//                    val isUser =
+//                        remember { mutableStateOf((messagesList[it] as MessageChat).role == "user") }
+//                    val content = (messagesList[it] as MessageChat).content
+//                    for (messages in content) {
+//                        when (messages) {
+//                            is ContentText -> {
+//                                MessageBox(
+//                                    text = messages.text,
+//                                    isUser = isUser.value
+//                                )
+//                            }
+//
+//                            is ContentImage -> {
+//                                MessageBox(
+//                                    text = messages.image_url.url,
+//                                    isUser = isUser.value
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                is MessageText -> {
+//                    val isUser =
+//                        remember { mutableStateOf((messagesList[it] as MessageText).role == "user") }
+//                    MessageBox(
+//                        text = (messagesList[it] as MessageText).content,
+//                        isUser = isUser.value
+//                    )
+//                }
             }
 
             Spacer(modifier = Modifier.size(20.dp))
@@ -300,6 +317,19 @@ fun RequestPanel(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val context = LocalContext.current
+        val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
+        val galleryLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri ->
+            uri?.let {
+                imageBitmap.value = context.contentResolver.openInputStream(uri)?.use {
+                    BitmapFactory.decodeStream(it)
+                }
+
+            }
+        }
+
         IconButton(
             modifier = Modifier
                 .weight(0.1f)
@@ -311,7 +341,7 @@ fun RequestPanel(
                 Color.Transparent
             ),
             onClick = {
-
+                galleryLauncher.launch("image/*")
             }
         ) {
             Icon(
@@ -321,9 +351,15 @@ fun RequestPanel(
             )
         }
         var promptText by remember { mutableStateOf("") }
+        if (imageBitmap.value != null) {
+            AsyncImage(
+                model = imageBitmap.value, contentDescription = "image to send",
+                modifier = Modifier.weight(0.1f)
+            )
+        }
         TextField(
             value = promptText,
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier.weight(0.7f),
             onValueChange = { text: String -> promptText = text },
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
@@ -396,7 +432,16 @@ fun ChatScreenPreview() {
         modifier = Modifier.fillMaxSize(),
         chatBotViewModel = ChatBotViewModel(
             groqApi = GroqApiHandler(httpClient = HttpClient()),
-            chatAiRepository = null
+            chatAiRepository = ChatAiRepositoryImpl(
+                groqApiHandler = GroqApiHandler(
+                    httpClient = HttpClient()
+                ),
+                geminiApiHandler = GeminiApiHandler(
+                    httpClient = HttpClient()
+                ), openAIApiHandler = OpenAIApiHandler(
+                    httpClient = HttpClient()
+                )
+            )
         )
     )
 }
