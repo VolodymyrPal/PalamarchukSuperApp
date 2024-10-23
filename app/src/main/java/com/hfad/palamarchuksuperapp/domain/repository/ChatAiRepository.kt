@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface ChatAiRepository {
     val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>>
     val errorFlow: MutableStateFlow<DataError?>
-    suspend fun getRespondChatOrImage(message: String)
+    suspend fun getRespondChatOrImage(message: MessageAI)
 }
