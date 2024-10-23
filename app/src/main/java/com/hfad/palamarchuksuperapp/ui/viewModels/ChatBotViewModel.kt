@@ -1,9 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
-import com.hfad.palamarchuksuperapp.data.services.GroqContentBuilder
-import com.hfad.palamarchuksuperapp.data.services.Message
 import com.hfad.palamarchuksuperapp.domain.models.DataError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
@@ -13,9 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,14 +23,14 @@ import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
     private val groqApi: GroqApiHandler,
-    private val chatAiRepository: ChatAiRepository?,
-) : GenericViewModel<PersistentList<Message>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+    private val chatAiRepository: ChatAiRepository,
+) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(
-        val listMessage: PersistentList<Message> = persistentListOf(),
+        val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: DataError? = null,
-    ) : State<PersistentList<Message>>
+    ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<DataError?> = groqApi.errorFlow
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
