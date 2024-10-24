@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -38,7 +39,7 @@ class GroqApiHandler @Inject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
         model: AiModels?,
-    ): MessageAI {
+    ): Result<MessageAI, DataError> {
 
         val request = httpClient.post(url) {
             header("Authorization", "Bearer $apiKey")
@@ -113,7 +114,7 @@ class GroqApiHandler @Inject constructor(
             )
         }
 
-        return MessageAI("", "")
+        return Result.Success(MessageAI("", ""))
     }
 }
 
