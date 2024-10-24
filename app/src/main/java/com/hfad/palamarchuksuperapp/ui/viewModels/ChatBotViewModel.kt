@@ -40,7 +40,7 @@ class ChatBotViewModel @Inject constructor(
             groqApi.errorFlow.collect { error ->
                 when (error) {
                     is DataError.CustomError -> {
-                        effect(Effect.ShowToast(error.errorText))
+                        effect(Effect.ShowToast(error.errorText!!))
                     }
 
                     else -> {
