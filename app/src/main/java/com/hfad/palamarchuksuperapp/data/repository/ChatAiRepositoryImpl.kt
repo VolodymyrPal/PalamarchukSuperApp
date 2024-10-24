@@ -118,9 +118,11 @@ interface AiModels {
 
     val value: String
 
+    data class GroqModel(override val value: String = "llama-3.2-11b-vision-preview") : AiModels
+
     enum class GroqModels(override val value: String) : AiModels {
-        BASE_IMAGE_MODEL("llama-3.2-11b-vision-preview"),
-        TEXT_MODEL("llama3-groq-8b-8192-tool-use-preview"),
+        BASE_MODEL("llama-3.2-11b-vision-preview"),
+        TEXT_MODEL("llama3-groq-8b-8192-tool-use-preview")
     }
 
     enum class GeminiModels(override val value: String) : AiModels {
