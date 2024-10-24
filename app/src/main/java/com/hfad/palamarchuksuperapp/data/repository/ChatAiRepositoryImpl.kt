@@ -1,11 +1,12 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
-import com.hfad.palamarchuksuperapp.data.services.toGeminiRequest
 import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -26,35 +27,85 @@ class ChatAiRepositoryImpl @Inject constructor(
     override val errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
 
     override suspend fun getRespondChatOrImage(message: MessageAI) {
-        try {
-            chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
-            sendRequestToAI()
-        } catch (e: Exception) {
-            errorFlow.emit(DataError.CustomError(e.message ?: "Error"))
+
+        chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
+
+        val response: Result<MessageAI, DataError> = when (currentModel) {
+            is AiModels.GroqModels -> {
+                groqApiHandler.getResponse(chatAiChatFlow.value) // TODO correct result
+            }
+
+            is AiModels.GeminiModels -> {
+                geminiApiHandler.getResponse(chatAiChatFlow.value)
+            }
+
+
+            is AiModels.OpenAIModels -> {
+                openAIApiHandler.sendRequestWithResponse()
+                Result.Success(MessageAI())
+            } //TODO request
+            else -> {
+                Result.Success(MessageAI()) //TODO correct result
+            }
         }
+        val result = when (response) {
+            is Result.Success -> {
+                MessageAI(
+                    role = "model",
+                    content = response.data.content,
+                    type = MessageType.TEXT
+                )
+            }
+
+            is Result.Error -> { //TODO better error handling
+                MessageAI(
+                    role = "model",
+                    content = response.error.toString(),
+                    type = MessageType.TEXT
+                )
+            }
+        }
+
+        chatAiChatFlow.update { chatAiChatFlow.value.add(result) }
 
     }
 
     private suspend fun sendRequestToAI() {
-        val response = when (currentModel) {
+        val response: Result<MessageAI, DataError> = when (currentModel) {
             is AiModels.GroqModels -> {
-                groqApiHandler.getResponse(chatAiChatFlow.value)
+                groqApiHandler.getResponse(chatAiChatFlow.value) // TODO correct result
             }
 
             is AiModels.GeminiModels -> {
-                geminiApiHandler.sendRequestWithResponse(chatAiChatFlow.value.toGeminiRequest()) //TODO request
+                geminiApiHandler.getResponse(chatAiChatFlow.value)
             }
 
 
-            is AiModels.OpenAIModels,
-                -> { openAIApiHandler.sendRequestWithResponse()
-                MessageAI()} //TODO request
+            is AiModels.OpenAIModels -> {
+                openAIApiHandler.sendRequestWithResponse()
+                Result.Success(MessageAI())
+            } //TODO request
             else -> {
-                MessageAI()
+                Result.Success(MessageAI()) //TODO correct result
+            }
+        }
+        val result = when (response) {
+            is Result.Success -> {
+                MessageAI(
+                    role = "model",
+                    content = response.data.content,
+                )
+            }
+
+            is Result.Error -> { //TODO better error handling
+                MessageAI(
+                    role = "model",
+                    content = response.error.toString(),
+                )
             }
         }
 
-        chatAiChatFlow.update { chatAiChatFlow.value.add(response) }
+        chatAiChatFlow.update { chatAiChatFlow.value.add(result) }
 
     }
 
