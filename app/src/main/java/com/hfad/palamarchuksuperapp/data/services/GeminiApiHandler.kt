@@ -51,67 +51,54 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
                     )
                 }
 
-            return if (request.status == HttpStatusCode.OK) {
+            if (request.status == HttpStatusCode.OK) {
                 val response = request.body<GeminiResponse>()
                 val responseMessage = MessageAI(
                     role = "model",
                     content = response.candidates[0].content.parts[0].text,
                 )
-                Result.Success(responseMessage)
+                return Result.Success(responseMessage)
             } else {
                 throw CodeError(request.status.value)
             }
         } catch (e: Exception) {
-//            errorFlow.emit(
-//                when (e) {
-//                    is HttpException -> {
-//                        DataError.Network.InternalServerError
-//                    }
-//
-//                    is CodeError -> {
-//                        when (e.value) {
-//                            400 -> {
-//                                //DataError.Network.BadRequest
-//                                DataError.CustomError(e.value.toString())
-//                            }
-//
-//                            401 -> {
-//                                DataError.CustomError(e.value.toString())
-//                                //DataError.Network.Unauthorized
-//                            }
-//
-//                            403 -> {
-//                                //DataError.Network.Forbidden
-//                                DataError.CustomError(e.value.toString())
-//
-//                            }
-//
-//                            in 400..500 -> {
-//                                DataError.CustomError(e.value.toString())
-//                                //DataError.Network.InternalServerError
-//                            }
-//
-//                            in 500..600 -> {
-//                                DataError.CustomError(e.value.toString())
-//                                //DataError.Network.Unknown
-//                            }
-//
-//                            else -> {
-//                                DataError.CustomError(e.value.toString())
-//                                //DataError.Network.Unknown
-//                            }
-//                        }
-//                    }
-//
-//                    else -> {
-//                        DataError.CustomError(e.toString())
-//                    }
-//                }
-//            )
+            return when (e) {
+                is HttpException -> {
+                    Result.Error(DataError.Network.Unknown)
+                }
+
+                is CodeError -> {
+                    when (e.value) {
+                        400 -> {
+                            Result.Error(DataError.Network.BadRequest)
+                        }
+
+                        401 -> {
+                            Result.Error(DataError.Network.Unauthorized)
+                        }
+
+                        403 -> {
+                            Result.Error(DataError.Network.Forbidden)
+                        }
+
+                        in 400..500 -> {
+                            Result.Error(DataError.CustomError("Ошибка запроса"))
+                        }
+
+                        in 500..600 -> {
+                            Result.Error(DataError.CustomError("Ошибка сервера"))
+                        }
+
+                        else -> {
+                            Result.Error(DataError.CustomError("Неизвестная ошибка"))
+                        }
+                    }
+                }
+
+                else -> {
+                    Result.Error(DataError.CustomError(error = e))
+                }
+            }
         }
-
-        return Result.Success(MessageAI("", ""))
-
-
     }
 }
