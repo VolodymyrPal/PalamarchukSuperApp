@@ -16,6 +16,7 @@ import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import retrofit2.HttpException
 
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
@@ -23,43 +24,17 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
         "https://generativelanguage.googleapis.com/v1beta/models/${model.value}:generateContent?key=$key"
 
     suspend fun getAvailableModels(): List<AiModels.GeminiModels> {
-        val response =
-            httpClient.post(getUrl()) {
-                contentType(ContentType.Application.Json)
-                setBody(
-                    "https://generativelanguage.googleapis.com/v1beta/models/" +
-                            "${AiModels.GeminiModels.BASE_MODEL}?key=$apiKey"
-                )
-            }
+        val response = httpClient.post(getUrl()) {
+            contentType(ContentType.Application.Json)
+            setBody(
+                "https://generativelanguage.googleapis.com/v1beta/models/" +
+                        "${AiModels.GeminiModels.BASE_MODEL}?key=$apiKey"
+            )
+        }
         return listOf(
             AiModels.GeminiModels.BASE_MODEL
         )
     }
-
-    suspend fun sendRequestWithResponse(geminiRequest: GeminiRequest): Result<MessageAI, DataError> {
-        try {
-            val response =
-                httpClient.post(getUrl()) {
-                    contentType(ContentType.Application.Json)
-                    setBody(geminiRequest)
-                }
-            val textResponse = response.body<GeminiResponse>().candidates[0].content.parts[0].text
-            return if (response.status == HttpStatusCode.OK) {
-                Result.Success(
-                    MessageAI(
-                        role = "model",
-                        content = textResponse,
-                        type = MessageType.TEXT
-                    )
-                )
-            } else {
-                Result.Error(DataError.Network.Unknown)
-            }
-        } catch (e: Exception) {
-            return Result.Error(DataError.CustomError(error = e))
-        }
-    }
-
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
