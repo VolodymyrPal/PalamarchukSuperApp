@@ -10,6 +10,7 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -24,7 +25,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>> =
         MutableStateFlow(persistentListOf())
 
-    override val errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
+    override val errorFlow: MutableSharedFlow<DataError?> = MutableSharedFlow()
 
     override suspend fun getRespondChatOrImage(message: MessageAI) {
 
