@@ -32,15 +32,16 @@ class ChatBotViewModel @Inject constructor(
         val error: DataError? = null,
     ) : State<PersistentList<MessageAI>>
 
-    override val _errorFlow: MutableStateFlow<DataError?> = groqApi.errorFlow
+    override val _errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
-            groqApi.errorFlow.collect { error ->
+            chatAiRepository.errorFlow.collect { error ->
+                _errorFlow.update { error }
                 when (error) {
                     is DataError.CustomError -> {
-                        effect(Effect.ShowToast(error.errorText!!))
+                        effect(Effect.ShowToast(error.errorText?: "Unknown error"))
                     }
 
                     else -> {
@@ -67,6 +68,7 @@ class ChatBotViewModel @Inject constructor(
             }
 
             is Result.Error -> {
+
                 StateChat(
                     listMessage = persistentListOf(),
                     isLoading = isLoading,

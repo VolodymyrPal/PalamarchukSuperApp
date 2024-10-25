@@ -10,6 +10,7 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -24,7 +25,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>> =
         MutableStateFlow(persistentListOf())
 
-    override val errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
+    override val errorFlow: MutableSharedFlow<DataError?> = MutableSharedFlow()
 
     override suspend fun getRespondChatOrImage(message: MessageAI) {
 
@@ -47,65 +48,17 @@ class ChatAiRepositoryImpl @Inject constructor(
             else -> {
                 Result.Success(MessageAI()) //TODO correct result
             }
+
         }
-        val result = when (response) {
-            is Result.Success -> {
-                MessageAI(
-                    role = "model",
-                    content = response.data.content,
-                    type = MessageType.TEXT
-                )
-            }
-
-            is Result.Error -> { //TODO better error handling
-                MessageAI(
-                    role = "model",
-                    content = response.error.toString(),
-                    type = MessageType.TEXT
-                )
-            }
-        }
-
-        chatAiChatFlow.update { chatAiChatFlow.value.add(result) }
-
-    }
-
-    private suspend fun sendRequestToAI() {
-        val response: Result<MessageAI, DataError> = when (currentModel) {
-            is AiModels.GroqModels -> {
-                groqApiHandler.getResponse(chatAiChatFlow.value) // TODO correct result
-            }
-
-            is AiModels.GeminiModels -> {
-                geminiApiHandler.getResponse(chatAiChatFlow.value)
-            }
-
-
-            is AiModels.OpenAIModels -> {
-                openAIApiHandler.sendRequestWithResponse()
-                Result.Success(MessageAI())
-            } //TODO request
-            else -> {
-                Result.Success(MessageAI()) //TODO correct result
-            }
-        }
-        val result = when (response) {
-            is Result.Success -> {
-                MessageAI(
-                    role = "model",
-                    content = response.data.content,
-                )
-            }
-
-            is Result.Error -> { //TODO better error handling
-                MessageAI(
-                    role = "model",
-                    content = response.error.toString(),
-                )
-            }
-        }
-
-        chatAiChatFlow.update { chatAiChatFlow.value.add(result) }
+//        when (response) {
+//            is Result.Success -> {
+//                chatAiChatFlow.update { chatAiChatFlow.value.add(response.data) }
+//            }
+//
+//            is Result.Error -> {
+//                errorFlow.emit(DataError.CustomError(errorText = response.error.toString()))
+//            }
+//        }
 
     }
 
