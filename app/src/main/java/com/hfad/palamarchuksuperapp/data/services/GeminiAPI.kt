@@ -69,6 +69,12 @@ data class GeminiTextResponse(
     val parts: List<TextPart>,
 )
 
+@Serializable
+data class GeminiModelsResponse(
+    val models: List<AiModels.GeminiModel>,
+)
+
+
 class GeminiBuilder {
 
     class RequestBuilder {
