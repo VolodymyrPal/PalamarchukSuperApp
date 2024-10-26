@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -16,24 +15,20 @@ import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import io.ktor.client.request.get
 import retrofit2.HttpException
 
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModels = AiModels.GeminiModels.BASE_MODEL, key: String = apiKey) =
-        "https://generativelanguage.googleapis.com/v1beta/models/${model.value}:generateContent?key=$key"
+        "https://generativelanguage.googleapis.com/v1beta/models/${model.modelName}:generateContent?key=$key"
 
-    suspend fun getAvailableModels(): List<AiModels.GeminiModels> {
-        val response = httpClient.post(getUrl()) {
-            contentType(ContentType.Application.Json)
-            setBody(
-                "https://generativelanguage.googleapis.com/v1beta/models/" +
-                        "${AiModels.GeminiModels.BASE_MODEL}?key=$apiKey"
-            )
-        }
-        return listOf(
-            AiModels.GeminiModels.BASE_MODEL
-        )
+    suspend fun getAvailableModels(): List<AiModels.GeminiModel> {
+        val response =
+            httpClient.get("https://generativelanguage.googleapis.com/v1beta/models?key=$apiKey") {
+            }
+        val list =  response.body<GeminiModelsResponse>()
+        return list.models
     }
 
     override suspend fun getResponse(
