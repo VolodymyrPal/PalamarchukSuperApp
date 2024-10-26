@@ -64,12 +64,12 @@ import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
+import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -161,7 +161,8 @@ fun ChatScreen(
                 modifier = Modifier.fillMaxWidth(),
                 messagesList = myState.listMessage,
                 loading = myState.isLoading,
-                event = chatBotViewModel::event
+                event = chatBotViewModel::event,
+                error = myState.error
             )
         }
     }
@@ -173,11 +174,12 @@ fun LazyChatScreen(
     messagesList: PersistentList<MessageAI> = persistentListOf(),
     loading: Boolean = false,
     event: (ChatBotViewModel.Event) -> Unit = {},
+    error: Error? = null ,
 ) {
     val brush = Brush.verticalGradient(
         listOf(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
         )
     )
@@ -190,11 +192,11 @@ fun LazyChatScreen(
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
         items(messagesList.size) {
-            LaunchedEffect(messagesList.size) {
-                launch {
-                    state.animateScrollToItem(messagesList.lastIndex + 3)
-                }
-            }
+//            LaunchedEffect(messagesList.size) {
+//                launch {
+//                    state.animateScrollToItem(messagesList.lastIndex + 3)
+//                }
+//            }
             when (messagesList[it].type) {
                 MessageType.TEXT -> {
                     MessageBox(
@@ -202,6 +204,7 @@ fun LazyChatScreen(
                         isUser = messagesList[it].role == "user"
                     )
                 }
+
                 MessageType.IMAGE -> {
                     AsyncImage(model = messagesList[it].content, contentDescription = null)
                 }
@@ -238,6 +241,10 @@ fun LazyChatScreen(
 //                    )
 //                }
             }
+
+//            when (error as AppError.Network) {
+//                else -> {} // TODO if specific error, show something new
+//            }
 
             Spacer(modifier = Modifier.size(20.dp))
         }
