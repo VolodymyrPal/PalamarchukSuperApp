@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
-sealed interface DataError : Error {
-    enum class Network : DataError {
+sealed interface AppError : Error {
+    enum class Network : AppError {
         BadRequest, //400
         Unauthorized, //401
         Forbidden, //403 лимиты, ограничения по IP
@@ -12,10 +12,10 @@ sealed interface DataError : Error {
         GatewayTimeout, //504
         Unknown // неизвестная ошибка
     }
-    enum class Local : DataError {
+    enum class Local : AppError {
         DatabaseError, // ошибка базы данных
         Unknown // неизвестная ошибка
     }
-    data class CustomError (val errorText: String? = null, val error: Throwable? = null): DataError
+    data class CustomError (val errorText: String? = null, val error: Throwable? = null): AppError
 
 }

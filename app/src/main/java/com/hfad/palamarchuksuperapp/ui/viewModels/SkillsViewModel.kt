@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
 import kotlinx.coroutines.flow.Flow
@@ -25,13 +25,13 @@ class SkillsViewModel @Inject constructor(
     data class SkillState(
         val items: PersistentList<SkillDomainRW> = persistentListOf(),
         val loading: Boolean = false,
-        val error: DataError? = null,
+        val error: AppError? = null,
     ) : State<PersistentList<SkillDomainRW>>
 
-    override val _dataFlow: Flow<Result<PersistentList<SkillDomainRW>, DataError>> =
+    override val _dataFlow: Flow<Result<PersistentList<SkillDomainRW>, AppError>> =
         repository.getSkillsFromDB().map { Result.Success(it) }
 
-    override val _errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
+    override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
 
     override val uiState: StateFlow<SkillState> =
         combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->

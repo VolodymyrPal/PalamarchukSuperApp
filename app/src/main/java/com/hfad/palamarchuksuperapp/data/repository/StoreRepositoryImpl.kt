@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
-import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -28,7 +28,7 @@ class StoreRepositoryImpl @Inject constructor(
         return try {
             Result.Success(fetchProductsAsFlowFromDB)
         } catch (e: HttpException) {
-            Result.Error(DataError.Network.InternalServerError)
+            Result.Error(AppError.Network.InternalServerError)
         }
     }
 
@@ -54,9 +54,9 @@ class StoreRepositoryImpl @Inject constructor(
 
             Result.Success(storeProducts)
         } catch (e: RuntimeException) {
-            Result.Error(DataError.Local.DatabaseError)
+            Result.Error(AppError.Local.DatabaseError)
         } catch (e: Exception) {
-            Result.Error(DataError.Network.InternalServerError)
+            Result.Error(AppError.Network.InternalServerError)
         }
 
 //        return try {
@@ -78,6 +78,6 @@ class StoreRepositoryImpl @Inject constructor(
         storeDao.updateProduct(product)
     }
 
-    override val errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
+    override val errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
 
 }
