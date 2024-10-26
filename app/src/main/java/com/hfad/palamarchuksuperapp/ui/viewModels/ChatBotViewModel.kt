@@ -39,15 +39,15 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope.launch {
             chatAiRepository.errorFlow.collect { error ->
                 _errorFlow.update { error }
-                when (error) {
-                    is DataError.CustomError -> {
-                        effect(Effect.ShowToast(error.errorText?: "Unknown error"))
-                    }
-
-                    else -> {
-                        effect(Effect.ShowToast(error.toString()))
-                    }
-                }
+//                when (error) {
+//                    is DataError.CustomError -> {
+//                        effect(Effect.ShowToast(error.errorText?: "Unknown error"))
+//                    }
+//
+//                    else -> {
+//                        effect(Effect.ShowToast(error.toString()))
+//                    }
+//                }
             }
         }
     }
@@ -118,13 +118,14 @@ class ChatBotViewModel @Inject constructor(
 
     private fun sendText(text: String) {
         viewModelScope.launch {
-            _loading.update { true }
-            chatAiRepository.getRespondChatOrImage(
-                MessageAI(
-                    role = "user", content = text, type = MessageType.TEXT
-                )
-            )
-            _loading.update { false }
+            chatAiRepository.getRespondChatOrImage(MessageAI())
+//            _loading.update { true }
+//            chatAiRepository.getRespondChatOrImage(
+//                MessageAI(
+//                    role = "user", content = text, type = MessageType.TEXT
+//                )
+//            )
+//            _loading.update { false }
         }
     }
 
