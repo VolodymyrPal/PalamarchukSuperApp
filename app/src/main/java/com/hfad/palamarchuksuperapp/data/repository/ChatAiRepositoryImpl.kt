@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import android.util.Log
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
@@ -30,32 +31,46 @@ class ChatAiRepositoryImpl @Inject constructor(
 
         chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
 
-        val response: Result<MessageAI, DataError> = when (currentModel) {
-            is AiModels.GroqModels -> {
-                groqApiHandler.getResponse(chatAiChatFlow.value) // TODO correct result
+        val response = geminiApiHandler.getAvailableModels()
+        Log.d("Gemini models:", "${response}")
+        Log.d(
+            "Gemini models:",
+            "${response.forEach { Log.d("Gemini models:", "${it.isSupported}") }}"
+        )
+        response.forEach { model ->
+            chatAiChatFlow.update {
+                it.add(MessageAI(role = "user", content = model.displayName))
             }
-
-            is AiModels.GeminiModels -> {
-                geminiApiHandler.getResponse(chatAiChatFlow.value)
-            }
-
-
-            is AiModels.OpenAIModels -> {
-                openAIApiHandler.sendRequestWithResponse()
-                Result.Success(MessageAI())
-            } //TODO request
-            else -> {
-                Result.Success(MessageAI()) //TODO correct result
-            }
-
         }
+
+//        Log.d("Is supported","${response.filter { it.supportedGenerationMethods }}")
+
+//        val response: Result<MessageAI, AppError> = when (currentModel) {
+//            is AiModels.GroqModels -> {
+//                groqApiHandler.getResponse(chatAiChatFlow.value) // TODO correct result
+//            }
+//
+//            is AiModels.GeminiModels -> {
+//                geminiApiHandler.getResponse(chatAiChatFlow.value)
+//            }
+//
+//
+//            is AiModels.OpenAIModels -> {
+//                openAIApiHandler.sendRequestWithResponse()
+//                Result.Success(MessageAI())
+//            } //TODO request
+//            else -> {
+//                Result.Success(MessageAI()) //TODO correct result
+//            }
+//
+//        }
 //        when (response) {
 //            is Result.Success -> {
 //                chatAiChatFlow.update { chatAiChatFlow.value.add(response.data) }
 //            }
 //
 //            is Result.Error -> {
-//                errorFlow.emit(DataError.CustomError(errorText = response.error.toString()))
+//                errorFlow.emit(AppError.CustomError(errorText = response.error.toString()))
 //            }
 //        }
 
