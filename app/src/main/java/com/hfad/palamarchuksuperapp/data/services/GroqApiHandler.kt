@@ -5,7 +5,7 @@ import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.repository.AiModels
-import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -39,7 +39,7 @@ class GroqApiHandler @Inject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
         model: AiModels?,
-    ): Result<MessageAI, DataError> {
+    ): Result<MessageAI, AppError> {
 
         val request = httpClient.post(url) {
             header("Authorization", "Bearer $apiKey")
@@ -69,46 +69,46 @@ class GroqApiHandler @Inject constructor(
             errorFlow.emit(
                 when (e) {
                     is HttpException -> {
-                        DataError.Network.InternalServerError
+                        AppError.Network.InternalServerError
                     }
 
                     is CodeError -> {
                         when (e.value) {
                             400 -> {
                                 //DataError.Network.BadRequest
-                                DataError.CustomError(e.value.toString())
+                                AppError.CustomError(e.value.toString())
                             }
 
                             401 -> {
-                                DataError.CustomError(e.value.toString())
+                                AppError.CustomError(e.value.toString())
                                 //DataError.Network.Unauthorized
                             }
 
                             403 -> {
                                 //DataError.Network.Forbidden
-                                DataError.CustomError(e.value.toString())
+                                AppError.CustomError(e.value.toString())
 
                             }
 
                             in 400..500 -> {
-                                DataError.CustomError(e.value.toString())
+                                AppError.CustomError(e.value.toString())
                                 //DataError.Network.InternalServerError
                             }
 
                             in 500..600 -> {
-                                DataError.CustomError(e.value.toString())
+                                AppError.CustomError(e.value.toString())
                                 //DataError.Network.Unknown
                             }
 
                             else -> {
-                                DataError.CustomError(e.value.toString())
+                                AppError.CustomError(e.value.toString())
                                 //DataError.Network.Unknown
                             }
                         }
                     }
 
                     else -> {
-                        DataError.CustomError(e.toString())
+                        AppError.CustomError(e.toString())
                     }
                 }
             )

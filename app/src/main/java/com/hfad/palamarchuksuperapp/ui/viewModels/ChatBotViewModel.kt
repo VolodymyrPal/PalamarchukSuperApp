@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
-import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
@@ -29,10 +29,10 @@ class ChatBotViewModel @Inject constructor(
     data class StateChat(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
-        val error: DataError? = null,
+        val error: AppError? = null,
     ) : State<PersistentList<MessageAI>>
 
-    override val _errorFlow: MutableStateFlow<DataError?> = MutableStateFlow(null)
+    override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
@@ -52,7 +52,7 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    override val _dataFlow: Flow<Result<PersistentList<MessageAI>, DataError>> =
+    override val _dataFlow: Flow<Result<PersistentList<MessageAI>, AppError>> =
         chatAiRepository.chatAiChatFlow.map { Result.Success(it) }
 
     override val uiState: StateFlow<StateChat> = combine(

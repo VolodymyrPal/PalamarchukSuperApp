@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import kotlinx.coroutines.delay
@@ -31,19 +31,19 @@ class StoreViewModel @Inject constructor(
     data class StoreState(
         val items: PersistentList<ProductDomainRW> = persistentListOf(),
         val loading: Boolean = false,
-        val error: DataError? = null,
+        val error: AppError? = null,
     ) : State<PersistentList<ProductDomainRW>>
 
-    override val _dataFlow: Flow<Result<PersistentList<ProductDomainRW>, DataError>> =
+    override val _dataFlow: Flow<Result<PersistentList<ProductDomainRW>, AppError>> =
         repository.fetchProductsAsFlowFromDB
-            .map<PersistentList<ProductDomainRW>, Result<PersistentList<ProductDomainRW>, DataError>> {
+            .map<PersistentList<ProductDomainRW>, Result<PersistentList<ProductDomainRW>, AppError>> {
                 Result.Success(it)
             }
             .catch {
                 effect(Effect.ShowToast(it.message ?: "Error. Please provide info to developer"))
             }
 
-    override val _errorFlow: MutableStateFlow<DataError?> = repository.errorFlow
+    override val _errorFlow: MutableStateFlow<AppError?> = repository.errorFlow
 
     override val uiState: StateFlow<StoreState> =
         combine(_dataFlow, _loading) { data, loading ->

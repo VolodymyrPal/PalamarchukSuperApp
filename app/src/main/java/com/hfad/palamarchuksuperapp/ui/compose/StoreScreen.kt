@@ -117,7 +117,7 @@ import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.domain.models.DataError
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
@@ -298,7 +298,7 @@ fun StoreScreen(
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
     items: List<ProductDomainRW>? = emptyList(),
-    error: DataError?,
+    error: AppError?,
     onEvent: (StoreViewModel.Event) -> Unit,
     snackBarHost: SnackbarHostState,
 ) {
@@ -326,7 +326,7 @@ fun StoreScreenContent(
             if (error != null) {
 
                 val textMessage = when (error) {
-                    is DataError.Network -> {
+                    is AppError.Network -> {
                         "Network error"
                     }
 
