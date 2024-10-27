@@ -16,19 +16,23 @@ import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import io.ktor.client.request.get
-import retrofit2.HttpException
 
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModels = AiModels.GeminiModels.BASE_MODEL, key: String = apiKey) =
         "https://generativelanguage.googleapis.com/v1beta/models/${model.modelName}:generateContent?key=$key"
 
-    suspend fun getAvailableModels(): List<AiModels.GeminiModel> {
-        val response =
-            httpClient.get("https://generativelanguage.googleapis.com/v1beta/models?key=$apiKey") {
-            }
-        val list =  response.body<GeminiModelsResponse>()
-        return list.models
+    override suspend fun getModels(): Result<List<AiModels.GeminiModel>, AppError> {
+
+        val response = httpClient.get(
+            "https://generativelanguage.googleapis.com/v1beta/models?key=$apiKey"
+        )
+        return if (response.status == HttpStatusCode.OK) {
+            val list = response.body<GeminiModelsResponse>()
+            return Result.Success(list.models)
+        } else {
+            Result.Error(AppError.Network.RequestError.BadRequest)
+        }
     }
 
     override suspend fun getResponse(
@@ -57,43 +61,23 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
                 throw CodeError(request.status.value)
             }
         } catch (e: Exception) {
-            return when (e) {
-                is HttpException -> {
-                    Result.Error(AppError.Network.Unknown)
-                }
+            return Result.Error(handleException(e))
+        }
+    }
+}
 
-                is CodeError -> {
-                    when (e.value) {
-                        400 -> {
-                            Result.Error(AppError.Network.BadRequest)
-                        }
-
-                        401 -> {
-                            Result.Error(AppError.Network.Unauthorized)
-                        }
-
-                        403 -> {
-                            Result.Error(AppError.Network.Forbidden)
-                        }
-
-                        in 400..500 -> {
-                            Result.Error(AppError.CustomError("Ошибка запроса"))
-                        }
-
-                        in 500..600 -> {
-                            Result.Error(AppError.CustomError("Ошибка сервера"))
-                        }
-
-                        else -> {
-                            Result.Error(AppError.CustomError("Неизвестная ошибка"))
-                        }
-                    }
-                }
-
-                else -> {
-                    Result.Error(AppError.CustomError(error = e))
-                }
+fun handleException(e: Exception): AppError {
+    return when (e) {
+        is CodeError -> {
+            when (e.value) {
+                400 -> AppError.Network.RequestError.BadRequest
+                401 -> AppError.Network.RequestError.Unauthorized
+                403 -> AppError.Network.RequestError.Forbidden
+                in 400..500 -> AppError.CustomError("Ошибка запроса")
+                in 500..600 -> AppError.CustomError("Ошибка сервера")
+                else -> AppError.CustomError("Неизвестная ошибка")
             }
         }
+        else -> AppError.CustomError(error = e)
     }
 }

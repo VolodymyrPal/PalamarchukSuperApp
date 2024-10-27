@@ -24,15 +24,16 @@ class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
     private val apiKey = BuildConfig.GROQ_KEY
-    private val max_tokens = 1024
-    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
-        it.role = "system"
-        it.buildText(
-            "You are math tutor. User send you image with sample. " +
-                    "Please provide answer and solve this sample."
-        )
-    }
-    val errorFlow = MutableStateFlow<DataError?>(null)
+
+    //    private val max_tokens = 1024
+//    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
+//        it.role = "system"
+//        it.buildText(
+//            "You are math tutor. User send you image with sample. " +
+//                    "Please provide answer and solve this sample."
+//        )
+//    }
+    val errorFlow = MutableStateFlow<AppError?>(null)
 
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -46,7 +47,7 @@ class GroqApiHandler @Inject constructor(
             contentType(ContentType.Application.Json)
             setBody(
                 ""
-              // messageList.toGroqRequest(model ?: AiModels.GroqModels.GROQ_IMAGE) // TODO logic for different models
+                // messageList.toGroqRequest(model ?: AiModels.GroqModels.GROQ_IMAGE) // TODO logic for different models
             )
         }
         try {
@@ -67,54 +68,16 @@ class GroqApiHandler @Inject constructor(
             }
         } catch (e: Exception) {
             errorFlow.emit(
-                when (e) {
-                    is HttpException -> {
-                        AppError.Network.InternalServerError
-                    }
-
-                    is CodeError -> {
-                        when (e.value) {
-                            400 -> {
-                                //DataError.Network.BadRequest
-                                AppError.CustomError(e.value.toString())
-                            }
-
-                            401 -> {
-                                AppError.CustomError(e.value.toString())
-                                //DataError.Network.Unauthorized
-                            }
-
-                            403 -> {
-                                //DataError.Network.Forbidden
-                                AppError.CustomError(e.value.toString())
-
-                            }
-
-                            in 400..500 -> {
-                                AppError.CustomError(e.value.toString())
-                                //DataError.Network.InternalServerError
-                            }
-
-                            in 500..600 -> {
-                                AppError.CustomError(e.value.toString())
-                                //DataError.Network.Unknown
-                            }
-
-                            else -> {
-                                AppError.CustomError(e.value.toString())
-                                //DataError.Network.Unknown
-                            }
-                        }
-                    }
-
-                    else -> {
-                        AppError.CustomError(e.toString())
-                    }
-                }
+                handleException(e)
             )
         }
 
         return Result.Success(MessageAI("", ""))
+    }
+
+    override suspend fun getModels(): Result<List<AiModels>, AppError> {
+        val a = AppError.OtherErrors.NotImplemented
+        return Result.Error(a)
     }
 }
 
