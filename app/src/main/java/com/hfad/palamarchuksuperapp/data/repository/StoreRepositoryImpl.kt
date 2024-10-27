@@ -28,7 +28,7 @@ class StoreRepositoryImpl @Inject constructor(
         return try {
             Result.Success(fetchProductsAsFlowFromDB)
         } catch (e: HttpException) {
-            Result.Error(AppError.Network.InternalServerError)
+            Result.Error(AppError.Network.ServerError.InternalServerError)
         }
     }
 
@@ -54,9 +54,9 @@ class StoreRepositoryImpl @Inject constructor(
 
             Result.Success(storeProducts)
         } catch (e: RuntimeException) {
-            Result.Error(AppError.Local.DatabaseError)
+            Result.Error(AppError.LocalData.DatabaseError)
         } catch (e: Exception) {
-            Result.Error(AppError.Network.InternalServerError)
+            Result.Error(AppError.Network.ServerError.InternalServerError)
         }
 
 //        return try {
