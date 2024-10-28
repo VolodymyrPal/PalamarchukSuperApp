@@ -1,8 +1,8 @@
 package com.hfad.palamarchuksuperapp.data.services
 
+import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -71,7 +71,7 @@ data class GeminiTextResponse(
 
 @Serializable
 data class GeminiModelsResponse(
-    val models: List<AiModels.GeminiModel>,
+    val models: List<AiModel.GeminiModel>,
 )
 
 
@@ -108,7 +108,7 @@ class GeminiBuilder {
     }
 }
 
-fun List<MessageAI>.toGeminiRequest(model: AiModels? = null): GeminiRequest {
+fun List<MessageAI>.toGeminiRequest(model: AiModel? = null): GeminiRequest {
     val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {

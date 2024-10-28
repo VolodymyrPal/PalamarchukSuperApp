@@ -1,9 +1,9 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
@@ -135,7 +135,7 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun changeAIModel(model: AiModels) {
+    private fun changeAIModel(model: AiModel) {
         viewModelScope.launch {
 
         }

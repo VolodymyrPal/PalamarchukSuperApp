@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
+import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow

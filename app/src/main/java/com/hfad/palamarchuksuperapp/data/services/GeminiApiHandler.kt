@@ -1,8 +1,8 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
+import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -19,10 +19,10 @@ import io.ktor.client.request.get
 
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
-    private fun getUrl(model: AiModels = AiModels.GeminiModels.BASE_MODEL, key: String = apiKey) =
+    private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
         "https://generativelanguage.googleapis.com/v1beta/models/${model.modelName}:generateContent?key=$key"
 
-    override suspend fun getModels(): Result<List<AiModels.GeminiModel>, AppError> {
+    override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
 
         val response = httpClient.get(
             "https://generativelanguage.googleapis.com/v1beta/models?key=$apiKey"
@@ -37,15 +37,15 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModels?,
+        model: AiModel?,
     ): Result<MessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = model ?: AiModels.GeminiModels.BASE_MODEL)) {
+                httpClient.post(getUrl(model = model ?: AiModel.GeminiModels.BASE_MODEL)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
-                            model = model ?: AiModels.GeminiModels.BASE_MODEL
+                            model = model ?: AiModel.GeminiModels.BASE_MODEL
                         )
                     )
                 }
