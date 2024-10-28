@@ -118,14 +118,15 @@ class ChatBotViewModel @Inject constructor(
 
     private fun sendText(text: String) {
         viewModelScope.launch {
-            chatAiRepository.getRespondChatOrImage(MessageAI())
-//            _loading.update { true }
-//            chatAiRepository.getRespondChatOrImage(
-//                MessageAI(
-//                    role = "user", content = text, type = MessageType.TEXT
-//                )
-//            )
-//            _loading.update { false }
+            _loading.update { true }
+            chatAiRepository.getRespondChatOrImage(
+                MessageAI(
+                    role = "user",
+                    content = text,
+                    type = MessageType.TEXT
+                )
+            )
+            _loading.update { false }
         }
     }
 
@@ -137,7 +138,7 @@ class ChatBotViewModel @Inject constructor(
 
     private fun changeAIModel(model: AiModel) {
         viewModelScope.launch {
-
+            chatAiRepository.setHandlerOrModel(model)
         }
     }
 }
