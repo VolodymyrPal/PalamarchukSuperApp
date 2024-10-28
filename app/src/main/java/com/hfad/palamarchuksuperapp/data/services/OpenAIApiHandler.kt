@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 class OpenAIApiHandler @Inject constructor(
     private val httpClient: HttpClient,
-) {
+) : AiModelHandler {
 
     private val imageMessageRequest = ImageMessageRequest(
         imageUrl = ImageRequest("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")
@@ -59,6 +59,17 @@ class OpenAIApiHandler @Inject constructor(
         } catch (e: Exception) {
             e.message ?: "Error"
         }
+    }
+
+    override suspend fun getResponse(
+        messageList: PersistentList<MessageAI>,
+        model: AiModel?,
+    ): Result<MessageAI, AppError> {
+        return Result.Success(MessageAI("true", "true"))
+    }
+
+    override suspend fun getModels(): Result<List<AiModel>, AppError> {
+        return Result.Success(emptyList())
     }
 }
 
