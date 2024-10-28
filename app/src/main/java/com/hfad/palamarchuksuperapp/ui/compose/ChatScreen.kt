@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -70,6 +68,7 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,6 +183,11 @@ fun LazyChatScreen(
         )
     )
     val state = rememberLazyListState()
+    LaunchedEffect(messagesList.size) {
+        launch {
+            state.animateScrollToItem(messagesList.lastIndex + 3)
+        }
+    }
     LazyColumn(
         modifier = modifier.background(brush),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,11 +196,6 @@ fun LazyChatScreen(
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
         items(messagesList.size) {
-//            LaunchedEffect(messagesList.size) {
-//                launch {
-//                    state.animateScrollToItem(messagesList.lastIndex + 3)
-//                }
-//            }
             when (messagesList[it].type) {
                 MessageType.TEXT -> {
                     MessageBox(
@@ -208,39 +207,8 @@ fun LazyChatScreen(
                 MessageType.IMAGE -> {
                     AsyncImage(model = messagesList[it].content, contentDescription = null)
                 }
-
-//                is MessageChat -> {
-//                    val isUser =
-//                        remember { mutableStateOf((messagesList[it] as MessageChat).role == "user") }
-//                    val content = (messagesList[it] as MessageChat).content
-//                    for (messages in content) {
-//                        when (messages) {
-//                            is ContentText -> {
-//                                MessageBox(
-//                                    text = messages.text,
-//                                    isUser = isUser.value
-//                                )
-//                            }
-//
-//                            is ContentImage -> {
-//                                MessageBox(
-//                                    text = messages.image_url.url,
-//                                    isUser = isUser.value
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                is MessageText -> {
-//                    val isUser =
-//                        remember { mutableStateOf((messagesList[it] as MessageText).role == "user") }
-//                    MessageBox(
-//                        text = (messagesList[it] as MessageText).content,
-//                        isUser = isUser.value
-//                    )
-//                }
             }
+        }
 
 //            when (error as AppError.Network) {
 //                else -> {} // TODO if specific error, show something new
