@@ -199,7 +199,7 @@ fun LazyChatScreen(
             when (messagesList[it].type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        text = messagesList[it].content,
+                        text = messagesList[it].content.trimEnd(),
                         isUser = messagesList[it].role == "user"
                     )
                 }
@@ -213,10 +213,6 @@ fun LazyChatScreen(
 //            when (error as AppError.Network) {
 //                else -> {} // TODO if specific error, show something new
 //            }
-
-            Spacer(modifier = Modifier.size(20.dp))
-        }
-
 //        item {
 //            Button(
 //                onClick = {
