@@ -33,24 +33,10 @@ class ChatAiRepositoryImpl @Inject constructor(
 
         chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
 
-        val response: Result<MessageAI, AppError> = when (currentModel) {
-            is AiModels.GroqModels -> {
-                groqApiHandler.getResponse(chatAiChatFlow.value) // TODO correct result
-            }
+        val response: Result<MessageAI, AppError> = currentHandler.value.getResponse(
+            chatAiChatFlow.value
+        )
 
-            is AiModels.GeminiModels -> {
-                geminiApiHandler.getResponse(chatAiChatFlow.value)
-            }
-
-            is AiModels.OpenAIModels -> {
-                openAIApiHandler.sendRequestWithResponse()
-                Result.Success(MessageAI())
-            } //TODO request
-            else -> {
-                Result.Success(MessageAI()) //TODO correct result
-            }
-
-        }
         when (response) {
             is Result.Success -> {
                 chatAiChatFlow.update { chatAiChatFlow.value.add(response.data) }
@@ -64,28 +50,51 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override suspend fun getModels(): List<AiModel> {
 
-        when (val response = geminiApiHandler.getModels()) {
+        val models = currentHandler.value.getModels()
+
+        when (models) {
             is Result.Success -> {
-                Log.d("Gemini models:", "${response}")
-                Log.d(
-                    "Gemini models:",
-                    "${response.data.forEach { Log.d("Gemini models:", "${it.modelName}") }}"
-                )
-                response.data.forEach { model ->
-                    chatAiChatFlow.update {
-                        it.add(MessageAI(role = "user", content = model.displayName))
-                    }
+                Log.d("Models: ", "${models.data}")
+
+                models.data.forEach {
+                    Log.d("Gemini models:", "${it.modelName}")
                 }
-                return response.data
+                listOfModels.value.addAll(models.data)
+
+                return models.data
             }
 
             is Result.Error -> {
-                errorFlow.emit(AppError.CustomError(errorText = response.error.toString()))
+                errorFlow.emit(AppError.CustomError(errorText = "Error"))
                 return emptyList()
             }
         }
     }
 
-    private val currentModel: AiModels = AiModels.GeminiModels.BASE_MODEL
+    val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
+        MutableStateFlow(persistentListOf())
+
+    private val currentHandler: MutableStateFlow<AiModelHandler> =
+        MutableStateFlow(geminiApiHandler)
+
+    override val currentModel: MutableStateFlow<AiModel> =
+        MutableStateFlow(AiModel.GeminiModels.BASE_MODEL)
+
+    override fun setHandlerOrModel(model: AiModel) {
+        when (model) {
+            is AiModel.GroqModels -> {
+                currentHandler.value = geminiApiHandler
+            }
+            is AiModel.GeminiModels -> {
+                currentHandler.value = geminiApiHandler
+            }
+            is AiModel.OpenAIModels -> {
+                currentHandler.value = openAIApiHandler
+            }
+        }
+        currentModel.update {
+            model
+        }
+    }
 
 }
