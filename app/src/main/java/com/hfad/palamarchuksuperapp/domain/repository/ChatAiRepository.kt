@@ -11,5 +11,7 @@ interface ChatAiRepository {
     val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>>
     val errorFlow: MutableSharedFlow<AppError?>
     suspend fun getRespondChatOrImage(message: MessageAI)
-    suspend fun getModels(): List<AiModels>
+    suspend fun getModels(): List<AiModel>
+    fun setHandlerOrModel(model: AiModel)
+    val currentModel : MutableStateFlow<AiModel>
 }
