@@ -1,10 +1,9 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import android.util.Log
-import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.BuildConfig
+import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.repository.AiModels
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -39,7 +38,7 @@ class GroqApiHandler @Inject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModels?,
+        model: AiModel?,
     ): Result<MessageAI, AppError> {
 
         val request = httpClient.post(url) {
@@ -75,7 +74,7 @@ class GroqApiHandler @Inject constructor(
         return Result.Success(MessageAI("", ""))
     }
 
-    override suspend fun getModels(): Result<List<AiModels>, AppError> {
+    override suspend fun getModels(): Result<List<AiModel>, AppError> {
         val a = AppError.OtherErrors.NotImplemented
         return Result.Error(a)
     }

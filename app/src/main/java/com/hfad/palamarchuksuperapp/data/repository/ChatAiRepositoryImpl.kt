@@ -1,21 +1,21 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import android.util.Log
+import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
-import com.squareup.moshi.Json
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.Serializable
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 
 
 class ChatAiRepositoryImpl @Inject constructor(
@@ -33,24 +33,10 @@ class ChatAiRepositoryImpl @Inject constructor(
 
         chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
 
-        val response: Result<MessageAI, AppError> = when (currentModel) {
-            is AiModels.GroqModels -> {
-                groqApiHandler.getResponse(chatAiChatFlow.value) // TODO correct result
-            }
+        val response: Result<MessageAI, AppError> = currentHandler.value.getResponse(
+            chatAiChatFlow.value
+        )
 
-            is AiModels.GeminiModels -> {
-                geminiApiHandler.getResponse(chatAiChatFlow.value)
-            }
-
-            is AiModels.OpenAIModels -> {
-                openAIApiHandler.sendRequestWithResponse()
-                Result.Success(MessageAI())
-            } //TODO request
-            else -> {
-                Result.Success(MessageAI()) //TODO correct result
-            }
-
-        }
         when (response) {
             is Result.Success -> {
                 chatAiChatFlow.update { chatAiChatFlow.value.add(response.data) }
@@ -62,73 +48,53 @@ class ChatAiRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getModels(): List<AiModels> {
+    override suspend fun getModels(): List<AiModel> {
 
-        when (val response = geminiApiHandler.getModels()) {
+        val models = currentHandler.value.getModels()
+
+        when (models) {
             is Result.Success -> {
-                Log.d("Gemini models:", "${response}")
-                Log.d(
-                    "Gemini models:",
-                    "${response.data.forEach { Log.d("Gemini models:", "${it.modelName}") }}"
-                )
-                response.data.forEach { model ->
-                    chatAiChatFlow.update {
-                        it.add(MessageAI(role = "user", content = model.displayName))
-                    }
+                Log.d("Models: ", "${models.data}")
+
+                models.data.forEach {
+                    Log.d("Gemini models:", "${it.modelName}")
                 }
-                return response.data
+                listOfModels.value.addAll(models.data)
+
+                return models.data
             }
 
             is Result.Error -> {
-                errorFlow.emit(AppError.CustomError(errorText = response.error.toString()))
+                errorFlow.emit(AppError.CustomError(errorText = "Error"))
                 return emptyList()
             }
         }
     }
 
-    private val currentModel: AiModels = AiModels.GeminiModels.BASE_MODEL
+    val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
+        MutableStateFlow(persistentListOf())
 
-}
+    private val currentHandler: MutableStateFlow<AiModelHandler> =
+        MutableStateFlow(geminiApiHandler)
 
-interface AiModels {
+    override val currentModel: MutableStateFlow<AiModel> =
+        MutableStateFlow(AiModel.GeminiModels.BASE_MODEL)
 
-    val modelName: String
-
-    @Serializable
-    data class GroqModel(
-        @Json(name = "name")
-        override val modelName: String = "llama-3.2-11b-vision-preview",
-    ) : AiModels
-
-    @Serializable
-    data class GeminiModel(
-        override val modelName: String = "gemini-1.5-flash",
-        val version: String = "1.0.0",
-        val displayName: String = "Gemini",
-        val description: String = "Gemini is a language model that can generate images using the LLM",
-        val supportedGenerationMethods: List<String> = emptyList(),
-        val isSupported: Boolean = supportedGenerationMethods.contains("generateContent"),
-    ) : AiModels
-
-    @Serializable
-    data class OpenAIModel(
-        override val modelName: String = "openai-1",
-    ) : AiModels
-
-
-    enum class GroqModels(override val modelName: String) : AiModels {
-        BASE_MODEL("llama-3.2-11b-vision-preview"),
-        TEXT_MODEL("llama3-groq-8b-8192-tool-use-preview")
-    }
-
-    enum class GeminiModels(override val modelName: String) : AiModels {
-        BASE_MODEL("gemini-1.5-flash"),
-        GEMINI_IMAGE("")
-    }
-
-    enum class OpenAIModels(override val modelName: String) : AiModels {
-        BASE_MODEL(""),
-        OPENAI_IMAGE("")
+    override fun setHandlerOrModel(model: AiModel) {
+        when (model) {
+            is AiModel.GroqModels -> {
+                currentHandler.value = geminiApiHandler
+            }
+            is AiModel.GeminiModels -> {
+                currentHandler.value = geminiApiHandler
+            }
+            is AiModel.OpenAIModels -> {
+                currentHandler.value = openAIApiHandler
+            }
+        }
+        currentModel.update {
+            model
+        }
     }
 
 }
