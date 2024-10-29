@@ -52,6 +52,7 @@ class ChatBotViewModel @Inject constructor(
 //                }
             }
         }
+
     }
 
     override val _dataFlow: Flow<Result<PersistentList<MessageAI>, AppError>> =
@@ -93,6 +94,8 @@ class ChatBotViewModel @Inject constructor(
         data class SendImage(val text: String, val image: String) : Event()
         data class SendText(val text: String) : Event()
         data class ShowToast(val message: String) : Event()
+        data object GetModels : Event()
+        data class ChangeAiModel(val aiModel: AiModel) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -104,6 +107,7 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendImage -> sendImage(event.text, event.image)
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
+            is Event.ChangeAiModel -> changeAIModel(event.aiModel)
         }
     }
 
@@ -142,6 +146,12 @@ class ChatBotViewModel @Inject constructor(
     private fun changeAIModel(model: AiModel) {
         viewModelScope.launch {
             chatAiRepository.setHandlerOrModel(model)
+        }
+    }
+
+    private fun getModels() {
+        viewModelScope.launch {
+            chatAiRepository.getModels()
         }
     }
 }
