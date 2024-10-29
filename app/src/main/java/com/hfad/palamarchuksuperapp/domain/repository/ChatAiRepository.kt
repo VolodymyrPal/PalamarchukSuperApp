@@ -14,4 +14,5 @@ interface ChatAiRepository {
     suspend fun getModels(): List<AiModel>
     fun setHandlerOrModel(model: AiModel)
     val currentModel : MutableStateFlow<AiModel>
+    val listOfModels : MutableStateFlow<PersistentList<AiModel>>
 }
