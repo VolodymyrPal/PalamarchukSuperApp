@@ -9,7 +9,7 @@ import kotlinx.collections.immutable.PersistentList
 interface AiModelHandler {
     suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel? = null,
+        model: AiModel,
     ): Result<MessageAI, AppError>
 
     suspend fun getModels(
