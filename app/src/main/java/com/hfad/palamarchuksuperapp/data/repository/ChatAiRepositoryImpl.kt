@@ -34,7 +34,7 @@ class ChatAiRepositoryImpl @Inject constructor(
         chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
 
         val response: Result<MessageAI, AppError> = currentHandler.value.getResponse(
-            chatAiChatFlow.value
+            chatAiChatFlow.value, model = currentModel.value
         )
 
         when (response) {
@@ -59,8 +59,10 @@ class ChatAiRepositoryImpl @Inject constructor(
                 models.data.forEach {
                     Log.d("Gemini models:", "${it.modelName}")
                 }
-                listOfModels.value.addAll(models.data)
-
+                listOfModels.update {
+                    it.addAll(models.data)
+                }
+                Log.d("My list: ", "${listOfModels.value}")
                 return models.data
             }
 
@@ -71,7 +73,7 @@ class ChatAiRepositoryImpl @Inject constructor(
         }
     }
 
-    val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
+    override val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
         MutableStateFlow(persistentListOf())
 
     private val currentHandler: MutableStateFlow<AiModelHandler> =
