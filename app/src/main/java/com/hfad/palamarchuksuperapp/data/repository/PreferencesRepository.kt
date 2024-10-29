@@ -20,9 +20,7 @@ class PreferencesRepository private constructor(private val dataStore: DataStore
 
         fun initialize(context: Context) {
             if (INSTANCE == null) {
-                val dataStore = PreferenceDataStoreFactory.create {
-                    context.preferencesDataStoreFile("app settings")
-                }
+                val dataStore : DataStore<Preferences> = context.appSettingsStore
                 INSTANCE = PreferencesRepository(dataStore)
             }
         }
