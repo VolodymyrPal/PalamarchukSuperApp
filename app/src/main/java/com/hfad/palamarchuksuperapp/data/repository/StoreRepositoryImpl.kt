@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -13,7 +14,6 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import retrofit2.HttpException
 import java.lang.RuntimeException
 
 class StoreRepositoryImpl @Inject constructor(

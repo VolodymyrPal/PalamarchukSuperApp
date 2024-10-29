@@ -38,7 +38,7 @@ class GroqApiHandler @Inject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel?,
+        model: AiModel,
     ): Result<MessageAI, AppError> {
 
         val request = httpClient.post(url) {

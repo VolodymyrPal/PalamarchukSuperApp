@@ -20,8 +20,10 @@ import io.ktor.client.request.get
 class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
-        "https://generativelanguage.googleapis.com/v1beta/models/${model.modelName}:generateContent?key=$key"
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
+
+  //  val model = AiModel.GeminiModels.BASE_MODEL
+
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
 

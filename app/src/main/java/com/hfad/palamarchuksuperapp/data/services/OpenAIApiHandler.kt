@@ -63,7 +63,7 @@ class OpenAIApiHandler @Inject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel?,
+        model: AiModel,
     ): Result<MessageAI, AppError> {
         return Result.Success(MessageAI("true", "true"))
     }
