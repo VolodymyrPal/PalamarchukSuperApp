@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
-    private val groqApi: GroqApiHandler,
     private val chatAiRepository: ChatAiRepository,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
@@ -30,6 +28,7 @@ class ChatBotViewModel @Inject constructor(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: AppError? = null,
+        val listOfModels : PersistentList<AiModel> = persistentListOf()
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -37,6 +36,9 @@ class ChatBotViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            launch {
+                getModels()
+            }
             chatAiRepository.errorFlow.collect { error ->
                 _errorFlow.update { error }
 //                when (error) {
@@ -56,14 +58,15 @@ class ChatBotViewModel @Inject constructor(
         chatAiRepository.chatAiChatFlow.map { Result.Success(it) }
 
     override val uiState: StateFlow<StateChat> = combine(
-        _dataFlow, _loading, _errorFlow
-    ) { chatHistory, isLoading, error ->
+        _dataFlow, _loading, _errorFlow, chatAiRepository.listOfModels
+    ) { chatHistory, isLoading, error, models ->
         when (chatHistory) {
             is Result.Success -> {
                 StateChat(
                     listMessage = chatHistory.data,
                     isLoading = isLoading,
-                    error = error
+                    error = error,
+                    listOfModels = models
                 )
             }
 
