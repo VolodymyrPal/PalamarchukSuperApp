@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.compose
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -91,11 +92,20 @@ fun ChatScreen(
         }
     }
 
+    val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Chat", color = MaterialTheme.colorScheme.primary) },
+                title = {
+                    Text(
+                        "Chat ${
+                            myState.listOfModels.getOrNull(0)?.modelName?: ""
+                        }",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
@@ -121,17 +131,19 @@ fun ChatScreen(
                         onDismissRequest = { isExpanded.value = false },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("Edit") },
-                            onClick = {}
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Delete") },
-                            onClick = {}
-                        )
+                        for (item in myState.listOfModels.filter { it.isSupported }) {
+                            DropdownMenuItem(
+                                text = { Text(item.modelName) },
+                                onClick = {
+                                    chatBotViewModel.event(ChatBotViewModel.Event.ChangeAiModel(item))
+                                    isExpanded.value = false
+                                }
+                            )
+                        }
                     }
                     IconButton(
                         onClick = {
+                            Log.d("TAG", "${isExpanded.value}")
                             isExpanded.value = !isExpanded.value
                         },
                     ) {
@@ -154,7 +166,6 @@ fun ChatScreen(
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
-            val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
             LazyChatScreen(
                 modifier = Modifier.fillMaxWidth(),
@@ -173,7 +184,7 @@ fun LazyChatScreen(
     messagesList: PersistentList<MessageAI> = persistentListOf(),
     loading: Boolean = false,
     event: (ChatBotViewModel.Event) -> Unit = {},
-    error: Error? = null ,
+    error: Error? = null,
 ) {
     val brush = Brush.verticalGradient(
         listOf(
@@ -402,7 +413,6 @@ fun ChatScreenPreview() {
     ChatScreen(
         modifier = Modifier.fillMaxSize(),
         chatBotViewModel = ChatBotViewModel(
-            groqApi = GroqApiHandler(httpClient = HttpClient()),
             chatAiRepository = ChatAiRepositoryImpl(
                 groqApiHandler = GroqApiHandler(
                     httpClient = HttpClient()

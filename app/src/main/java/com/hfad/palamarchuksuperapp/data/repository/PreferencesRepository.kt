@@ -3,19 +3,16 @@ package com.hfad.palamarchuksuperapp.data.repository
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStoreFile
+import com.hfad.palamarchuksuperapp.appSettingsStore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-
 class PreferencesRepository private constructor(private val dataStore: DataStore<Preferences>) {
-
     companion object {
         private val NIGHT_MODE_KEY = booleanPreferencesKey("nightModeOn")
 
@@ -23,9 +20,7 @@ class PreferencesRepository private constructor(private val dataStore: DataStore
 
         fun initialize(context: Context) {
             if (INSTANCE == null) {
-                val dataStore = PreferenceDataStoreFactory.create {
-                    context.preferencesDataStoreFile("app settings")
-                }
+                val dataStore : DataStore<Preferences> = context.appSettingsStore
                 INSTANCE = PreferencesRepository(dataStore)
             }
         }
