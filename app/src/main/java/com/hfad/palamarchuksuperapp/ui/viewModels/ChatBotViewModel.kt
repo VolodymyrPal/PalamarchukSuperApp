@@ -107,6 +107,7 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendImage -> sendImage(event.text, event.image)
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
+            is Event.GetModels -> getModels()
             is Event.ChangeAiModel -> changeAIModel(event.aiModel)
         }
     }
