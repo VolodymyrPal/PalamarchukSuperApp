@@ -28,7 +28,8 @@ class ChatBotViewModel @Inject constructor(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: AppError? = null,
-        val listOfModels : PersistentList<AiModel> = persistentListOf()
+        val listOfModels : PersistentList<AiModel> = persistentListOf(),
+        val currentModel: AiModel = AiModel.GeminiModels.BASE_MODEL
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -59,15 +60,16 @@ class ChatBotViewModel @Inject constructor(
         chatAiRepository.chatAiChatFlow.map { Result.Success(it) }
 
     override val uiState: StateFlow<StateChat> = combine(
-        _dataFlow, _loading, _errorFlow, chatAiRepository.listOfModels
-    ) { chatHistory, isLoading, error, models ->
+        _dataFlow, _loading, _errorFlow, chatAiRepository.listOfModels, chatAiRepository.currentModel
+    ) { chatHistory, isLoading, error, models, currentModel ->
         when (chatHistory) {
             is Result.Success -> {
                 StateChat(
                     listMessage = chatHistory.data,
                     isLoading = isLoading,
                     error = error,
-                    listOfModels = models
+                    listOfModels = models,
+                    currentModel = currentModel
                 )
             }
 
