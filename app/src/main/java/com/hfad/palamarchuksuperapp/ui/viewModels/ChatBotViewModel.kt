@@ -28,7 +28,8 @@ class ChatBotViewModel @Inject constructor(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: AppError? = null,
-        val listOfModels : PersistentList<AiModel> = persistentListOf()
+        val listOfModels : PersistentList<AiModel> = persistentListOf(),
+        val currentModel: AiModel = AiModel.GeminiModels.BASE_MODEL
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
