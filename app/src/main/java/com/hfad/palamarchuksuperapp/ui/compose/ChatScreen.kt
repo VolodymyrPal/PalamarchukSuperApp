@@ -81,6 +81,8 @@ fun ChatScreen(
         (factory = LocalContext.current.appComponent.viewModelFactory()),
 ) {
     val context = LocalContext.current
+    val navController = LocalNavController.current
+    val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         chatBotViewModel.effect.collect { effect ->
@@ -92,7 +94,6 @@ fun ChatScreen(
         }
     }
 
-    val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -101,7 +102,7 @@ fun ChatScreen(
                 title = {
                     Text(
                         "Chat ${
-                            myState.listOfModels.getOrNull(0)?.modelName?: ""
+                            myState.currentModel.modelName.replace("models/", "")
                         }",
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -111,7 +112,6 @@ fun ChatScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 navigationIcon = {
-                    val navController = LocalNavController.current
                     IconButton(
                         onClick = {
                             navController.popBackStack()
