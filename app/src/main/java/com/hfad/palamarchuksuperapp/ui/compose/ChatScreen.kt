@@ -305,7 +305,9 @@ fun RequestPanel(
     modifier: Modifier = Modifier,
     onEvent: (ChatBotViewModel.Event) -> Unit = {},
     loading: Boolean = false,
+    promptText: MutableState<String> = remember { mutableStateOf("") },
 ) {
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -344,7 +346,7 @@ fun RequestPanel(
                 contentDescription = "Add image",
             )
         }
-        var promptText by remember { mutableStateOf("") }
+
         if (imageBitmap.value != null) {
             AsyncImage(
                 model = imageBitmap.value, contentDescription = "image to send",
@@ -373,6 +375,7 @@ fun RequestPanel(
             maxLines = 3,
             textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
         )
+
         IconButton(
             modifier = Modifier
                 .weight(0.1f)
