@@ -406,6 +406,36 @@ fun RequestPanel(
     }
 }
 
+@Composable
+fun TextFieldRequest(
+    promptText: MutableState<String>,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier,
+) {
+    TextField(
+        value = promptText.value,
+        modifier = modifier,
+        onValueChange = onValueChange,
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            focusedTextColor = Color.Red,
+            unfocusedTextColor = Color.Red,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent
+        ),
+        placeholder = {
+            if (promptText.value.isBlank()) Text(
+                "Enter a message",
+                color = Color.Gray.copy(alpha = 0.5f)
+            )
+        },
+        maxLines = 3,
+        textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
+
+    )
+}
+
 @Preview
 @Composable
 fun RequestPanelPreview() {
