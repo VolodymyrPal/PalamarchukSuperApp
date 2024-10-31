@@ -40,10 +40,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +66,7 @@ import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
+import com.theapache64.rebugger.Rebugger
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -194,6 +195,17 @@ fun LazyChatScreen(
         )
     )
     val state = rememberLazyListState()
+    Rebugger(
+        trackMap = mapOf(
+            "listMessage" to messagesList,
+            "isLoading" to loading,
+            "event" to event,
+            "modifier" to modifier,
+            "error" to error,
+            "Lazy state" to state
+        )
+    )
+
     LaunchedEffect(messagesList.size) {
         launch {
             state.animateScrollToItem(messagesList.lastIndex + 3)
@@ -293,7 +305,9 @@ fun RequestPanel(
     modifier: Modifier = Modifier,
     onEvent: (ChatBotViewModel.Event) -> Unit = {},
     loading: Boolean = false,
+    promptText: MutableState<String> = remember { mutableStateOf("") },
 ) {
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -332,35 +346,19 @@ fun RequestPanel(
                 contentDescription = "Add image",
             )
         }
-        var promptText by remember { mutableStateOf("") }
+
         if (imageBitmap.value != null) {
             AsyncImage(
                 model = imageBitmap.value, contentDescription = "image to send",
                 modifier = Modifier.weight(0.1f)
             )
         }
-        TextField(
-            value = promptText,
-            modifier = Modifier.weight(0.7f),
-            onValueChange = { text: String -> promptText = text },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                focusedTextColor = Color.Red,
-                unfocusedTextColor = Color.Red,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
-            ),
-
-            placeholder = {
-                if (promptText.isBlank()) Text(
-                    "Enter a message",
-                    color = Color.Gray.copy(alpha = 0.5f)
-                )
-            },
-            maxLines = 3,
-            textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
+        TextFieldRequest(
+            promptText = promptText,
+            onValueChange = { text: String -> promptText.value = text },
+            modifier = Modifier.weight(0.7f)
         )
+
         IconButton(
             modifier = Modifier
                 .weight(0.1f)
@@ -372,13 +370,13 @@ fun RequestPanel(
                 Color.Transparent
             ),
             onClick = {
-                if (promptText.isNotBlank()) {
+                if (promptText.value.isNotBlank()) {
                     onEvent.invoke(
                         ChatBotViewModel.Event.SendText(
-                            promptText,
+                            promptText.value,
                         )
                     )
-                    promptText = ""
+                    promptText.value = ""
                 } else {
                     onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
                 }
@@ -392,6 +390,36 @@ fun RequestPanel(
             )
         }
     }
+}
+
+@Composable
+fun TextFieldRequest(
+    promptText: MutableState<String>,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier,
+) {
+    TextField(
+        value = promptText.value,
+        modifier = modifier,
+        onValueChange = onValueChange,
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            focusedTextColor = Color.Red,
+            unfocusedTextColor = Color.Red,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent
+        ),
+        placeholder = {
+            if (promptText.value.isBlank()) Text(
+                "Enter a message",
+                color = Color.Gray.copy(alpha = 0.5f)
+            )
+        },
+        maxLines = 3,
+        textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
+
+    )
 }
 
 @Preview

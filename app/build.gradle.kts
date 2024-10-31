@@ -132,4 +132,7 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.7.4")
     implementation("io.ktor:ktor-client-logging:2.3.12")
 
+    implementation("io.github.theapache64:rebugger:1.0.0-rc03")
+
+
 }
