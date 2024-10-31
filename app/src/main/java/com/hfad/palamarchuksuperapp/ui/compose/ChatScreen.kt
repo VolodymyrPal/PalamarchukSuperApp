@@ -40,10 +40,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,6 +66,7 @@ import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
+import com.theapache64.rebugger.Rebugger
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -194,6 +195,17 @@ fun LazyChatScreen(
         )
     )
     val state = rememberLazyListState()
+    Rebugger(
+        trackMap = mapOf(
+            "listMessage" to messagesList,
+            "isLoading" to loading,
+            "event" to event,
+            "modifier" to modifier,
+            "error" to error,
+            "Lazy state" to state
+        )
+    )
+
     LaunchedEffect(messagesList.size) {
         launch {
             state.animateScrollToItem(messagesList.lastIndex + 3)
