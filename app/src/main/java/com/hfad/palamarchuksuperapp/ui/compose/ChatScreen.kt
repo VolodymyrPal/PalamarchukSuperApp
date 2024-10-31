@@ -353,27 +353,10 @@ fun RequestPanel(
                 modifier = Modifier.weight(0.1f)
             )
         }
-        TextField(
-            value = promptText,
-            modifier = Modifier.weight(0.7f),
-            onValueChange = { text: String -> promptText = text },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                focusedTextColor = Color.Red,
-                unfocusedTextColor = Color.Red,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
-            ),
-
-            placeholder = {
-                if (promptText.isBlank()) Text(
-                    "Enter a message",
-                    color = Color.Gray.copy(alpha = 0.5f)
-                )
-            },
-            maxLines = 3,
-            textStyle = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer)
+        TextFieldRequest(
+            promptText = promptText,
+            onValueChange = { text: String -> promptText.value = text },
+            modifier = Modifier.weight(0.7f)
         )
 
         IconButton(
@@ -387,13 +370,13 @@ fun RequestPanel(
                 Color.Transparent
             ),
             onClick = {
-                if (promptText.isNotBlank()) {
+                if (promptText.value.isNotBlank()) {
                     onEvent.invoke(
                         ChatBotViewModel.Event.SendText(
-                            promptText,
+                            promptText.value,
                         )
                     )
-                    promptText = ""
+                    promptText.value = ""
                 } else {
                     onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
                 }
