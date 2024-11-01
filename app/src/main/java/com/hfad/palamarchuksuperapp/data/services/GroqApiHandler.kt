@@ -116,4 +116,24 @@ class GroqContentBuilder {
     }
 }
 
+fun List<MessageAI>.toGroqRequest(model: AiModel? = null): GroqRequest {
+    val groqRequest = GroqContentBuilder.Builder().also { builder ->
+
+    }.buildChat()
+    val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
+        for (message in this) {
+            when (message.type) {
+                MessageType.TEXT -> {
+                    builder.contentText(role = message.role, content = message.content)
+                }
+                MessageType.IMAGE -> {
+                    builder.contentImage(role = message.role, content = message.content)
+                }
+            }
+        }
+    }.buildChatRequest()
+
+    return geminiRequest
+}
+
 class CodeError(val value: Int) : Exception()
