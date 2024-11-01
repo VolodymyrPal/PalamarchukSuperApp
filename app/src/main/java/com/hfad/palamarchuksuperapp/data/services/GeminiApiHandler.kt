@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.data.services
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -83,4 +84,21 @@ fun handleException(e: Exception): AppError {
         }
         else -> AppError.CustomError(error = e)
     }
+}
+
+fun List<MessageAI>.toGeminiRequest(model: AiModel? = null): GeminiRequest {
+    val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
+        for (message in this) {
+            when (message.type) {
+                MessageType.TEXT -> {
+                    builder.contentText(role = message.role, content = message.content)
+                }
+                MessageType.IMAGE -> {
+                    builder.contentImage(role = message.role, content = message.content)
+                }
+            }
+        }
+    }.buildChatRequest()
+
+    return geminiRequest
 }

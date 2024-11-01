@@ -77,7 +77,7 @@ class ChatAiRepositoryImpl @Inject constructor(
         MutableStateFlow(persistentListOf())
 
     private val currentHandler: MutableStateFlow<AiModelHandler> =
-        MutableStateFlow(geminiApiHandler)
+        MutableStateFlow(groqApiHandler)
 
     override val currentModel: MutableStateFlow<AiModel> =
         MutableStateFlow(AiModel.GeminiModels.BASE_MODEL)
