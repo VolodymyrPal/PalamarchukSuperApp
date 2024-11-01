@@ -4,11 +4,13 @@ import android.util.Log
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -45,8 +47,7 @@ class GroqApiHandler @Inject constructor(
             header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
             setBody(
-                ""
-                // messageList.toGroqRequest(model ?: AiModels.GroqModels.GROQ_IMAGE) // TODO logic for different models
+                messageList.toGroqRequest(model)
             )
         }
         try {
@@ -75,8 +76,18 @@ class GroqApiHandler @Inject constructor(
     }
 
     override suspend fun getModels(): Result<List<AiModel>, AppError> {
-        val a = AppError.OtherErrors.NotImplemented
-        return Result.Error(a)
+        val response = httpClient.get(
+            "https://api.groq.com/openai/v1/models"
+        ) {
+                header("Authorization", "Bearer $apiKey")
+            contentType(ContentType.Application.Json)
+        }
+        return if (response.status == HttpStatusCode.OK) {
+            val list = response.body<AiModel.GroqModelList>()
+            return Result.Success(list.data)
+        } else {
+            Result.Error(AppError.Network.RequestError.BadRequest)
+        }
     }
 }
 
