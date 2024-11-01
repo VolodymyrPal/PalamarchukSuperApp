@@ -108,21 +108,4 @@ class GeminiBuilder {
     }
 }
 
-fun List<MessageAI>.toGeminiRequest(model: AiModel? = null): GeminiRequest {
-    val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
-        for (message in this) {
-            when (message.type) {
-                MessageType.TEXT -> {
-                    builder.contentText(role = message.role, content = message.content)
-                }
-                MessageType.IMAGE -> {
-                    builder.contentImage(role = message.role, content = message.content)
-                }
-            }
-        }
-    }.buildChatRequest()
-
-    return geminiRequest
-}
-
 
