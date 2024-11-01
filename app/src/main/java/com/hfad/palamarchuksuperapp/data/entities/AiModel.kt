@@ -39,7 +39,7 @@ interface AiModel {
     }
 
     enum class GeminiModels(override val modelName: String, override val isSupported: Boolean = true) : AiModel {
-        BASE_MODEL("models/gemini-1.5-flash"),
+        BASE_MODEL("models/gemini-1.5-flash-8b"),
         GEMINI_IMAGE("")
     }
 
