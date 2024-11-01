@@ -232,23 +232,23 @@ fun LazyChatScreen(
                 }
             }
         }
-
 //            when (error as AppError.Network) {
 //                else -> {} // TODO if specific error, show something new
 //            }
+
 //        item {
 //            Button(
 //                onClick = {
-//                    if (promptText.isNotBlank()) {
-//                        event?.invoke(
+//                    if (promptText.value.isNotBlank()) {
+//                        event.invoke(
 //                            ChatBotViewModel.Event.SendImage(
-//                                promptText,
+//                                promptText.value,
 //                                image = "https://n1s1.hsmedia.ru/b3/10/ae/b310ae7a1baeaec4df75db18b5465ebc/1501x843_0x4U9bTTLH_1708972820638352229.jpg"
 //                            )
 //                        )
-//                        promptText = ""
+//                        promptText.value = ""
 //                    } else {
-//                        event?.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
+//                        event.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
 //                    }
 //                },
 //                modifier = Modifier,
