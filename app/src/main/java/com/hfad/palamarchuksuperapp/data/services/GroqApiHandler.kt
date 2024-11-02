@@ -97,23 +97,33 @@ class GroqContentBuilder {
 
     class Builder {
 
-        private var contents: MutableList<GroqContentType> = arrayListOf()
+        private var messages: MutableList<Message> = arrayListOf()
 
-        var role = "user"
+        fun addMessage(request: String, role: String) {
+            val message = MessageText(content = request, role = role)
+            messages.add(message)
+        }
 
-        @JvmName("addPart")
-        fun <T : GroqContentType> content(data: T) = apply { contents.add(data) }
+        fun buildChatRequest(model: AiModel): GroqRequest = GroqRequest(
+            messages = messages,
+            model = model.modelName,
+            maxTokens = 1024
+        )
 
-        @JvmName("addText")
-        fun text(text: String) = content(ContentText(text = text))
-
-        @JvmName("addImage")
-        fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
-
-        //fun build(): MessageText = MessageText(content = contents, role = role)
-        fun buildChat(): MessageChat = MessageChat(content = contents, role = role)
-
-        fun buildText(request: String): MessageText = MessageText(content = request, role = role)
+        //TODO add image content
+//        private var imageContent: MutableList<GroqContentType> = arrayListOf()
+//        @JvmName("addPart")
+//        fun <T : GroqContentType> content(data: T) = apply { imageContent.add(data) }
+//
+//        @JvmName("addText")
+//        fun text(text: String) = content(ContentText(text = text))
+//
+//        @JvmName("addImage")
+//        fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
+//
+//        fun buildText(request: String, role: String = Role.USER.value): MessageText {
+//            return MessageText(content = request, role = role)
+//        }
     }
 }
 

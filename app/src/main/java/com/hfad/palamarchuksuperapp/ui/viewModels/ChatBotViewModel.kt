@@ -44,7 +44,7 @@ class ChatBotViewModel @Inject constructor(
             chatAiRepository.errorFlow.collect { error ->
                 _errorFlow.update { error }
 //                when (error) {
-//                    is DataError.CustomError -> {
+//                   is DataError.CustomError -> {
 //                        effect(Effect.ShowToast(error.errorText?: "Unknown error"))
 //                    }
 //
