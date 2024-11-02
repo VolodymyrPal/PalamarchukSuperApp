@@ -80,7 +80,7 @@ class ChatAiRepositoryImpl @Inject constructor(
         MutableStateFlow(groqApiHandler)
 
     override val currentModel: MutableStateFlow<AiModel> =
-        MutableStateFlow(AiModel.GeminiModels.BASE_MODEL)
+        MutableStateFlow(AiModel.GroqModels.BASE_MODEL)
 
     override fun setHandlerOrModel(model: AiModel) {
         when (model) {
