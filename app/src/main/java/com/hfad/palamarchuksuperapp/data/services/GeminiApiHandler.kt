@@ -4,6 +4,7 @@ import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -45,11 +46,10 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
     ): Result<MessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = model ?: AiModel.GeminiModels.BASE_MODEL)) {
+                httpClient.post(getUrl(model = model)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
-                            model = model ?: AiModel.GeminiModels.BASE_MODEL
                         )
                     )
                 }
@@ -57,7 +57,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<GeminiResponse>()
                 val responseMessage = MessageAI(
-                    role = "model",
+                    role = Role.MODEL,
                     content = response.candidates[0].content.parts[0].text,
                 )
                 return Result.Success(responseMessage)
@@ -86,15 +86,15 @@ fun handleException(e: Exception): AppError {
     }
 }
 
-fun List<MessageAI>.toGeminiRequest(model: AiModel? = null): GeminiRequest {
+fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
     val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {
                 MessageType.TEXT -> {
-                    builder.contentText(role = message.role, content = message.content)
+                    builder.contentText(role = message.role.value, content = message.content)
                 }
                 MessageType.IMAGE -> {
-                    builder.contentImage(role = message.role, content = message.content)
+                    builder.contentImage(role = message.role.value, content = message.content)
                 }
             }
         }

@@ -59,6 +59,7 @@ import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
@@ -223,7 +224,7 @@ fun LazyChatScreen(
                 MessageType.TEXT -> {
                     MessageBox(
                         text = messagesList[it].content.trimEnd(),
-                        isUser = messagesList[it].role == "user"
+                        isUser = messagesList[it].role == Role.USER
                     )
                 }
 

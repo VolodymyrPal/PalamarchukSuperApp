@@ -5,6 +5,7 @@ import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -55,31 +56,25 @@ class GroqApiHandler @Inject constructor(
             Log.d("Groq response:", request.body<String>())
 
             if (request.status == HttpStatusCode.OK) {
-
                 val response = request.body<ChatCompletionResponse>()
-
-                val responseMessage = GroqContentBuilder.Builder().let {
-                    it.role = "assistant"
-                    it.buildText((response.choices[0].message as MessageText).content)
-                }
-
+                val responseMessage = MessageAI(
+                    content = (response.choices[0].message as MessageText).content,
+                    role = Role.SYSTEM
+                )
+                return Result.Success(responseMessage)
             } else {
                 throw CodeError(request.status.value)
             }
         } catch (e: Exception) {
-            errorFlow.emit(
-                handleException(e)
-            )
+            return Result.Error(handleException(e))
         }
-
-        return Result.Success(MessageAI("", ""))
     }
 
     override suspend fun getModels(): Result<List<AiModel>, AppError> {
         val response = httpClient.get(
             "https://api.groq.com/openai/v1/models"
         ) {
-                header("Authorization", "Bearer $apiKey")
+            header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
         }
         return if (response.status == HttpStatusCode.OK) {
@@ -96,44 +91,52 @@ class GroqContentBuilder {
 
     class Builder {
 
-        private var contents: MutableList<GroqContentType> = arrayListOf()
+        private var messages: MutableList<Message> = arrayListOf()
 
-        var role = "user"
+        fun addMessage(request: String, role: String) {
+            val message = MessageText(content = request, role = role)
+            messages.add(message)
+        }
 
-        @JvmName("addPart")
-        fun <T : GroqContentType> content(data: T) = apply { contents.add(data) }
+        fun buildChatRequest(model: AiModel): GroqRequest = GroqRequest(
+            messages = messages,
+            model = model.modelName,
+            maxTokens = 1024
+        )
 
-        @JvmName("addText")
-        fun text(text: String) = content(ContentText(text = text))
-
-        @JvmName("addImage")
-        fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
-
-        //fun build(): MessageText = MessageText(content = contents, role = role)
-        fun buildChat(): MessageChat = MessageChat(content = contents, role = role)
-
-        fun buildText(request: String): MessageText = MessageText(content = request, role = role)
+        //TODO add image content
+//        private var imageContent: MutableList<GroqContentType> = arrayListOf()
+//        @JvmName("addPart")
+//        fun <T : GroqContentType> content(data: T) = apply { imageContent.add(data) }
+//
+//        @JvmName("addText")
+//        fun text(text: String) = content(ContentText(text = text))
+//
+//        @JvmName("addImage")
+//        fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
+//
+//        fun buildText(request: String, role: String = Role.USER.value): MessageText {
+//            return MessageText(content = request, role = role)
+//        }
     }
 }
 
-fun List<MessageAI>.toGroqRequest(model: AiModel? = null): GroqRequest {
+fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL): GroqRequest {
     val groqRequest = GroqContentBuilder.Builder().also { builder ->
-
-    }.buildChat()
-    val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {
                 MessageType.TEXT -> {
-                    builder.contentText(role = message.role, content = message.content)
+                    builder.addMessage(request = message.content, role = message.role.value)
                 }
+
                 MessageType.IMAGE -> {
-                    builder.contentImage(role = message.role, content = message.content)
+
                 }
             }
         }
-    }.buildChatRequest()
+    }.buildChatRequest(model)
 
-    return geminiRequest
+    return groqRequest
 }
 
 class CodeError(val value: Int) : Exception()

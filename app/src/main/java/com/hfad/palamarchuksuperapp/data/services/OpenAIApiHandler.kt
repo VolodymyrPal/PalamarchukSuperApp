@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.data.services
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -65,7 +66,7 @@ class OpenAIApiHandler @Inject constructor(
         messageList: PersistentList<MessageAI>,
         model: AiModel,
     ): Result<MessageAI, AppError> {
-        return Result.Success(MessageAI("true", "true"))
+        return Result.Success(MessageAI(Role.MODEL, "true"))
     }
 
     override suspend fun getModels(): Result<List<AiModel>, AppError> {
