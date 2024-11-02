@@ -127,24 +127,22 @@ class GroqContentBuilder {
     }
 }
 
-fun List<MessageAI>.toGroqRequest(model: AiModel? = null): GroqRequest {
+fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL): GroqRequest {
     val groqRequest = GroqContentBuilder.Builder().also { builder ->
-
-    }.buildChat()
-    val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {
                 MessageType.TEXT -> {
-                    builder.contentText(role = message.role, content = message.content)
+                    builder.addMessage(request = message.content, role = message.role.value)
                 }
+
                 MessageType.IMAGE -> {
-                    builder.contentImage(role = message.role, content = message.content)
+
                 }
             }
         }
-    }.buildChatRequest()
+    }.buildChatRequest(model)
 
-    return geminiRequest
+    return groqRequest
 }
 
 class CodeError(val value: Int) : Exception()
