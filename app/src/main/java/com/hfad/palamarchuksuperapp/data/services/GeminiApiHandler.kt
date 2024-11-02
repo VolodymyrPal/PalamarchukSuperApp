@@ -46,11 +46,10 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
     ): Result<MessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = model ?: AiModel.GeminiModels.BASE_MODEL)) {
+                httpClient.post(getUrl(model = model)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
-                            model = model ?: AiModel.GeminiModels.BASE_MODEL
                         )
                     )
                 }
@@ -87,7 +86,7 @@ fun handleException(e: Exception): AppError {
     }
 }
 
-fun List<MessageAI>.toGeminiRequest(model: AiModel? = null): GeminiRequest {
+fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
     val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {
