@@ -56,31 +56,25 @@ class GroqApiHandler @Inject constructor(
             Log.d("Groq response:", request.body<String>())
 
             if (request.status == HttpStatusCode.OK) {
-
                 val response = request.body<ChatCompletionResponse>()
-
-                val responseMessage = GroqContentBuilder.Builder().let {
-                    it.role = "assistant"
-                    it.buildText((response.choices[0].message as MessageText).content)
-                }
-
+                val responseMessage = MessageAI(
+                    content = (response.choices[0].message as MessageText).content,
+                    role = Role.SYSTEM
+                )
+                return Result.Success(responseMessage)
             } else {
                 throw CodeError(request.status.value)
             }
         } catch (e: Exception) {
-            errorFlow.emit(
-                handleException(e)
-            )
+            return Result.Error(handleException(e))
         }
-
-        return Result.Success(MessageAI("", ""))
     }
 
     override suspend fun getModels(): Result<List<AiModel>, AppError> {
         val response = httpClient.get(
             "https://api.groq.com/openai/v1/models"
         ) {
-                header("Authorization", "Bearer $apiKey")
+            header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
         }
         return if (response.status == HttpStatusCode.OK) {
