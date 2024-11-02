@@ -20,6 +20,7 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.data.services.GeminiBuilder
 import com.hfad.palamarchuksuperapp.data.services.toGeminiRequest
@@ -170,9 +171,9 @@ class MainScreenFragment : Fragment() {
                 .buildSingleRequest()
 
             val listMessages = listOf<MessageAI>(
-                MessageAI(role = "user", content = "Картинка", type = MessageType.IMAGE),
-                MessageAI(role = "model", content = "Some info"),
-                MessageAI(role = "user", content = "Картинка"),
+                MessageAI(role = Role.USER, content = "Картинка", type = MessageType.IMAGE),
+                MessageAI(role = Role.MODEL, content = "Some info"),
+                MessageAI(role = Role.USER, content = "Картинка"),
             )
             Log.d("My list:", "${listMessages.toGeminiRequest()}")
 

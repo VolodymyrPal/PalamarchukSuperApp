@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
@@ -119,7 +120,7 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { true }
             chatAiRepository.getRespondChatOrImage(
                 MessageAI(
-                    role = "user", content = text, type = MessageType.TEXT
+                    role = Role.USER, content = text, type = MessageType.TEXT
                 )
             )
             _loading.update { false }
@@ -131,7 +132,7 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { true }
             chatAiRepository.getRespondChatOrImage(
                 MessageAI(
-                    role = "user",
+                    role = Role.USER,
                     content = text,
                     type = MessageType.TEXT
                 )

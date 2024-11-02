@@ -5,6 +5,7 @@ import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
+import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
