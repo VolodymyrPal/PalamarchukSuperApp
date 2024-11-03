@@ -140,11 +140,18 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
         for (message in this) {
             when (message.type) {
                 MessageType.TEXT -> {
-                    builder.addMessage(request = message.content, role = message.role.value)
+                    builder.addMessage(
+                        request = message.content,
+                        role = if (message.role == Role.MODEL) "assistant" else message.role.value
+                    )
                 }
 
                 MessageType.IMAGE -> {
-
+                    builder.imageText(
+                        image = if (message.otherContent is Base64) message.otherContent else "",
+                        text = message.content,
+                        role = if (message.role == Role.MODEL) "assistant" else message.role.value
+                    )
                 }
             }
         }
