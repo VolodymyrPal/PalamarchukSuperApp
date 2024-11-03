@@ -16,6 +16,5 @@ enum class Role(val value: String) {
     USER("user"),
     MODEL("model"),
     ASSISTANT("assistant"),
-    SYSTEM("system"),
     PROMPT("prompt");
 }
