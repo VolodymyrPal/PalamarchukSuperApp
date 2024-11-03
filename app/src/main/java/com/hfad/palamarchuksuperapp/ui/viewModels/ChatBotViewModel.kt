@@ -5,6 +5,7 @@ import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
@@ -29,8 +30,8 @@ class ChatBotViewModel @Inject constructor(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: AppError? = null,
-        val listOfModels : PersistentList<AiModel> = persistentListOf(),
-        val currentModel: AiModel = AiModel.GeminiModels.BASE_MODEL
+        val listOfModels: PersistentList<AiModel> = persistentListOf(),
+        val currentModel: AiModel = AiModel.GeminiModels.BASE_MODEL,
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -61,7 +62,11 @@ class ChatBotViewModel @Inject constructor(
         chatAiRepository.chatAiChatFlow.map { Result.Success(it) }
 
     override val uiState: StateFlow<StateChat> = combine(
-        _dataFlow, _loading, _errorFlow, chatAiRepository.listOfModels, chatAiRepository.currentModel
+        _dataFlow,
+        _loading,
+        _errorFlow,
+        chatAiRepository.listOfModels,
+        chatAiRepository.currentModel
     ) { chatHistory, isLoading, error, models, currentModel ->
         when (chatHistory) {
             is Result.Success -> {
@@ -115,12 +120,15 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun sendImage(text: String, imageUrl: String) {
+    private fun sendImage(text: String, imageUrl: Base64) {
         viewModelScope.launch {
             _loading.update { true }
             chatAiRepository.getRespondChatOrImage(
                 MessageAI(
-                    role = Role.USER, content = text, type = MessageType.TEXT
+                    role = Role.USER,
+                    content = text,
+                    otherContent = imageUrl,
+                    type = MessageType.IMAGE
                 )
             )
             _loading.update { false }

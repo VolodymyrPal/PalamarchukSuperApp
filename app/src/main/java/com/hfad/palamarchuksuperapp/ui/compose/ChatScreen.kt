@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.compose
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -72,6 +73,7 @@ import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -229,7 +231,17 @@ fun LazyChatScreen(
                 }
 
                 MessageType.IMAGE -> {
-                    AsyncImage(model = messagesList[it].content, contentDescription = null)
+                    MessageBox(
+                        text = messagesList[it].content.trimEnd(),
+                        isUser = messagesList[it].role == Role.USER
+                    )
+                    val imageBytes =
+                        Base64.decode(messagesList[it].otherContent as String, Base64.DEFAULT)
+                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    AsyncImage(
+                        model = image,
+                        contentDescription = "Image u push to AI"
+                    )
                 }
             }
         }
@@ -323,7 +335,6 @@ fun RequestPanel(
                 imageBitmap.value = context.contentResolver.openInputStream(uri)?.use {
                     BitmapFactory.decodeStream(it)
                 }
-
             }
         }
 
@@ -372,11 +383,30 @@ fun RequestPanel(
             ),
             onClick = {
                 if (promptText.value.isNotBlank()) {
-                    onEvent.invoke(
-                        ChatBotViewModel.Event.SendText(
-                            promptText.value,
-                        )
-                    )
+                    when (imageBitmap.value) {
+                        null -> {
+                            onEvent.invoke(
+                                ChatBotViewModel.Event.SendText(
+                                    promptText.value,
+                                )
+                            )
+                        }
+
+                        else -> {
+
+                            val imgByteCode = ByteArrayOutputStream().let {
+                                imageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 80, it)
+                                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
+                            }
+
+                            onEvent.invoke(
+                                ChatBotViewModel.Event.SendImage(
+                                    promptText.value,
+                                    imgByteCode
+                                )
+                            )
+                        }
+                    }
                     promptText.value = ""
                 } else {
                     onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
@@ -397,7 +427,7 @@ fun RequestPanel(
 fun TextFieldRequest(
     promptText: MutableState<String>,
     onValueChange: (String) -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     TextField(
         value = promptText.value,
