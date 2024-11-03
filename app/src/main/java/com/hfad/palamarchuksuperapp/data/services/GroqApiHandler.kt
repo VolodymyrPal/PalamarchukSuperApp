@@ -35,7 +35,6 @@ class GroqApiHandler @Inject constructor(
 //                    "Please provide answer and solve this sample."
 //        )
 //    }
-    val errorFlow = MutableStateFlow<AppError?>(null)
 
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -52,14 +51,11 @@ class GroqApiHandler @Inject constructor(
             )
         }
         try {
-
-            Log.d("Groq response:", request.body<String>())
-
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<ChatCompletionResponse>()
                 val responseMessage = MessageAI(
                     content = (response.choices[0].message as MessageText).content,
-                    role = Role.SYSTEM
+                    role = Role.MODEL
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -104,16 +100,34 @@ class GroqContentBuilder {
             maxTokens = 1024
         )
 
+        @JvmName("addText")
+        private fun text(text: String) = ContentText(text = text)
+
+        @JvmName("addImage")
+        private fun image(image: Base64) = ContentImage(
+            image_url =
+            ImageUrl("data:image/jpeg;base64,$image")
+        )
+
+        @JvmName("addImageText")
+        fun imageText(image: Base64, text: String, role: String) {
+            (messages.removeIf { it is MessageChat }) // TODO Groq supports only one image
+            messages.add(
+                MessageChat(
+                    role = role,
+                    content = listOf(
+                        text(text),
+                        image(image)
+                    )
+                )
+            )
+        }
+
         //TODO add image content
 //        private var imageContent: MutableList<GroqContentType> = arrayListOf()
 //        @JvmName("addPart")
 //        fun <T : GroqContentType> content(data: T) = apply { imageContent.add(data) }
 //
-//        @JvmName("addText")
-//        fun text(text: String) = content(ContentText(text = text))
-//
-//        @JvmName("addImage")
-//        fun image(image: Base64) = content(ContentImage(image_url = ImageUrl(image)))
 //
 //        fun buildText(request: String, role: String = Role.USER.value): MessageText {
 //            return MessageText(content = request, role = role)
