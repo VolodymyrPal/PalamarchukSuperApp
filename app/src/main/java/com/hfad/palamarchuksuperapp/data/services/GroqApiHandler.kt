@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import android.util.Log
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
@@ -19,7 +18,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class GroqApiHandler @Inject constructor(
@@ -43,11 +41,17 @@ class GroqApiHandler @Inject constructor(
         model: AiModel,
     ): Result<MessageAI, AppError> {
 
+        val listToPass = if (messageList.last().type == MessageType.IMAGE) {
+            messageList.last().toGroqRequest(model)
+        } else {
+            messageList.toGroqRequest(model)
+        }
+
         val request = httpClient.post(url) {
             header("Authorization", "Bearer $apiKey")
             contentType(ContentType.Application.Json)
             setBody(
-                messageList.toGroqRequest(model)
+                listToPass
             )
         }
         try {
