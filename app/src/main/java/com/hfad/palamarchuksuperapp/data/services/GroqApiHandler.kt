@@ -114,8 +114,7 @@ class GroqContentBuilder {
         )
 
         @JvmName("addImageText")
-        fun imageText(image: Base64, text: String, role: String) {
-            (messages.removeIf { it is MessageChat }) // TODO Groq supports only one image
+        fun imageWithText(image: Base64, text: String, role: String) {
             messages.add(
                 MessageChat(
                     role = role,
@@ -169,9 +168,8 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
                 }
 
                 MessageType.IMAGE -> {
-                    builder.imageText(
-                        image = if (message.otherContent is Base64) message.otherContent else "",
-                        text = message.content,
+                    builder.addMessage(
+                        request = message.content,
                         role = if (message.role == Role.MODEL) "assistant" else message.role.value
                     )
                 }
