@@ -126,18 +126,36 @@ class GroqContentBuilder {
                 )
             )
         }
-
-        //TODO add image content
-//        private var imageContent: MutableList<GroqContentType> = arrayListOf()
-//        @JvmName("addPart")
-//        fun <T : GroqContentType> content(data: T) = apply { imageContent.add(data) }
-//
-//
-//        fun buildText(request: String, role: String = Role.USER.value): MessageText {
-//            return MessageText(content = request, role = role)
-//        }
     }
 }
+
+fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
+    val builder = GroqContentBuilder.Builder().also {
+        when (this.type) {
+            MessageType.IMAGE -> {
+                it.imageWithText(
+                    image = if (this.otherContent is Base64) this.otherContent else "",
+                    text = this.content,
+                    role = if (this.role == Role.MODEL) "assistant" else this.role.value
+                )
+            }
+
+            MessageType.TEXT -> {
+                it.addMessage(
+                    request = this.content,
+                    role = if (this.role == Role.MODEL) "assistant" else this.role.value
+                )
+            }
+        }
+    }.buildChatRequest(model)
+    return builder
+}
+
+/*
+********
+TODO GROQ: currently groq can handle only one image at a time. Find better solution in future.
+********
+ */
 
 fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL): GroqRequest {
     val groqRequest = GroqContentBuilder.Builder().also { builder ->
