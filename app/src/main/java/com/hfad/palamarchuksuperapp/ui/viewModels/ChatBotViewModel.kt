@@ -43,16 +43,15 @@ class ChatBotViewModel @Inject constructor(
                 getModels()
             }
             chatAiRepository.errorFlow.collect { error ->
-                _errorFlow.update { error }
-//                when (error) {
-//                   is DataError.CustomError -> {
-//                        effect(Effect.ShowToast(error.errorText?: "Unknown error"))
-//                    }
-//
-//                    else -> {
-//                        effect(Effect.ShowToast(error.toString()))
-//                    }
-//                }
+                when (error) {
+                   is AppError.CustomError -> {
+                        effect(Effect.ShowToast(error.errorText?: "Unknown error"))
+                    }
+
+                    else -> {
+                        effect(Effect.ShowToast(error.toString()))
+                    }
+                }
             }
         }
 
