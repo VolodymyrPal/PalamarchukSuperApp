@@ -105,10 +105,11 @@ fun ChatScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Chat ${
+                        "Chat \n${
                             myState.currentModel.modelName.replace("models/", "")
                         }",
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
