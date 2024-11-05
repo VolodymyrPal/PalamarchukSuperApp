@@ -69,7 +69,7 @@ interface AiModel {
     }
 
     enum class OpenAIModels(override val modelName: String, override val isSupported: Boolean = true) : AiModel {
-        BASE_MODEL(""),
+        BASE_MODEL("gpt-4o-mini"),
         OPENAI_IMAGE("")
     }
 
