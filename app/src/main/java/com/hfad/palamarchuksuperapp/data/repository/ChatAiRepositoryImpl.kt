@@ -16,6 +16,12 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 
 class ChatAiRepositoryImpl @Inject constructor(
@@ -33,7 +39,7 @@ class ChatAiRepositoryImpl @Inject constructor(
 
         chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
 
-        val response: Result<MessageAI, AppError> = currentHandler.value.getResponse(
+        val response: Result<MessageAI, AppError> = currentHandler().value.getResponse(
             chatAiChatFlow.value, model = currentModel.value
         )
 
@@ -50,7 +56,7 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override suspend fun getModels(): List<AiModel> {
 
-        val models = currentHandler.value.getModels()
+        val models = currentHandler().value.getModels()
 
         when (models) {
             is Result.Success -> {
@@ -76,27 +82,56 @@ class ChatAiRepositoryImpl @Inject constructor(
     override val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
         MutableStateFlow(persistentListOf())
 
-    private val currentHandler: MutableStateFlow<AiModelHandler> =
-        MutableStateFlow(groqApiHandler)
-
     override val currentModel: MutableStateFlow<AiModel> =
-        MutableStateFlow(AiModel.GroqModels.BASE_MODEL)
+        MutableStateFlow(AiModel.OpenAIModels.BASE_MODEL)
+
+    override suspend fun currentHandler(): StateFlow<AiModelHandler> = currentModel.map {
+        Log.d("Model: ", "$it")
+        when (it) {
+            is AiModel.GroqModels -> {
+                groqApiHandler
+            }
+
+            is AiModel.GeminiModels -> {
+                geminiApiHandler
+            }
+
+            is AiModel.OpenAIModels -> {
+                openAIApiHandler
+            }
+
+            else -> {
+                throw Exception("Handler not found")
+            }
+        }
+    }.stateIn(
+        scope = CoroutineScope(Dispatchers.IO),
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = openAIApiHandler  /** TODO change it  */
+    )
+
+//        currentModel.collect {
+//            when (it) {
+//                is AiModel.GroqModels -> {
+//                    groqApiHandler
+//                }
+//
+//                is AiModel.GeminiModels -> {
+//                    geminiApiHandler
+//                }
+//
+//                is AiModel.OpenAIModels -> {
+//                    openAIApiHandler
+//                }
+//
+//                else -> {
+//                    throw Exception("Handler not found")
+//                }
+//            }
+//        }
+
 
     override fun setHandlerOrModel(model: AiModel) {
-        when (model) {
-            is AiModel.GroqModels -> {
-                currentHandler.value = geminiApiHandler
-            }
-            is AiModel.GeminiModels -> {
-                currentHandler.value = geminiApiHandler
-            }
-            is AiModel.OpenAIModels -> {
-                currentHandler.value = openAIApiHandler
-            }
-        }
-        currentModel.update {
-            model
-        }
+        currentModel.update { model }
     }
-
 }
