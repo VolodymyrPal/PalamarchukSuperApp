@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 interface ChatAiRepository {
     val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>>
@@ -15,4 +16,5 @@ interface ChatAiRepository {
     fun setHandlerOrModel(model: AiModel)
     val currentModel : MutableStateFlow<AiModel>
     val listOfModels : MutableStateFlow<PersistentList<AiModel>>
+    suspend fun currentHandler(): StateFlow<AiModelHandler>
 }

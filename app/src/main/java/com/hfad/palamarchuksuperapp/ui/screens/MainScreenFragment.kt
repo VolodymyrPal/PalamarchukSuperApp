@@ -151,7 +151,6 @@ class MainScreenFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         updatePhoto()
-        }
     }
 
     override fun onDestroyView() {
