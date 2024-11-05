@@ -114,12 +114,12 @@ class GroqContentBuilder {
         )
 
         @JvmName("addImageText")
-        fun imageWithText(image: Base64, text: String, role: String) {
+        fun imageWithText(image: Base64, request: String, role: String) {
             messages.add(
                 MessageChat(
                     role = role,
                     content = listOf(
-                        text(text),
+                        text(request),
                         image(image)
                     )
                 )
@@ -134,7 +134,7 @@ fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
             MessageType.IMAGE -> {
                 it.imageWithText(
                     image = if (this.otherContent is Base64) this.otherContent else "",
-                    text = this.content,
+                    request = this.content,
                     role = if (this.role == Role.MODEL) "assistant" else this.role.value
                 )
             }
@@ -150,10 +150,10 @@ fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
     return builder
 }
 
-/*
-********
-TODO GROQ: currently groq can handle only one image at a time. Find better solution in future.
-********
+/**
+ *
+ * TODO GROQ: currently groq can handle only one image at a time. Find better solution in future.
+ *
  */
 
 fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL): GroqRequest {
@@ -167,12 +167,20 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
                     )
                 }
 
+/** Groq currently can only handle one image at a time, so all images in list we convert to text */
                 MessageType.IMAGE -> {
                     builder.addMessage(
                         request = message.content,
                         role = if (message.role == Role.MODEL) "assistant" else message.role.value
                     )
                 }
+//                MessageType.IMAGE -> {
+//                    builder.imageWithText(
+//                        request = message.content,
+//                        image = message.otherContent as Base64, //TODO For testing different models
+//                        role = if (message.role == Role.MODEL) "assistant" else message.role.value
+//                    )
+//                }
             }
         }
     }.buildChatRequest(model)
