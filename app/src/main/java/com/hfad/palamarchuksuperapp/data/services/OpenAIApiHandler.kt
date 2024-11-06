@@ -57,58 +57,26 @@ class OpenAIApiHandler @Inject constructor(
         // Заглушка, так как OpenAI API не предоставляет endpoint для получения списка моделей в данном контексте
         return Result.Success(emptyList())
     }
-
-
-    private val imageMessageRequest = ImageMessageRequest(
-        imageUrl = ImageRequest("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg")
-    )
-
-    private val systemMessageRequest = TextMessageRequest(
-        text = "Ты учитель, который называет меня Угольком. Помоги мне с изображением. Отвечай на русском."
-    )
-
-    private val systemRequest = RequestRole(
-        role = "system",
-        content = listOf(systemMessageRequest)
-    )
-
-    private val roleRequest = RequestRole(
-        role = "user",
-        content = listOf(imageMessageRequest)
-    )
-
-    private val gptRequest = GptRequested(
-        messages = listOf(systemRequest, roleRequest)
-    )
-
-    private val jsonRequest = Json.encodeToString(gptRequest)
-
-    suspend fun sendRequestWithResponse(): String {
-        return try {
-            val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
-                contentType(ContentType.Application.Json)
-                header("Authorization", "Bearer $openAiKey")
-                setBody(jsonRequest)
-            }
-            response.body<String>()
-        } catch (e: Exception) {
-            e.message ?: "Error"
-        }
-    }
 }
 
-fun PersistentList<MessageAI>.toOpenAIRequest(): List<RequestRole> {
-    return map { message ->
-        RequestRole(
-            role = message.role.value,
-            content = listOf(
-                when (message.type) {
-                    MessageType.TEXT -> TextMessageRequest(text = message.content)
-                    MessageType.IMAGE -> ImageMessageRequest(
-                        imageUrl = ImageRequest(url = message.content)
-                    )
-                }
+fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested { // List<RequestRole> {
+    return GptRequested(
+        model = model.modelName,
+        messages = this.map { message ->
+            RequestRole(
+                role = when (message.role) {
+                    Role.USER -> "user"
+                    Role.MODEL -> "assistant"
+                    Role.PROMPT -> "system"
+                    Role.ASSISTANT -> "assistant" // OpenAI API не поддерживает такую роль TODO скорректировать
+                },
+                content = listOf(
+                    when (message.type) {
+                        MessageType.TEXT -> TextMessageRequest(text = message.content)
+                        MessageType.IMAGE -> ImageMessageRequest(imageUrl = ImageRequest(url = message.content))
+                    }
+                )
             )
-        )
-    }
+        }
+    )
 }
