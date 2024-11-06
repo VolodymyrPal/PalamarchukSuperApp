@@ -17,8 +17,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class OpenAIApiHandler @Inject constructor(
@@ -31,10 +29,7 @@ class OpenAIApiHandler @Inject constructor(
         messageList: PersistentList<MessageAI>,
         model: AiModel,
     ): Result<MessageAI, AppError> {
-        val gptRequest = GptRequested(
-            model = model.modelName,
-            messages = messageList.toOpenAIRequest()
-        )
+        val gptRequest = messageList.toOpenAIRequest(model = model)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
@@ -44,13 +39,12 @@ class OpenAIApiHandler @Inject constructor(
             }
 
             if (response.status == HttpStatusCode.OK) {
-                val openAIResponse = response.body<String>()
-//                val responseMessage = MessageAI(
-//                    role = Role.MODEL,
-//                    content = openAIResponse.choices.firstOrNull()?.message?.content
-//                        ?: "No response"
-//                )
-                Result.Success(MessageAI(role = Role.MODEL, content = openAIResponse))
+                val openAIResponse = response.body<ChatCompletionResponse>()
+                val responseMessage = MessageAI(
+                    role = Role.MODEL,
+                    content = openAIResponse.choices[0].message.content
+                )
+                Result.Success(responseMessage)
             } else {
                 Result.Error(AppError.Network.RequestError.BadRequest)
             }
