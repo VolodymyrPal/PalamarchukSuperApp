@@ -56,9 +56,9 @@ class GroqApiHandler @Inject constructor(
         }
         try {
             if (request.status == HttpStatusCode.OK) {
-                val response = request.body<ChatCompletionResponse>()
+                val response = request.body<GroqChatCompletionResponse>()
                 val responseMessage = MessageAI(
-                    content = (response.choices[0].message as MessageText).content,
+                    content = (response.groqChoices[0].groqMessage as GroqMessageText).content,
                     role = Role.MODEL
                 )
                 return Result.Success(responseMessage)
@@ -91,15 +91,15 @@ class GroqContentBuilder {
 
     class Builder {
 
-        private var messages: MutableList<Message> = arrayListOf()
+        private var groqMessages: MutableList<GroqMessage> = arrayListOf()
 
         fun addMessage(request: String, role: String) {
-            val message = MessageText(content = request, role = role)
-            messages.add(message)
+            val message = GroqMessageText(content = request, role = role)
+            groqMessages.add(message)
         }
 
         fun buildChatRequest(model: AiModel): GroqRequest = GroqRequest(
-            messages = messages,
+            groqMessages = groqMessages,
             model = model.modelName,
             maxTokens = 1024
         )
@@ -115,8 +115,8 @@ class GroqContentBuilder {
 
         @JvmName("addImageText")
         fun imageWithText(image: Base64, request: String, role: String) {
-            messages.add(
-                MessageChat(
+            groqMessages.add(
+                GroqMessageChat(
                     role = role,
                     content = listOf(
                         text(request),
