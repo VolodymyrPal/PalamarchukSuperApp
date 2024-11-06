@@ -57,30 +57,15 @@ class ChatAiRepositoryImpl @Inject constructor(
     override suspend fun getModels(): List<AiModel> {
 
         val models = currentHandler().value.getModels()
-
-        when (models) {
-            is Result.Success -> {
-                Log.d("Models: ", "${models.data}")
-
-                models.data.forEach {
-                    Log.d("Gemini models:", "${it.modelName}")
-                }
-                listOfModels.update {
-                    it.addAll(models.data)
-                }
-                Log.d("My list: ", "${listOfModels.value}")
-                return models.data
-            }
-
-            is Result.Error -> {
-                errorFlow.emit(AppError.CustomError(errorText = "Error"))
-                return emptyList()
-            }
-        }
+        return listOfModels.value
     }
 
     override val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
-        MutableStateFlow(persistentListOf())
+        MutableStateFlow(persistentListOf(
+            AiModel.GeminiModels.BASE_MODEL,
+            AiModel.GroqModels.BASE_MODEL,
+            AiModel.OpenAIModels.BASE_MODEL
+        ))
 
     override val currentModel: MutableStateFlow<AiModel> =
         MutableStateFlow(AiModel.OpenAIModels.BASE_MODEL)
