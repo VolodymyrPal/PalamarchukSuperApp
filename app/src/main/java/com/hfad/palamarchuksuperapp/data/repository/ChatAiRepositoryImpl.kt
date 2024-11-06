@@ -71,8 +71,17 @@ class ChatAiRepositoryImpl @Inject constructor(
         MutableStateFlow(AiModel.OpenAIModels.BASE_MODEL)
 
     override suspend fun currentHandler(): StateFlow<AiModelHandler> = currentModel.map {
-        Log.d("Model: ", "$it")
-        when (it) {
+        resolveHanlder()
+    }.stateIn(
+        scope = CoroutineScope(Dispatchers.IO),
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = resolveHanlder()
+    )
+
+    private fun resolveHanlder(): AiModelHandler {
+        val model = currentModel.value
+        Log.d("Model: ", "$model")
+        return when (model) {
             is AiModel.GroqModels -> {
                 groqApiHandler
             }
@@ -85,36 +94,9 @@ class ChatAiRepositoryImpl @Inject constructor(
                 openAIApiHandler
             }
 
-            else -> {
-                throw Exception("Handler not found")
-            }
+            else -> throw Error("Handler not found")
         }
-    }.stateIn(
-        scope = CoroutineScope(Dispatchers.IO),
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = openAIApiHandler  /** TODO change it  */
-    )
-
-//        currentModel.collect {
-//            when (it) {
-//                is AiModel.GroqModels -> {
-//                    groqApiHandler
-//                }
-//
-//                is AiModel.GeminiModels -> {
-//                    geminiApiHandler
-//                }
-//
-//                is AiModel.OpenAIModels -> {
-//                    openAIApiHandler
-//                }
-//
-//                else -> {
-//                    throw Exception("Handler not found")
-//                }
-//            }
-//        }
-
+    }
 
     override fun setHandlerOrModel(model: AiModel) {
         currentModel.update { model }
