@@ -10,26 +10,26 @@ import kotlinx.serialization.json.jsonObject
 
 @Serializable
 data class GroqRequest(
-    val messages: List<Message>,
+    val groqMessages: List<GroqMessage>,
     val model: String,
     @SerialName("max_tokens")
     val maxTokens: Int
 )
 
 @Serializable (GroqMessageSerializer::class)
-sealed interface Message
+sealed interface GroqMessage
 
 @Serializable
-data class MessageChat(
+data class GroqMessageChat(
     val role: String,
     val content: List<GroqContentType>
-) : Message
+) : GroqMessage
 
 @Serializable
-data class MessageText(
+data class GroqMessageText(
     val role: String,
     val content: String
-) : Message
+) : GroqMessage
 
 
 @Serializable (GroqContentSerializer::class)
@@ -68,12 +68,12 @@ object GroqContentSerializer : JsonContentPolymorphicSerializer<GroqContentType>
     }
 }
 
-object GroqMessageSerializer : JsonContentPolymorphicSerializer<Message>(Message::class) {
-    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<Message> {
+object GroqMessageSerializer : JsonContentPolymorphicSerializer<GroqMessage>(GroqMessage::class) {
+    override fun selectDeserializer(element: JsonElement): DeserializationStrategy<GroqMessage> {
         val jsonObject = element.jsonObject
         return when {
-            "type" in jsonObject -> MessageChat.serializer()
-            "content" in jsonObject -> MessageText.serializer()
+            "type" in jsonObject -> GroqMessageChat.serializer()
+            "content" in jsonObject -> GroqMessageText.serializer()
             else -> throw SerializationException("Unknown Part type")
         }
     }
@@ -85,29 +85,29 @@ object GroqMessageSerializer : JsonContentPolymorphicSerializer<Message>(Message
 
 
 
-
+@SerialName("ChatCompletionResponse")
 @Serializable
-data class ChatCompletionResponse(
+data class GroqChatCompletionResponse(
     val id: String,
     @SerialName("object")
     val jObject: String,
     val created: Long,
     val model: String,
-    val choices: List<Choice>,
-    val usage: Usage,
+    val groqChoices: List<GroqChoice>,
+    val groqUsage: GroqUsage,
     @SerialName("system_fingerprint")
     val systemFingerprint: String,
     val x_groq: XGroq
 )
 
 @Serializable
-data class Choice(
+data class GroqChoice(
     val index: Int,
-    val message: Message
+    val groqMessage: GroqMessage
 )
 
 @Serializable
-data class Usage(
+data class GroqUsage(
     @SerialName("queue_time")
     val queueTime: Double,
     @SerialName("prompt_tokens")
