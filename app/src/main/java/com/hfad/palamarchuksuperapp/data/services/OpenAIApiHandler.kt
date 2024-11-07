@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.data.services
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -72,8 +73,13 @@ fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested { //
                 },
                 content = listOf(
                     when (message.type) {
-                        MessageType.TEXT -> TextMessageRequest(text = message.content)
-                        MessageType.IMAGE -> ImageMessageRequest(imageUrl = ImageRequest(url = message.content))
+                        MessageType.TEXT -> TextMessageRequest(text = message.content.first().message)
+                        MessageType.IMAGE -> ImageMessageRequest(
+                            imageUrl =
+                            ImageRequest(
+                                url = (message.otherContent as MessageAiContent.Image).image
+                            )
+                        )
                     }
                 )
             )
