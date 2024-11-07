@@ -133,6 +133,7 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:2.3.12")
 
     implementation("io.github.theapache64:rebugger:1.0.0-rc03")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
 
 
 }
