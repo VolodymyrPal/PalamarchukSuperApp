@@ -1,8 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

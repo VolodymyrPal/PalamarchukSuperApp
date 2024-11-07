@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.data.services
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -82,6 +83,7 @@ fun handleException(e: Exception): AppError {
                 else -> AppError.CustomError("Неизвестная ошибка")
             }
         }
+
         else -> AppError.CustomError(error = e)
     }
 }
@@ -91,10 +93,17 @@ fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
         for (message in this) {
             when (message.type) {
                 MessageType.TEXT -> {
-                    builder.contentText(role = message.role.value, content = message.content)
+                    builder.contentText(
+                        role = message.role.value,
+                        content = message.content.first().message
+                    )
                 }
+
                 MessageType.IMAGE -> {
-                    builder.contentImage(role = message.role.value, content = message.content)
+                    builder.contentImage(
+                        role = message.role.value,
+                        content = (message.otherContent as MessageAiContent.Image).image
+                    )
                 }
             }
         }

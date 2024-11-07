@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.data.services
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -133,15 +134,15 @@ fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
         when (this.type) {
             MessageType.IMAGE -> {
                 it.imageWithText(
-                    image = if (this.otherContent is Base64) this.otherContent else "",
-                    request = this.content,
+                    image = if (this.otherContent is MessageAiContent.Image) this.otherContent.image else "",
+                    request = this.content.first().message,
                     role = if (this.role == Role.MODEL) "assistant" else this.role.value
                 )
             }
 
             MessageType.TEXT -> {
                 it.addMessage(
-                    request = this.content,
+                    request = this.content.first().message,
                     role = if (this.role == Role.MODEL) "assistant" else this.role.value
                 )
             }
@@ -162,7 +163,7 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
             when (message.type) {
                 MessageType.TEXT -> {
                     builder.addMessage(
-                        request = message.content,
+                        request = message.content.first().message,
                         role = if (message.role == Role.MODEL) "assistant" else message.role.value
                     )
                 }
@@ -170,7 +171,7 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
 /** Groq currently can only handle one image at a time, so all images in list we convert to text */
                 MessageType.IMAGE -> {
                     builder.addMessage(
-                        request = message.content,
+                        request = message.content.first().message,
                         role = if (message.role == Role.MODEL) "assistant" else message.role.value
                     )
                 }

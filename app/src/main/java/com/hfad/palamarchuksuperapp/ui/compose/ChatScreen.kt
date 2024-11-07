@@ -226,14 +226,14 @@ fun LazyChatScreen(
             when (messagesList[it].type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        text = messagesList[it].content.trimEnd(),
+                        text = messagesList[it].content.first().message.trimEnd(),
                         isUser = messagesList[it].role == Role.USER
                     )
                 }
 
                 MessageType.IMAGE -> {
                     MessageBox(
-                        text = messagesList[it].content.trimEnd(),
+                        text = messagesList[it].content.first().message.trimEnd(),
                         isUser = messagesList[it].role == Role.USER
                     )
                     val imageBytes =

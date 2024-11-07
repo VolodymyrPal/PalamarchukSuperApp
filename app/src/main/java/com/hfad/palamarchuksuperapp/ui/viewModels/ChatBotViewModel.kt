@@ -119,14 +119,14 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun sendImage(text: String, imageUrl: Base64) {
+    private fun sendImage(text: String, image: Base64) {
         viewModelScope.launch {
             _loading.update { true }
             chatAiRepository.getRespondChatOrImage(
                 MessageAI(
                     role = Role.USER,
                     content = text,
-                    otherContent = imageUrl,
+                    otherContent = image,
                     type = MessageType.IMAGE
                 )
             )
