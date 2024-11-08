@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -25,7 +25,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
     private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
 
-  //  val model = AiModel.GeminiModels.BASE_MODEL
+    //  val model = AiModel.GeminiModels.BASE_MODEL
 
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
@@ -44,7 +44,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
         model: AiModel,
-    ): Result<MessageAI, AppError> {
+    ): Result<SubMessageAI, AppError> {
         try {
             val request =
                 httpClient.post(getUrl(model = model)) {
@@ -57,9 +57,9 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
 
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<GeminiResponse>()
-                val responseMessage = MessageAI(
-                    role = Role.MODEL,
-                    content = response.candidates[0].content.parts[0].text,
+                val responseMessage = SubMessageAI(
+                    message = response.candidates[0].content.parts[0].text,
+                    model = model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -102,7 +102,7 @@ fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
                 MessageType.IMAGE -> {
                     builder.contentImage(
                         role = message.role.value,
-                        content = (message.otherContent as MessageAiContent.Image).image
+                        content = (message.content.first().otherContent as MessageAiContent.Image).image
                     )
                 }
             }

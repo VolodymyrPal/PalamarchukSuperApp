@@ -6,46 +6,53 @@ import kotlinx.datetime.Clock
 
 typealias Base64 = String
 
-data class MessageAI (
+data class MessageAI(
     val role: Role = Role.USER,
     val content: PersistentList<SubMessageAI> = persistentListOf(),
-    val otherContent: MessageAiContent? = null,
     val type: MessageType = MessageType.TEXT,
 ) {
     constructor(
-        role: Role = Role.USER, content: String, type: MessageType = MessageType.TEXT
-    ) : this (
+        role: Role = Role.USER, content: String, type: MessageType = MessageType.TEXT,
+    ) : this(
         role = role,
-        content = persistentListOf(SubMessageAI(
-            timestamp = Clock.System.now().toString(),
-            message = content
-        )),
+        content = persistentListOf(
+            SubMessageAI(
+                timestamp = Clock.System.now().toString(),
+                message = content
+            )
+        ),
         type = type
     )
 
     constructor(
-        role: Role = Role.USER, content: String, otherContent: Base64, type: MessageType = MessageType.IMAGE
-    ) : this (
+        role: Role = Role.USER,
+        content: String,
+        otherContent: Base64,
+        type: MessageType = MessageType.IMAGE,
+    ) : this(
         role = role,
-        content = persistentListOf(SubMessageAI(
-            timestamp = Clock.System.now().toString(),
-            message = content
-        )),
-        otherContent = MessageAiContent.Image(otherContent),
+        content = persistentListOf(
+            SubMessageAI(
+                timestamp = Clock.System.now().toString(),
+                message = content,
+                otherContent = MessageAiContent.Image(otherContent)
+            ),
+        ),
         type = type
     )
 }
 
-data class SubMessageAI (
-    val id : String = "",
+data class SubMessageAI(
+    val id: String = "",
     val timestamp: String = Clock.System.now().toString(),
     val message: String = "",
+    val otherContent: MessageAiContent? = null,
     val model: AiModel? = null,
     val isChosen: Boolean = false,
 )
 
 sealed class MessageAiContent {
-    data class Image (val image: Base64): MessageAiContent()
+    data class Image(val image: Base64) : MessageAiContent()
 }
 
 enum class MessageType {

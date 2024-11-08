@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -40,7 +41,7 @@ class GroqApiHandler @Inject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
         model: AiModel,
-    ): Result<MessageAI, AppError> {
+    ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
             messageList.last().toGroqRequest(model)
@@ -58,9 +59,10 @@ class GroqApiHandler @Inject constructor(
         try {
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<GroqChatCompletionResponse>()
-                val responseMessage = MessageAI(
-                    content = (response.groqChoices[0].groqMessage as GroqMessageText).content,
-                    role = Role.MODEL
+                val responseText = response.groqChoices[0].groqMessage
+                val responseMessage = SubMessageAI(
+                    message = if (responseText is GroqMessageText) responseText.content else "",
+                    model = model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -133,8 +135,9 @@ fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
     val builder = GroqContentBuilder.Builder().also {
         when (this.type) {
             MessageType.IMAGE -> {
+                val image = this.content.first().otherContent
                 it.imageWithText(
-                    image = if (this.otherContent is MessageAiContent.Image) this.otherContent.image else "",
+                    image = if (image is MessageAiContent.Image) image.image else "Unsupported content",
                     request = this.content.first().message,
                     role = if (this.role == Role.MODEL) "assistant" else this.role.value
                 )
@@ -168,7 +171,7 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
                     )
                 }
 
-/** Groq currently can only handle one image at a time, so all images in list we convert to text */
+                /** Groq currently can only handle one image at a time, so all images in list we convert to text */
                 MessageType.IMAGE -> {
                     builder.addMessage(
                         request = message.content.first().message,
