@@ -10,6 +10,7 @@ import kotlinx.serialization.json.jsonObject
 
 @Serializable
 data class GroqRequest(
+    @SerialName("messages")
     val groqMessages: List<GroqMessage>,
     val model: String,
     @SerialName("max_tokens")
@@ -85,7 +86,7 @@ object GroqMessageSerializer : JsonContentPolymorphicSerializer<GroqMessage>(Gro
 
 
 
-@SerialName("ChatCompletionResponse")
+//@SerialName("ChatCompletionResponse")
 @Serializable
 data class GroqChatCompletionResponse(
     val id: String,
@@ -93,7 +94,9 @@ data class GroqChatCompletionResponse(
     val jObject: String,
     val created: Long,
     val model: String,
+    @SerialName("choices")
     val groqChoices: List<GroqChoice>,
+    @SerialName("usage")
     val groqUsage: GroqUsage,
     @SerialName("system_fingerprint")
     val systemFingerprint: String,
@@ -103,6 +106,7 @@ data class GroqChatCompletionResponse(
 @Serializable
 data class GroqChoice(
     val index: Int,
+    @SerialName("message")
     val groqMessage: GroqMessage
 )
 
