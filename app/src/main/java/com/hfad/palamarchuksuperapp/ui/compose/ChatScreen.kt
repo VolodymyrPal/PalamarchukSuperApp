@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -59,8 +60,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
+import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
@@ -226,24 +229,28 @@ fun LazyChatScreen(
             when (messagesList[it].type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        text = messagesList[it].content.first().message.trimEnd(),
+                        subMessageList = messagesList[it].content,
                         isUser = messagesList[it].role == Role.USER
                     )
                 }
+                else -> {}
 
-                MessageType.IMAGE -> {
-                    MessageBox(
-                        text = messagesList[it].content.first().message.trimEnd(),
-                        isUser = messagesList[it].role == Role.USER
-                    )
-                    val imageBytes =
-                        Base64.decode(messagesList[it].otherContent as String, Base64.DEFAULT)
-                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    AsyncImage(
-                        model = image,
-                        contentDescription = "Image u push to AI"
-                    )
-                }
+//                MessageType.IMAGE -> {
+//                    MessageBox(
+//                        subMessageList = messagesList[it].content.first().message.trimEnd(),
+//                        isUser = messagesList[it].role == Role.USER
+//                    )
+//                    val imageBytes =
+//                        Base64.decode(
+//                            (messagesList[it].content.first().otherContent as MessageAiContent.Image).image,
+//                            Base64.DEFAULT
+//                        )
+//                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+//                    AsyncImage(
+//                        model = image,
+//                        contentDescription = "Image u push to AI"
+//                    )
+//                }
             }
         }
 //            when (error as AppError.Network) {
@@ -288,29 +295,56 @@ fun LazyChatScreen(
 @Composable
 fun MessageBox(
     modifier: Modifier = Modifier,
-    text: String = "",
+    subMessageList: PersistentList<SubMessageAI> = persistentListOf(SubMessageAI(message = "test")),
     isUser: Boolean = true,
 ) {
-    Box(
-        modifier = modifier.fillMaxWidth()
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
-        Text(
-            modifier = modifier
-                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                .fillMaxWidth(0.8f)
-                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                .sizeIn(minWidth = 50.dp)
-                .background(
-                    if (isUser) MaterialTheme.colorScheme.primaryContainer
-                    else Color.Transparent,
-                    shape = RoundedCornerShape(10.dp, 10.dp, if (isUser) 0.dp else 10.dp, 10.dp)
-                )
-                .padding(15.dp, 5.dp, 15.dp, 5.dp),
-            text = text,
-            color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Start
-        )
+        items(subMessageList.size) {
+            when (subMessageList[it].otherContent == null) {
+                true -> {
+                    Box {
+                        Text(
+                            modifier = modifier
+                                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                                .fillMaxWidth(0.8f)
+                                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                                .sizeIn(minWidth = 50.dp)
+                                .background(
+                                    if (isUser) MaterialTheme.colorScheme.primaryContainer
+                                    else Color.Transparent,
+                                    shape = RoundedCornerShape(
+                                        10.dp,
+                                        10.dp,
+                                        if (isUser) 0.dp else 10.dp,
+                                        10.dp
+                                    )
+                                )
+                                .padding(15.dp, 5.dp, 15.dp, 5.dp),
+                            text = subMessageList[it].message,
+                            color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                }
+
+                false -> {
+                    val imageBytes =
+                        Base64.decode(
+                            (subMessageList[it].otherContent as MessageAiContent.Image).image,
+                            Base64.DEFAULT
+                        )
+                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    AsyncImage(
+                        model = image,
+                        contentDescription = "Image u push to AI"
+                    )
+                }
+            }
+        }
     }
 }
 
