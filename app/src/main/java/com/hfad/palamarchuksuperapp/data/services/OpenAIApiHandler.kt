@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -29,7 +30,7 @@ class OpenAIApiHandler @Inject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
         model: AiModel,
-    ): Result<MessageAI, AppError> {
+    ): Result<SubMessageAI, AppError> {
         val gptRequest = messageList.toOpenAIRequest(model = model)
 
         return try {
@@ -41,9 +42,9 @@ class OpenAIApiHandler @Inject constructor(
 
             if (response.status == HttpStatusCode.OK) {
                 val openAIResponse = response.body<ChatCompletionResponse>()
-                val responseMessage = MessageAI(
-                    role = Role.MODEL,
-                    content = openAIResponse.choices[0].message.content
+                val responseMessage = SubMessageAI(
+                    message = openAIResponse.choices[0].message.content,
+                    model = model
                 )
                 Result.Success(responseMessage)
             } else {
@@ -55,7 +56,7 @@ class OpenAIApiHandler @Inject constructor(
     }
 
     override suspend fun getModels(): Result<List<AiModel>, AppError> {
-        // Заглушка, так как OpenAI API не предоставляет endpoint для получения списка моделей в данном контексте
+        // Заглушка, так как OpenAI API не предоставляет endpoint для получения списка моделей
         return Result.Success(emptyList())
     }
 }
@@ -77,7 +78,7 @@ fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested { //
                         MessageType.IMAGE -> ImageMessageRequest(
                             imageUrl =
                             ImageRequest(
-                                url = (message.otherContent as MessageAiContent.Image).image
+                                url = (message.content.first().otherContent as MessageAiContent.Image).image
                             )
                         )
                     }
