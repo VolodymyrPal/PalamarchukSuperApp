@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -47,7 +48,7 @@ class ChatAiRepositoryImpl @Inject constructor(
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            val responseList: PersistentList<SubMessageAI> = persistentListOf()
+            val responseList: MutableList<SubMessageAI> = mutableListOf()
 
             val responses = listOf(
                 async {
@@ -73,16 +74,22 @@ class ChatAiRepositoryImpl @Inject constructor(
             responses.forEach {
                 if (it is Result.Success) {
                     responseList.add(it.data)
+                } else {
+                    errorFlow.emit(AppError.CustomError("$it failed."))
                 }
             }
 
-            chatAiChatFlow.value.add(
-                MessageAI(
-                    role = Role.MODEL,
-                    content = responseList,
-                    type = MessageType.TEXT
-                )
+            val messageToAdd = MessageAI(
+                role = Role.MODEL,
+                content = responseList.toPersistentList(),
+                type = MessageType.TEXT
             )
+            chatAiChatFlow.update {
+                it.add(
+                    messageToAdd
+                )
+            }
+            Log.d("AiRepository chat: ", "${chatAiChatFlow.value}")
         }
     }
 
@@ -93,11 +100,13 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
-        MutableStateFlow(persistentListOf(
-            AiModel.GeminiModels.BASE_MODEL,
-            AiModel.GroqModels.BASE_MODEL,
-            AiModel.OpenAIModels.BASE_MODEL
-        ))
+        MutableStateFlow(
+            persistentListOf(
+                AiModel.GeminiModels.BASE_MODEL,
+                AiModel.GroqModels.BASE_MODEL,
+                AiModel.OpenAIModels.BASE_MODEL
+            )
+        )
 
     override val currentModel: MutableStateFlow<AiModel> =
         MutableStateFlow(AiModel.OpenAIModels.BASE_MODEL)
