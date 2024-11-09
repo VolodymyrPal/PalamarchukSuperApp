@@ -15,11 +15,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -58,6 +62,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.halilibo.richtext.commonmark.Markdown
+import com.halilibo.richtext.commonmark.MarkdownParseOptions
+import com.halilibo.richtext.ui.material3.RichText
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
@@ -71,7 +78,6 @@ import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
-import com.theapache64.rebugger.Rebugger
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -202,16 +208,16 @@ fun LazyChatScreen(
         )
     )
     val state = rememberLazyListState()
-    Rebugger(
-        trackMap = mapOf(
-            "listMessage" to messagesList,
-            "isLoading" to loading,
-            "event" to event,
-            "modifier" to modifier,
-            "error" to error,
-            "Lazy state" to state
-        )
-    )
+//    Rebugger(
+//        trackMap = mapOf(
+//            "listMessage" to messagesList,
+//            "isLoading" to loading,
+//            "event" to event, //TODO use to test recomposition
+//            "modifier" to modifier,
+//            "error" to error,
+//            "Lazy state" to state
+//        )
+//    )
 
     LaunchedEffect(messagesList.size) {
         launch {
@@ -233,51 +239,12 @@ fun LazyChatScreen(
                         isUser = messagesList[it].role == Role.USER
                     )
                 }
-                else -> {}
 
-//                MessageType.IMAGE -> {
-//                    MessageBox(
-//                        subMessageList = messagesList[it].content.first().message.trimEnd(),
-//                        isUser = messagesList[it].role == Role.USER
-//                    )
-//                    val imageBytes =
-//                        Base64.decode(
-//                            (messagesList[it].content.first().otherContent as MessageAiContent.Image).image,
-//                            Base64.DEFAULT
-//                        )
-//                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-//                    AsyncImage(
-//                        model = image,
-//                        contentDescription = "Image u push to AI"
-//                    )
-//                }
+                else -> {
+
+                }
             }
         }
-//            when (error as AppError.Network) {
-//                else -> {} // TODO if specific error, show something new
-//            }
-
-//        item {
-//            Button(
-//                onClick = {
-//                    if (promptText.value.isNotBlank()) {
-//                        event.invoke(
-//                            ChatBotViewModel.Event.SendImage(
-//                                promptText.value,
-//                                image = "https://n1s1.hsmedia.ru/b3/10/ae/b310ae7a1baeaec4df75db18b5465ebc/1501x843_0x4U9bTTLH_1708972820638352229.jpg"
-//                            )
-//                        )
-//                        promptText.value = ""
-//                    } else {
-//                        event.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
-//                    }
-//                },
-//                modifier = Modifier,
-//                enabled = loading.not()
-//            ) {
-//                Text("Send photoMessage to Bot")
-//            }
-//        }
         item {
             RequestPanel(
                 modifier = Modifier
@@ -298,18 +265,27 @@ fun MessageBox(
     subMessageList: PersistentList<SubMessageAI> = persistentListOf(SubMessageAI(message = "test")),
     isUser: Boolean = true,
 ) {
-    LazyRow(
+    val pagerState = rememberPagerState(pageCount = {
+        subMessageList.size
+    })
+    HorizontalPager(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
-    ) {
-        items(subMessageList.size) {
-            when (subMessageList[it].otherContent == null) {
-                true -> {
-                    Box {
+        state = pagerState,
+        // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
+    ) { page ->
+        when (subMessageList[page].otherContent == null) {
+            true -> {
+                val text = subMessageList[page].message
+                Box {
+                    RichText {
+                        //val a = CommonmarkAstNodeParser()
+                        //val astNode = a.parse(text)
+                        //RichTextScope.BasicMarkdown(astNode)
+                        Markdown(text, MarkdownParseOptions.Default)
                         Text(
                             modifier = modifier
                                 .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                                .fillMaxWidth(0.8f)
+                                .fillMaxWidth(1f)
                                 .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                                 .sizeIn(minWidth = 50.dp)
                                 .background(
@@ -323,26 +299,47 @@ fun MessageBox(
                                     )
                                 )
                                 .padding(15.dp, 5.dp, 15.dp, 5.dp),
-                            text = subMessageList[it].message,
+                            text = "", //subMessageList[page].message.trimEnd(),
                             color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
                             else MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Start
                         )
                     }
                 }
+            }
 
-                false -> {
-                    val imageBytes =
-                        Base64.decode(
-                            (subMessageList[it].otherContent as MessageAiContent.Image).image,
-                            Base64.DEFAULT
-                        )
-                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    AsyncImage(
-                        model = image,
-                        contentDescription = "Image u push to AI"
+            false -> {
+                val imageBytes =
+                    Base64.decode(
+                        (subMessageList[page].otherContent as MessageAiContent.Image).image,
+                        Base64.DEFAULT
                     )
-                }
+                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                AsyncImage(
+                    model = image,
+                    contentDescription = "Image u push to AI"
+                )
+            }
+        }
+    }
+    if (pagerState.pageCount > 1) {
+        Row(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color =
+                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(6.dp)
+                )
             }
         }
     }
