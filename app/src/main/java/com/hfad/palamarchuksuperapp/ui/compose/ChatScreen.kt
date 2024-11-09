@@ -270,16 +270,22 @@ fun MessageBox(
     })
     HorizontalPager(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
-    ) {
-        items(subMessageList.size) {
-            when (subMessageList[it].otherContent == null) {
-                true -> {
-                    Box {
+        state = pagerState,
+        // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
+    ) { page ->
+        when (subMessageList[page].otherContent == null) {
+            true -> {
+                val text = subMessageList[page].message
+                Box {
+                    RichText {
+                        //val a = CommonmarkAstNodeParser()
+                        //val astNode = a.parse(text)
+                        //RichTextScope.BasicMarkdown(astNode)
+                        Markdown(text, MarkdownParseOptions.Default)
                         Text(
                             modifier = modifier
                                 .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                                .fillMaxWidth(0.8f)
+                                .fillMaxWidth(1f)
                                 .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                                 .sizeIn(minWidth = 50.dp)
                                 .background(
@@ -293,26 +299,26 @@ fun MessageBox(
                                     )
                                 )
                                 .padding(15.dp, 5.dp, 15.dp, 5.dp),
-                            text = subMessageList[it].message,
+                            text = "", //subMessageList[page].message.trimEnd(),
                             color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
                             else MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Start
                         )
                     }
                 }
+            }
 
-                false -> {
-                    val imageBytes =
-                        Base64.decode(
-                            (subMessageList[it].otherContent as MessageAiContent.Image).image,
-                            Base64.DEFAULT
-                        )
-                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    AsyncImage(
-                        model = image,
-                        contentDescription = "Image u push to AI"
+            false -> {
+                val imageBytes =
+                    Base64.decode(
+                        (subMessageList[page].otherContent as MessageAiContent.Image).image,
+                        Base64.DEFAULT
                     )
-                }
+                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                AsyncImage(
+                    model = image,
+                    contentDescription = "Image u push to AI"
+                )
             }
         }
     }
