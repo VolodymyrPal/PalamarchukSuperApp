@@ -322,6 +322,27 @@ fun MessageBox(
             }
         }
     }
+    if (pagerState.pageCount > 1) {
+        Row(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color =
+                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(6.dp)
+                )
+            }
+        }
+    }
 }
 
 @Composable
