@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import IoDispatcher
+import MainDispatcher
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
@@ -16,11 +18,35 @@ import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CoroutineDispatcher
 
 class SkillsViewModel @Inject constructor(
     private val repository: SkillRepository,
-) :
-    GenericViewModel<PersistentList<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+) : GenericViewModel<PersistentList<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
+
+//    data class SkillStateExpanded(
+//        val stateInfo: String = "Volodymyr",
+//        val screen: ScreenState? = null,
+//    )
+//
+//    sealed interface ScreenState {
+//        data object Loading : ScreenState
+//        data class Error(val error: AppError) : ScreenState
+//        data class Content(
+//            val items: PersistentList<SkillDomainRW>,
+//            val contentState: ExpandedContentState,
+//        ) : ScreenState
+//    }
+//
+//    sealed interface ExpandedContentState {
+//        data object Loading : ExpandedContentState
+//        data object Paginating : ExpandedContentState
+//        data object Error : ExpandedContentState
+//    }
+    /** Example of implementation of State to share stable data between different states */
+
 
     data class SkillState(
         val items: PersistentList<SkillDomainRW> = persistentListOf(),
@@ -38,11 +64,12 @@ class SkillsViewModel @Inject constructor(
             when (data) {
                 is Result.Error -> {
                     SkillState(
-                        items = data.data?: persistentListOf(),
+                        items = data.data ?: persistentListOf(),
                         error = data.error,
                         loading = loading
                     )
                 }
+
                 is Result.Success -> {
                     SkillState(
                         items = data.data,
@@ -104,7 +131,7 @@ class SkillsViewModel @Inject constructor(
     }
 
     fun moveToFirstPosition(skillDomainRW: SkillDomainRW) {
-        viewModelScope.launch {
+        viewModelScope.launch(mainDispatcher) {
 //            val minPosition = _dataFlow.first().minOfOrNull { it.skill.position } ?: 0
 //            repository.updateSkill(
 //                skillDomainRW.copy(
@@ -117,13 +144,13 @@ class SkillsViewModel @Inject constructor(
     }
 
     fun deleteSkill(skillDomainRW: SkillDomainRW) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             repository.deleteSkill(skillDomainRW)
         }
     }
 
     fun deleteAllChosenSkill() {
-//        viewModelScope.launch {
+//        viewModelScope.launch (ioDispatcher) {
 //            _dataFlow.first().filter { it.chosen }.forEach {
 //                repository.deleteSkill(it)
 //            }
@@ -132,13 +159,13 @@ class SkillsViewModel @Inject constructor(
 
 
     private fun addSkill(skillDomainRW: SkillDomainRW) {
-        viewModelScope.launch {
+        viewModelScope.launch(mainDispatcher) {
             repository.addSkill(skillDomainRW)
         }
     }
 
     fun updateSkillOrAdd(skillDomainRW: SkillDomainRW, changeConst: SkillsChangeConst) {
-        viewModelScope.launch {
+        viewModelScope.launch(mainDispatcher) {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
 //                            val newSkills = uiState.first().items!!.toMutableList()
