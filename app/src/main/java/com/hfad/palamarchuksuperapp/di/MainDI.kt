@@ -44,7 +44,10 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
+import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 
@@ -74,6 +77,19 @@ object AppModule
 
 @Module
 abstract class ViewModelsModule {
+
+    @IoDispatcher
+    @Provides
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @DefaultDispatcher
+    @Provides
+    fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
+
+    @MainDispatcher
+    @Provides
+    fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
+
 
     @Binds
     abstract fun bindChatAiRepository(chatAiRepositoryImpl: ChatAiRepositoryImpl): ChatAiRepository
@@ -200,6 +216,18 @@ object DatabaseModule {
     }
 
 }
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class IoDispatcher
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DefaultDispatcher
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class MainDispatcher
 
 @Target(
     AnnotationTarget.FUNCTION,

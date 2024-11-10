@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import IoDispatcher
+import MainDispatcher
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
@@ -11,6 +13,7 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +26,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ChatBotViewModel @Inject constructor(
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
     private val chatAiRepository: ChatAiRepository,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
@@ -38,14 +43,14 @@ class ChatBotViewModel @Inject constructor(
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
-        viewModelScope.launch {
-            launch {
+        viewModelScope.launch (mainDispatcher) {
+            launch (ioDispatcher) {
                 getModels()
             }
             chatAiRepository.errorFlow.collect { error ->
                 when (error) {
                    is AppError.CustomError -> {
-                        effect(Effect.ShowToast(error.errorText?: "Unknown error"))
+                        effect(Effect.ShowToast(error.error.toString()?: "Unknown error"))
                     }
 
                     else -> {
@@ -120,7 +125,7 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun sendImage(text: String, image: Base64) {
-        viewModelScope.launch {
+        viewModelScope.launch (ioDispatcher) {
             _loading.update { true }
             chatAiRepository.getRespondChatOrImage(
                 MessageAI(
@@ -135,7 +140,7 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun sendText(text: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             _loading.update { true }
             chatAiRepository.getRespondChatOrImage(
                 MessageAI(
@@ -149,19 +154,19 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun showToast(message: String) {
-        viewModelScope.launch {
+        viewModelScope.launch (mainDispatcher) {
             effect(Effect.ShowToast(message))
         }
     }
 
     private fun changeAIModel(model: AiModel) {
-        viewModelScope.launch {
+        viewModelScope.launch (ioDispatcher) {
             chatAiRepository.setHandlerOrModel(model)
         }
     }
 
     private fun getModels() {
-        viewModelScope.launch {
+        viewModelScope.launch (ioDispatcher) {
             chatAiRepository.getModels()
         }
     }
