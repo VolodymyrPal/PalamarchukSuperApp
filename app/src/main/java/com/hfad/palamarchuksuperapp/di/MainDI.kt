@@ -72,12 +72,7 @@ interface AppComponent {
 
 
 @Module(includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class])
-object AppModule
-
-
-@Module
-abstract class ViewModelsModule {
-
+object AppModule {
     @IoDispatcher
     @Provides
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
@@ -89,6 +84,11 @@ abstract class ViewModelsModule {
     @MainDispatcher
     @Provides
     fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
+}
+
+
+@Module
+abstract class ViewModelsModule {
 
 
     @Binds

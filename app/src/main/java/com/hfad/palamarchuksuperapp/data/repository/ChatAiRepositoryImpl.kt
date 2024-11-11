@@ -25,10 +25,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 
 class ChatAiRepositoryImpl @Inject constructor(
@@ -46,50 +45,59 @@ class ChatAiRepositoryImpl @Inject constructor(
 
         chatAiChatFlow.update { chatAiChatFlow.value.add(message) }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        val listToSend: PersistentList<MessageAI> = chatAiChatFlow.value
 
-            val responseList: MutableList<SubMessageAI> = mutableListOf()
+        supervisorScope {
 
-            val responses = listOf(
+            val messageToAdd1 = MessageAI(
+                role = Role.MODEL,
+                content = persistentListOf(),
+                type = MessageType.TEXT
+            )
+            chatAiChatFlow.update {
+                it.add(
+                    messageToAdd1
+                )
+            }
+            val lastIndex = chatAiChatFlow.value.lastIndex
+
+            listOf(
                 async {
                     groqApiHandler.getResponse(
-                        chatAiChatFlow.value,
+                        listToSend,
                         model = AiModel.GroqModels.BASE_MODEL
                     )
                 },
                 async {
                     geminiApiHandler.getResponse(
-                        chatAiChatFlow.value,
+                        listToSend,
                         model = AiModel.GeminiModels.BASE_MODEL
                     )
                 },
                 async {
                     openAIApiHandler.getResponse(
-                        chatAiChatFlow.value,
+                        listToSend,
                         model = AiModel.OpenAIModels.BASE_MODEL
                     )
                 }
-            ).awaitAll()
-
-            responses.forEach {
-                if (it is Result.Success) {
-                    responseList.add(it.data)
-                } else {
-                    errorFlow.emit(AppError.CustomError("$it failed."))
+            ).forEach {
+                launch {
+                    it.await().let { result ->
+                        if (result is Result.Success) {
+                            chatAiChatFlow.update { list ->
+                                list.set(
+                                    lastIndex,
+                                    list[lastIndex].copy(
+                                        content = list[lastIndex].content.add(result.data)
+                                    )
+                                )
+                            }
+                        } else {
+                            errorFlow.emit(AppError.CustomError("$it failed."))
+                        }
+                    }
                 }
             }
-
-            val messageToAdd = MessageAI(
-                role = Role.MODEL,
-                content = responseList.toPersistentList(),
-                type = MessageType.TEXT
-            )
-            chatAiChatFlow.update {
-                it.add(
-                    messageToAdd
-                )
-            }
-            Log.d("AiRepository chat: ", "${chatAiChatFlow.value}")
         }
     }
 
