@@ -516,7 +516,9 @@ fun ChatScreenPreview() {
                 ), openAIApiHandler = OpenAIApiHandler(
                     httpClient = HttpClient()
                 )
-            )
+            ),
+            ioDispatcher = Dispatchers.IO,
+            mainDispatcher = Dispatchers.Main
         )
     )
 }
