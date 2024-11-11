@@ -60,8 +60,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
@@ -72,6 +70,7 @@ import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
+import kotlinx.coroutines.Dispatchers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -484,6 +483,8 @@ fun ListItemSkillPreview() {
 @Preview
 fun SkillScreenPreview() {
     SkillScreen(
-        viewModel = SkillsViewModel(SkillsRepositoryImplForPreview()),
+        viewModel = SkillsViewModel(SkillsRepositoryImplForPreview(),
+            mainDispatcher = Dispatchers.Main,
+            ioDispatcher = Dispatchers.IO),
     )
 }
