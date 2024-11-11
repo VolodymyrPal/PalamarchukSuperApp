@@ -81,6 +81,7 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
@@ -268,78 +269,80 @@ fun MessageBox(
     val pagerState = rememberPagerState(pageCount = {
         subMessageList.size
     })
-    HorizontalPager(
-        modifier = modifier.fillMaxWidth(),
-        state = pagerState,
-        // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
-    ) { page ->
-        when (subMessageList[page].otherContent == null) {
-            true -> {
-                val text = subMessageList[page].message
-                Box {
-                    RichText {
-                        //val a = CommonmarkAstNodeParser()
-                        //val astNode = a.parse(text)
-                        //RichTextScope.BasicMarkdown(astNode)
-                        Markdown(text, MarkdownParseOptions.Default)
-                        Text(
-                            modifier = modifier
-                                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                                .fillMaxWidth(1f)
-                                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                                .sizeIn(minWidth = 50.dp)
-                                .background(
-                                    if (isUser) MaterialTheme.colorScheme.primaryContainer
-                                    else Color.Transparent,
-                                    shape = RoundedCornerShape(
-                                        10.dp,
-                                        10.dp,
-                                        if (isUser) 0.dp else 10.dp,
-                                        10.dp
+    if (subMessageList.size > 0) {
+        HorizontalPager(
+            modifier = modifier.fillMaxWidth(),
+            state = pagerState,
+            // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
+        ) { page ->
+            when (subMessageList[page].otherContent == null) {
+                true -> {
+                    val text = subMessageList[page].message
+                    Box {
+                        RichText {
+                            //val a = CommonmarkAstNodeParser()
+                            //val astNode = a.parse(text)
+                            //RichTextScope.BasicMarkdown(astNode)
+                            //Markdown(text, MarkdownParseOptions.Default)
+                            Text(
+                                modifier = modifier
+                                    .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                                    .fillMaxWidth(1f)
+                                    .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                                    .sizeIn(minWidth = 50.dp)
+                                    .background(
+                                        if (isUser) MaterialTheme.colorScheme.primaryContainer
+                                        else Color.Transparent,
+                                        shape = RoundedCornerShape(
+                                            10.dp,
+                                            10.dp,
+                                            if (isUser) 0.dp else 10.dp,
+                                            10.dp
+                                        )
                                     )
-                                )
-                                .padding(15.dp, 5.dp, 15.dp, 5.dp),
-                            text = "", //subMessageList[page].message.trimEnd(),
-                            color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
-                            else MaterialTheme.colorScheme.primary,
-                            textAlign = TextAlign.Start
-                        )
+                                    .padding(15.dp, 5.dp, 15.dp, 5.dp),
+                                text = subMessageList[page].message.trimEnd(),
+                                color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
+                                else MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Start
+                            )
+                        }
                     }
                 }
-            }
 
-            false -> {
-                val imageBytes =
-                    Base64.decode(
-                        (subMessageList[page].otherContent as MessageAiContent.Image).image,
-                        Base64.DEFAULT
+                false -> {
+                    val imageBytes =
+                        Base64.decode(
+                            (subMessageList[page].otherContent as MessageAiContent.Image).image,
+                            Base64.DEFAULT
+                        )
+                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    AsyncImage(
+                        model = image,
+                        contentDescription = "Image u push to AI"
                     )
-                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                AsyncImage(
-                    model = image,
-                    contentDescription = "Image u push to AI"
-                )
+                }
             }
         }
-    }
-    if (pagerState.pageCount > 1) {
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color =
-                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                Box(
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(6.dp)
-                )
+        if (pagerState.pageCount > 1) {
+            Row(
+                Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(pagerState.pageCount) { iteration ->
+                    val color =
+                        if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(6.dp)
+                    )
+                }
             }
         }
     }
