@@ -16,6 +16,10 @@ import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
+import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
+import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
+import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
+import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
@@ -34,6 +38,7 @@ import dagger.MapKey
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import dagger.multibindings.IntoSet
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.cio.endpoint
@@ -71,7 +76,7 @@ interface AppComponent {
 }
 
 
-@Module(includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class])
+@Module(includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class, AiModelHandlerModule::class])
 object AppModule {
     @IoDispatcher
     @Provides
@@ -84,6 +89,23 @@ object AppModule {
     @MainDispatcher
     @Provides
     fun provideMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
+}
+
+@Module
+abstract class AiModelHandlerModule {
+
+    @Binds
+    @IntoSet
+    abstract fun provideOpenAiHandler(openAIApiHandler: OpenAIApiHandler): AiModelHandler
+
+    @Binds
+    @IntoSet
+    abstract fun provideGroqApiHandler(groqApiHandler: GroqApiHandler): AiModelHandler
+
+    @Binds
+    @IntoSet
+    abstract fun provideGeminiApiHandler(geminiApiHandler: GeminiApiHandler): AiModelHandler
+
 }
 
 

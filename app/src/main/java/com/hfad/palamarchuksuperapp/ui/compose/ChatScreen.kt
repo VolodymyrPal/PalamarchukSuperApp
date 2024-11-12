@@ -269,7 +269,6 @@ fun MessageBox(
     val pagerState = rememberPagerState(pageCount = {
         subMessageList.size
     })
-    if (subMessageList.size > 0) {
         HorizontalPager(
             modifier = modifier.fillMaxWidth(),
             state = pagerState,
@@ -277,7 +276,6 @@ fun MessageBox(
         ) { page ->
             when (subMessageList[page].otherContent == null) {
                 true -> {
-                    val text = subMessageList[page].message
                     Box {
                         RichText {
                             //val a = CommonmarkAstNodeParser()
@@ -346,7 +344,6 @@ fun MessageBox(
             }
         }
     }
-}
 
 @Composable
 fun RequestPanel(
@@ -508,14 +505,7 @@ fun ChatScreenPreview() {
         modifier = Modifier.fillMaxSize(),
         chatBotViewModel = ChatBotViewModel(
             chatAiRepository = ChatAiRepositoryImpl(
-                groqApiHandler = GroqApiHandler(
-                    httpClient = HttpClient()
-                ),
-                geminiApiHandler = GeminiApiHandler(
-                    httpClient = HttpClient()
-                ), openAIApiHandler = OpenAIApiHandler(
-                    httpClient = HttpClient()
-                )
+                apiHandlers = emptySet()
             ),
             ioDispatcher = Dispatchers.IO,
             mainDispatcher = Dispatchers.Main

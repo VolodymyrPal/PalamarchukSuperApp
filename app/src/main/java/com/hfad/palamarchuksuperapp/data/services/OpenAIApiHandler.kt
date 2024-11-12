@@ -26,12 +26,13 @@ class OpenAIApiHandler @Inject constructor(
 ) : AiModelHandler {
 
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
+    override val baseModel = AiModel.OpenAIModels.BASE_MODEL
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel,
+        model: AiModel?,
     ): Result<SubMessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = model)
+        val gptRequest = messageList.toOpenAIRequest(model = model?: baseModel)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
