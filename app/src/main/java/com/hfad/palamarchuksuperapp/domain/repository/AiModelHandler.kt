@@ -8,9 +8,12 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.collections.immutable.PersistentList
 
 interface AiModelHandler {
+
+    val baseModel: AiModel
+
     suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel,
+        model: AiModel?,
     ): Result<SubMessageAI, AppError>
 
     suspend fun getModels(
