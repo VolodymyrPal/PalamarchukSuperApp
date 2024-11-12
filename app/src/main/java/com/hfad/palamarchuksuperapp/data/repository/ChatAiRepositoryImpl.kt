@@ -49,51 +49,60 @@ class ChatAiRepositoryImpl @Inject constructor(
 
         supervisorScope {
 
-            val messageToAdd1 = MessageAI(
+            val requests: List<Pair<Int, Deferred<Result<SubMessageAI, AppError>>>> =
+                apiHandlers.mapIndexed { index, handler ->
+                    index to async {
+                        handler.getResponse(
+                            listToSend, null
+                        )
+                    }
+                }
+
+            val loadingContent = requests.map { (index, _) ->
+                SubMessageAI(
+                    id = index,
+                    message = "",
+                    model = null,
+                    loading = true
+                )
+            }.toPersistentList()
+
+
+            val messageToAdd = MessageAI(
                 role = Role.MODEL,
-                content = persistentListOf(),
+                content = loadingContent,
                 type = MessageType.TEXT
             )
+
             chatAiChatFlow.update {
-                it.add(
-                    messageToAdd1
-                )
+                it.add(messageToAdd)
             }
             val lastIndex = chatAiChatFlow.value.lastIndex
 
-            listOf(
-                async {
-                    groqApiHandler.getResponse(
-                        listToSend,
-                        model = AiModel.GroqModels.BASE_MODEL
-                    )
-                },
-                async {
-                    geminiApiHandler.getResponse(
-                        listToSend,
-                        model = AiModel.GeminiModels.BASE_MODEL
-                    )
-                },
-                async {
-                    openAIApiHandler.getResponse(
-                        listToSend,
-                        model = AiModel.OpenAIModels.BASE_MODEL
-                    )
-                }
-            ).forEach {
+            requests.forEach { (requestIndex, request) ->
                 launch {
-                    it.await().let { result ->
-                        if (result is Result.Success) {
-                            chatAiChatFlow.update { list ->
-                                list.set(
-                                    lastIndex,
-                                    list[lastIndex].copy(
-                                        content = list[lastIndex].content.add(result.data)
-                                    )
-                                )
-                            }
-                        } else {
-                            errorFlow.emit(AppError.CustomError("$it failed."))
+                    request.await().let { result ->
+                        chatAiChatFlow.update { list ->
+                            val updatedContent = list[lastIndex].content.mapIndexed { index, subMessage ->
+                                // Обновляем только соответствующий SubMessageAI
+                                if (index == requestIndex) {
+                                    when (result) {
+                                        is Result.Success -> subMessage.copy(
+                                            message = result.data.message,
+                                            model = result.data.model,
+                                            loading = false
+                                        )
+                                        is Result.Error -> subMessage.copy(
+                                            message = "Error",
+                                            loading = false
+                                        )
+                                    }
+                                } else {
+                                    subMessage // остальные остаются без изменений
+                                }
+                            }.toPersistentList()
+
+                            list.set(lastIndex, list[lastIndex].copy(content = updatedContent))
                         }
                     }
                 }
