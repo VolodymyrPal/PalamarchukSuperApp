@@ -25,15 +25,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
 
 class ChatAiRepositoryImpl @Inject constructor(
-    private val groqApiHandler: GroqApiHandler,
-    private val geminiApiHandler: GeminiApiHandler,
-    private val openAIApiHandler: OpenAIApiHandler,
+    private val apiHandlers: Set<@JvmSuppressWildcards AiModelHandler>,
 ) : ChatAiRepository {
 
     override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>> =
