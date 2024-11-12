@@ -141,15 +141,15 @@ class ChatAiRepositoryImpl @Inject constructor(
         Log.d("Model: ", "$model")
         return when (model) {
             is AiModel.GroqModels -> {
-                groqApiHandler
+                apiHandlers.first()
             }
 
             is AiModel.GeminiModels -> {
-                geminiApiHandler
+                apiHandlers.first()
             }
 
             is AiModel.OpenAIModels -> {
-                openAIApiHandler
+                apiHandlers.first()
             }
 
             else -> throw Error("Handler not found")
