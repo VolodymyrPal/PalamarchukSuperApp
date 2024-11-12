@@ -25,7 +25,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
     private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
 
-    //  val model = AiModel.GeminiModels.BASE_MODEL
+    override val baseModel = AiModel.GeminiModels.BASE_MODEL
 
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
@@ -43,11 +43,11 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel,
+        model: AiModel?,
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = model)) {
+                httpClient.post(getUrl(model = model?: baseModel)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
