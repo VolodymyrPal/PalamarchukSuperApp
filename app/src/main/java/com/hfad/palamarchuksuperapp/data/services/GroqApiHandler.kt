@@ -27,6 +27,8 @@ class GroqApiHandler @Inject constructor(
 ) : AiModelHandler {
     private val apiKey = BuildConfig.GROQ_KEY
 
+    override val baseModel = AiModel.GroqModels.BASE_MODEL
+
     //    private val max_tokens = 1024
 //    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
 //        it.role = "system"
@@ -40,13 +42,13 @@ class GroqApiHandler @Inject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel,
+        model: AiModel?,
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(model)
+            messageList.last().toGroqRequest(model?: baseModel )
         } else {
-            messageList.toGroqRequest(model)
+            messageList.toGroqRequest(model?: baseModel)
         }
 
         val request = httpClient.post(url) {
