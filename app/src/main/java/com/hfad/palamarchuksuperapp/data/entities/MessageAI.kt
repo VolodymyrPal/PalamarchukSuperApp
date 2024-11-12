@@ -43,12 +43,13 @@ data class MessageAI(
 }
 
 data class SubMessageAI(
-    val id: String = "",
+    val id: Int = 0,
     val timestamp: String = Clock.System.now().toString(),
     val message: String = "",
     val otherContent: MessageAiContent? = null,
     val model: AiModel? = null,
     val isChosen: Boolean = false,
+    val loading: Boolean = false
 )
 
 sealed class MessageAiContent {
