@@ -310,31 +310,38 @@ fun MessageBox(
                 }
             }
 
-                false -> {
-                    val imageBytes =
-                        Base64.decode(
-                            (subMessageList[page].otherContent as MessageAiContent.Image).image,
-                            Base64.DEFAULT
-                        )
-                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    AsyncImage(
-                        model = image,
-                        contentDescription = "Image u push to AI"
+            false -> {
+                val imageBytes =
+                    Base64.decode(
+                        (subMessageList[page].otherContent as MessageAiContent.Image).image,
+                        Base64.DEFAULT
                     )
-                }
+                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                AsyncImage(
+                    model = image,
+                    contentDescription = "Image u push to AI"
+                )
             }
         }
-        if (pagerState.pageCount > 1) {
-            Row(
-                Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                repeat(pagerState.pageCount) { iteration ->
-                    val color =
-                        if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+    }
+    if (subMessageList.size > 1) {
+        LazyRow(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            items(subMessageList.size) {
+                val color =
+                    if (pagerState.currentPage == it) Color.DarkGray else Color.LightGray
+                if (subMessageList[it].loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .size(10.dp)
+                    )
+                } else {
                     Box(
                         modifier = Modifier
                             .padding(2.dp)
@@ -346,6 +353,7 @@ fun MessageBox(
             }
         }
     }
+}
 
 @Composable
 fun RequestPanel(
