@@ -16,10 +16,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -31,6 +30,7 @@ import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.halilibo.richtext.commonmark.Markdown
-import com.halilibo.richtext.commonmark.MarkdownParseOptions
 import com.halilibo.richtext.ui.material3.RichText
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
@@ -269,70 +268,80 @@ fun MessageBox(
     val pagerState = rememberPagerState(pageCount = {
         subMessageList.size
     })
-        HorizontalPager(
-            modifier = modifier.fillMaxWidth(),
-            state = pagerState,
-            // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
-        ) { page ->
-            when (subMessageList[page].otherContent == null) {
-                true -> {
-                    Box {
-                        RichText {
-                            //val a = CommonmarkAstNodeParser()
-                            //val astNode = a.parse(text)
-                            //RichTextScope.BasicMarkdown(astNode)
-                            //Markdown(text, MarkdownParseOptions.Default)
-                            Text(
-                                modifier = modifier
-                                    .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                                    .fillMaxWidth(1f)
-                                    .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                                    .sizeIn(minWidth = 50.dp)
-                                    .background(
-                                        if (isUser) MaterialTheme.colorScheme.primaryContainer
-                                        else Color.Transparent,
-                                        shape = RoundedCornerShape(
-                                            10.dp,
-                                            10.dp,
-                                            if (isUser) 0.dp else 10.dp,
-                                            10.dp
-                                        )
-                                    )
-                                    .padding(15.dp, 5.dp, 15.dp, 5.dp),
-                                text = subMessageList[page].message.trimEnd(),
-                                color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
-                                else MaterialTheme.colorScheme.primary,
-                                textAlign = TextAlign.Start
-                            )
-                        }
+    HorizontalPager(
+        modifier = modifier.fillMaxWidth(),
+        state = pagerState,
+        // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
+    ) { page ->
+        when (subMessageList[page].otherContent == null) {
+            true -> {
+                Box {
+                    RichText {
+                        //val a = CommonmarkAstNodeParser()
+                        //val astNode = a.parse(subMessageList[page].message.trimEnd())
+                        //RichTextScope.BasicMarkdown(astNode)
+                        Markdown(
+                            subMessageList[page].message.trimEnd(),
+                        )
+//                        Markdown(subMessageList[page].message.trimEnd(), MarkdownParseOptions.Default)
+//                        Text(
+//                            modifier = modifier
+//                                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+//                                .fillMaxWidth(1f)
+//                                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+//                                .sizeIn(minWidth = 50.dp)
+//                                .background(
+//                                    if (isUser) MaterialTheme.colorScheme.primaryContainer
+//                                    else Color.Transparent,
+//                                    shape = RoundedCornerShape(
+//                                        10.dp,
+//                                        10.dp,
+//                                        if (isUser) 0.dp else 10.dp,
+//                                        10.dp
+//                                    )
+//                                )
+//                                .padding(15.dp, 5.dp, 15.dp, 5.dp),
+//                            text = subMessageList[page].message.trimEnd(),
+//                            color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
+//                            else MaterialTheme.colorScheme.primary,
+//                            textAlign = TextAlign.Start
+//                        )
                     }
                 }
+            }
 
-                false -> {
-                    val imageBytes =
-                        Base64.decode(
-                            (subMessageList[page].otherContent as MessageAiContent.Image).image,
-                            Base64.DEFAULT
-                        )
-                    val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    AsyncImage(
-                        model = image,
-                        contentDescription = "Image u push to AI"
+            false -> {
+                val imageBytes =
+                    Base64.decode(
+                        (subMessageList[page].otherContent as MessageAiContent.Image).image,
+                        Base64.DEFAULT
                     )
-                }
+                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                AsyncImage(
+                    model = image,
+                    contentDescription = "Image u push to AI"
+                )
             }
         }
-        if (pagerState.pageCount > 1) {
-            Row(
-                Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                repeat(pagerState.pageCount) { iteration ->
-                    val color =
-                        if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+    }
+    if (subMessageList.size > 1) {
+        LazyRow(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            items(subMessageList.size) {
+                val color =
+                    if (pagerState.currentPage == it) Color.DarkGray else Color.LightGray
+                if (subMessageList[it].loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .size(10.dp)
+                    )
+                } else {
                     Box(
                         modifier = Modifier
                             .padding(2.dp)
@@ -344,6 +353,7 @@ fun MessageBox(
             }
         }
     }
+}
 
 @Composable
 fun RequestPanel(
