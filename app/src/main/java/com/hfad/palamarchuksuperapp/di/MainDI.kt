@@ -98,13 +98,13 @@ abstract class AiModelHandlerModule {
     @IntoSet
     abstract fun provideOpenAiHandler(openAIApiHandler: OpenAIApiHandler): AiModelHandler
 
-//    @Binds
-//    @IntoSet
-//    abstract fun provideGroqApiHandler(groqApiHandler: GroqApiHandler): AiModelHandler
-//
-//    @Binds
-//    @IntoSet
-//    abstract fun provideGeminiApiHandler(geminiApiHandler: GeminiApiHandler): AiModelHandler
+    @Binds
+    @IntoSet
+    abstract fun provideGroqApiHandler(groqApiHandler: GroqApiHandler): AiModelHandler
+
+    @Binds
+    @IntoSet
+    abstract fun provideGeminiApiHandler(geminiApiHandler: GeminiApiHandler): AiModelHandler
 
 }
 
