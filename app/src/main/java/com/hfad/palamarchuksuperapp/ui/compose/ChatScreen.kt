@@ -276,36 +276,32 @@ fun MessageBox(
         when (subMessageList[page].otherContent == null) {
             true -> {
                 Box {
-                    RichText {
-                        //val a = CommonmarkAstNodeParser()
-                        //val astNode = a.parse(subMessageList[page].message.trimEnd())
-                        //RichTextScope.BasicMarkdown(astNode)
-                        Markdown(
-                            subMessageList[page].message.trimEnd(),
-                        )
-//                        Markdown(subMessageList[page].message.trimEnd(), MarkdownParseOptions.Default)
-//                        Text(
-//                            modifier = modifier
-//                                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-//                                .fillMaxWidth(1f)
-//                                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-//                                .sizeIn(minWidth = 50.dp)
-//                                .background(
-//                                    if (isUser) MaterialTheme.colorScheme.primaryContainer
-//                                    else Color.Transparent,
-//                                    shape = RoundedCornerShape(
-//                                        10.dp,
-//                                        10.dp,
-//                                        if (isUser) 0.dp else 10.dp,
-//                                        10.dp
-//                                    )
-//                                )
-//                                .padding(15.dp, 5.dp, 15.dp, 5.dp),
-//                            text = subMessageList[page].message.trimEnd(),
-//                            color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
-//                            else MaterialTheme.colorScheme.primary,
-//                            textAlign = TextAlign.Start
-//                        )
+                    Box(
+                        modifier = modifier
+                            .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                            .fillMaxWidth(1f)
+                            .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                            .sizeIn(minWidth = 50.dp)
+                            .background(
+                                if (isUser) MaterialTheme.colorScheme.primaryContainer
+                                else Color.Transparent,
+                                shape = RoundedCornerShape(
+                                    10.dp,
+                                    10.dp,
+                                    if (isUser) 0.dp else 10.dp,
+                                    10.dp
+                                )
+                            )
+                            .padding(15.dp, 5.dp, 15.dp, 5.dp),
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            RichText {
+                                Markdown(
+                                    subMessageList[page].message.trimEnd(),
+                                )
+                            }
                     }
                 }
             }
