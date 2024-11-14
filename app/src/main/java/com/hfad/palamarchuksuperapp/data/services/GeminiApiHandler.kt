@@ -59,7 +59,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = model
+                    model = model?: baseModel
                 )
                 return Result.Success(responseMessage)
             } else {
