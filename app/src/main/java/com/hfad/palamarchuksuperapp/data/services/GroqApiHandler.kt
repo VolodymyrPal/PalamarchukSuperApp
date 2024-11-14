@@ -64,7 +64,7 @@ class GroqApiHandler @Inject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = model
+                    model = model?: baseModel
                 )
                 return Result.Success(responseMessage)
             } else {
