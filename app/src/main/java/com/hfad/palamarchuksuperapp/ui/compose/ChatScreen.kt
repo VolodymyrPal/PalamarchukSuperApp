@@ -302,6 +302,22 @@ fun MessageBox(
                                     subMessageList[page].message.trimEnd(),
                                 )
                             }
+                            if (subMessageList[page].model != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = "Powered by ${
+                                        subMessageList[page].model?.modelName?.replace(
+                                            "models/",
+                                            ""
+                                        )
+                                    }",
+                                    color = Color.Red.copy(alpha = 0.6f),
+                                    fontSize = TextUnit(12f, TextUnitType.Sp),
+                                    textAlign = TextAlign.End,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            }
+                        }
                     }
                 }
             }
