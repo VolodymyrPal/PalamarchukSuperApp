@@ -45,7 +45,7 @@ class OpenAIApiHandler @Inject constructor(
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = SubMessageAI(
                     message = openAIResponse.choices[0].message.content,
-                    model = model
+                    model = model?: baseModel
                 )
                 Result.Success(responseMessage)
             } else {
