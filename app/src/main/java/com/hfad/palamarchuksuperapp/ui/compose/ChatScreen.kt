@@ -10,13 +10,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -57,8 +60,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -71,13 +77,9 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
-import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
-import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
-import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
-import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -114,9 +116,7 @@ fun ChatScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Chat \n${
-                            myState.currentModel.modelName.replace("models/", "")
-                        }",
+                        "Chat",
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center
                     )
@@ -276,36 +276,48 @@ fun MessageBox(
         when (subMessageList[page].otherContent == null) {
             true -> {
                 Box {
-                    RichText {
-                        //val a = CommonmarkAstNodeParser()
-                        //val astNode = a.parse(subMessageList[page].message.trimEnd())
-                        //RichTextScope.BasicMarkdown(astNode)
-                        Markdown(
-                            subMessageList[page].message.trimEnd(),
-                        )
-//                        Markdown(subMessageList[page].message.trimEnd(), MarkdownParseOptions.Default)
-//                        Text(
-//                            modifier = modifier
-//                                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-//                                .fillMaxWidth(1f)
-//                                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-//                                .sizeIn(minWidth = 50.dp)
-//                                .background(
-//                                    if (isUser) MaterialTheme.colorScheme.primaryContainer
-//                                    else Color.Transparent,
-//                                    shape = RoundedCornerShape(
-//                                        10.dp,
-//                                        10.dp,
-//                                        if (isUser) 0.dp else 10.dp,
-//                                        10.dp
-//                                    )
-//                                )
-//                                .padding(15.dp, 5.dp, 15.dp, 5.dp),
-//                            text = subMessageList[page].message.trimEnd(),
-//                            color = if (!isUser) MaterialTheme.colorScheme.onPrimaryContainer
-//                            else MaterialTheme.colorScheme.primary,
-//                            textAlign = TextAlign.Start
-//                        )
+                    Box(
+                        modifier = modifier
+                            .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                            .fillMaxWidth(1f)
+                            .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                            .sizeIn(minWidth = 50.dp)
+                            .background(
+                                if (isUser) MaterialTheme.colorScheme.primaryContainer
+                                else Color.Transparent,
+                                shape = RoundedCornerShape(
+                                    10.dp,
+                                    10.dp,
+                                    if (isUser) 0.dp else 10.dp,
+                                    10.dp
+                                )
+                            )
+                            .padding(15.dp, 5.dp, 15.dp, 5.dp),
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            RichText {
+                                Markdown(
+                                    subMessageList[page].message.trimEnd(),
+                                )
+                            }
+                            if (subMessageList[page].model != null) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = "Powered by ${
+                                        subMessageList[page].model?.modelName?.replace(
+                                            "models/",
+                                            ""
+                                        )
+                                    }",
+                                    color = Color.Red.copy(alpha = 0.6f),
+                                    fontSize = TextUnit(12f, TextUnitType.Sp),
+                                    textAlign = TextAlign.End,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            }
+                        }
                     }
                 }
             }
