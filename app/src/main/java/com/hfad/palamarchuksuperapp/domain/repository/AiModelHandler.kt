@@ -9,6 +9,8 @@ import kotlinx.collections.immutable.PersistentList
 
 interface AiModelHandler {
 
+    val chosen : Boolean
+    val enabled : Boolean
     val baseModel: AiModel
 
     suspend fun getResponse(

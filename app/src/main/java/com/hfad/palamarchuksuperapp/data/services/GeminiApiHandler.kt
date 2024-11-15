@@ -20,11 +20,14 @@ import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import io.ktor.client.request.get
 
-class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) : AiModelHandler {
+data class GeminiApiHandler @Inject constructor(
+    private val httpClient: HttpClient,
+) : AiModelHandler {
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
-
+    override val chosen: Boolean = true
+    override val enabled: Boolean = true
     override val baseModel = AiModel.GeminiModels.BASE_MODEL
 
 
@@ -47,7 +50,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = model?: baseModel)) {
+                httpClient.post(getUrl(model = model ?: baseModel)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
@@ -59,7 +62,7 @@ class GeminiApiHandler @Inject constructor(private val httpClient: HttpClient) :
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = model?: baseModel
+                    model = model ?: baseModel
                 )
                 return Result.Success(responseMessage)
             } else {

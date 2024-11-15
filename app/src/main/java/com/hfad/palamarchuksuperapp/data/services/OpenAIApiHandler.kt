@@ -25,6 +25,8 @@ class OpenAIApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
+    override val chosen: Boolean = true
+    override val enabled: Boolean = true
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
     override val baseModel = AiModel.OpenAIModels.BASE_MODEL
 
@@ -32,7 +34,7 @@ class OpenAIApiHandler @Inject constructor(
         messageList: PersistentList<MessageAI>,
         model: AiModel?,
     ): Result<SubMessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = model?: baseModel)
+        val gptRequest = messageList.toOpenAIRequest(model = model ?: baseModel)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
@@ -45,7 +47,7 @@ class OpenAIApiHandler @Inject constructor(
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = SubMessageAI(
                     message = openAIResponse.choices[0].message.content,
-                    model = model?: baseModel
+                    model = model ?: baseModel
                 )
                 Result.Success(responseMessage)
             } else {
@@ -78,9 +80,9 @@ fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested { //
                         MessageType.TEXT -> TextMessageRequest(text = message.content.first().message)
                         MessageType.IMAGE -> ImageMessageRequest(
                             imageUrl =
-                            ImageRequest(
-                                url = (message.content.first().otherContent as MessageAiContent.Image).image
-                            )
+                                ImageRequest(
+                                    url = (message.content.first().otherContent as MessageAiContent.Image).image
+                                )
                         )
                     }
                 )
