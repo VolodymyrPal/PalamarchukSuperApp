@@ -26,7 +26,8 @@ class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
     private val apiKey = BuildConfig.GROQ_KEY
-
+    override val chosen: Boolean = true
+    override val enabled: Boolean = true
     override val baseModel = AiModel.GroqModels.BASE_MODEL
 
     //    private val max_tokens = 1024
@@ -46,9 +47,9 @@ class GroqApiHandler @Inject constructor(
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(model?: baseModel )
+            messageList.last().toGroqRequest(model ?: baseModel)
         } else {
-            messageList.toGroqRequest(model?: baseModel)
+            messageList.toGroqRequest(model ?: baseModel)
         }
 
         val request = httpClient.post(url) {
@@ -64,7 +65,7 @@ class GroqApiHandler @Inject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = model?: baseModel
+                    model = model ?: baseModel
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -115,7 +116,7 @@ class GroqContentBuilder {
         @JvmName("addImage")
         private fun image(image: Base64) = ContentImage(
             image_url =
-            ImageUrl("data:image/jpeg;base64,$image")
+                ImageUrl("data:image/jpeg;base64,$image")
         )
 
         @JvmName("addImageText")
