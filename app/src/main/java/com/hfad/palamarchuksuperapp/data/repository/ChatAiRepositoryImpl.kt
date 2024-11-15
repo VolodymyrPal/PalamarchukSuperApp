@@ -6,9 +6,6 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
-import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
-import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
-import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
@@ -34,6 +31,7 @@ import kotlinx.coroutines.supervisorScope
 
 class ChatAiRepositoryImpl @Inject constructor(
     private val apiHandlers: Set<@JvmSuppressWildcards AiModelHandler>,
+
 ) : ChatAiRepository {
 
     override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>> =
