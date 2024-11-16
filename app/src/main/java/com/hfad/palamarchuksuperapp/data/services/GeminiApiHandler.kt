@@ -18,11 +18,14 @@ import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.repository.HandlerName
 import io.ktor.client.request.get
 
 data class GeminiApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
+
+    override val modelName: HandlerName = HandlerName.GEMINI
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
