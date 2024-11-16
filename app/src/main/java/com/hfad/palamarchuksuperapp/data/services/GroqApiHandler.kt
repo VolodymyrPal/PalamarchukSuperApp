@@ -10,6 +10,7 @@ import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.domain.repository.HandlerName
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -25,6 +26,8 @@ import javax.inject.Inject
 class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
+
+    override val modelName: HandlerName = HandlerName.GROQ
     private val apiKey = BuildConfig.GROQ_KEY
     override val chosen: Boolean = true
     override val enabled: Boolean = true
