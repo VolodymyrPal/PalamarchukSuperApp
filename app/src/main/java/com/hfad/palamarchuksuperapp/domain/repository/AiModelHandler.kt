@@ -9,6 +9,7 @@ import kotlinx.collections.immutable.PersistentList
 
 interface AiModelHandler {
 
+    val modelName : HandlerName
     val chosen : Boolean
     val enabled : Boolean
     val baseModel: AiModel
@@ -20,4 +21,10 @@ interface AiModelHandler {
 
     suspend fun getModels(
     ): Result<List<AiModel>, AppError>
+}
+
+enum class HandlerName {
+    OPENAI,
+    GEMINI,
+    GROQ
 }

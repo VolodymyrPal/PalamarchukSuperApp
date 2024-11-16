@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandlerDispatcher
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -31,7 +32,7 @@ import kotlinx.coroutines.supervisorScope
 
 class ChatAiRepositoryImpl @Inject constructor(
     private val apiHandlers: Set<@JvmSuppressWildcards AiModelHandler>,
-
+    private val handlerDispatcher: AiModelHandlerDispatcher
 ) : ChatAiRepository {
 
     override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>> =
@@ -114,7 +115,7 @@ class ChatAiRepositoryImpl @Inject constructor(
         return listOfModels.value
     }
 
-    override val listOfModels: MutableStateFlow<PersistentList<AiModel>> =
+    override val listOfModels: MutableStateFlow<PersistentList<AiModel>> = // TODO handlerDispatcher.handlerList
         MutableStateFlow(
             persistentListOf(
                 AiModel.GeminiModels.BASE_MODEL,

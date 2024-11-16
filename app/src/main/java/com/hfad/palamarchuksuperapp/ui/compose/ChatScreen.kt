@@ -53,6 +53,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,6 +68,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.halilibo.richtext.commonmark.Markdown
 import com.halilibo.richtext.ui.material3.RichText
@@ -94,9 +96,9 @@ fun ChatScreen(
     modifier: Modifier = Modifier,
     chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
         (factory = LocalContext.current.appComponent.viewModelFactory()),
+    navController: NavHostController? = LocalNavController.current
 ) {
     val context = LocalContext.current
-    val navController = LocalNavController.current
     val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -128,7 +130,7 @@ fun ChatScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+                            navController?.popBackStack()
                         }
                     ) {
                         Icon(
@@ -372,7 +374,7 @@ fun RequestPanel(
     modifier: Modifier = Modifier,
     onEvent: (ChatBotViewModel.Event) -> Unit = {},
     loading: Boolean = false,
-    promptText: MutableState<String> = remember { mutableStateOf("") },
+    promptText: MutableState<String> = rememberSaveable { mutableStateOf("") },
 ) {
 
     Row(
@@ -529,8 +531,9 @@ fun ChatScreenPreview() {
             chatAiRepository = ChatAiRepositoryImpl(
                 apiHandlers = emptySet()
             ),
-            ioDispatcher = Dispatchers.IO,
-            mainDispatcher = Dispatchers.Main
-        )
+            ioDispatcher = Dispatchers.Default,
+            mainDispatcher = Dispatchers.Default
+        ),
+        navController = null
     )
 }
