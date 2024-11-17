@@ -10,7 +10,7 @@ import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
+import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcherUseCase
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,7 +28,8 @@ import javax.inject.Inject
 class ChatBotViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
-    private val chatAiRepository: ChatAiRepository,
+    //private val chatAiRepository: ChatAiRepository,
+    private val chatAiRepository: AiHandlerDispatcherUseCase
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     data class StateChat(
