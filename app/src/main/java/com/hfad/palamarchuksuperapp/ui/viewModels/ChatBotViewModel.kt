@@ -48,7 +48,7 @@ class ChatBotViewModel @Inject constructor(
             launch (ioDispatcher) {
                 getModels()
             }
-            chatAiRepository.errorFlow.collect { error ->
+            chatAiRepository.observeErrors().collect { error ->
                 when (error) {
                    is AppError.CustomError -> {
                         effect(Effect.ShowToast(error.error.toString()?: "Unknown error"))
@@ -64,23 +64,19 @@ class ChatBotViewModel @Inject constructor(
     }
 
     override val _dataFlow: Flow<Result<PersistentList<MessageAI>, AppError>> =
-        chatAiRepository.chatAiChatFlow.map { Result.Success(it) }
+        chatAiRepository.observeChatFlow().map { Result.Success(it) }
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
         _loading,
         _errorFlow,
-        chatAiRepository.listOfModels,
-        chatAiRepository.currentModel
-    ) { chatHistory, isLoading, error, models, currentModel ->
+    ) { chatHistory, isLoading, error ->
         when (chatHistory) {
             is Result.Success -> {
                 StateChat(
                     listMessage = chatHistory.data,
                     isLoading = isLoading,
                     error = error,
-                    listOfModels = models,
-                    currentModel = currentModel
                 )
             }
 
@@ -128,7 +124,7 @@ class ChatBotViewModel @Inject constructor(
     private fun sendImage(text: String, image: Base64) {
         viewModelScope.launch (ioDispatcher) {
             _loading.update { true }
-            chatAiRepository.getRespondChatOrImage(
+            chatAiRepository.getResponse(
                 MessageAI(
                     role = Role.USER,
                     content = text,
@@ -143,7 +139,7 @@ class ChatBotViewModel @Inject constructor(
     private fun sendText(text: String) {
         viewModelScope.launch(ioDispatcher) {
             _loading.update { true }
-            chatAiRepository.getRespondChatOrImage(
+            chatAiRepository.getResponse(
                 MessageAI(
                     role = Role.USER,
                     content = text,
@@ -161,9 +157,7 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun changeAIModel(model: AiModel) {
-        viewModelScope.launch (ioDispatcher) {
-            chatAiRepository.setHandlerOrModel(model)
-        }
+        //TODO
     }
 
     private fun getModels() {
