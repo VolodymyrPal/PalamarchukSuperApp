@@ -23,6 +23,7 @@ import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
+import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcherUseCase
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
@@ -67,6 +68,7 @@ interface AppComponent {
     fun viewModelFactory(): ViewModelProvider.Factory
     fun inject(storeFragment: StoreFragment)
     fun getHttpClient(): HttpClient
+    fun getAiHandlerDispatcher() : AiHandlerDispatcherUseCase
 
     @Component.Builder
     interface Builder {
@@ -160,7 +162,8 @@ object NetworkModule {
             }
             engine {
                 endpoint {
-                    socketTimeout = 100_000       // Максимальное время ожидания соединения 100 секунд
+                    socketTimeout =
+                        100_000       // Максимальное время ожидания соединения 100 секунд
                     connectTimeout = 30000        // Время ожидания соединения 30 секунд
                     requestTimeout = 100000       // Максимальное время ожидания запроса 100 секунд
                     keepAliveTime =
