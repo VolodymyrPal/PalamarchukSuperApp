@@ -78,8 +78,8 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
-import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.Error
+import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcherUseCase
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.collections.immutable.PersistentList
@@ -528,9 +528,7 @@ fun ChatScreenPreview() {
     ChatScreen(
         modifier = Modifier.fillMaxSize(),
         chatBotViewModel = ChatBotViewModel(
-            chatAiRepository = ChatAiRepositoryImpl(
-                apiHandlers = emptySet()
-            ),
+            aiHandlerDispatcher = AiHandlerDispatcherUseCase(),
             ioDispatcher = Dispatchers.Default,
             mainDispatcher = Dispatchers.Default
         ),
