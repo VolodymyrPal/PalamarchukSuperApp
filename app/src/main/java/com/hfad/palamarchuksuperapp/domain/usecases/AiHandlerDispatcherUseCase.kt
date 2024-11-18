@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
-import androidx.datastore.core.DataStore
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -12,37 +11,33 @@ import javax.inject.Inject
 
 class AiHandlerDispatcherUseCase @Inject constructor(
     private val apiHandlers: Set<@JvmSuppressWildcards AiModelHandler>,
-    val handlerSettingStore: DataStore<AiHandlersSettings>,
+    //val handlerSettingStore: DataStore<AiHandlersSettings>,
     private val chatAiRepository: ChatAiRepository,
-) {
+) : AiHandlerDispatcher {
 
-    val handlerList: List<AiModelHandler> =
+    override val handlerList: List<AiModelHandler> =
         apiHandlers.filter { it.enabled }.sortedBy { it.modelName }
 
-    suspend fun getCurrentHandler(currentModel: AiModel): AiModelHandler {
-        return handlerList.firstOrNull { it.baseModel == currentModel }
-            ?: throw IllegalArgumentException("No handler found for model $currentModel")
+    /**
+     * Describe how to get handlers and sort them
+     */
+    //MutableStateFlow(listOf(OpenAIApiHandler(HttpClient()))).value
+    //handlerSettingStore.aiHandler TODO
+
+    override suspend fun getModelsFromHandler(handler: AiModelHandler): List<AiModel> {
+        return chatAiRepository.getModels(handler)
     }
 
-    suspend fun getModels(): List<AiModel> {
-        return chatAiRepository.getModels()
-    }
-
-    suspend fun getResponse(message: MessageAI) {
+    override suspend fun getResponse(message: MessageAI) {
         chatAiRepository.getRespondChatOrImage(message, handlerList)
-        // TODO pass handlers
     }
 
-    fun observeChatFlow(): Flow<PersistentList<MessageAI>> {
+    override fun observeChatFlow(): Flow<PersistentList<MessageAI>> {
         return chatAiRepository.chatAiChatFlow
     }
 
-    fun observeErrors(): Flow<AppError?> {
+    override fun observeErrors(): Flow<AppError?> {
         return chatAiRepository.errorFlow
     }
 
 }
-
-data class AiHandlersSettings(
-    val handlers: PersistentList<String>,
-)
