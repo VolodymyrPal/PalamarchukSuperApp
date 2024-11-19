@@ -122,27 +122,14 @@ fun RootChatScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
+@NonRestartableComposable
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
-    chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
-        (factory = LocalContext.current.appComponent.viewModelFactory()),
-    navController: NavHostController? = LocalNavController.current
+    navController: NavHostController? = LocalNavController.current,
+    onEvent: (ChatBotViewModel.Event) -> Unit,
+    myState: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
 ) {
-    val context = LocalContext.current
-    val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        chatBotViewModel.effect.collect { effect ->
-            when (effect) {
-                is ChatBotViewModel.Effect.ShowToast -> {
-                    Toast.makeText(context, effect.text, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
