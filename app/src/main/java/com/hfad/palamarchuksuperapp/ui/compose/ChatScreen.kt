@@ -545,11 +545,6 @@ fun RequestPanelPreview() {
 fun ChatScreenPreview() {
     ChatScreen(
         modifier = Modifier.fillMaxSize(),
-        chatBotViewModel = ChatBotViewModel(
-            aiHandlerDispatcher = AiHandlerDispatcherUseCase(),
-            ioDispatcher = Dispatchers.Default,
-            mainDispatcher = Dispatchers.Default
-        ),
-        navController = null
+        onEvent = {},
     )
 }
