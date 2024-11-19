@@ -50,7 +50,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -79,14 +80,44 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Error
-import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcherUseCase
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod")
+@Composable
+fun RootChatScreen(
+    modifier: Modifier = Modifier,
+    chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
+        (factory = LocalContext.current.appComponent.viewModelFactory()),
+    navController: NavHostController? = LocalNavController.current
+)
+{
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        chatBotViewModel.effect.collect { effect ->
+            when (effect) {
+                is ChatBotViewModel.Effect.ShowToast -> {
+                    Toast.makeText(context, effect.text, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+    val myState = chatBotViewModel.uiState.collectAsStateWithLifecycle()
+
+    ChatScreen(
+        modifier = modifier,
+        navController = navController,
+        onEvent = chatBotViewModel::event,
+        myState = myState
+    )
+}
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
