@@ -71,7 +71,7 @@ fun MainContent() {
                     StoreScreen()
                 }
                 composable<Routes.ChatBotScreen> {
-                    ChatScreen()
+                    RootChatScreen()
                 }
             }
         }

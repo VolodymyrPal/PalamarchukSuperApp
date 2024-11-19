@@ -50,7 +50,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -79,27 +80,24 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Error
-import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcherUseCase
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
-fun ChatScreen(
+fun RootChatScreen(
     modifier: Modifier = Modifier,
     chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
         (factory = LocalContext.current.appComponent.viewModelFactory()),
     navController: NavHostController? = LocalNavController.current
-) {
+)
+{
+
     val context = LocalContext.current
-    val myState by chatBotViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         chatBotViewModel.effect.collect { effect ->
@@ -110,8 +108,28 @@ fun ChatScreen(
             }
         }
     }
+    val myState = chatBotViewModel.uiState.collectAsStateWithLifecycle()
+
+    ChatScreen(
+        modifier = modifier,
+        navController = navController,
+        onEvent = chatBotViewModel::event,
+        myState = myState
+    )
+}
 
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("detekt.FunctionNaming", "detekt.LongMethod")
+@NonRestartableComposable
+@Composable
+fun ChatScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController? = LocalNavController.current,
+    onEvent: (ChatBotViewModel.Event) -> Unit,
+    myState: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
+) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -147,11 +165,11 @@ fun ChatScreen(
                         onDismissRequest = { isExpanded.value = false },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
-                        for (item in myState.listOfModels.filter { it.isSupported }) {
+                        for (item in myState.value.listOfModels.filter { it.isSupported }) {
                             DropdownMenuItem(
                                 text = { Text(item.modelName) },
                                 onClick = {
-                                    chatBotViewModel.event(ChatBotViewModel.Event.ChangeAiModel(item))
+                                    onEvent(ChatBotViewModel.Event.ChangeAiModel(item))
                                     isExpanded.value = false
                                 }
                             )
@@ -185,10 +203,10 @@ fun ChatScreen(
 
             LazyChatScreen(
                 modifier = Modifier.fillMaxWidth(),
-                messagesList = myState.listMessage,
-                loading = myState.isLoading,
-                event = chatBotViewModel::event,
-                error = myState.error
+                messagesList = myState.value.listMessage,
+                loading = myState.value.isLoading,
+                event = onEvent,
+                error = myState.value.error
             )
         }
     }
@@ -527,11 +545,6 @@ fun RequestPanelPreview() {
 fun ChatScreenPreview() {
     ChatScreen(
         modifier = Modifier.fillMaxSize(),
-        chatBotViewModel = ChatBotViewModel(
-            aiHandlerDispatcher = AiHandlerDispatcherUseCase(),
-            ioDispatcher = Dispatchers.Default,
-            mainDispatcher = Dispatchers.Default
-        ),
-        navController = null
+        onEvent = {},
     )
 }

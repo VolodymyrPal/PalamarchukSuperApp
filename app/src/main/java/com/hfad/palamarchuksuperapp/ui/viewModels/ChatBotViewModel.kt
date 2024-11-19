@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import IoDispatcher
 import MainDispatcher
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
@@ -32,6 +33,7 @@ class ChatBotViewModel @Inject constructor(
     private val aiHandlerDispatcher: AiHandlerDispatcher,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
+    @Stable
     data class StateChat(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
