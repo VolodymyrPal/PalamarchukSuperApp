@@ -23,6 +23,7 @@ import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
+import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcher
 import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcherUseCase
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
@@ -189,6 +190,17 @@ object NetworkModule {
             }
             install(HttpCache) // Добавляем кэширование запросов, чтобы не обращаться к API каждый раз
         }
+    }
+
+    @Provides
+    fun getAiHandlerDispatcher(
+        apiHandlers: @JvmSuppressWildcards Set<AiModelHandler>,
+        chatAiRepository: ChatAiRepository
+    ) : AiHandlerDispatcher {
+        return AiHandlerDispatcherUseCase(
+            apiHandlers = apiHandlers,
+            chatAiRepository = chatAiRepository
+        )
     }
 }
 
