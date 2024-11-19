@@ -165,11 +165,11 @@ fun ChatScreen(
                         onDismissRequest = { isExpanded.value = false },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
-                        for (item in myState.listOfModels.filter { it.isSupported }) {
+                        for (item in myState.value.listOfModels.filter { it.isSupported }) {
                             DropdownMenuItem(
                                 text = { Text(item.modelName) },
                                 onClick = {
-                                    chatBotViewModel.event(ChatBotViewModel.Event.ChangeAiModel(item))
+                                    onEvent(ChatBotViewModel.Event.ChangeAiModel(item))
                                     isExpanded.value = false
                                 }
                             )
@@ -203,10 +203,10 @@ fun ChatScreen(
 
             LazyChatScreen(
                 modifier = Modifier.fillMaxWidth(),
-                messagesList = myState.listMessage,
-                loading = myState.isLoading,
-                event = chatBotViewModel::event,
-                error = myState.error
+                messagesList = myState.value.listMessage,
+                loading = myState.value.isLoading,
+                event = onEvent,
+                error = myState.value.error
             )
         }
     }
