@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface ChatAiRepository {
     val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>>
     val errorFlow: MutableSharedFlow<AppError?>
-    suspend fun getRespondChatOrImage(message: MessageAI, handlers: List<AiModelHandler>)
     suspend fun getModels(handler: AiModelHandler): List<AiModel>
     suspend fun getModels(handlers: List<AiModelHandler>): List<AiModel>
 }

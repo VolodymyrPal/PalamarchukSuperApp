@@ -23,8 +23,9 @@ import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
-import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcher
-import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerDispatcherUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerRepositoryImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCaseImpl
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
@@ -69,7 +70,7 @@ interface AppComponent {
     fun viewModelFactory(): ViewModelProvider.Factory
     fun inject(storeFragment: StoreFragment)
     fun getHttpClient(): HttpClient
-    fun getAiHandlerDispatcher() : AiHandlerDispatcherUseCase
+    fun getAiHandlerDispatcher() : AiHandlerRepositoryImpl
 
     @Component.Builder
     interface Builder {
@@ -196,10 +197,10 @@ object NetworkModule {
     fun getAiHandlerDispatcher(
         apiHandlers: @JvmSuppressWildcards Set<AiModelHandler>,
         chatAiRepository: ChatAiRepository
-    ) : AiHandlerDispatcher {
-        return AiHandlerDispatcherUseCase(
+    ) : AiHandlerRepository {
+        return AiHandlerRepositoryImpl(
             apiHandlers = apiHandlers,
-            chatAiRepository = chatAiRepository
+            getModelsUseCase = GetModelsUseCaseImpl()
         )
     }
 }
