@@ -203,10 +203,10 @@ fun ChatScreen(
 
             LazyChatScreen(
                 modifier = Modifier.fillMaxWidth(),
-                messagesList = myState.value.listMessage,
-                loading = myState.value.isLoading,
+                messagesList = { myState.value.listMessage },
+                loading = { myState.value.isLoading },
                 event = onEvent,
-                error = myState.value.error
+                error = { myState.value.error }
             )
         }
     }
@@ -215,10 +215,10 @@ fun ChatScreen(
 @Composable
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
-    messagesList: PersistentList<MessageAI> = persistentListOf(),
-    loading: Boolean = false,
+    messagesList: () -> PersistentList<MessageAI> = { persistentListOf() }, // TODO lambda passing
+    loading: () -> Boolean = { false } , // TODO lambda passing
     event: (ChatBotViewModel.Event) -> Unit = {},
-    error: Error? = null,
+    error: () -> Error? = { null }, // TODO lambda passing
 ) {
     val brush = Brush.verticalGradient(
         listOf(
@@ -239,9 +239,9 @@ fun LazyChatScreen(
 //        )
 //    )
 
-    LaunchedEffect(messagesList.size) {
+    LaunchedEffect(messagesList().size) { //TODO lambda invoke
         launch {
-            state.animateScrollToItem(messagesList.lastIndex + 3)
+            state.animateScrollToItem(messagesList().lastIndex + 3)
         }
     }
     LazyColumn(
@@ -251,12 +251,12 @@ fun LazyChatScreen(
         state = state,
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
-        items(messagesList.size) {
-            when (messagesList[it].type) {
+        items(messagesList().size) {
+            when (messagesList()[it].type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        subMessageList = messagesList[it].content,
-                        isUser = messagesList[it].role == Role.USER
+                        subMessageList = messagesList()[it].content,
+                        isUser = messagesList()[it].role == Role.USER
                     )
                 }
 
@@ -273,7 +273,7 @@ fun LazyChatScreen(
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 onEvent = event,
-                loading = loading
+                loading = loading()
             )
         }
     }

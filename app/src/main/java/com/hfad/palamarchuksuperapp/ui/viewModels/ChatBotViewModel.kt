@@ -14,6 +14,7 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -32,11 +33,11 @@ import javax.inject.Inject
 class ChatBotViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
-    //private val chatAiRepository: ChatAiRepository,
     private val aiHandlerRepository: AiHandlerRepository,
     private val getAiChatUseCase: GetAiChatUseCase,
     private val addAiMessageUseCase: AddAiMessageUseCase,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
+    private val getErrorUseCase: GetErrorUseCase,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     @Stable
@@ -56,7 +57,7 @@ class ChatBotViewModel @Inject constructor(
             launch(ioDispatcher) {
                 getModels()
             }
-            aiHandlerRepository.observeErrors().collect { error ->
+            getErrorUseCase().collect { error ->
                 when (error) {
                     is AppError.CustomError -> {
                         effect(Effect.ShowToast(error.error.toString() ?: "Unknown error"))
@@ -72,7 +73,7 @@ class ChatBotViewModel @Inject constructor(
     }
 
     override val _dataFlow: Flow<Result<PersistentList<MessageAI>, AppError>> =
-        aiHandlerRepository.observeChatFlow().map { Result.Success(it) }
+        getAiChatUseCase().map { Result.Success(it) }
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
@@ -132,13 +133,14 @@ class ChatBotViewModel @Inject constructor(
     private fun sendImage(text: String, image: Base64) {
         viewModelScope.launch(ioDispatcher) {
             _loading.update { true }
-            aiHandlerRepository.getResponse(
+            sendChatRequestUseCase(
                 MessageAI(
                     role = Role.USER,
                     content = text,
                     otherContent = image,
                     type = MessageType.IMAGE
-                )
+                ),
+                aiHandlerRepository.handlerList
             )
             _loading.update { false }
         }

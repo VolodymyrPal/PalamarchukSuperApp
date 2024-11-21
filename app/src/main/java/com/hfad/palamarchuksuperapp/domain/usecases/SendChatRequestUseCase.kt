@@ -12,6 +12,7 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -23,17 +24,22 @@ interface SendChatRequestUseCase {
 
 class SendChatRequestUseCaseImpl @Inject constructor(
     private val chatAiRepository: ChatAiRepository,
-    private val addAiMessageUseCase: AddAiMessageUseCase
+    private val addAiMessageUseCase: AddAiMessageUseCase,
+    private val getAiChatUseCase: GetAiChatUseCase,
 ) : SendChatRequestUseCase {
 
     override suspend operator fun invoke(message: MessageAI, handlers: List<AiModelHandler>) {
 
+        if (handlers.isEmpty()) {
+            chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided"))
+            return
+        }
+
         addAiMessageUseCase(message)
 
-        val listToSend: PersistentList<MessageAI> = chatAiRepository.chatAiChatFlow.value
+        val listToSend: PersistentList<MessageAI> = getAiChatUseCase().first()
 
         supervisorScope {
-
             val requests: List<Pair<Int, Deferred<Result<SubMessageAI, AppError>>>> =
                 handlers.mapIndexed { index, handler ->
                     index to async {
@@ -61,15 +67,14 @@ class SendChatRequestUseCaseImpl @Inject constructor(
 
             addAiMessageUseCase(messageToAdd)
 
-            val lastIndex = chatAiRepository.chatAiChatFlow.value.lastIndex
+            val indexOfRequest = chatAiRepository.chatAiChatFlow.value.lastIndex
 
             requests.forEach { (requestIndex, request) ->
                 launch {
                     request.await().let { result ->
-
                         chatAiRepository.chatAiChatFlow.update { list ->
                             val updatedContent =
-                                list[lastIndex].content.mapIndexed { index, subMessage ->
+                                list[indexOfRequest].content.mapIndexed { index, subMessage ->
                                     if (index == requestIndex) {
                                         when (result) {
                                             is Result.Success -> subMessage.copy(
@@ -88,7 +93,7 @@ class SendChatRequestUseCaseImpl @Inject constructor(
                                     }
                                 }.toPersistentList()
 
-                            list.set(lastIndex, list[lastIndex].copy(content = updatedContent))
+                            list.set(indexOfRequest, list[indexOfRequest].copy(content = updatedContent))
                         }
                     }
                 }
