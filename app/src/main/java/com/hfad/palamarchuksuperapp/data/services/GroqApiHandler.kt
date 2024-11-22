@@ -46,13 +46,12 @@ class GroqApiHandler @Inject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel?,
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(model ?: baseModel)
+            messageList.last().toGroqRequest(baseModel)
         } else {
-            messageList.toGroqRequest(model ?: baseModel)
+            messageList.toGroqRequest(baseModel)
         }
 
         val request = httpClient.post(url) {
@@ -68,7 +67,7 @@ class GroqApiHandler @Inject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = model ?: baseModel
+                    model = baseModel
                 )
                 return Result.Success(responseMessage)
             } else {
