@@ -25,8 +25,8 @@ import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCaseImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerRepository
-import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerRepositoryImpl
+import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChangeAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
@@ -36,7 +36,7 @@ import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
@@ -91,8 +91,10 @@ interface AppComponent {
 }
 
 
-@Module(includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class,
-    AiModelHandlerModule::class, ViewModelsModule::class, UseCaseModule::class])
+@Module(
+    includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class,
+        AiModelHandlerModule::class, ViewModelsModule::class, UseCaseModule::class]
+)
 object AppModule {
     @IoDispatcher
     @Provides
@@ -109,6 +111,10 @@ object AppModule {
 
 @Module
 abstract class AiModelHandlerModule {
+
+    @Binds
+    @Singleton
+    abstract fun provideAiHandlerHandler(aiHandlerRepository: AiHandlerRepositoryImpl): AiHandlerRepository
 
     @Binds
     @IntoSet
@@ -149,9 +155,7 @@ interface UseCaseModule {
 
     @Singleton
     @Binds
-    fun bindSendChatRequestUseCase(
-        sendChatRequestUseCaseImpl: SendChatRequestUseCaseImpl,
-    ): SendChatRequestUseCase
+    fun bindSendChatRequestUseCase(sendAiRequestUseCaseImpl: SendAiRequestUseCaseImpl): SendChatRequestUseCase
 }
 
 
@@ -234,17 +238,6 @@ object NetworkModule {
             }
             install(HttpCache) // Добавляем кэширование запросов, чтобы не обращаться к API каждый раз
         }
-    }
-
-    @Provides
-    fun getAiHandlerDispatcher(
-        apiHandlers: @JvmSuppressWildcards Set<AiModelHandler>,
-        chatAiRepository: ChatAiRepository,
-    ): AiHandlerRepository {
-        return AiHandlerRepositoryImpl(
-            apiHandlers = apiHandlers,
-            getModelsUseCase = GetModelsUseCaseImpl()
-        )
     }
 }
 
