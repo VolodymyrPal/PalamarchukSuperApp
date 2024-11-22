@@ -13,7 +13,6 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
@@ -22,10 +21,11 @@ interface SendChatRequestUseCase {
     suspend operator fun invoke(message: MessageAI, handlers: List<AiModelHandler>)
 }
 
-class SendChatRequestUseCaseImpl @Inject constructor(
+class SendAiRequestUseCaseImpl @Inject constructor(
     private val chatAiRepository: ChatAiRepository,
     private val addAiMessageUseCase: AddAiMessageUseCase,
     private val getAiChatUseCase: GetAiChatUseCase,
+    private val changeAiMessageUseCase: ChangeAiMessageUseCase
 ) : SendChatRequestUseCase {
 
     override suspend operator fun invoke(message: MessageAI, handlers: List<AiModelHandler>) {
@@ -43,9 +43,7 @@ class SendChatRequestUseCaseImpl @Inject constructor(
             val requests: List<Pair<Int, Deferred<Result<SubMessageAI, AppError>>>> =
                 handlers.mapIndexed { index, handler ->
                     index to async {
-                        handler.getResponse(
-                            listToSend, null
-                        )
+                        handler.getResponse(listToSend)
                     }
                 }
 
@@ -71,31 +69,28 @@ class SendChatRequestUseCaseImpl @Inject constructor(
 
             requests.forEach { (requestIndex, request) ->
                 launch {
-                    request.await().let { result ->
-                        chatAiRepository.chatAiChatFlow.update { list ->
-                            val updatedContent =
-                                list[indexOfRequest].content.mapIndexed { index, subMessage ->
-                                    if (index == requestIndex) {
-                                        when (result) {
-                                            is Result.Success -> subMessage.copy(
-                                                message = result.data.message,
-                                                model = result.data.model,
-                                                loading = false
-                                            )
+                    val result = request.await()
+                    val updatedContent =
+                        getAiChatUseCase().first()[indexOfRequest].content.mapIndexed { index, subMessage ->
+                            if (index == requestIndex) {
+                                when (result) {
+                                    is Result.Success -> subMessage.copy(
+                                        message = result.data.message,
+                                        model = result.data.model,
+                                        loading = false
+                                    )
 
-                                            is Result.Error -> subMessage.copy(
-                                                message = "Error",
-                                                loading = false
-                                            )
-                                        }
-                                    } else {
-                                        subMessage // остальные остаются без изменений
-                                    }
-                                }.toPersistentList()
+                                    is Result.Error -> subMessage.copy(
+                                        message = "Error",
+                                        loading = false
+                                    )
+                                }
+                            } else {
+                                subMessage // остальные остаются без изменений
+                            }
+                        }.toPersistentList()
 
-                            list.set(indexOfRequest, list[indexOfRequest].copy(content = updatedContent))
-                        }
-                    }
+                    changeAiMessageUseCase(updatedContent, indexOfRequest)
                 }
             }
         }

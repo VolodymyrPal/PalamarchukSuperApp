@@ -1,9 +1,10 @@
-package com.hfad.palamarchuksuperapp.domain.usecases
+package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import javax.inject.Inject
 
 interface AiHandlerRepository {

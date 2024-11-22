@@ -35,9 +35,8 @@ class OpenAIApiHandler @Inject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel?,
     ): Result<SubMessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = model ?: baseModel)
+        val gptRequest = messageList.toOpenAIRequest(model = baseModel)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
@@ -50,7 +49,7 @@ class OpenAIApiHandler @Inject constructor(
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = SubMessageAI(
                     message = openAIResponse.choices[0].message.content,
-                    model = model ?: baseModel
+                    model = baseModel
                 )
                 Result.Success(responseMessage)
             } else {

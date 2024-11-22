@@ -16,7 +16,6 @@ interface AiModelHandler {
 
     suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel?,
     ): Result<SubMessageAI, AppError>
 
     suspend fun getModels(

@@ -49,11 +49,10 @@ data class GeminiApiHandler @Inject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
-        model: AiModel?,
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = model ?: baseModel)) {
+                httpClient.post(getUrl(model = baseModel)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
@@ -65,7 +64,7 @@ data class GeminiApiHandler @Inject constructor(
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = model ?: baseModel
+                    model = baseModel
                 )
                 return Result.Success(responseMessage)
             } else {

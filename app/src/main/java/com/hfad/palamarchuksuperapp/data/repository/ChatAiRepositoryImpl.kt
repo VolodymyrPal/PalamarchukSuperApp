@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import kotlinx.coroutines.flow.update
 
 
 class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
@@ -45,4 +46,15 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
             }
         }
     }
+
+    override suspend fun addMessage(messageAI: MessageAI) {
+        chatAiChatFlow.update { it.add(messageAI) }
+    }
+
+    override suspend fun updateMessage(index: Int, updatedContent: MessageAI) {
+        chatAiChatFlow.update {
+            it.set(index, it[index].copy(content = updatedContent.content))
+        }
+    }
+
 }
