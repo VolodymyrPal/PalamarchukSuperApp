@@ -12,7 +12,7 @@ import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
