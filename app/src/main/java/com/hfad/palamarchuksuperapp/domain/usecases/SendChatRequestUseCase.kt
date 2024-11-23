@@ -25,7 +25,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
     private val chatAiRepository: ChatAiRepository,
     private val addAiMessageUseCase: AddAiMessageUseCase,
     private val getAiChatUseCase: GetAiChatUseCase,
-    private val changeAiMessageUseCase: ChangeAiMessageUseCase
+    private val updateAiMessageUseCase: UpdateAiMessageUseCase
 ) : SendChatRequestUseCase {
 
     override suspend operator fun invoke(message: MessageAI, handlers: List<AiModelHandler>) {
@@ -90,7 +90,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             }
                         }.toPersistentList()
 
-                    changeAiMessageUseCase(updatedContent, indexOfRequest)
+                    updateAiMessageUseCase(updatedContent, indexOfRequest)
                 }
             }
         }

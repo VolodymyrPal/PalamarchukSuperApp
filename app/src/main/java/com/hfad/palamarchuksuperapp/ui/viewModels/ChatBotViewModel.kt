@@ -8,11 +8,12 @@ import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
@@ -35,9 +36,9 @@ class ChatBotViewModel @Inject constructor(
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
     private val aiHandlerRepository: AiHandlerRepository,
     private val getAiChatUseCase: GetAiChatUseCase,
-    private val addAiMessageUseCase: AddAiMessageUseCase,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
     private val getErrorUseCase: GetErrorUseCase,
+    private val chooseMessageAiUseCase: ChooseMessageAiUseCase
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     @Stable
@@ -114,6 +115,7 @@ class ChatBotViewModel @Inject constructor(
         data class ShowToast(val message: String) : Event()
         data object GetModels : Event()
         data class ChangeAiModel(val aiModel: AiModel) : Event()
+        data class ChooseSubMessage(val indexOfMessageAi: Int, val message: SubMessageAI) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -127,6 +129,7 @@ class ChatBotViewModel @Inject constructor(
             is Event.ShowToast -> showToast(event.message)
             is Event.GetModels -> getModels()
             is Event.ChangeAiModel -> changeAIModel(event.aiModel)
+            is Event.ChooseSubMessage -> chooseSubMessage(event.indexOfMessageAi, event.message)
         }
     }
 
@@ -171,6 +174,11 @@ class ChatBotViewModel @Inject constructor(
         //TODO
     }
 
+    private fun chooseSubMessage(index: Int, message: SubMessageAI) {
+        viewModelScope.launch(ioDispatcher) {
+            chooseMessageAiUseCase(message, index)
+        }
+    }
     private fun getModels() {
         viewModelScope.launch(ioDispatcher) {
         }

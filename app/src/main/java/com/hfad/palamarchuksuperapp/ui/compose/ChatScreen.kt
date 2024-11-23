@@ -256,7 +256,9 @@ fun LazyChatScreen(
                 MessageType.TEXT -> {
                     MessageBox(
                         subMessageList = messagesList()[it].content,
-                        isUser = messagesList()[it].role == Role.USER
+                        isUser = messagesList()[it].role == Role.USER,
+                        event = event,
+                        boxIndex = it
                     )
                 }
 
@@ -284,6 +286,8 @@ fun MessageBox(
     modifier: Modifier = Modifier,
     subMessageList: PersistentList<SubMessageAI> = persistentListOf(SubMessageAI(message = "test")),
     isUser: Boolean = true,
+    event: (ChatBotViewModel.Event) -> Unit,
+    boxIndex: Int = 0 // TODO better solution to find
 ) {
     val pagerState = rememberPagerState(pageCount = {
         subMessageList.size
@@ -293,6 +297,9 @@ fun MessageBox(
         state = pagerState,
         // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) { page ->
+        LaunchedEffect(page) {
+            event(ChatBotViewModel.Event.ChooseSubMessage(boxIndex, subMessageList[page]))
+        }
         when (subMessageList[page].otherContent == null) {
             true -> {
                 Box {
