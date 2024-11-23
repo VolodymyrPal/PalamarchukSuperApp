@@ -27,8 +27,10 @@ import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.ChangeAiMessageUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.ChangeAiMessageUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
@@ -139,7 +141,7 @@ interface UseCaseModule {
 
     @Singleton
     @Binds
-    fun bindChangeAiMessageUseCase(changeAiMessageUseCase: ChangeAiMessageUseCaseImpl): ChangeAiMessageUseCase
+    fun bindChangeAiMessageUseCase(changeAiMessageUseCase: UpdateAiMessageUseCaseImpl): UpdateAiMessageUseCase
 
     @Singleton
     @Binds
@@ -156,6 +158,10 @@ interface UseCaseModule {
     @Singleton
     @Binds
     fun bindSendChatRequestUseCase(sendAiRequestUseCaseImpl: SendAiRequestUseCaseImpl): SendChatRequestUseCase
+
+    @Singleton
+    @Binds
+    fun bindChooseMessageAiUseCase(chooseMessageAiUseCaseImpl: ChooseMessageAiUseCaseImpl): ChooseMessageAiUseCase
 }
 
 
