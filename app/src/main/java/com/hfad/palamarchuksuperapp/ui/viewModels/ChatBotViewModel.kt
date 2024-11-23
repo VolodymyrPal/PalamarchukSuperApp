@@ -39,6 +39,7 @@ class ChatBotViewModel @Inject constructor(
     private val addAiMessageUseCase: AddAiMessageUseCase,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
     private val getErrorUseCase: GetErrorUseCase,
+    private val chooseMessageAiUseCase: ChooseMessageAiUseCase
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     @Stable
