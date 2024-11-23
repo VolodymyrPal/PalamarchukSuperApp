@@ -36,7 +36,6 @@ class ChatBotViewModel @Inject constructor(
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
     private val aiHandlerRepository: AiHandlerRepository,
     private val getAiChatUseCase: GetAiChatUseCase,
-    private val addAiMessageUseCase: AddAiMessageUseCase,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
     private val getErrorUseCase: GetErrorUseCase,
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase
