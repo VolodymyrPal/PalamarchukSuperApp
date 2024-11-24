@@ -9,10 +9,10 @@ import kotlinx.collections.immutable.PersistentList
 
 interface AiModelHandler {
 
-    val modelName : HandlerName
+    val modelName : AiProviderName
     val chosen : Boolean
     val enabled : Boolean
-    val baseModel: AiModel
+    val model: AiModel
 
     suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
@@ -22,7 +22,7 @@ interface AiModelHandler {
     ): Result<List<AiModel>, AppError>
 }
 
-enum class HandlerName {
+enum class AiProviderName {
     OPENAI,
     GEMINI,
     GROQ
