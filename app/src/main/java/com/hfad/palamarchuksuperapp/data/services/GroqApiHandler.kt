@@ -27,11 +27,11 @@ class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
-    override val modelName: HandlerName = HandlerName.GROQ
+    override val modelName: AiProviderName = AiProviderName.GROQ
     private val apiKey = BuildConfig.GROQ_KEY
     override val chosen: Boolean = true
     override val enabled: Boolean = true
-    override val baseModel = AiModel.GroqModels.BASE_MODEL
+    override val model = AiModel.GroqModels.BASE_MODEL
 
     //    private val max_tokens = 1024
 //    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
@@ -49,9 +49,9 @@ class GroqApiHandler @Inject constructor(
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(baseModel)
+            messageList.last().toGroqRequest(model)
         } else {
-            messageList.toGroqRequest(baseModel)
+            messageList.toGroqRequest(model)
         }
 
         val request = httpClient.post(url) {
@@ -67,7 +67,7 @@ class GroqApiHandler @Inject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = baseModel
+                    model = model
                 )
                 return Result.Success(responseMessage)
             } else {
