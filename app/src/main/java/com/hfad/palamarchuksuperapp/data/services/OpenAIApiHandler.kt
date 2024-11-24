@@ -10,7 +10,7 @@ import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.HandlerName
+import com.hfad.palamarchuksuperapp.domain.repository.AiProviderName
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -24,19 +24,18 @@ import javax.inject.Inject
 
 class OpenAIApiHandler @Inject constructor(
     private val httpClient: HttpClient,
-
 ) : AiModelHandler {
 
-    override val modelName: HandlerName = HandlerName.OPENAI
+    override val modelName: AiProviderName = AiProviderName.OPENAI
     override val chosen: Boolean = true
     override val enabled: Boolean = true
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
-    override val baseModel = AiModel.OpenAIModels.BASE_MODEL
+    override val model = AiModel.OpenAIModels.BASE_MODEL
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
     ): Result<SubMessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = baseModel)
+        val gptRequest = messageList.toOpenAIRequest(model = model)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
@@ -49,7 +48,7 @@ class OpenAIApiHandler @Inject constructor(
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = SubMessageAI(
                     message = openAIResponse.choices[0].message.content,
-                    model = baseModel
+                    model = model
                 )
                 Result.Success(responseMessage)
             } else {
@@ -66,7 +65,7 @@ class OpenAIApiHandler @Inject constructor(
     }
 }
 
-fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested { // List<RequestRole> {
+fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested {
     return GptRequested(
         model = model.modelName,
         messages = this.map { message ->
@@ -79,11 +78,19 @@ fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested { //
                 },
                 content = listOf(
                     when (message.type) {
-                        MessageType.TEXT -> TextMessageRequest(text = message.content.first().message)
+                        MessageType.TEXT -> TextMessageRequest(
+                            text = message.content.firstOrNull { it.isChosen }?.message
+                                ?: message.content.first().message
+                        )
+
                         MessageType.IMAGE -> ImageMessageRequest(
                             imageUrl =
                                 ImageRequest(
-                                    url = (message.content.first().otherContent as MessageAiContent.Image).image
+                                    url = if (message.content.first().otherContent is MessageAiContent.Image)
+                                        (message.content.first().otherContent as MessageAiContent.Image).image
+                                    else {
+                                        "Unsupported image type"
+                                    }
                                 )
                         )
                     }

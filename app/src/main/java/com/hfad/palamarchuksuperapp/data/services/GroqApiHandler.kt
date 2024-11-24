@@ -10,7 +10,7 @@ import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.HandlerName
+import com.hfad.palamarchuksuperapp.domain.repository.AiProviderName
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -27,11 +27,11 @@ class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
-    override val modelName: HandlerName = HandlerName.GROQ
+    override val modelName: AiProviderName = AiProviderName.GROQ
     private val apiKey = BuildConfig.GROQ_KEY
     override val chosen: Boolean = true
     override val enabled: Boolean = true
-    override val baseModel = AiModel.GroqModels.BASE_MODEL
+    override val model = AiModel.GroqModels.BASE_MODEL
 
     //    private val max_tokens = 1024
 //    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
@@ -49,9 +49,9 @@ class GroqApiHandler @Inject constructor(
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(baseModel)
+            messageList.last().toGroqRequest(model)
         } else {
-            messageList.toGroqRequest(baseModel)
+            messageList.toGroqRequest(model)
         }
 
         val request = httpClient.post(url) {
@@ -67,7 +67,7 @@ class GroqApiHandler @Inject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = baseModel
+                    model = model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -171,7 +171,8 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
             when (message.type) {
                 MessageType.TEXT -> {
                     builder.addMessage(
-                        request = message.content.first().message,
+                        request = message.content.firstOrNull { it.isChosen }?.message
+                            ?: message.content.first().message,
                         role = if (message.role == Role.MODEL) "assistant" else message.role.value
                     )
                 }

@@ -18,20 +18,21 @@ import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.repository.HandlerName
+import com.hfad.palamarchuksuperapp.domain.repository.AiProviderName
 import io.ktor.client.request.get
 
 data class GeminiApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
-    override val modelName: HandlerName = HandlerName.GEMINI
+    override val modelName: AiProviderName = AiProviderName.GEMINI
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
+
     override val chosen: Boolean = true
     override val enabled: Boolean = true
-    override val baseModel = AiModel.GeminiModels.BASE_MODEL
+    override val model = AiModel.GeminiModels.BASE_MODEL
 
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
@@ -52,7 +53,7 @@ data class GeminiApiHandler @Inject constructor(
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = baseModel)) {
+                httpClient.post(getUrl(model = model)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
@@ -64,7 +65,7 @@ data class GeminiApiHandler @Inject constructor(
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = baseModel
+                    model = model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -100,14 +101,17 @@ fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
                 MessageType.TEXT -> {
                     builder.contentText(
                         role = message.role.value,
-                        content = message.content.first().message
+                        content = message.content.firstOrNull { it.isChosen }?.message
+                            ?: message.content.first().message
                     )
                 }
 
                 MessageType.IMAGE -> {
                     builder.contentImage(
                         role = message.role.value,
-                        content = (message.content.first().otherContent as MessageAiContent.Image).image
+                        content = if (message.content.first().otherContent is MessageAiContent.Image)
+                            (message.content.first().otherContent as MessageAiContent.Image).image
+                        else "Unsupported content"
                     )
                 }
             }
