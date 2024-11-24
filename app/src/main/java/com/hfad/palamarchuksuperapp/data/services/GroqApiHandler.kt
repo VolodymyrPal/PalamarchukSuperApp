@@ -171,7 +171,8 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL
             when (message.type) {
                 MessageType.TEXT -> {
                     builder.addMessage(
-                        request = message.content.first().message,
+                        request = message.content.firstOrNull { it.isChosen }?.message
+                            ?: message.content.first().message,
                         role = if (message.role == Role.MODEL) "assistant" else message.role.value
                     )
                 }
