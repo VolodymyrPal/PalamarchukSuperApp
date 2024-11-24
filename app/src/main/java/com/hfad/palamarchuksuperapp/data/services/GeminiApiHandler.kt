@@ -100,14 +100,17 @@ fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
                 MessageType.TEXT -> {
                     builder.contentText(
                         role = message.role.value,
-                        content = message.content.first().message
+                        content = message.content.firstOrNull { it.isChosen }?.message
+                            ?: message.content.first().message
                     )
                 }
 
                 MessageType.IMAGE -> {
                     builder.contentImage(
                         role = message.role.value,
-                        content = (message.content.first().otherContent as MessageAiContent.Image).image
+                        content = if (message.content.first().otherContent is MessageAiContent.Image)
+                            (message.content.first().otherContent as MessageAiContent.Image).image
+                        else "Unsupported content"
                     )
                 }
             }
