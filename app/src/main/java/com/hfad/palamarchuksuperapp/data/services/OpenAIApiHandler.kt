@@ -79,11 +79,19 @@ fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested { //
                 },
                 content = listOf(
                     when (message.type) {
-                        MessageType.TEXT -> TextMessageRequest(text = message.content.first().message)
+                        MessageType.TEXT -> TextMessageRequest(
+                            text = message.content.firstOrNull { it.isChosen }?.message
+                                ?: message.content.first().message
+                        )
+
                         MessageType.IMAGE -> ImageMessageRequest(
                             imageUrl =
                                 ImageRequest(
-                                    url = (message.content.first().otherContent as MessageAiContent.Image).image
+                                    url = if (message.content.first().otherContent is MessageAiContent.Image)
+                                        (message.content.first().otherContent as MessageAiContent.Image).image
+                                    else {
+                                        "Unsupported image type"
+                                    }
                                 )
                         )
                     }
