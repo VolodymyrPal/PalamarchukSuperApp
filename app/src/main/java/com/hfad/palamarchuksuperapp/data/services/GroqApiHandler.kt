@@ -2,15 +2,16 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.AiProviderName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.AiProviderName
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -27,11 +28,14 @@ class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
-    override val modelName: AiProviderName = AiProviderName.GROQ
     private val apiKey = BuildConfig.GROQ_KEY
-    override val chosen: Boolean = true
-    override val enabled: Boolean = true
-    override val model = AiModel.GroqModels.BASE_MODEL
+
+    override val aiHandler: AiHandler = AiHandler(
+        model = AiModel.GROQ_BASE_MODEL,
+        modelName = AiProviderName.GROQ,
+        chosen = true,
+        enabled = true
+    )
 
     //    private val max_tokens = 1024
 //    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
@@ -49,9 +53,9 @@ class GroqApiHandler @Inject constructor(
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(model)
+            messageList.last().toGroqRequest(aiHandler.model)
         } else {
-            messageList.toGroqRequest(model)
+            messageList.toGroqRequest(aiHandler.model)
         }
 
         val request = httpClient.post(url) {
@@ -67,7 +71,7 @@ class GroqApiHandler @Inject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = model
+                    model = aiHandler.model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -86,7 +90,7 @@ class GroqApiHandler @Inject constructor(
             contentType(ContentType.Application.Json)
         }
         return if (response.status == HttpStatusCode.OK) {
-            val list = response.body<AiModel.GroqModelList>()
+            val list = response.body<GroqModelList>()
             return Result.Success(list.data)
         } else {
             Result.Error(AppError.Network.RequestError.BadRequest)
@@ -165,7 +169,7 @@ fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
  *
  */
 
-fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GroqModels.BASE_MODEL): GroqRequest {
+fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GROQ_BASE_MODEL): GroqRequest {
     val groqRequest = GroqContentBuilder.Builder().also { builder ->
         for (message in this) {
             when (message.type) {
