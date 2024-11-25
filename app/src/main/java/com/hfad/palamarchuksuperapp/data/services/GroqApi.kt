@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
+import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -131,4 +132,27 @@ data class GroqUsage(
 @Serializable
 data class XGroq(
     val id: String
+)
+
+@Serializable
+data class GroqModelResponse(
+    @SerialName(value = "id")
+    override val modelName: String,
+    //val objectType: String,
+    //val created: Long,
+    //val ownedBy: String,
+    //val active: Boolean,
+    //@SerialName(value = "contextWindow")
+    //val contextWindow: Int,
+    //@SerialName(value = "publicApps")
+    //val publicApps: List<String>?,
+    @SerialName("active")
+    override val isSupported: Boolean = true,
+) : AiModel
+
+@Serializable
+data class GroqModelList(
+    @SerialName(value = "object")
+    val objectType: String,
+    val data: List<GroqModelResponse>
 )
