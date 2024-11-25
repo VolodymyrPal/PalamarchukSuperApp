@@ -114,9 +114,9 @@ dependencies {
     //noinspection KaptUsageInsteadOfKsp
     ksp(libs.room.annotation)
 
-    implementation(libs.moshi.kotlin)
-    implementation(libs.converter.moshi)
-    ksp(libs.moshi.kotlin.codegen)
+    //implementation(libs.moshi.kotlin)
+    //implementation(libs.converter.moshi)
+    //ksp(libs.moshi.kotlin.codegen)
 
 
     implementation(libs.numberpicker)
