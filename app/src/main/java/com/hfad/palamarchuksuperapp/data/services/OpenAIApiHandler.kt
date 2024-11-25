@@ -2,15 +2,16 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.AiProviderName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.AiProviderName
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -26,16 +27,19 @@ class OpenAIApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
-    override val modelName: AiProviderName = AiProviderName.OPENAI
-    override val chosen: Boolean = true
-    override val enabled: Boolean = true
+    override val aiHandler: AiHandler = AiHandler(
+        modelName = AiProviderName.OPENAI,
+        chosen = true,
+        enabled = true,
+        model = AiModel.OPENAI_BASE_MODEL
+    )
+
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
-    override val model = AiModel.OpenAIModels.BASE_MODEL
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
     ): Result<SubMessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = model)
+        val gptRequest = messageList.toOpenAIRequest(model = aiHandler.model)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
@@ -48,7 +52,7 @@ class OpenAIApiHandler @Inject constructor(
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = SubMessageAI(
                     message = openAIResponse.choices[0].message.content,
-                    model = model
+                    model = aiHandler.model
                 )
                 Result.Success(responseMessage)
             } else {

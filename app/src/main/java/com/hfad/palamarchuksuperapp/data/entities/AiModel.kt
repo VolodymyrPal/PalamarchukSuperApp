@@ -9,6 +9,12 @@ interface AiModel {
     val modelName: String
     val isSupported: Boolean
 
+    companion object {
+        val GROQ_BASE_MODEL = GroqModel("llama-3.2-11b-vision-preview")
+        val GEMINI_BASE_MODEL = GeminiModel("models/gemini-1.5-flash-8b")
+        val OPENAI_BASE_MODEL = OpenAIModel("gpt-4o-mini")
+    }
+
     @Serializable
     data class GroqModel(
         @SerialName(value = "name")
@@ -31,46 +37,10 @@ interface AiModel {
         override val modelName: String = "openai-1",
         override val isSupported: Boolean = true,
     ) : AiModel
+}
 
-    @Serializable
-    data class GroqModelResponse(
-        @SerialName(value = "id")
-        override val modelName: String,
-        //val objectType: String,
-        //val created: Long,
-        //val ownedBy: String,
-        //val active: Boolean,
-        //@SerialName(value = "contextWindow")
-        //val contextWindow: Int,
-        //@SerialName(value = "publicApps")
-        //val publicApps: List<String>?,
-        @SerialName("active")
-        override val isSupported: Boolean = true,
-    ) : AiModel
-
-    @Serializable
-    data class GroqModelList(
-        @SerialName(value = "object")
-        val objectType: String,
-        val data: List<GroqModelResponse>
-    )
-
-
-
-
-    enum class GroqModels(override val modelName: String, override val isSupported: Boolean = true) : AiModel {
-        BASE_MODEL("llama-3.2-11b-vision-preview" ),
-        TEXT_MODEL("llama3-groq-8b-8192-tool-use-preview")
-    }
-
-    enum class GeminiModels(override val modelName: String, override val isSupported: Boolean = true) : AiModel {
-        BASE_MODEL("models/gemini-1.5-flash-8b"),
-        GEMINI_IMAGE("")
-    }
-
-    enum class OpenAIModels(override val modelName: String, override val isSupported: Boolean = true) : AiModel {
-        BASE_MODEL("gpt-4o-mini"),
-        OPENAI_IMAGE("")
-    }
-
+enum class AiProviderName {
+    OPENAI,
+    GEMINI,
+    GROQ
 }

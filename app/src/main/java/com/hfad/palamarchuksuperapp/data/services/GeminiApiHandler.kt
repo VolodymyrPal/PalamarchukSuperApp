@@ -2,10 +2,12 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.AiProviderName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -18,21 +20,22 @@ import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.repository.AiProviderName
 import io.ktor.client.request.get
 
 data class GeminiApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
-    override val modelName: AiProviderName = AiProviderName.GEMINI
-    private val apiKey = BuildConfig.GEMINI_AI_KEY
-    private fun getUrl(model: AiModel = AiModel.GeminiModels.BASE_MODEL, key: String = apiKey) =
-        "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
+    override val aiHandler: AiHandler = AiHandler(
+        modelName = AiProviderName.GEMINI,
+        chosen = true,
+        enabled = true,
+        model = AiModel.GEMINI_BASE_MODEL,
+    )
 
-    override val chosen: Boolean = true
-    override val enabled: Boolean = true
-    override val model = AiModel.GeminiModels.BASE_MODEL
+    private val apiKey = BuildConfig.GEMINI_AI_KEY
+    private fun getUrl(model: AiModel = AiModel.GEMINI_BASE_MODEL, key: String = apiKey) =
+        "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
 
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
@@ -53,7 +56,7 @@ data class GeminiApiHandler @Inject constructor(
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = model)) {
+                httpClient.post(getUrl(model = aiHandler.model)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
@@ -65,7 +68,7 @@ data class GeminiApiHandler @Inject constructor(
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = model
+                    model = aiHandler.model
                 )
                 return Result.Success(responseMessage)
             } else {
