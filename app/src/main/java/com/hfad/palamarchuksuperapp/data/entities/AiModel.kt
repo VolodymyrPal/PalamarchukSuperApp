@@ -38,3 +38,9 @@ interface AiModel {
         override val isSupported: Boolean = true,
     ) : AiModel
 }
+
+enum class AiProviderName {
+    OPENAI,
+    GEMINI,
+    GROQ
+}
