@@ -2,12 +2,10 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.AiProviderName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
-import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -22,16 +20,10 @@ import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import io.ktor.client.request.get
 
-data class GeminiApiHandler @Inject constructor(
+abstract class GeminiApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
-    override val aiHandler: AiHandler = AiHandler(
-        modelName = AiProviderName.GEMINI,
-        chosen = true,
-        enabled = true,
-        model = AiModel.GEMINI_BASE_MODEL,
-    )
 
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModel = AiModel.GEMINI_BASE_MODEL, key: String = apiKey) =
