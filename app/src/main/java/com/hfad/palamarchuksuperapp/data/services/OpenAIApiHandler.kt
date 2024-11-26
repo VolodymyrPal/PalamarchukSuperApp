@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.AiProviderName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
@@ -23,16 +22,17 @@ import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 
-class OpenAIApiHandler @Inject constructor(
+abstract class OpenAIApiHandler @Inject constructor(
     private val httpClient: HttpClient,
+    override val aiHandler: AiHandler
 ) : AiModelHandler {
 
-    override val aiHandler: AiHandler = AiHandler(
-        modelName = AiProviderName.OPENAI,
-        chosen = true,
-        enabled = true,
-        model = AiModel.OPENAI_BASE_MODEL
-    )
+//    override val aiHandler: AiHandler = AiHandler(
+//        modelName = AiProviderName.OPENAI,
+//        chosen = true,
+//        enabled = true,
+//        model = AiModel.OPENAI_BASE_MODEL
+//    )
 
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
 
