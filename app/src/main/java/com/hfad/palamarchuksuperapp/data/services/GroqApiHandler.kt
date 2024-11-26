@@ -2,13 +2,11 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.AiProviderName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
-import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -24,18 +22,18 @@ import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 
-class GroqApiHandler @Inject constructor(
+abstract class GroqApiHandler @Inject constructor(
     private val httpClient: HttpClient,
 ) : AiModelHandler {
 
     private val apiKey = BuildConfig.GROQ_KEY
 
-    override val aiHandler: AiHandler = AiHandler(
-        model = AiModel.GROQ_BASE_MODEL,
-        modelName = AiProviderName.GROQ,
-        chosen = true,
-        enabled = true
-    )
+//override val aiHandler: AiHandler = AiHandler(
+//        model = AiModel.GROQ_BASE_MODEL,
+//        modelName = AiProviderName.GROQ,
+//        chosen = true,
+//        enabled = true
+//    )
 
     //    private val max_tokens = 1024
 //    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
