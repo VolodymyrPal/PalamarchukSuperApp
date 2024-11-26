@@ -10,10 +10,6 @@ import kotlinx.collections.immutable.PersistentList
 
 interface AiModelHandler {
     val aiHandler: AiHandler
-//    val modelName : AiProviderName
-//    val chosen : Boolean
-//    val enabled : Boolean
-//    val model: AiModel
 
     suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
