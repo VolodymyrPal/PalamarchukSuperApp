@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("LongParameterList")
 class ChatBotViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
@@ -47,7 +48,7 @@ class ChatBotViewModel @Inject constructor(
         val isLoading: Boolean = false,
         val error: AppError? = null,
         val listOfModels: PersistentList<AiModel> = persistentListOf(),
-        val currentModel: AiModel = AiModel.OpenAIModels.BASE_MODEL,
+        val currentModel: AiModel = AiModel.OPENAI_BASE_MODEL,
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)

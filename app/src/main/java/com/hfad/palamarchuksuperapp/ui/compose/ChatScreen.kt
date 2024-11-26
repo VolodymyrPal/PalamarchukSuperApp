@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -21,9 +22,11 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -93,12 +96,10 @@ fun RootChatScreen(
     modifier: Modifier = Modifier,
     chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
         (factory = LocalContext.current.appComponent.viewModelFactory()),
-    navController: NavHostController? = LocalNavController.current
-)
-{
+    navController: NavHostController? = LocalNavController.current,
+    context: Context = LocalContext.current,
 
-    val context = LocalContext.current
-
+    ) {
     LaunchedEffect(Unit) {
         chatBotViewModel.effect.collect { effect ->
             when (effect) {
@@ -117,7 +118,6 @@ fun RootChatScreen(
         myState = myState
     )
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -213,12 +213,14 @@ fun ChatScreen(
 }
 
 @Composable
+@Suppress("LongParameterList")
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
     messagesList: () -> PersistentList<MessageAI> = { persistentListOf() }, // TODO lambda passing
-    loading: () -> Boolean = { false } , // TODO lambda passing
+    loading: () -> Boolean = { false }, // TODO lambda passing
     event: (ChatBotViewModel.Event) -> Unit = {},
     error: () -> Error? = { null }, // TODO lambda passing
+    state: LazyListState = rememberLazyListState(),
 ) {
     val brush = Brush.verticalGradient(
         listOf(
@@ -227,7 +229,6 @@ fun LazyChatScreen(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
         )
     )
-    val state = rememberLazyListState()
 //    Rebugger(
 //        trackMap = mapOf(
 //            "listMessage" to messagesList,
@@ -282,16 +283,15 @@ fun LazyChatScreen(
 }
 
 @Composable
+@Suppress("LongParameterList")
 fun MessageBox(
     modifier: Modifier = Modifier,
     subMessageList: PersistentList<SubMessageAI> = persistentListOf(SubMessageAI(message = "test")),
     isUser: Boolean = true,
     event: (ChatBotViewModel.Event) -> Unit,
-    boxIndex: Int = 0 // TODO better solution to find
+    boxIndex: Int = 0, // TODO better solution to find
+    pagerState: PagerState = rememberPagerState(pageCount = { subMessageList.size }),
 ) {
-    val pagerState = rememberPagerState(pageCount = {
-        subMessageList.size
-    })
     HorizontalPager(
         modifier = modifier.fillMaxWidth(),
         state = pagerState,
