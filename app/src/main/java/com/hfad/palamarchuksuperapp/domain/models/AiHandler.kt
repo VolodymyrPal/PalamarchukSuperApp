@@ -1,11 +1,14 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.AiProviderName
+import com.hfad.palamarchuksuperapp.data.entities.LLMName
+import kotlinx.serialization.Polymorphic
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AiHandler(
-    val modelName : AiProviderName,
+    val llmName : LLMName,
     val chosen : Boolean,
     val enabled : Boolean,
-    val model: AiModel
+    @Polymorphic val model: AiModel
 )

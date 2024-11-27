@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -16,12 +17,15 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
-import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.ktor.client.request.get
 
-abstract class GeminiApiHandler @Inject constructor(
+class GeminiApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
+    @Assisted override val aiHandler: AiHandler,
 ) : AiModelHandler {
 
 
@@ -114,4 +118,9 @@ fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
     }.buildChatRequest()
 
     return geminiRequest
+}
+
+@AssistedFactory
+interface GeminiAIApiHandlerFactory {
+    fun create(aiHandler: AiHandler): GeminiApiHandler
 }

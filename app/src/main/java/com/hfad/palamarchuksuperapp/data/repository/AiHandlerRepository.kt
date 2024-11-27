@@ -2,37 +2,44 @@ package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.LLMName
 import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 interface AiHandlerRepository {
-    val handlerList: List<AiModelHandler>
+    suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>>
     suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError>
 }
 
 class AiHandlerRepositoryImpl @Inject constructor(
-    //private val apiHandlers: Set<@JvmSuppressWildcards AiModelHandler>,
+    private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
     private val dataStoreHandler: DataStoreHandler,
     private val getModelsUseCase: GetModelsUseCase,
 ) : AiHandlerRepository {
 
-    override val handlerList: List<AiModelHandler> =
-        dataStoreHandler.aiHandlerList.data.map { prefernces ->
-            prefernces["enabled"] ?: listOf(
-                AiHandler(
-                    modelName = AiProviderName.GEMINI,
-                    chosen = true,
-                    enabled = true,
-                    model = AiModel.GEMINI_BASE_MODEL,
+    override suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> {
+        val a = MutableStateFlow(
+            persistentListOf(
+                mapAiModelHandlerUseCase(
+                    AiHandler(
+                        LLMName.OPENAI,
+                        chosen = true,
+                        enabled = true,
+                        model = AiModel.GROQ_BASE_MODEL
+                    )
                 )
             )
-        }.first()
+        ) //TODO complete list
+        return a
+    }
     //apiHandlers.filter { it.enabled }.sortedBy { it.modelName }
 
     /**

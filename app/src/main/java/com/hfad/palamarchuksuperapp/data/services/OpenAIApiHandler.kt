@@ -11,6 +11,9 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -20,19 +23,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
-import javax.inject.Inject
 
-abstract class OpenAIApiHandler @Inject constructor(
+class OpenAIApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    override val aiHandler: AiHandler
+    @Assisted override val aiHandler: AiHandler
 ) : AiModelHandler {
-
-//    override val aiHandler: AiHandler = AiHandler(
-//        modelName = AiProviderName.OPENAI,
-//        chosen = true,
-//        enabled = true,
-//        model = AiModel.OPENAI_BASE_MODEL
-//    )
 
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
 
@@ -102,4 +97,9 @@ fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested {
             )
         }
     )
+}
+
+@AssistedFactory
+interface OpenAIApiHandlerFactory {
+    fun create(aiHandler: AiHandler): OpenAIApiHandler
 }

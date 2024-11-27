@@ -7,9 +7,13 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -20,29 +24,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
-import javax.inject.Inject
 
-abstract class GroqApiHandler @Inject constructor(
+class GroqApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
+    @Assisted override val aiHandler: AiHandler,
 ) : AiModelHandler {
 
     private val apiKey = BuildConfig.GROQ_KEY
-
-//override val aiHandler: AiHandler = AiHandler(
-//        model = AiModel.GROQ_BASE_MODEL,
-//        modelName = AiProviderName.GROQ,
-//        chosen = true,
-//        enabled = true
-//    )
-
-    //    private val max_tokens = 1024
-//    private val adminRoleMessage: Message = GroqContentBuilder.Builder().let {
-//        it.role = "system"
-//        it.buildText(
-//            "You are math tutor. User send you image with sample. " +
-//                    "Please provide answer and solve this sample."
-//        )
-//    }
 
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -201,3 +189,8 @@ fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GROQ_BASE_MODEL): Gro
 }
 
 class CodeError(val value: Int) : Exception()
+
+@AssistedFactory
+interface GroqAIApiHandlerFactory {
+    fun create(aiHandler: AiHandler): GroqApiHandler
+}
