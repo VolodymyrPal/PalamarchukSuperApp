@@ -15,6 +15,7 @@ sealed interface AiModel {
     @SerialName(value = "name")
     val modelName: String
     val isSupported: Boolean
+    val llmName : LLMName
 
     companion object {
         val GROQ_BASE_MODEL = GroqModel("llama-3.2-11b-vision-preview")
@@ -25,8 +26,9 @@ sealed interface AiModel {
     @Serializable
     data class GroqModel(
         @SerialName(value = "name")
-        override val modelName: String = "llama-3.2-11b-vision-preview",
-        override val isSupported: Boolean = true
+        override val modelName: String,
+        override val isSupported: Boolean = true,
+        override val llmName: LLMName = LLMName.GROQ
     ) : AiModel
 
     @Serializable
@@ -37,12 +39,14 @@ sealed interface AiModel {
         val description: String = "Gemini is a language model that can generate images using the LLM",
         val supportedGenerationMethods: List<String> = emptyList(),
         override val isSupported: Boolean = supportedGenerationMethods.contains("generateContent"),
+        override val llmName: LLMName = LLMName.GEMINI
     ) : AiModel
 
     @Serializable
     data class OpenAIModel(
         override val modelName: String = "openai-1",
         override val isSupported: Boolean = true,
+        override val llmName: LLMName = LLMName.OPENAI
     ) : AiModel
 
     object AiModelSerializer : JsonContentPolymorphicSerializer<AiModel>(AiModel::class) {
@@ -56,7 +60,8 @@ sealed interface AiModel {
     }
 }
 
-enum class AiProviderName {
+@Serializable
+enum class LLMName {
     OPENAI,
     GEMINI,
     GROQ
