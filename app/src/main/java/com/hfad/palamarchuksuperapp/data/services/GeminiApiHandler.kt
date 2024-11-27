@@ -18,13 +18,14 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.request.get
 
 class GeminiApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    override val aiHandler: AiHandler,
+    @Assisted override val aiHandler: AiHandler,
 ) : AiModelHandler {
 
 
