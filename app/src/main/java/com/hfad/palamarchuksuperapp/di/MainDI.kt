@@ -16,10 +16,6 @@ import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
-import com.hfad.palamarchuksuperapp.data.services.GeminiApiHandler
-import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
-import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandler
-import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
@@ -37,6 +33,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
@@ -54,7 +52,6 @@ import dagger.MapKey
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
-import dagger.multibindings.IntoSet
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.cio.endpoint
@@ -118,17 +115,6 @@ abstract class AiModelHandlerModule {
     @Singleton
     abstract fun provideAiHandlerHandler(aiHandlerRepository: AiHandlerRepositoryImpl): AiHandlerRepository
 
-    @Binds
-    @IntoSet
-    abstract fun provideOpenAiHandler(openAIApiHandler: OpenAIApiHandler): AiModelHandler
-
-    @Binds
-    @IntoSet
-    abstract fun provideGroqApiHandler(groqApiHandler: GroqApiHandler): AiModelHandler
-
-    @Binds
-    @IntoSet
-    abstract fun provideGeminiApiHandler(geminiApiHandler: GeminiApiHandler): AiModelHandler
 
 }
 
@@ -138,6 +124,11 @@ interface UseCaseModule {
     @Singleton
     @Binds
     fun bindAddAiMessageUseCase(addAiMessageUseCaseImpl: AddAiMessageUseCaseImpl): AddAiMessageUseCase
+
+    @Singleton
+    @Binds
+    fun bindMapAiModelHandlerUseCase(mapAiModelHandlerUseCaseImpl: MapAiModelHandlerUseCaseImpl)
+            : MapAiModelHandlerUseCase
 
     @Singleton
     @Binds

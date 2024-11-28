@@ -169,7 +169,6 @@ fun ChatScreen(
                             DropdownMenuItem(
                                 text = { Text(item.modelName) },
                                 onClick = {
-                                    onEvent(ChatBotViewModel.Event.ChangeAiModel(item))
                                     isExpanded.value = false
                                 }
                             )
@@ -213,7 +212,7 @@ fun ChatScreen(
 }
 
 @Composable
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "FunctionNaming")
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
     messagesList: () -> PersistentList<MessageAI> = { persistentListOf() }, // TODO lambda passing

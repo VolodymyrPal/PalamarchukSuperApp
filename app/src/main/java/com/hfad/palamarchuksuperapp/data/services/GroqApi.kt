@@ -135,24 +135,8 @@ data class XGroq(
 )
 
 @Serializable
-data class GroqModelResponse(
-    @SerialName(value = "id")
-    override val modelName: String,
-    //val objectType: String,
-    //val created: Long,
-    //val ownedBy: String,
-    //val active: Boolean,
-    //@SerialName(value = "contextWindow")
-    //val contextWindow: Int,
-    //@SerialName(value = "publicApps")
-    //val publicApps: List<String>?,
-    @SerialName("active")
-    override val isSupported: Boolean = true,
-) : AiModel
-
-@Serializable
 data class GroqModelList(
     @SerialName(value = "object")
     val objectType: String,
-    val data: List<GroqModelResponse>
+    val data: List<AiModel.GroqModel>
 )
