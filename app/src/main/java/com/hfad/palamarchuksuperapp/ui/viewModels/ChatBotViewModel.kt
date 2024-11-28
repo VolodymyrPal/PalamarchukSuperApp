@@ -115,7 +115,6 @@ class ChatBotViewModel @Inject constructor(
         data class SendText(val text: String) : Event()
         data class ShowToast(val message: String) : Event()
         data object GetModels : Event()
-        data class ChangeAiModel(val aiModel: AiModel) : Event()
         data class ChooseSubMessage(val indexOfMessageAi: Int, val message: SubMessageAI) : Event()
     }
 
@@ -129,7 +128,6 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
             is Event.GetModels -> getModels()
-            is Event.ChangeAiModel -> changeAIModel(event.aiModel)
             is Event.ChooseSubMessage -> chooseSubMessage(event.indexOfMessageAi, event.message)
         }
     }
@@ -144,7 +142,7 @@ class ChatBotViewModel @Inject constructor(
                     otherContent = image,
                     type = MessageType.IMAGE
                 ),
-                aiHandlerRepository.handlerList
+                aiHandlerRepository.getHandlerFlow().value
             )
             _loading.update { false }
         }
@@ -159,7 +157,7 @@ class ChatBotViewModel @Inject constructor(
                     content = text,
                     type = MessageType.TEXT
                 ),
-                aiHandlerRepository.handlerList
+                aiHandlerRepository.getHandlerFlow().value
             )
             _loading.update { false }
         }
@@ -169,10 +167,6 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope.launch(mainDispatcher) {
             effect(Effect.ShowToast(message))
         }
-    }
-
-    private fun changeAIModel(model: AiModel) {
-        //TODO
     }
 
     private fun chooseSubMessage(index: Int, message: SubMessageAI) {
