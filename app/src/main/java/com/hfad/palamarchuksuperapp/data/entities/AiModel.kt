@@ -25,8 +25,9 @@ sealed interface AiModel {
 
     @Serializable
     data class GroqModel(
-        @SerialName(value = "name")
+        @SerialName(value = "id")
         override val modelName: String,
+        @SerialName("active")
         override val isSupported: Boolean = true,
         override val llmName: LLMName = LLMName.GROQ
     ) : AiModel
