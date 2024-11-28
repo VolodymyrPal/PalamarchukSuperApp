@@ -138,5 +138,5 @@ data class XGroq(
 data class GroqModelList(
     @SerialName(value = "object")
     val objectType: String,
-    val data: List<GroqModelResponse>
+    val data: List<AiModel.GroqModel>
 )
