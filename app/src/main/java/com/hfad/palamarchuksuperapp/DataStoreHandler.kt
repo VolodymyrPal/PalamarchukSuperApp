@@ -11,7 +11,10 @@ import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-class DataStoreHandler @Inject constructor (val context: Context) {
+class DataStoreHandler @Inject constructor(
+    val context: Context,
+    private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
+) {
     val appSettings = context.appSettingsStore
     val chatScreenInfo = context.chatScreenInfoStore
     val aiHandlerList = context.aiHandlerList
