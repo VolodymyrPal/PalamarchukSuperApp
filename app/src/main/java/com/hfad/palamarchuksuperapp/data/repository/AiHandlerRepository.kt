@@ -2,15 +2,13 @@ package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.LLMName
-import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -25,21 +23,36 @@ class AiHandlerRepositoryImpl @Inject constructor(
     private val getModelsUseCase: GetModelsUseCase,
 ) : AiHandlerRepository {
 
-    override suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> {
-        val a = MutableStateFlow(
-            persistentListOf(
-                mapAiModelHandlerUseCase(
-                    AiHandler(
-                        LLMName.OPENAI,
-                        chosen = true,
-                        enabled = true,
-                        model = AiModel.GROQ_BASE_MODEL
-                    )
-                )
-            )
-        ) //TODO complete list
-        return a
-    }
+    override suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> =
+        MutableStateFlow(
+            dataStoreHandler.getAiHandlerList().toPersistentList()
+//            persistentListOf(
+//                mapAiModelHandlerUseCase(
+//                    AiHandler(
+//                        LLMName.OPENAI,
+//                        chosen = true,
+//                        enabled = true,
+//                        model = AiModel.OPENAI_BASE_MODEL
+//                    )
+//                ),
+//                mapAiModelHandlerUseCase(
+//                    AiHandler(
+//                        LLMName.GEMINI,
+//                        chosen = false,
+//                        enabled = false,
+//                        model = AiModel.GEMINI_BASE_MODEL
+//                    )
+//                ),
+//                mapAiModelHandlerUseCase(
+//                    AiHandler(
+//                        LLMName.GROQ,
+//                        chosen = false,
+//                        enabled = false,
+//                        model = AiModel.GROQ_BASE_MODEL
+//                    )
+//                )
+//            )
+        )
     //apiHandlers.filter { it.enabled }.sortedBy { it.modelName }
 
     /**
