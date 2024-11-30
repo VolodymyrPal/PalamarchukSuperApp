@@ -10,7 +10,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable(with = AiModel.AiModelSerializer::class)
-sealed interface AiModel {
+sealed class AiModel {
 
     @SerialName(value = "name")
     val modelName: String
