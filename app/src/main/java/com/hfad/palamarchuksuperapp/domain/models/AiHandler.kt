@@ -12,3 +12,8 @@ data class AiHandler(
     val enabled : Boolean,
     @Polymorphic val model: AiModel
 )
+
+@Serializable
+data class ListAiModelHandler(
+    val list: List<AiHandler>
+)
