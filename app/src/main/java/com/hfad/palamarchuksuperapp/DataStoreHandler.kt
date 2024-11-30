@@ -33,21 +33,23 @@ class DataStoreHandler @Inject constructor(
 
 
     suspend fun getAiHandlerList(): List<AiModelHandler> {
-        val a = Json.decodeFromString(
-            AiHandler.serializer(),
+        val aiHandlerList = Json.decodeFromString(
+            ListAiModelHandler.serializer(),
             aiHandlerList.data.first()[AI_HANDLER_LIST] ?: Json.encodeToString(
-                AiHandler.serializer(),
-                AiHandler(
-                    llmName = LLMName.OPENAI,
-                    model = AiModel.OPENAI_BASE_MODEL,
-                    chosen = true,
-                    enabled = true
+                ListAiModelHandler.serializer(),
+                ListAiModelHandler(
+                    listOf(
+                        AiHandler(
+                            llmName = LLMName.OPENAI,
+                            model = AiModel.OPENAI_BASE_MODEL,
+                            chosen = true,
+                            enabled = true
+                        )
+                    )
                 )
             )
         )
-        return listOf(
-            mapAiModelHandlerUseCase(a)
-        )
+        return aiHandlerList.list.map { mapAiModelHandlerUseCase(it) }
     }
 }
 
