@@ -61,6 +61,14 @@ sealed interface AiModel {
     }
 }
 
+val aiModelModule = SerializersModule {
+    polymorphic(AiModel::class) {
+        subclass(AiModel.GroqModel::class, AiModel.GroqModel.serializer())
+        subclass(AiModel.GeminiModel::class, AiModel.GeminiModel.serializer())
+        subclass(AiModel.OpenAIModel::class, AiModel.OpenAIModel.serializer())
+    }
+}
+
 @Serializable
 enum class LLMName {
     OPENAI,
