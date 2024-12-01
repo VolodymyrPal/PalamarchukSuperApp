@@ -18,40 +18,13 @@ interface AiHandlerRepository {
 }
 
 class AiHandlerRepositoryImpl @Inject constructor(
-    private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
     private val dataStoreHandler: DataStoreHandler,
     private val getModelsUseCase: GetModelsUseCase,
 ) : AiHandlerRepository {
 
     override suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> =
         MutableStateFlow(
-            dataStoreHandler.getAiHandlerList().toPersistentList()
-//            persistentListOf(
-//                mapAiModelHandlerUseCase(
-//                    AiHandler(
-//                        LLMName.OPENAI,
-//                        chosen = true,
-//                        enabled = true,
-//                        model = AiModel.OPENAI_BASE_MODEL
-//                    )
-//                ),
-//                mapAiModelHandlerUseCase(
-//                    AiHandler(
-//                        LLMName.GEMINI,
-//                        chosen = false,
-//                        enabled = false,
-//                        model = AiModel.GEMINI_BASE_MODEL
-//                    )
-//                ),
-//                mapAiModelHandlerUseCase(
-//                    AiHandler(
-//                        LLMName.GROQ,
-//                        chosen = false,
-//                        enabled = false,
-//                        model = AiModel.GROQ_BASE_MODEL
-//                    )
-//                )
-//            )
+            dataStoreHandler.getAiHandlerList().filter { it.aiHandler.enabled }.toPersistentList()
         )
     //apiHandlers.filter { it.enabled }.sortedBy { it.modelName }
 
