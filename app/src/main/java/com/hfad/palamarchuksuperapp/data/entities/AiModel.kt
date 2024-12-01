@@ -35,7 +35,7 @@ sealed interface AiModel {
     @Serializable
     @SerialName(value = "gemini_model")
     data class GeminiModel(
-        @SerialName(value = "gemini_model_name") override val modelName: String,
+        override val modelName: String,
         val version: String = "1.0.0",
         val displayName: String = "Gemini",
         val description: String = "Gemini is a language model that can generate images using the LLM",
@@ -47,9 +47,7 @@ sealed interface AiModel {
     @Serializable
     @SerialName(value = "openai_model")
     data class OpenAIModel(
-        @SerialName(value = "openai_model_name")
         override val modelName: String = "openai-1",
-        @SerialName("open_is_supported")
         override val isSupported: Boolean = true,
         @SerialName(value = "llmName") override val llmName: LLMName = LLMName.OPENAI,
     ) : AiModel
@@ -65,14 +63,6 @@ sealed interface AiModel {
                     throw SerializationException("Unknown Model type")
                 }
             }
-    }
-}
-
-val aiModelModule = SerializersModule {
-    polymorphic(AiModel::class) {
-        subclass(AiModel.GroqModel::class, AiModel.GroqModel.serializer())
-        subclass(AiModel.GeminiModel::class, AiModel.GeminiModel.serializer())
-        subclass(AiModel.OpenAIModel::class, AiModel.OpenAIModel.serializer())
     }
 }
 
