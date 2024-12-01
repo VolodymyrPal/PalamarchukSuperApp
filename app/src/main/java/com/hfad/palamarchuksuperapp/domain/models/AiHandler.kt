@@ -10,7 +10,7 @@ data class AiHandler(
     val llmName : LLMName,
     val chosen : Boolean,
     val enabled : Boolean,
-    @Polymorphic val model: AiModel
+    val model: AiModel
 )
 
 @Serializable
