@@ -26,13 +26,9 @@ class AiHandlerRepositoryImpl @Inject constructor(
         MutableStateFlow(
             dataStoreHandler.getAiHandlerList().filter { it.aiHandler.enabled }.toPersistentList()
         )
-    //apiHandlers.filter { it.enabled }.sortedBy { it.modelName }
-
     /**
      * Describe how to get handlers and sort them
      */
-    //MutableStateFlow(listOf(OpenAIApiHandler(HttpClient()))).value
-    //handlerSettingStore.aiHandler TODO
 
     override suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError> {
         return getModelsUseCase(handler)
