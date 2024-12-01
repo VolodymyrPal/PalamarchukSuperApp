@@ -34,23 +34,53 @@ class DataStoreHandler @Inject constructor(
         }
 
     suspend fun getAiHandlerList(): List<AiModelHandler> {
-        val aiHandlerList = Json.decodeFromString(
-            ListAiModelHandler.serializer(),
-            aiHandlerList.data.first()[AI_HANDLER_LIST] ?: Json.encodeToString(
-                ListAiModelHandler.serializer(),
-                ListAiModelHandler(
-                    listOf(
-                        AiHandler(
-                            llmName = LLMName.OPENAI,
-                            model = AiModel.OPENAI_BASE_MODEL,
-                            chosen = true,
-                            enabled = true
-                        )
-                    )
+        Log.d("My saved data: ", "${aiHandlerList.data.first()[AI_HANDLER_LIST]}")
+//        Log.d(
+//            "Serialized data: ", "${
+//                Json.decodeFromString(
+//                    ListAiModelHandler.serializer(),
+//                    aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
+//                )
+//            }"
+//        )
+//        return if (aiHandlerList.data.first()[AI_HANDLER_LIST] != null) {
+//            val a = Json.decodeFromString(
+//                ListAiModelHandler.serializer(),
+//                aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
+//            )
+//            mapAiModelHandlerUseCase(
+//                a.list
+//            )
+//        } else {
+        val list = persistentListOf(
+            mapAiModelHandlerUseCase(
+                AiHandler(
+                    LLMName.OPENAI,
+                    chosen = true,
+                    enabled = true,
+                    model = AiModel.OPENAI_BASE_MODEL
+                )
+            ),
+            mapAiModelHandlerUseCase(
+                AiHandler(
+                    LLMName.GEMINI,
+                    chosen = false,
+                    enabled = false,
+                    model = AiModel.GEMINI_BASE_MODEL
+                )
+            ),
+            mapAiModelHandlerUseCase(
+                AiHandler(
+                    LLMName.GROQ,
+                    chosen = false,
+                    enabled = false,
+                    model = AiModel.GROQ_BASE_MODEL
                 )
             )
         )
-        return aiHandlerList.list.map { mapAiModelHandlerUseCase(it) }
+        saveAiHandlerList(list)
+        return list
+        //}
     }
 }
 
