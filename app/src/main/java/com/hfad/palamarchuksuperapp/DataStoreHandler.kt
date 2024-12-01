@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -12,6 +13,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandler
 import com.hfad.palamarchuksuperapp.domain.models.ListAiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -20,17 +22,16 @@ class DataStoreHandler @Inject constructor(
     val context: Context,
     private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
 ) {
-    val appSettings = context.appSettingsStore
-    val chatScreenInfo = context.chatScreenInfoStore
-    val aiHandlerList = context.aiHandlerList
+    private val aiHandlerList = context.aiHandlerList
 
-    suspend fun saveAiHandlerList(list: List<AiModelHandler>) = aiHandlerList.edit { preferences ->
-        val listToSave = ListAiModelHandler(list.map { it.aiHandler })
-        val newList = Json.encodeToString(ListAiModelHandler.serializer(), listToSave)
-        //val newList = list.map { Json.encodeToString(AiHandler.serializer(), it.aiHandler) }
-        preferences[AI_HANDLER_LIST] = newList
-    }
-
+    private suspend fun saveAiHandlerList(list: List<AiModelHandler>) =
+        aiHandlerList.edit { preferences ->
+            val listToSave = ListAiModelHandler(list.map { it.aiHandler })
+            Log.d("Saved list: ", "$listToSave")
+            val newList = Json.encodeToString(ListAiModelHandler.serializer(), listToSave)
+            Log.d("Saved Json list: ", newList)
+            preferences[AI_HANDLER_LIST] = newList
+        }
 
     suspend fun getAiHandlerList(): List<AiModelHandler> {
         val aiHandlerList = Json.decodeFromString(
