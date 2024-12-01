@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.entities
 
+import android.util.Log
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -8,16 +9,14 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 
 @Serializable(with = AiModel.AiModelSerializer::class)
-sealed class AiModel {
+sealed interface AiModel {
 
     @SerialName(value = "name")
-    open val modelName: String = ""
-    open val isSupported: Boolean = false
-    open val llmName : LLMName = LLMName.OPENAI
+    val modelName: String
+    val isSupported: Boolean
+    @SerialName("llmName") val llmName: LLMName
 
     companion object {
         val GROQ_BASE_MODEL = GroqModel("llama-3.2-11b-vision-preview")
