@@ -27,10 +27,10 @@ sealed interface AiModel {
     @Serializable
     @SerialName(value = "groq_model")
     data class GroqModel(
-        @SerialName(value = "id") override val modelName: String,
-        @SerialName("active") override val isSupported: Boolean = true,
-        @SerialName("llmName") override val llmName: LLMName = LLMName.GROQ
-    ) : AiModel()
+        override val modelName: String,
+        override val isSupported: Boolean = true,
+        @SerialName(value = "llmName") override val llmName: LLMName = LLMName.GROQ,
+    ) : AiModel
 
     @Serializable
     @SerialName(value = "gemini_model")
@@ -40,10 +40,9 @@ sealed interface AiModel {
         val displayName: String = "Gemini",
         val description: String = "Gemini is a language model that can generate images using the LLM",
         val supportedGenerationMethods: List<String> = emptyList(),
-        @SerialName("supported_generation_methods")
         override val isSupported: Boolean = supportedGenerationMethods.contains("generateContent"),
-        @SerialName("llmName") override val llmName: LLMName = LLMName.GEMINI
-    ) : AiModel()
+        @SerialName(value = "llmName") override val llmName: LLMName = LLMName.GEMINI,
+    ) : AiModel
 
     @Serializable
     @SerialName(value = "openai_model")
@@ -52,16 +51,19 @@ sealed interface AiModel {
         override val modelName: String = "openai-1",
         @SerialName("open_is_supported")
         override val isSupported: Boolean = true,
-        @SerialName("llmName") override val llmName: LLMName = LLMName.OPENAI
-    ) : AiModel()
+        @SerialName(value = "llmName") override val llmName: LLMName = LLMName.OPENAI,
+    ) : AiModel
 
     object AiModelSerializer : JsonContentPolymorphicSerializer<AiModel>(AiModel::class) {
         override fun selectDeserializer(element: JsonElement) =
             when (element.jsonObject["llmName"]?.jsonPrimitive?.contentOrNull) {
                 LLMName.GROQ.name -> GroqModel.serializer()
                 LLMName.GEMINI.name -> GeminiModel.serializer()
-                LLMName.OPENAI.name-> OpenAIModel.serializer()
-                else -> throw SerializationException("Unknown Model type")
+                LLMName.OPENAI.name -> OpenAIModel.serializer()
+                else -> {
+                    Log.d("Current tag: ", "${element.jsonObject["llmName"]?.jsonPrimitive?.contentOrNull}")
+                    throw SerializationException("Unknown Model type")
+                }
             }
     }
 }
