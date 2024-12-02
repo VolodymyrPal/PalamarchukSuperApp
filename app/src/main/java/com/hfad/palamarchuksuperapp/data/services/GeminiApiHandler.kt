@@ -52,7 +52,7 @@ class GeminiApiHandler @AssistedInject constructor(
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = aiHandler.model)) {
+                httpClient.post(getUrl(model = aiHandler.currentModel)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
@@ -64,7 +64,7 @@ class GeminiApiHandler @AssistedInject constructor(
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = aiHandler.model
+                    model = aiHandler.currentModel
                 )
                 return Result.Success(responseMessage)
             } else {

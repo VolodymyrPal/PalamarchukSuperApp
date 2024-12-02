@@ -26,8 +26,7 @@ class DataStoreHandler @Inject constructor(
 
     private suspend fun saveAiHandlerList(list: List<AiModelHandler>) =
         aiHandlerList.edit { preferences ->
-            val listToSave = ListAiModelHandler(list.map { it.aiHandler })
-            Log.d("Saved list: ", "$listToSave")
+            val listToSave: ListAiModelHandler = ListAiModelHandler(list.map { it.aiHandler })
             val newList = Json.encodeToString(ListAiModelHandler.serializer(), listToSave)
             Log.d("Saved Json list: ", newList)
             preferences[AI_HANDLER_LIST] = newList
@@ -55,26 +54,25 @@ class DataStoreHandler @Inject constructor(
         val list = persistentListOf(
             mapAiModelHandlerUseCase(
                 AiHandler(
-                    LLMName.OPENAI,
+
                     chosen = true,
                     enabled = true,
-                    model = AiModel.OPENAI_BASE_MODEL
+                    currentModel = AiModel.OPENAI_BASE_MODEL
                 )
             ),
             mapAiModelHandlerUseCase(
                 AiHandler(
-                    LLMName.GEMINI,
+
                     chosen = false,
                     enabled = false,
-                    model = AiModel.GEMINI_BASE_MODEL
+                    currentModel = AiModel.GEMINI_BASE_MODEL
                 )
             ),
             mapAiModelHandlerUseCase(
                 AiHandler(
-                    LLMName.GROQ,
                     chosen = false,
                     enabled = false,
-                    model = AiModel.GROQ_BASE_MODEL
+                    currentModel = AiModel.GROQ_BASE_MODEL
                 )
             )
         )
