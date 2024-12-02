@@ -1,69 +1,66 @@
 package com.hfad.palamarchuksuperapp.data.entities
 
-import android.util.Log
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.JsonContentPolymorphicSerializer
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
-@Serializable(with = AiModel.AiModelSerializer::class)
+@Serializable
 sealed interface AiModel {
 
-    @SerialName(value = "name")
+    val llmName: LLMName
     val modelName: String
     val isSupported: Boolean
-    @SerialName("llmName") val llmName: LLMName
 
     companion object {
-        val GROQ_BASE_MODEL = GroqModel("llama-3.2-11b-vision-preview")
-        val GEMINI_BASE_MODEL = GeminiModel("models/gemini-1.5-flash-8b")
-        val OPENAI_BASE_MODEL = OpenAIModel("gpt-4o-mini")
+        val GROQ_BASE_MODEL = GroqModel(llmName = LLMName.GROQ, modelName = "llama-3.2-11b-vision-preview")
+        val GEMINI_BASE_MODEL = GeminiModel(llmName = LLMName.GEMINI, modelName = "models/gemini-1.5-flash-8b")
+        val OPENAI_BASE_MODEL = OpenAIModel(llmName = LLMName.OPENAI, modelName = "gpt-4o-mini")
     }
 
     @Serializable
-    @SerialName(value = "groq_model")
-    data class GroqModel(
-        override val modelName: String,
+    data class GroqModel @OptIn(ExperimentalSerializationApi::class) constructor(
+        @SerialName("LLM")
+        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        override val llmName: LLMName = LLMName.GROQ,
+        @SerialName("name")
+        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        override val modelName: String = "llama-3.2-11b-vision-preview",
+        @SerialName("isSupported")
+        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
         override val isSupported: Boolean = true,
-        @SerialName(value = "llmName") override val llmName: LLMName = LLMName.GROQ,
     ) : AiModel
 
     @Serializable
-    @SerialName(value = "gemini_model")
-    data class GeminiModel(
-        override val modelName: String,
+    data class GeminiModel @OptIn(ExperimentalSerializationApi::class) constructor(
+        @SerialName("LLM")
+        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        override val llmName: LLMName = LLMName.GEMINI,
+        @SerialName("name")
+        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        override val modelName: String = "models/gemini-1.5-flash-8b",
         val version: String = "1.0.0",
         val displayName: String = "Gemini",
         val description: String = "Gemini is a language model that can generate images using the LLM",
         val supportedGenerationMethods: List<String> = emptyList(),
+        @SerialName("isSupported")
+        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
         override val isSupported: Boolean = supportedGenerationMethods.contains("generateContent"),
-        @SerialName(value = "llmName") override val llmName: LLMName = LLMName.GEMINI,
     ) : AiModel
 
     @Serializable
-    @SerialName(value = "openai_model")
-    data class OpenAIModel(
+    data class OpenAIModel @OptIn(ExperimentalSerializationApi::class) constructor(
+        @SerialName("LLM")
+        @Required
+        override val llmName: LLMName = LLMName.OPENAI,
+        @SerialName("name")
+        @Required
         override val modelName: String = "openai-1",
+        @SerialName("isSupported")
+        @Required
         override val isSupported: Boolean = true,
-        @SerialName(value = "llmName") override val llmName: LLMName = LLMName.OPENAI,
     ) : AiModel
-
-    object AiModelSerializer : JsonContentPolymorphicSerializer<AiModel>(AiModel::class) {
-        override fun selectDeserializer(element: JsonElement) =
-            when (element.jsonObject["llmName"]?.jsonPrimitive?.contentOrNull) {
-                LLMName.GROQ.name -> GroqModel.serializer()
-                LLMName.GEMINI.name -> GeminiModel.serializer()
-                LLMName.OPENAI.name -> OpenAIModel.serializer()
-                else -> {
-                    Log.d("Current tag: ", "${element.jsonObject["llmName"]?.jsonPrimitive?.contentOrNull}")
-                    throw SerializationException("Unknown Model type")
-                }
-            }
-    }
 }
 
 @Serializable
