@@ -19,7 +19,7 @@ class MapAiModelHandlerUseCaseImpl @Inject constructor(
     private val openAIApiHandlerFactory: OpenAIApiHandlerFactory
 ) : MapAiModelHandlerUseCase {
     override suspend fun invoke(aiHandler: AiHandler): AiModelHandler {
-        return when (aiHandler.llmName) {
+        return when (aiHandler.currentModel.llmName) {
             LLMName.GROQ -> {
                 groqAIApiHandlerFactory.create(aiHandler)
             }
