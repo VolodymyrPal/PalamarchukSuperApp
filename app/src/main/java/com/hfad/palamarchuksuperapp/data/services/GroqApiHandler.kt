@@ -39,9 +39,9 @@ class GroqApiHandler @AssistedInject constructor(
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(aiHandler.model)
+            messageList.last().toGroqRequest(aiHandler.currentModel)
         } else {
-            messageList.toGroqRequest(aiHandler.model)
+            messageList.toGroqRequest(aiHandler.currentModel)
         }
 
         val request = httpClient.post(url) {
@@ -57,7 +57,7 @@ class GroqApiHandler @AssistedInject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = aiHandler.model
+                    model = aiHandler.currentModel
                 )
                 return Result.Success(responseMessage)
             } else {
