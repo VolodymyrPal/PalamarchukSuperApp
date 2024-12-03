@@ -7,7 +7,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
-import com.hfad.palamarchuksuperapp.domain.models.AiHandler
+import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -27,7 +27,7 @@ import kotlinx.collections.immutable.PersistentList
 
 class GroqApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    @Assisted override val aiHandler: AiHandler,
+    @Assisted override val aiHandlerInfo: AiHandlerInfo,
 ) : AiModelHandler {
 
     private val apiKey = BuildConfig.GROQ_KEY
@@ -39,9 +39,9 @@ class GroqApiHandler @AssistedInject constructor(
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(aiHandler.currentModel)
+            messageList.last().toGroqRequest(aiHandlerInfo.model)
         } else {
-            messageList.toGroqRequest(aiHandler.currentModel)
+            messageList.toGroqRequest(aiHandlerInfo.model)
         }
 
         val request = httpClient.post(url) {
@@ -57,7 +57,7 @@ class GroqApiHandler @AssistedInject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = aiHandler.currentModel
+                    model = aiHandlerInfo.model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -192,5 +192,5 @@ class CodeError(val value: Int) : Exception()
 
 @AssistedFactory
 interface GroqAIApiHandlerFactory {
-    fun create(aiHandler: AiHandler): GroqApiHandler
+    fun create(aiHandlerInfo: AiHandlerInfo): GroqApiHandler
 }
