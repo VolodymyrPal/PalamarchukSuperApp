@@ -6,7 +6,6 @@ import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +23,7 @@ class AiHandlerRepositoryImpl @Inject constructor(
 
     override suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> =
         MutableStateFlow(
-            dataStoreHandler.getAiHandlerList().filter { it.aiHandler.enabled }.toPersistentList()
+            dataStoreHandler.getAiHandlerList().filter { it.aiHandlerInfo.isActive }.toPersistentList()
         )
     /**
      * Describe how to get handlers and sort them

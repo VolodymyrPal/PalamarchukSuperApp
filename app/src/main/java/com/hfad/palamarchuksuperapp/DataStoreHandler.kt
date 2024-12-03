@@ -7,14 +7,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.LLMName
-import com.hfad.palamarchuksuperapp.domain.models.AiHandler
-import com.hfad.palamarchuksuperapp.domain.models.ListAiModelHandler
+import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
@@ -26,59 +23,29 @@ class DataStoreHandler @Inject constructor(
 
     private suspend fun saveAiHandlerList(list: List<AiModelHandler>) =
         aiHandlerList.edit { preferences ->
-            val listToSave: ListAiModelHandler = ListAiModelHandler(list.map { it.aiHandler })
-            val newList = Json.encodeToString(ListAiModelHandler.serializer(), listToSave)
-            Log.d("Saved Json list: ", newList)
-            preferences[AI_HANDLER_LIST] = newList
+            val jsonToSave = Json.encodeToString(list.map { it.aiHandlerInfo })
+            Log.d("DataStoreHandler", "saveAiHandlerList: $jsonToSave")
+            preferences[AI_HANDLER_LIST] = jsonToSave
         }
 
     suspend fun getAiHandlerList(): List<AiModelHandler> {
-        Log.d("My saved data: ", "${aiHandlerList.data.first()[AI_HANDLER_LIST]}")
-//        Log.d(
-//            "Serialized data: ", "${
-//                Json.decodeFromString(
-//                    ListAiModelHandler.serializer(),
-//                    aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
-//                )
-//            }"
-//        )
-//        return if (aiHandlerList.data.first()[AI_HANDLER_LIST] != null) {
-//            val a = Json.decodeFromString(
-//                ListAiModelHandler.serializer(),
-//                aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
-//            )
-//            mapAiModelHandlerUseCase(
-//                a.list
-//            )
-//        } else {
-        val list = persistentListOf(
-            mapAiModelHandlerUseCase(
-                AiHandler(
-
-                    chosen = true,
-                    enabled = true,
-                    currentModel = AiModel.OPENAI_BASE_MODEL
-                )
-            ),
-            mapAiModelHandlerUseCase(
-                AiHandler(
-
-                    chosen = false,
-                    enabled = false,
-                    currentModel = AiModel.GEMINI_BASE_MODEL
-                )
-            ),
-            mapAiModelHandlerUseCase(
-                AiHandler(
-                    chosen = false,
-                    enabled = false,
-                    currentModel = AiModel.GROQ_BASE_MODEL
+        return if (!aiHandlerList.data.first()[AI_HANDLER_LIST].isNullOrBlank()) {
+            Log.d(
+                "DataStoreHandler",
+                "getAiHandlerList: ${aiHandlerList.data.first()[AI_HANDLER_LIST]}"
+            )
+            val a = mapAiModelHandlerUseCase(
+                Json.decodeFromString<List<AiHandlerInfo>>(
+                    aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
                 )
             )
-        )
-        saveAiHandlerList(list)
-        return list
-        //}
+            a
+        } else {
+            val list = AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO
+            val listAiHandlerInfo = mapAiModelHandlerUseCase(list)
+            saveAiHandlerList(listAiHandlerInfo)
+            listAiHandlerInfo
+        }
     }
 }
 

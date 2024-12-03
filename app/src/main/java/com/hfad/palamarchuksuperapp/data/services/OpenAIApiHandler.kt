@@ -7,7 +7,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
-import com.hfad.palamarchuksuperapp.domain.models.AiHandler
+import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -26,7 +26,7 @@ import kotlinx.collections.immutable.PersistentList
 
 class OpenAIApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    @Assisted override val aiHandler: AiHandler
+    @Assisted override val aiHandlerInfo: AiHandlerInfo
 ) : AiModelHandler {
 
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
@@ -34,7 +34,7 @@ class OpenAIApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
     ): Result<SubMessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = aiHandler.currentModel)
+        val gptRequest = messageList.toOpenAIRequest(model = aiHandlerInfo.model)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
@@ -47,7 +47,7 @@ class OpenAIApiHandler @AssistedInject constructor(
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = SubMessageAI(
                     message = openAIResponse.choices[0].message.content,
-                    model = aiHandler.currentModel
+                    model = aiHandlerInfo.model
                 )
                 Result.Success(responseMessage)
             } else {
@@ -101,5 +101,5 @@ fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested {
 
 @AssistedFactory
 interface OpenAIApiHandlerFactory {
-    fun create(aiHandler: AiHandler): OpenAIApiHandler
+    fun create(aiHandlerInfo: AiHandlerInfo): OpenAIApiHandler
 }

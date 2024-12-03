@@ -6,7 +6,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
-import com.hfad.palamarchuksuperapp.domain.models.AiHandler
+import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
@@ -25,7 +25,7 @@ import io.ktor.client.request.get
 
 class GeminiApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    @Assisted override val aiHandler: AiHandler,
+    @Assisted override val aiHandlerInfo: AiHandlerInfo,
 ) : AiModelHandler {
 
 
@@ -52,7 +52,7 @@ class GeminiApiHandler @AssistedInject constructor(
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = aiHandler.currentModel)) {
+                httpClient.post(getUrl(model = aiHandlerInfo.model)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
@@ -64,7 +64,7 @@ class GeminiApiHandler @AssistedInject constructor(
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = aiHandler.currentModel
+                    model = aiHandlerInfo.model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -122,5 +122,5 @@ fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
 
 @AssistedFactory
 interface GeminiAIApiHandlerFactory {
-    fun create(aiHandler: AiHandler): GeminiApiHandler
+    fun create(aiHandlerInfo: AiHandlerInfo): GeminiApiHandler
 }
