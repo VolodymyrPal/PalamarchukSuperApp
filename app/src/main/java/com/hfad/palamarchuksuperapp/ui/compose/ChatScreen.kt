@@ -296,8 +296,13 @@ fun MessageBox(
         state = pagerState,
         // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) { page ->
-        LaunchedEffect(page) {
-            event(ChatBotViewModel.Event.ChooseSubMessage(boxIndex, subMessageList[page]))
+        LaunchedEffect(pagerState.currentPage) {
+            event(
+                ChatBotViewModel.Event.ChooseSubMessage(
+                    boxIndex,
+                    subMessageList[pagerState.currentPage]
+                )
+            )
         }
         when (subMessageList[page].otherContent == null) {
             true -> {
