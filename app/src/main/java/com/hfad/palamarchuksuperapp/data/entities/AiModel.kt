@@ -1,7 +1,5 @@
 package com.hfad.palamarchuksuperapp.data.entities
 
-import kotlinx.serialization.EncodeDefault
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -20,37 +18,37 @@ sealed interface AiModel {
     }
 
     @Serializable
-    data class GroqModel @OptIn(ExperimentalSerializationApi::class) constructor(
+    data class GroqModel(
         @SerialName("LLM")
-        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        @Required
         override val llmName: LLMName = LLMName.GROQ,
         @SerialName("name")
-        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        @Required
         override val modelName: String = "llama-3.2-11b-vision-preview",
         @SerialName("isSupported")
-        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        @Required
         override val isSupported: Boolean = true,
     ) : AiModel
 
     @Serializable
-    data class GeminiModel @OptIn(ExperimentalSerializationApi::class) constructor(
+    data class GeminiModel(
         @SerialName("LLM")
-        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        @Required
         override val llmName: LLMName = LLMName.GEMINI,
         @SerialName("name")
-        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        @Required
         override val modelName: String = "models/gemini-1.5-flash-8b",
         val version: String = "1.0.0",
         val displayName: String = "Gemini",
         val description: String = "Gemini is a language model that can generate images using the LLM",
         val supportedGenerationMethods: List<String> = emptyList(),
         @SerialName("isSupported")
-        @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+        @Required
         override val isSupported: Boolean = supportedGenerationMethods.contains("generateContent"),
     ) : AiModel
 
     @Serializable
-    data class OpenAIModel @OptIn(ExperimentalSerializationApi::class) constructor(
+    data class OpenAIModel(
         @SerialName("LLM")
         @Required
         override val llmName: LLMName = LLMName.OPENAI,
