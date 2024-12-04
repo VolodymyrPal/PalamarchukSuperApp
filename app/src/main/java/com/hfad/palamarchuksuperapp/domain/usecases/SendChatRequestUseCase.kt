@@ -58,6 +58,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
 
             val messageToAdd = MessageAI(
+                id = listToSend.size,
                 role = Role.MODEL,
                 content = loadingContent,
                 type = MessageType.TEXT
