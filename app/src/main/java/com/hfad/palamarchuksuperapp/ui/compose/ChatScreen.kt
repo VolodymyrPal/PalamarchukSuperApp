@@ -258,7 +258,7 @@ fun LazyChatScreen(
                         subMessageList = messagesList()[it].content,
                         isUser = messagesList()[it].role == Role.USER,
                         event = event,
-                        boxIndex = it
+                        messageAiIndex = { it }
                     )
                 }
 
@@ -288,7 +288,7 @@ fun MessageBox(
     subMessageList: PersistentList<SubMessageAI> = persistentListOf(SubMessageAI(message = "test")),
     isUser: Boolean = true,
     event: (ChatBotViewModel.Event) -> Unit,
-    boxIndex: Int = 0, // TODO better solution to find
+    messageAiIndex: () -> Int = { 0 },
     pagerState: PagerState = rememberPagerState(pageCount = { subMessageList.size }),
 ) {
     HorizontalPager(
@@ -299,8 +299,8 @@ fun MessageBox(
         LaunchedEffect(pagerState.currentPage) {
             event(
                 ChatBotViewModel.Event.ChooseSubMessage(
-                    boxIndex,
-                    subMessageList[pagerState.currentPage]
+                    messageAiIndex(),
+                    pagerState.currentPage
                 )
             )
         }
