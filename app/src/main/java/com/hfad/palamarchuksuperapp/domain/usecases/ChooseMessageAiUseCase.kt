@@ -1,30 +1,28 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 interface ChooseMessageAiUseCase {
-    suspend operator fun invoke (subMessageAI: SubMessageAI, indexOfMessage: Int)
+    suspend operator fun invoke(messageAiIndex: Int, subMessageAiIndex: Int)
 }
 
 class ChooseMessageAiUseCaseImpl @Inject constructor(
     private val getAiChatUseCase: GetAiChatUseCase,
-    private val updateMessageUseCase: UpdateAiMessageUseCase
+    private val updateMessageUseCase: UpdateAiMessageUseCase,
 ) : ChooseMessageAiUseCase {
-    override suspend operator fun invoke(subMessageAI: SubMessageAI, indexOfMessage: Int) {
-        val list = getAiChatUseCase().first()
-        val message = list[indexOfMessage]
-        val listSubMessageAI = message.content.toMutableList()
-        val chosenMessage = listSubMessageAI.map {subMessage ->
-            if (subMessage == subMessageAI) {
-                subMessage.copy(isChosen = true)
-            } else {
-                subMessage.copy(isChosen = false)
-            }
-        }.toPersistentList()
-
-        updateMessageUseCase(chosenMessage, indexOfMessage)
+    override suspend operator fun invoke(messageAiIndex: Int, subMessageAiIndex: Int) {
+        val currentList = getAiChatUseCase().value.toMutableList().also { list ->
+            list[messageAiIndex] = list[messageAiIndex].copy(
+                content = getAiChatUseCase().value[messageAiIndex].content.map {
+                    if (it.id == subMessageAiIndex) {
+                        it.copy(isChosen = true)
+                    } else it.copy(
+                        isChosen = false
+                    )
+                }.toPersistentList()
+            )
+        }
+        updateMessageUseCase(currentList.toPersistentList())
     }
 }
