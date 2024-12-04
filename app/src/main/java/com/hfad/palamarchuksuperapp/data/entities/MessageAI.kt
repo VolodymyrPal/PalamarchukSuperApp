@@ -7,13 +7,15 @@ import kotlinx.datetime.Clock
 typealias Base64 = String
 
 data class MessageAI(
+    val id: Int = 0,
     val role: Role = Role.USER,
     val content: PersistentList<SubMessageAI> = persistentListOf(),
     val type: MessageType = MessageType.TEXT,
 ) {
     constructor(
-        role: Role = Role.USER, content: String, type: MessageType = MessageType.TEXT,
+        id: Int, role: Role = Role.USER, content: String, type: MessageType = MessageType.TEXT,
     ) : this(
+        id = id,
         role = role,
         content = persistentListOf(
             SubMessageAI(
@@ -25,11 +27,13 @@ data class MessageAI(
     )
 
     constructor(
+        id: Int,
         role: Role = Role.USER,
         content: String,
         otherContent: Base64,
         type: MessageType = MessageType.IMAGE,
     ) : this(
+        id = id,
         role = role,
         content = persistentListOf(
             SubMessageAI(
@@ -49,7 +53,7 @@ data class SubMessageAI(
     val otherContent: MessageAiContent? = null,
     val model: AiModel? = null,
     val isChosen: Boolean = false,
-    val loading: Boolean = false
+    val loading: Boolean = false,
 )
 
 sealed class MessageAiContent {

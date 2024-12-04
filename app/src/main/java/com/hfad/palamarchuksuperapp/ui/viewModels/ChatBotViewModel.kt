@@ -2,13 +2,13 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import IoDispatcher
 import MainDispatcher
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
@@ -115,7 +115,7 @@ class ChatBotViewModel @Inject constructor(
         data class SendText(val text: String) : Event()
         data class ShowToast(val message: String) : Event()
         data object GetModels : Event()
-        data class ChooseSubMessage(val indexOfMessageAi: Int, val message: SubMessageAI) : Event()
+        data class ChooseSubMessage(val messageAiIndex: Int, val subMessageIndex: Int) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -128,7 +128,7 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
             is Event.GetModels -> getModels()
-            is Event.ChooseSubMessage -> chooseSubMessage(event.indexOfMessageAi, event.message)
+            is Event.ChooseSubMessage -> chooseSubMessage(event.messageAiIndex, event.subMessageIndex)
         }
     }
 
@@ -137,10 +137,11 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { true }
             sendChatRequestUseCase(
                 MessageAI(
+                    id = getAiChatUseCase().value.size,
                     role = Role.USER,
                     content = text,
                     otherContent = image,
-                    type = MessageType.IMAGE
+                    type = MessageType.IMAGE,
                 ),
                 aiHandlerRepository.getHandlerFlow().value
             )
@@ -153,6 +154,7 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { true }
             sendChatRequestUseCase(
                 MessageAI(
+                    id = getAiChatUseCase().value.size,
                     role = Role.USER,
                     content = text,
                     type = MessageType.TEXT
@@ -169,9 +171,9 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun chooseSubMessage(index: Int, message: SubMessageAI) {
+    private fun chooseSubMessage(messageAiIndex: Int, subMessageIndex: Int) {
         viewModelScope.launch(ioDispatcher) {
-            chooseMessageAiUseCase(message, index)
+            chooseMessageAiUseCase(messageAiIndex, subMessageIndex)
         }
     }
     private fun getModels() {

@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 interface UpdateAiMessageUseCase {
     suspend operator fun invoke(list: PersistentList<MessageAI>)
-    suspend operator fun invoke(listSubMessageAI: PersistentList<SubMessageAI>, messageIndex: Int)
+    suspend operator fun invoke(listSubMessageAI: PersistentList<SubMessageAI>, messageAiIndex: Int)
     suspend operator fun invoke(message: MessageAI, messageIndex: Int)
 }
 
@@ -21,9 +21,9 @@ class UpdateAiMessageUseCaseImpl @Inject constructor(
 
     override suspend operator fun invoke(
         listSubMessageAI: PersistentList<SubMessageAI>,
-        messageIndex: Int,
+        messageAiIndex: Int,
     ) {
-        chatAiRepository.updateSubMessage(messageIndex, listSubMessageAI)
+        chatAiRepository.updateSubMessage(messageAiIndex, listSubMessageAI)
     }
 
     override suspend fun invoke(message: MessageAI, messageIndex: Int) {
