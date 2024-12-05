@@ -21,7 +21,9 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -139,7 +141,19 @@ fun MyNavigationDrawer(
                 }
 
                 Box(modifier = mainGestureModifier) {
-                    content()
+                    val offset by remember {
+                        derivedStateOf {
+                            -(fullWidth - subDrawerOffset - drawerWidthPx - mainDrawerOffset)
+                        }
+                    }
+                    Box(modifier = Modifier.offset {
+                        IntOffset(
+                            offset.toInt(),
+                            0
+                        )
+                    }) {
+                        content()
+                    }
 
 
                     if (mainDrawerState.isOpen) {
