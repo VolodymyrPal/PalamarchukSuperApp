@@ -59,7 +59,15 @@ fun MyNavigationDrawer(
                 gesturesEnabled = gesturesEnabled,
                 drawerState = mainDrawerState,
                 leftToRightSide = true,
-                content = { content() },
+                content = {
+                    Box(modifier = Modifier.offset {
+                        IntOffset(
+                            x = mainDrawerState.currentOffset.toInt(),
+                            y = 0
+                        )
+                    })
+                    content()
+                },
             ) {
                 mainDrawerContent()
             }
@@ -73,7 +81,15 @@ fun MyNavigationDrawer(
                 gesturesEnabled = gesturesEnabled,
                 drawerState = mainDrawerState,
                 leftToRightSide = false,
-                content = { content() },
+                content = {
+                    Box(modifier = Modifier.offset {
+                        IntOffset(
+                            x = -mainDrawerState.currentOffset.toInt(),
+                            y = 0
+                        )
+                    })
+                    content()
+                },
             ) {
                 mainDrawerContent()
             }
@@ -191,15 +207,15 @@ fun DrawerBox(
 
         val drawerOffset by animateFloatAsState(
             targetValue =
-            when (leftToRightSide) {
-                true -> {
-                    if (drawerState.isOpen) 0f else -drawerWidthPx
-                }
+                when (leftToRightSide) {
+                    true -> {
+                        if (drawerState.isOpen) 0f else -drawerWidthPx
+                    }
 
-                else -> {
-                    if (drawerState.isOpen) fullWidth - drawerWidthPx else fullWidth
-                }
-            },
+                    else -> {
+                        if (drawerState.isOpen) fullWidth - drawerWidthPx else fullWidth
+                    }
+                },
             label = "drawerOffset",
         )
 
