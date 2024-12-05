@@ -557,5 +557,6 @@ fun ChatScreenPreview() {
     ChatScreen(
         modifier = Modifier.fillMaxSize(),
         onEvent = {},
+        navController = null
     )
 }
