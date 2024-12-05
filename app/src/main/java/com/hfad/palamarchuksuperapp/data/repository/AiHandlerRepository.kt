@@ -9,10 +9,11 @@ import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 interface AiHandlerRepository {
-    suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>>
+    suspend fun getHandlerFlow(): StateFlow<PersistentList<AiModelHandler>>
     suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError>
 }
 
@@ -21,9 +22,9 @@ class AiHandlerRepositoryImpl @Inject constructor(
     private val getModelsUseCase: GetModelsUseCase,
 ) : AiHandlerRepository {
 
-    override suspend fun getHandlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> =
-        MutableStateFlow(
-            dataStoreHandler.getAiHandlerList().filter { it.aiHandlerInfo.isActive }.toPersistentList()
+    override suspend fun getHandlerFlow(): StateFlow<PersistentList<AiModelHandler>> =
+        _handlerFlow()
+
     suspend fun _handlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> {
         return MutableStateFlow(
             dataStoreHandler.getAiHandlerList().filter { it.aiHandlerInfo.isActive }
