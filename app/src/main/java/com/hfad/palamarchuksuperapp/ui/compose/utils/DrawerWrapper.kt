@@ -21,7 +21,9 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,7 +61,15 @@ fun MyNavigationDrawer(
                 gesturesEnabled = gesturesEnabled,
                 drawerState = mainDrawerState,
                 leftToRightSide = true,
-                content = { content() },
+                content = {
+                    Box(modifier = Modifier.offset {
+                        IntOffset(
+                            x = mainDrawerState.currentOffset.toInt(),
+                            y = 0
+                        )
+                    })
+                    content()
+                },
             ) {
                 mainDrawerContent()
             }
@@ -73,7 +83,15 @@ fun MyNavigationDrawer(
                 gesturesEnabled = gesturesEnabled,
                 drawerState = mainDrawerState,
                 leftToRightSide = false,
-                content = { content() },
+                content = {
+                    Box(modifier = Modifier.offset {
+                        IntOffset(
+                            x = -mainDrawerState.currentOffset.toInt(),
+                            y = 0
+                        )
+                    })
+                    content()
+                },
             ) {
                 mainDrawerContent()
             }
@@ -123,7 +141,19 @@ fun MyNavigationDrawer(
                 }
 
                 Box(modifier = mainGestureModifier) {
-                    content()
+                    val offset by remember {
+                        derivedStateOf {
+                            -(fullWidth - subDrawerOffset - drawerWidthPx - mainDrawerOffset)
+                        }
+                    }
+                    Box(modifier = Modifier.offset {
+                        IntOffset(
+                            offset.toInt(),
+                            0
+                        )
+                    }) {
+                        content()
+                    }
 
 
                     if (mainDrawerState.isOpen) {
@@ -191,15 +221,15 @@ fun DrawerBox(
 
         val drawerOffset by animateFloatAsState(
             targetValue =
-            when (leftToRightSide) {
-                true -> {
-                    if (drawerState.isOpen) 0f else -drawerWidthPx
-                }
+                when (leftToRightSide) {
+                    true -> {
+                        if (drawerState.isOpen) 0f else -drawerWidthPx
+                    }
 
-                else -> {
-                    if (drawerState.isOpen) fullWidth - drawerWidthPx else fullWidth
-                }
-            },
+                    else -> {
+                        if (drawerState.isOpen) fullWidth - drawerWidthPx else fullWidth
+                    }
+                },
             label = "drawerOffset",
         )
 
