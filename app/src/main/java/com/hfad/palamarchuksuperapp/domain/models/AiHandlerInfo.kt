@@ -1,10 +1,12 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
+import androidx.compose.runtime.Stable
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Stable
 data class AiHandlerInfo(
     val name: String,
     val isSelected: Boolean,
