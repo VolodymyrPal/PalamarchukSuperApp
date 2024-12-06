@@ -29,15 +29,11 @@ class AiHandlerRepositoryImpl @Inject constructor(
     override suspend fun getHandlerFlow(): StateFlow<PersistentList<AiModelHandler>> =
         _handlerFlow()
 
-    suspend fun _handlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> {
+    private suspend fun _handlerFlow(): MutableStateFlow<PersistentList<AiModelHandler>> {
         return MutableStateFlow(
-            dataStoreHandler.getAiHandlerList().filter { it.aiHandlerInfo.isActive }
-                .toPersistentList()
+            dataStoreHandler.getAiHandlerList().toPersistentList()
         )
     }
-    /**
-     * Describe how to get handlers and sort them
-     */
 
     override suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError> {
         return getModelsUseCase(handler)
