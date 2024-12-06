@@ -10,11 +10,15 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 interface AiHandlerRepository {
     suspend fun getHandlerFlow(): StateFlow<PersistentList<AiModelHandler>>
     suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError>
+    suspend fun addHandler(handler: AiModelHandler)
+    suspend fun removeHandler(handler: AiModelHandler)
+    suspend fun updateHandlers(handlers: List<AiModelHandler>)
 }
 
 class AiHandlerRepositoryImpl @Inject constructor(
@@ -37,6 +41,28 @@ class AiHandlerRepositoryImpl @Inject constructor(
 
     override suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError> {
         return getModelsUseCase(handler)
+    }
+
+    override suspend fun addHandler(handler: AiModelHandler) {
+        _handlerFlow().update {
+            it.add(handler)
+        }
+        dataStoreHandler.saveAiHandlerList(_handlerFlow().value)
+    }
+
+    override suspend fun removeHandler(handler: AiModelHandler) {
+        _handlerFlow().update {
+            it.remove(handler)
+        }
+        dataStoreHandler.saveAiHandlerList(_handlerFlow().value)
+
+    }
+
+    override suspend fun updateHandlers(handlers: List<AiModelHandler>) {
+        _handlerFlow().update {
+            handlers.toPersistentList()
+        }
+        dataStoreHandler.saveAiHandlerList(_handlerFlow().value)
     }
 
 }
