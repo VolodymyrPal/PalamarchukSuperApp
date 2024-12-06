@@ -241,6 +241,7 @@ fun LazyChatScreen(
 
     LaunchedEffect(messagesList().size) { //TODO lambda invoke
         launch {
+            Log.d("LazyChatScreen", "LazyChatScreen: ${messagesList().size}")
             state.animateScrollToItem(messagesList().lastIndex + 3)
         }
     }
