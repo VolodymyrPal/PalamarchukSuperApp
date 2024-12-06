@@ -21,7 +21,7 @@ class DataStoreHandler @Inject constructor(
 ) {
     private val aiHandlerList = context.aiHandlerList
 
-    private suspend fun saveAiHandlerList(list: List<AiModelHandler>) =
+    suspend fun saveAiHandlerList(list: List<AiModelHandler>) =
         aiHandlerList.edit { preferences ->
             val jsonToSave = Json.encodeToString(list.map { it.aiHandlerInfo })
             Log.d("DataStoreHandler", "saveAiHandlerList: $jsonToSave")
@@ -30,16 +30,11 @@ class DataStoreHandler @Inject constructor(
 
     suspend fun getAiHandlerList(): List<AiModelHandler> {
         return if (!aiHandlerList.data.first()[AI_HANDLER_LIST].isNullOrBlank()) {
-            Log.d(
-                "DataStoreHandler",
-                "getAiHandlerList: ${aiHandlerList.data.first()[AI_HANDLER_LIST]}"
-            )
-            val a = mapAiModelHandlerUseCase(
+            mapAiModelHandlerUseCase(
                 Json.decodeFromString<List<AiHandlerInfo>>(
                     aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
                 )
             )
-            a
         } else {
             val list = AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO
             val listAiHandlerInfo = mapAiModelHandlerUseCase(list)
