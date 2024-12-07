@@ -84,6 +84,7 @@ import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -328,11 +329,7 @@ fun MessageBox(
                         Column(
                             verticalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            RichText {
-                                Markdown(
-                                    subMessageList[page].message.trimEnd(),
-                                )
-                            }
+                            MarkdownText(subMessageList[page].message.trimEnd())
                             if (subMessageList[page].model != null) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
