@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -74,8 +75,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.halilibo.richtext.commonmark.Markdown
-import com.halilibo.richtext.ui.material3.RichText
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
@@ -241,7 +240,6 @@ fun LazyChatScreen(
 
     LaunchedEffect(messagesList().size) { //TODO lambda invoke
         launch {
-            Log.d("LazyChatScreen", "LazyChatScreen: ${messagesList().size}")
             state.animateScrollToItem(messagesList().lastIndex + 3)
         }
     }
@@ -252,17 +250,18 @@ fun LazyChatScreen(
         state = state,
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
-        items(messagesList().size) {
-            when (messagesList()[it].type) {
+        items(messagesList(),
+            key = { it.id }
+        ) {
+            when (it.type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        subMessageList = messagesList()[it].content,
-                        isUser = messagesList()[it].role == Role.USER,
+                        subMessageList = it.content,
+                        isUser = it.role == Role.USER,
                         event = event,
-                        messageAiIndex = { it }
+                        messageAiIndex = { it.id }
                     )
                 }
-
                 else -> {
 
                 }
