@@ -220,6 +220,17 @@ fun ChatScreen(
                 }
             )
         },
+        bottomBar = {
+            RequestPanel(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp, 0.dp, 15.dp, 5.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                onEvent = onEvent,
+                loading = myState.value.isLoading,
+                scrollBehavior = scrollBehavior
+            )
         }
     ) { paddingValues ->
         Surface(
