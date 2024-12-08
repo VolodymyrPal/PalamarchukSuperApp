@@ -433,112 +433,120 @@ fun MessageBox(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestPanel(
     modifier: Modifier = Modifier,
     onEvent: (ChatBotViewModel.Event) -> Unit = {},
     loading: Boolean = false,
     promptText: MutableState<String> = rememberSaveable { mutableStateOf("") },
+    scrollBehavior: BottomAppBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior(),
 ) {
-
-    Row(
+    BottomAppBar(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        scrollBehavior = scrollBehavior
     ) {
-        val context = LocalContext.current
-        val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
-        val galleryLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
-        ) { uri ->
-            uri?.let {
-                imageBitmap.value = context.contentResolver.openInputStream(uri)?.use {
-                    BitmapFactory.decodeStream(it)
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val context = LocalContext.current
+            val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
+            val galleryLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri ->
+                uri?.let {
+                    imageBitmap.value = context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it)
+                    }
                 }
             }
-        }
 
-        IconButton(
-            modifier = Modifier
-                .weight(0.1f)
-                .align(Alignment.Bottom),
-            colors = IconButtonColors(
-                Color.Transparent,
-                MaterialTheme.colorScheme.onPrimaryContainer,
-                Color.Transparent,
-                Color.Transparent
-            ),
-            onClick = {
-                galleryLauncher.launch("image/*")
+            IconButton(
+                modifier = Modifier
+                    .weight(0.1f)
+                    .align(Alignment.CenterVertically),
+                colors = IconButtonColors(
+                    Color.Transparent,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    Color.Transparent,
+                    Color.Transparent
+                ),
+                onClick = {
+                    galleryLauncher.launch("image/*")
+                }
+            ) {
+                Icon(
+                    modifier = Modifier,
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add image",
+                )
             }
-        ) {
-            Icon(
-                modifier = Modifier,
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Add image",
-            )
-        }
 
-        if (imageBitmap.value != null) {
-            AsyncImage(
-                model = imageBitmap.value, contentDescription = "image to send",
-                modifier = Modifier.weight(0.1f)
+            if (imageBitmap.value != null) {
+                AsyncImage(
+                    model = imageBitmap.value, contentDescription = "image to send",
+                    modifier = Modifier.weight(0.1f)
+                )
+            }
+            TextFieldRequest(
+                promptText = promptText,
+                onValueChange = { text: String -> promptText.value = text },
+                modifier = Modifier.weight(0.7f)
             )
-        }
-        TextFieldRequest(
-            promptText = promptText,
-            onValueChange = { text: String -> promptText.value = text },
-            modifier = Modifier.weight(0.7f)
-        )
 
-        IconButton(
-            modifier = Modifier
-                .weight(0.1f)
-                .align(Alignment.Bottom),
-            colors = IconButtonColors(
-                Color.Transparent,
-                MaterialTheme.colorScheme.onPrimaryContainer,
-                Color.Transparent,
-                Color.Transparent
-            ),
-            onClick = {
-                if (promptText.value.isNotBlank()) {
-                    when (imageBitmap.value) {
-                        null -> {
-                            onEvent.invoke(
-                                ChatBotViewModel.Event.SendText(
-                                    promptText.value,
+            IconButton(
+                modifier = Modifier
+                    .weight(0.1f)
+                    .align(Alignment.CenterVertically),
+                colors = IconButtonColors(
+                    Color.Transparent,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    Color.Transparent,
+                    Color.Transparent
+                ),
+                onClick = {
+                    if (promptText.value.isNotBlank()) {
+                        when (imageBitmap.value) {
+                            null -> {
+                                onEvent.invoke(
+                                    ChatBotViewModel.Event.SendText(
+                                        promptText.value,
+                                    )
                                 )
-                            )
-                        }
-
-                        else -> {
-
-                            val imgByteCode = ByteArrayOutputStream().let {
-                                imageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 80, it)
-                                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
                             }
 
-                            onEvent.invoke(
-                                ChatBotViewModel.Event.SendImage(
-                                    promptText.value,
-                                    imgByteCode
+                            else -> {
+
+                                val imgByteCode = ByteArrayOutputStream().let {
+                                    imageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 80, it)
+                                    Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
+                                }
+
+                                onEvent.invoke(
+                                    ChatBotViewModel.Event.SendImage(
+                                        promptText.value,
+                                        imgByteCode
+                                    )
                                 )
-                            )
+                            }
                         }
+                        promptText.value = ""
+                    } else {
+                        onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
                     }
-                    promptText.value = ""
-                } else {
-                    onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
-                }
-            },
-            enabled = loading.not()
-        ) {
-            Icon(
-                modifier = Modifier,
-                imageVector = Icons.AutoMirrored.Rounded.Send,
-                contentDescription = "Send",
-            )
+                },
+                enabled = loading.not()
+            ) {
+                Icon(
+                    modifier = Modifier,
+                    imageVector = Icons.AutoMirrored.Rounded.Send,
+                    contentDescription = "Send",
+                )
+            }
         }
     }
 }
@@ -573,6 +581,7 @@ fun TextFieldRequest(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun RequestPanelPreview() {
