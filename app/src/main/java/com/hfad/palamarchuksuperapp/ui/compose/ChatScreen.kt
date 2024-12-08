@@ -263,6 +263,7 @@ fun LazyChatScreen(
     event: (ChatBotViewModel.Event) -> Unit = {},
     error: () -> Error? = { null }, // TODO lambda passing
     state: LazyListState = rememberLazyListState(),
+    bottomPaddings: Dp = 0.dp,
 ) {
     val brush = Brush.verticalGradient(
         listOf(
@@ -312,15 +313,9 @@ fun LazyChatScreen(
             }
         }
         item {
-            RequestPanel(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                onEvent = event,
-                loading = loading()
-            )
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(bottomPaddings))
         }
     }
 }
