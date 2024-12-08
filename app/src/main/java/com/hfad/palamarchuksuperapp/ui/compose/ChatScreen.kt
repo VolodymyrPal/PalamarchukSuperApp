@@ -201,6 +201,25 @@ fun ChatScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            SmallFloatingActionButton(
+                shape = FloatingActionButtonDefaults.smallShape,
+                modifier = Modifier,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                onClick = {
+                    //TODO scroll to last item
+                },
+                content = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
+                            "Floating action button."
+                        )
+                    }
+                }
+            )
+        },
         }
     ) { paddingValues ->
         Surface(
