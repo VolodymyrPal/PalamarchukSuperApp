@@ -132,7 +132,7 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.7.4")
     implementation("io.ktor:ktor-client-logging:2.3.12")
 
-    implementation("io.github.theapache64:rebugger:1.0.0-rc03")
+    implementation("io.github.theapache64:rebugger:1.0.0-rc03")   //TODO using for checking number of recompositions
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
 
     implementation ("com.github.jeziellago:compose-markdown:0.5.4")
