@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -36,16 +38,21 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -64,17 +71,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
@@ -130,6 +141,8 @@ fun ChatScreen(
     onEvent: (ChatBotViewModel.Event) -> Unit,
     myState: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
 ) {
+    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -188,6 +201,36 @@ fun ChatScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            SmallFloatingActionButton(
+                shape = FloatingActionButtonDefaults.smallShape,
+                modifier = Modifier,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                onClick = {
+                    //TODO scroll to last item
+                },
+                content = {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
+                            "Floating action button."
+                        )
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            RequestPanel(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(15.dp, 0.dp, 15.dp, 5.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                onEvent = onEvent,
+                loading = myState.value.isLoading,
+                scrollBehavior = scrollBehavior
+            )
         }
     ) { paddingValues ->
         Surface(
@@ -195,17 +238,17 @@ fun ChatScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(
-                    bottom = paddingValues.calculateBottomPadding(),
+                    //bottom = paddingValues.calculateBottomPadding(),
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
-
             LazyChatScreen(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().nestedScroll(scrollBehavior.nestedScrollConnection),
                 messagesList = { myState.value.listMessage },
                 loading = { myState.value.isLoading },
                 event = onEvent,
-                error = { myState.value.error }
+                error = { myState.value.error },
+                bottomPaddings = paddingValues.calculateBottomPadding()
             )
         }
     }
@@ -220,6 +263,7 @@ fun LazyChatScreen(
     event: (ChatBotViewModel.Event) -> Unit = {},
     error: () -> Error? = { null }, // TODO lambda passing
     state: LazyListState = rememberLazyListState(),
+    bottomPaddings: Dp = 0.dp,
 ) {
     val brush = Brush.verticalGradient(
         listOf(
@@ -269,15 +313,9 @@ fun LazyChatScreen(
             }
         }
         item {
-            RequestPanel(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                onEvent = event,
-                loading = loading()
-            )
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(bottomPaddings))
         }
     }
 }
@@ -395,112 +433,120 @@ fun MessageBox(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestPanel(
     modifier: Modifier = Modifier,
     onEvent: (ChatBotViewModel.Event) -> Unit = {},
     loading: Boolean = false,
     promptText: MutableState<String> = rememberSaveable { mutableStateOf("") },
+    scrollBehavior: BottomAppBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior(),
 ) {
-
-    Row(
+    BottomAppBar(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        scrollBehavior = scrollBehavior
     ) {
-        val context = LocalContext.current
-        val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
-        val galleryLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
-        ) { uri ->
-            uri?.let {
-                imageBitmap.value = context.contentResolver.openInputStream(uri)?.use {
-                    BitmapFactory.decodeStream(it)
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val context = LocalContext.current
+            val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
+            val galleryLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri ->
+                uri?.let {
+                    imageBitmap.value = context.contentResolver.openInputStream(uri)?.use {
+                        BitmapFactory.decodeStream(it)
+                    }
                 }
             }
-        }
 
-        IconButton(
-            modifier = Modifier
-                .weight(0.1f)
-                .align(Alignment.Bottom),
-            colors = IconButtonColors(
-                Color.Transparent,
-                MaterialTheme.colorScheme.onPrimaryContainer,
-                Color.Transparent,
-                Color.Transparent
-            ),
-            onClick = {
-                galleryLauncher.launch("image/*")
+            IconButton(
+                modifier = Modifier
+                    .weight(0.1f)
+                    .align(Alignment.CenterVertically),
+                colors = IconButtonColors(
+                    Color.Transparent,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    Color.Transparent,
+                    Color.Transparent
+                ),
+                onClick = {
+                    galleryLauncher.launch("image/*")
+                }
+            ) {
+                Icon(
+                    modifier = Modifier,
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Add image",
+                )
             }
-        ) {
-            Icon(
-                modifier = Modifier,
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Add image",
-            )
-        }
 
-        if (imageBitmap.value != null) {
-            AsyncImage(
-                model = imageBitmap.value, contentDescription = "image to send",
-                modifier = Modifier.weight(0.1f)
+            if (imageBitmap.value != null) {
+                AsyncImage(
+                    model = imageBitmap.value, contentDescription = "image to send",
+                    modifier = Modifier.weight(0.1f)
+                )
+            }
+            TextFieldRequest(
+                promptText = promptText,
+                onValueChange = { text: String -> promptText.value = text },
+                modifier = Modifier.weight(0.7f)
             )
-        }
-        TextFieldRequest(
-            promptText = promptText,
-            onValueChange = { text: String -> promptText.value = text },
-            modifier = Modifier.weight(0.7f)
-        )
 
-        IconButton(
-            modifier = Modifier
-                .weight(0.1f)
-                .align(Alignment.Bottom),
-            colors = IconButtonColors(
-                Color.Transparent,
-                MaterialTheme.colorScheme.onPrimaryContainer,
-                Color.Transparent,
-                Color.Transparent
-            ),
-            onClick = {
-                if (promptText.value.isNotBlank()) {
-                    when (imageBitmap.value) {
-                        null -> {
-                            onEvent.invoke(
-                                ChatBotViewModel.Event.SendText(
-                                    promptText.value,
+            IconButton(
+                modifier = Modifier
+                    .weight(0.1f)
+                    .align(Alignment.CenterVertically),
+                colors = IconButtonColors(
+                    Color.Transparent,
+                    MaterialTheme.colorScheme.onPrimaryContainer,
+                    Color.Transparent,
+                    Color.Transparent
+                ),
+                onClick = {
+                    if (promptText.value.isNotBlank()) {
+                        when (imageBitmap.value) {
+                            null -> {
+                                onEvent.invoke(
+                                    ChatBotViewModel.Event.SendText(
+                                        promptText.value,
+                                    )
                                 )
-                            )
-                        }
-
-                        else -> {
-
-                            val imgByteCode = ByteArrayOutputStream().let {
-                                imageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 80, it)
-                                Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
                             }
 
-                            onEvent.invoke(
-                                ChatBotViewModel.Event.SendImage(
-                                    promptText.value,
-                                    imgByteCode
+                            else -> {
+
+                                val imgByteCode = ByteArrayOutputStream().let {
+                                    imageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 80, it)
+                                    Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
+                                }
+
+                                onEvent.invoke(
+                                    ChatBotViewModel.Event.SendImage(
+                                        promptText.value,
+                                        imgByteCode
+                                    )
                                 )
-                            )
+                            }
                         }
+                        promptText.value = ""
+                    } else {
+                        onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
                     }
-                    promptText.value = ""
-                } else {
-                    onEvent.invoke(ChatBotViewModel.Event.ShowToast("Please enter a message"))
-                }
-            },
-            enabled = loading.not()
-        ) {
-            Icon(
-                modifier = Modifier,
-                imageVector = Icons.AutoMirrored.Rounded.Send,
-                contentDescription = "Send",
-            )
+                },
+                enabled = loading.not()
+            ) {
+                Icon(
+                    modifier = Modifier,
+                    imageVector = Icons.AutoMirrored.Rounded.Send,
+                    contentDescription = "Send",
+                )
+            }
         }
     }
 }
@@ -535,6 +581,7 @@ fun TextFieldRequest(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun RequestPanelPreview() {
