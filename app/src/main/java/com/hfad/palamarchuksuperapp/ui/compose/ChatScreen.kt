@@ -93,6 +93,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Error
+import com.hfad.palamarchuksuperapp.ui.reusable.enterAlwaysScrollBehavior
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -141,7 +142,7 @@ fun ChatScreen(
     onEvent: (ChatBotViewModel.Event) -> Unit,
     myState: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
 ) {
-    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val scrollBehavior = BottomAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
