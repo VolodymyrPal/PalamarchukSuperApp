@@ -93,6 +93,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Error
+import com.hfad.palamarchuksuperapp.ui.reusable.enterAlwaysScrollBehavior
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -141,7 +142,7 @@ fun ChatScreen(
     onEvent: (ChatBotViewModel.Event) -> Unit,
     myState: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
 ) {
-    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val scrollBehavior = BottomAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -243,7 +244,9 @@ fun ChatScreen(
                 )
         ) {
             LazyChatScreen(
-                modifier = Modifier.fillMaxWidth().nestedScroll(scrollBehavior.nestedScrollConnection),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 messagesList = { myState.value.listMessage },
                 loading = { myState.value.isLoading },
                 event = onEvent,
@@ -265,6 +268,8 @@ fun LazyChatScreen(
     state: LazyListState = rememberLazyListState(),
     bottomPaddings: Dp = 0.dp,
 ) {
+    val padding = remember { bottomPaddings }
+
     val brush = Brush.verticalGradient(
         listOf(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
@@ -290,12 +295,13 @@ fun LazyChatScreen(
     }
     LazyColumn(
         modifier = modifier.background(brush),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
         state = state,
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
-        items(messagesList(),
+        items(
+            messagesList(),
             key = { it.id }
         ) {
             when (it.type) {
@@ -307,15 +313,18 @@ fun LazyChatScreen(
                         messageAiIndex = { it.id }
                     )
                 }
+
                 else -> {
 
                 }
             }
         }
         item {
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(bottomPaddings))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(padding)
+            )
         }
     }
 }
