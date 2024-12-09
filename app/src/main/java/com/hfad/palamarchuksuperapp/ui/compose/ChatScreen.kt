@@ -266,6 +266,8 @@ fun LazyChatScreen(
     state: LazyListState = rememberLazyListState(),
     bottomPaddings: Dp = 0.dp,
 ) {
+    val padding = remember { bottomPaddings }
+
     val brush = Brush.verticalGradient(
         listOf(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
