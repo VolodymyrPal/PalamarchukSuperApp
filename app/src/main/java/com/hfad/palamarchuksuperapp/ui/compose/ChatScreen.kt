@@ -244,7 +244,9 @@ fun ChatScreen(
                 )
         ) {
             LazyChatScreen(
-                modifier = Modifier.fillMaxWidth().nestedScroll(scrollBehavior.nestedScrollConnection),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
                 messagesList = { myState.value.listMessage },
                 loading = { myState.value.isLoading },
                 event = onEvent,
@@ -298,7 +300,8 @@ fun LazyChatScreen(
         state = state,
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
-        items(messagesList(),
+        items(
+            messagesList(),
             key = { it.id }
         ) {
             when (it.type) {
@@ -310,15 +313,18 @@ fun LazyChatScreen(
                         messageAiIndex = { it.id }
                     )
                 }
+
                 else -> {
 
                 }
             }
         }
         item {
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .height(bottomPaddings))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(padding)
+            )
         }
     }
 }
