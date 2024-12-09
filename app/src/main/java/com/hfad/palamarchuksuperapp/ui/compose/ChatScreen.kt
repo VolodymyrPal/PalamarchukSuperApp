@@ -293,7 +293,7 @@ fun LazyChatScreen(
     }
     LazyColumn(
         modifier = modifier.background(brush),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
         state = state,
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
