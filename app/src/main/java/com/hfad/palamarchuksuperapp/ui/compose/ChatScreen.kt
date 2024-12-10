@@ -236,13 +236,13 @@ fun ChatScreen(
         ) {
             LazyChatScreen(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    .fillMaxWidth(),
                 messagesList = { myState.value.listMessage },
                 loading = { myState.value.isLoading },
                 event = onEvent,
                 error = { myState.value.error },
-                bottomPaddings = paddingValues.calculateBottomPadding()
+                bottomPaddings = paddingValues.calculateBottomPadding(),
+                state = listState
             )
         }
     }
