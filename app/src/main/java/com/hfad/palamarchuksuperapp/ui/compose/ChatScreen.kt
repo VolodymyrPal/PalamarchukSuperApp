@@ -8,7 +8,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -37,10 +43,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -63,17 +67,17 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -85,7 +89,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
@@ -93,12 +96,13 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Error
-import com.hfad.palamarchuksuperapp.ui.reusable.enterAlwaysScrollBehavior
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
@@ -142,7 +146,7 @@ fun ChatScreen(
     onEvent: (ChatBotViewModel.Event) -> Unit,
     myState: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
 ) {
-    val scrollBehavior = BottomAppBarDefaults.enterAlwaysScrollBehavior()
+    val listState = rememberLazyListState()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -204,33 +208,20 @@ fun ChatScreen(
             )
         },
         floatingActionButton = {
-            SmallFloatingActionButton(
-                shape = FloatingActionButtonDefaults.smallShape,
-                modifier = Modifier,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onClick = {
-                    //TODO scroll to last item
-                },
-                content = {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
-                            "Floating action button."
-                        )
-                    }
-                }
+            FabScrollLastItem(
+                modifier = Modifier.offset(0.dp, 25.dp),
+                listState = listState,
+                list = { myState.value.listMessage },
             )
         },
         bottomBar = {
             RequestPanel(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(15.dp, 0.dp, 15.dp, 5.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .padding(10.dp, 0.dp, 10.dp, 5.dp),
                 onEvent = onEvent,
                 loading = myState.value.isLoading,
-                scrollBehavior = scrollBehavior
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         }
     ) { paddingValues ->
@@ -245,13 +236,13 @@ fun ChatScreen(
         ) {
             LazyChatScreen(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    .fillMaxWidth(),
                 messagesList = { myState.value.listMessage },
                 loading = { myState.value.isLoading },
                 event = onEvent,
                 error = { myState.value.error },
-                bottomPaddings = paddingValues.calculateBottomPadding()
+                bottomPaddings = paddingValues.calculateBottomPadding(),
+                state = listState
             )
         }
     }
@@ -268,8 +259,6 @@ fun LazyChatScreen(
     state: LazyListState = rememberLazyListState(),
     bottomPaddings: Dp = 0.dp,
 ) {
-    val padding = remember { bottomPaddings }
-
     val brush = Brush.verticalGradient(
         listOf(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
@@ -277,16 +266,6 @@ fun LazyChatScreen(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
         )
     )
-//    Rebugger(
-//        trackMap = mapOf(
-//            "listMessage" to messagesList,
-//            "isLoading" to loading,
-//            "event" to event, //TODO use to test recomposition
-//            "modifier" to modifier,
-//            "error" to error,
-//            "Lazy state" to state
-//        )
-//    )
 
     LaunchedEffect(messagesList().size) { //TODO lambda invoke
         launch {
@@ -323,7 +302,7 @@ fun LazyChatScreen(
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(padding)
+                    .height(bottomPaddings)
             )
         }
     }
@@ -442,25 +421,26 @@ fun MessageBox(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongParameterList")
 @Composable
 fun RequestPanel(
     modifier: Modifier = Modifier,
     onEvent: (ChatBotViewModel.Event) -> Unit = {},
     loading: Boolean = false,
+    containerColor: Color = Color.Transparent,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     promptText: MutableState<String> = rememberSaveable { mutableStateOf("") },
-    scrollBehavior: BottomAppBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior(),
 ) {
-    BottomAppBar(
-        modifier = modifier,
-        containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        scrollBehavior = scrollBehavior
+    Surface(
+        color = containerColor,
+        contentColor = contentColor,
+        shape = CircleShape,
+        modifier = modifier
     ) {
         Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             val context = LocalContext.current
             val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
@@ -504,7 +484,7 @@ fun RequestPanel(
             TextFieldRequest(
                 promptText = promptText,
                 onValueChange = { text: String -> promptText.value = text },
-                modifier = Modifier.weight(0.7f)
+                modifier = Modifier.weight(0.8f)
             )
 
             IconButton(
@@ -557,6 +537,55 @@ fun RequestPanel(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun FabScrollLastItem(
+    modifier: Modifier = Modifier,
+    listState: LazyListState,
+    list: () -> List<MessageAI> = { emptyList() },
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val showFab = remember {
+        derivedStateOf {
+            if (listState.layoutInfo.visibleItemsInfo.lastOrNull() == null) {
+                false
+            } else {
+                listState.layoutInfo.visibleItemsInfo.lastOrNull()!!.index !=
+                        listState.layoutInfo.totalItemsCount - 1
+            }
+        }
+    }
+
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = showFab.value,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        SmallFloatingActionButton(
+            shape = CircleShape,
+            modifier = Modifier,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f),
+            onClick = {
+                coroutineScope.launch {
+                    listState.animateScrollToItem(list().lastIndex + 1)
+                }
+            },
+            interactionSource = object : MutableInteractionSource {
+                override val interactions: Flow<Interaction> = emptyFlow()
+                override suspend fun emit(interaction: Interaction) {}
+                override fun tryEmit(interaction: Interaction) = true
+            },
+            elevation = FloatingActionButtonDefaults.elevation(0.dp),
+            content = {
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    "Floating action button.",
+                )
+            }
+        )
     }
 }
 
