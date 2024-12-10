@@ -218,12 +218,10 @@ fun ChatScreen(
             RequestPanel(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(15.dp, 0.dp, 15.dp, 5.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .padding(10.dp, 0.dp, 10.dp, 5.dp),
                 onEvent = onEvent,
                 loading = myState.value.isLoading,
-                scrollBehavior = scrollBehavior
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         }
     ) { paddingValues ->
