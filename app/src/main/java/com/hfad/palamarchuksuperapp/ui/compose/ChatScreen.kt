@@ -259,8 +259,6 @@ fun LazyChatScreen(
     state: LazyListState = rememberLazyListState(),
     bottomPaddings: Dp = 0.dp,
 ) {
-    val padding = remember { bottomPaddings }
-
     val brush = Brush.verticalGradient(
         listOf(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
@@ -268,16 +266,6 @@ fun LazyChatScreen(
             MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f),
         )
     )
-//    Rebugger(
-//        trackMap = mapOf(
-//            "listMessage" to messagesList,
-//            "isLoading" to loading,
-//            "event" to event, //TODO use to test recomposition
-//            "modifier" to modifier,
-//            "error" to error,
-//            "Lazy state" to state
-//        )
-//    )
 
     LaunchedEffect(messagesList().size) { //TODO lambda invoke
         launch {
@@ -314,7 +302,7 @@ fun LazyChatScreen(
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(padding)
+                    .height(bottomPaddings)
             )
         }
     }
