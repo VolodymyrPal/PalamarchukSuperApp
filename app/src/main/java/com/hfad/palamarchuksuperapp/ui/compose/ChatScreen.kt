@@ -541,6 +541,55 @@ fun RequestPanel(
 }
 
 @Composable
+fun FabScrollLastItem(
+    modifier: Modifier = Modifier,
+    listState: LazyListState,
+    list: () -> List<MessageAI> = { emptyList() },
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val showFab = remember {
+        derivedStateOf {
+            if (listState.layoutInfo.visibleItemsInfo.lastOrNull() == null) {
+                false
+            } else {
+                listState.layoutInfo.visibleItemsInfo.lastOrNull()!!.index !=
+                        listState.layoutInfo.totalItemsCount - 1
+            }
+        }
+    }
+
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = showFab.value,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        SmallFloatingActionButton(
+            shape = CircleShape,
+            modifier = Modifier,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f),
+            onClick = {
+                coroutineScope.launch {
+                    listState.animateScrollToItem(list().lastIndex + 1)
+                }
+            },
+            interactionSource = object : MutableInteractionSource {
+                override val interactions: Flow<Interaction> = emptyFlow()
+                override suspend fun emit(interaction: Interaction) {}
+                override fun tryEmit(interaction: Interaction) = true
+            },
+            elevation = FloatingActionButtonDefaults.elevation(0.dp),
+            content = {
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    "Floating action button.",
+                )
+            }
+        )
+    }
+}
+
+@Composable
 fun TextFieldRequest(
     promptText: MutableState<String>,
     onValueChange: (String) -> Unit,
