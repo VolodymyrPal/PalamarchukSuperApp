@@ -421,25 +421,26 @@ fun MessageBox(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongParameterList")
 @Composable
 fun RequestPanel(
     modifier: Modifier = Modifier,
     onEvent: (ChatBotViewModel.Event) -> Unit = {},
     loading: Boolean = false,
+    containerColor: Color = Color.Transparent,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     promptText: MutableState<String> = rememberSaveable { mutableStateOf("") },
-    scrollBehavior: BottomAppBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior(),
 ) {
-    BottomAppBar(
-        modifier = modifier,
-        containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        scrollBehavior = scrollBehavior
+    Surface(
+        color = containerColor,
+        contentColor = contentColor,
+        shape = CircleShape,
+        modifier = modifier
     ) {
         Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             val context = LocalContext.current
             val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
@@ -483,7 +484,7 @@ fun RequestPanel(
             TextFieldRequest(
                 promptText = promptText,
                 onValueChange = { text: String -> promptText.value = text },
-                modifier = Modifier.weight(0.7f)
+                modifier = Modifier.weight(0.8f)
             )
 
             IconButton(
