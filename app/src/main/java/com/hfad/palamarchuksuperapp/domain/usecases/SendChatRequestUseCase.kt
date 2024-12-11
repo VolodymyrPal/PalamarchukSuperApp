@@ -41,7 +41,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
         supervisorScope {
             val requests: List<Pair<Int, Deferred<Result<SubMessageAI, AppError>>>> =
-                handlers.mapIndexed { index, handler ->
+                handlers.filter { it.aiHandlerInfo.value.isSelected }.mapIndexed { index, handler ->
                     index to async {
                         handler.getResponse(listToSend)
                     }

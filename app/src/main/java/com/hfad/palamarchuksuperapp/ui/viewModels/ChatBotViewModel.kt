@@ -9,16 +9,20 @@ import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.services.Base64
+import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,59 +39,65 @@ import javax.inject.Inject
 class ChatBotViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
-    private val aiHandlerRepository: AiHandlerRepository,
+    private val getAiHandlersUseCase: GetAiHandlersUseCase,
     private val getAiChatUseCase: GetAiChatUseCase,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
     private val getErrorUseCase: GetErrorUseCase,
-    private val chooseMessageAiUseCase: ChooseMessageAiUseCase
+    private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
+    private val aiHandlerRepository: AiHandlerRepository,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+
+    init {
+        viewModelScope.launch(mainDispatcher) {
+            launch(mainDispatcher) {
+                getErrorUseCase().collect { error ->
+                    when (error) { //TODO Better error handler
+                        is AppError.CustomError -> {
+                            effect(Effect.ShowToast(error.error.toString()))
+                        }
+
+                        else -> {
+                            effect(Effect.ShowToast(error.toString()))
+                        }
+                    }
+                }
+            }
+            launch(mainDispatcher) {
+                getAiHandlersUseCase().collect { handlerList ->
+                    _handlers.update { handlerList }
+                }
+            }
+        }
+    }
 
     @Stable
     data class StateChat(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: AppError? = null,
-        val listOfModels: PersistentList<AiModel> = persistentListOf(),
+        val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
         val currentModel: AiModel = AiModel.OPENAI_BASE_MODEL,
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
-    init {
-        viewModelScope.launch(mainDispatcher) {
-            launch(ioDispatcher) {
-                getModels()
-            }
-            getErrorUseCase().collect { error ->
-                when (error) {
-                    is AppError.CustomError -> {
-                        effect(Effect.ShowToast(error.error.toString() ?: "Unknown error"))
-                    }
-
-                    else -> {
-                        effect(Effect.ShowToast(error.toString()))
-                    }
-                }
-            }
-        }
-
-    }
-
     override val _dataFlow: Flow<Result<PersistentList<MessageAI>, AppError>> =
         getAiChatUseCase().map { Result.Success(it) }
+    private val _handlers: MutableStateFlow<List<AiModelHandler>> = MutableStateFlow(emptyList())
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
         _loading,
+        _handlers,
         _errorFlow,
-    ) { chatHistory, isLoading, error ->
+    ) { chatHistory, isLoading, handlers, error ->
         when (chatHistory) {
             is Result.Success -> {
                 StateChat(
                     listMessage = chatHistory.data,
                     isLoading = isLoading,
                     error = error,
+                    listHandler = handlers.toPersistentList()
                 )
             }
 
@@ -96,7 +106,8 @@ class ChatBotViewModel @Inject constructor(
                 StateChat(
                     listMessage = persistentListOf(),
                     isLoading = isLoading,
-                    error = error
+                    error = error,
+                    listHandler = handlers.toPersistentList()
                 )
             }
         }
@@ -116,6 +127,8 @@ class ChatBotViewModel @Inject constructor(
         data class ShowToast(val message: String) : Event()
         data object GetModels : Event()
         data class ChooseSubMessage(val messageAiIndex: Int, val subMessageIndex: Int) : Event()
+        data class UpdateHandler(val handler: AiModelHandler, val aiHandlerInfo: AiHandlerInfo) :
+            Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -128,7 +141,12 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
             is Event.GetModels -> getModels()
-            is Event.ChooseSubMessage -> chooseSubMessage(event.messageAiIndex, event.subMessageIndex)
+            is Event.ChooseSubMessage -> chooseSubMessage(
+                event.messageAiIndex,
+                event.subMessageIndex
+            )
+
+            is Event.UpdateHandler -> updateHandler(event.handler, event.aiHandlerInfo)
         }
     }
 
@@ -143,7 +161,7 @@ class ChatBotViewModel @Inject constructor(
                     otherContent = image,
                     type = MessageType.IMAGE,
                 ),
-                aiHandlerRepository.getHandlerFlow().value
+                handlers = _handlers.value
             )
             _loading.update { false }
         }
@@ -159,7 +177,7 @@ class ChatBotViewModel @Inject constructor(
                     content = text,
                     type = MessageType.TEXT
                 ),
-                aiHandlerRepository.getHandlerFlow().value
+                handlers = _handlers.value
             )
             _loading.update { false }
         }
@@ -176,8 +194,16 @@ class ChatBotViewModel @Inject constructor(
             chooseMessageAiUseCase(messageAiIndex, subMessageIndex)
         }
     }
+
     private fun getModels() {
         viewModelScope.launch(ioDispatcher) {
+        }
+    }
+
+    private fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {
+        Log.d("ViewModel: ", "updateHandler: $aiHandlerInfo")
+        viewModelScope.launch(ioDispatcher) {
+            aiHandlerRepository.updateHandler(handler, aiHandlerInfo)
         }
     }
 }

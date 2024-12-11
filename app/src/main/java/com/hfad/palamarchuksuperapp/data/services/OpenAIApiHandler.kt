@@ -23,18 +23,24 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class OpenAIApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    @Assisted override val aiHandlerInfo: AiHandlerInfo
+    @Assisted val initAiHandlerInfo: AiHandlerInfo
 ) : AiModelHandler {
 
+    private val _aiHandlerInfo : MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
+    override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
     private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
     ): Result<SubMessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = aiHandlerInfo.model)
+        val gptRequest = messageList.toOpenAIRequest(model = initAiHandlerInfo.model)
 
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
@@ -47,7 +53,7 @@ class OpenAIApiHandler @AssistedInject constructor(
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = SubMessageAI(
                     message = openAIResponse.choices[0].message.content,
-                    model = aiHandlerInfo.model
+                    model = initAiHandlerInfo.model
                 )
                 Result.Success(responseMessage)
             } else {
@@ -61,6 +67,12 @@ class OpenAIApiHandler @AssistedInject constructor(
     override suspend fun getModels(): Result<List<AiModel>, AppError> {
         // Заглушка, так как OpenAI API не предоставляет endpoint для получения списка моделей
         return Result.Success(emptyList())
+    }
+
+    override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
+        _aiHandlerInfo.update {
+            aiHandlerInfo
+        }
     }
 }
 

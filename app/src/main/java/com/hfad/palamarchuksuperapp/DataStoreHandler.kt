@@ -23,8 +23,7 @@ class DataStoreHandler @Inject constructor(
 
     suspend fun saveAiHandlerList(list: List<AiModelHandler>) =
         aiHandlerList.edit { preferences ->
-            val jsonToSave = Json.encodeToString(list.map { it.aiHandlerInfo })
-            Log.d("DataStoreHandler", "saveAiHandlerList: $jsonToSave")
+            val jsonToSave = Json.encodeToString(list.map { it.aiHandlerInfo.value })
             preferences[AI_HANDLER_LIST] = jsonToSave
         }
 
