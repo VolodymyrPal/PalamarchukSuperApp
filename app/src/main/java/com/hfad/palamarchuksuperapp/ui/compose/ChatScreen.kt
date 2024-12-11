@@ -48,7 +48,6 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -130,8 +129,8 @@ fun RootChatScreen(
     ChatScreen(
         modifier = modifier,
         navController = navController,
-        onEvent = chatBotViewModel::event,
-        myState = myState
+        event = chatBotViewModel::event,
+        state = myState
     )
 }
 
@@ -143,8 +142,8 @@ fun RootChatScreen(
 fun ChatScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController? = LocalNavController.current,
-    onEvent: (ChatBotViewModel.Event) -> Unit,
-    myState: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
+    event: (ChatBotViewModel.Event) -> Unit,
+    state: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
 ) {
     val listState = rememberLazyListState()
 
@@ -183,18 +182,24 @@ fun ChatScreen(
                         onDismissRequest = { isExpanded.value = false },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
-                        for (item in myState.value.listOfModels.filter { it.isSupported }) {
-                            DropdownMenuItem(
-                                text = { Text(item.modelName) },
-                                onClick = {
-                                    isExpanded.value = false
-                                }
-                            )
-                        }
+                        AiHandlerScreen(
+                            modifier = Modifier.size(200.dp),
+                            listAiModelHandler = state.value.listHandler,
+                            event = event
+                        )
+//                        for (item in myState.value.listHandler.filter {
+//                            it.aiHandlerInfo.model.isSupported
+//                        }) {
+//                            DropdownMenuItem(
+//                                text = { Text(item.aiHandlerInfo.name) },
+//                                onClick = {
+//                                    isExpanded.value = false
+//                                }
+//                            )
+//                        }
                     }
                     IconButton(
                         onClick = {
-                            Log.d("TAG", "${isExpanded.value}")
                             isExpanded.value = !isExpanded.value
                         },
                     ) {
@@ -211,7 +216,7 @@ fun ChatScreen(
             FabScrollLastItem(
                 modifier = Modifier.offset(0.dp, 25.dp),
                 listState = listState,
-                list = { myState.value.listMessage },
+                list = { state.value.listMessage },
             )
         },
         bottomBar = {
@@ -219,8 +224,8 @@ fun ChatScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp, 0.dp, 10.dp, 5.dp),
-                onEvent = onEvent,
-                loading = myState.value.isLoading,
+                onEvent = event,
+                loading = state.value.isLoading,
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         }
@@ -237,10 +242,10 @@ fun ChatScreen(
             LazyChatScreen(
                 modifier = Modifier
                     .fillMaxWidth(),
-                messagesList = { myState.value.listMessage },
-                loading = { myState.value.isLoading },
-                event = onEvent,
-                error = { myState.value.error },
+                messagesList = { state.value.listMessage },
+                loading = { state.value.isLoading },
+                event = event,
+                error = { state.value.error },
                 bottomPaddings = paddingValues.calculateBottomPadding(),
                 state = listState
             )
@@ -638,7 +643,12 @@ fun RequestPanelPreview() {
 fun ChatScreenPreview() {
     ChatScreen(
         modifier = Modifier.fillMaxSize(),
-        onEvent = {},
-        navController = null
+        event = {},
+        navController = null,
+        state = mutableStateOf(
+            ChatBotViewModel.StateChat(
+                listMessage = persistentListOf(MessageAI(1, role = Role.USER, "Text message"))
+            )
+        )
     )
 }
