@@ -39,11 +39,12 @@ import javax.inject.Inject
 class ChatBotViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
-    private val aiHandlerRepository: AiHandlerRepository,
+    private val getAiHandlersUseCase: GetAiHandlersUseCase,
     private val getAiChatUseCase: GetAiChatUseCase,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
     private val getErrorUseCase: GetErrorUseCase,
-    private val chooseMessageAiUseCase: ChooseMessageAiUseCase
+    private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
+    private val aiHandlerRepository: AiHandlerRepository,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
@@ -74,7 +75,7 @@ class ChatBotViewModel @Inject constructor(
         val listMessage: PersistentList<MessageAI> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: AppError? = null,
-        val listOfModels: PersistentList<AiModel> = persistentListOf(),
+        val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
         val currentModel: AiModel = AiModel.OPENAI_BASE_MODEL,
     ) : State<PersistentList<MessageAI>>
 
@@ -87,14 +88,16 @@ class ChatBotViewModel @Inject constructor(
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
         _loading,
+        _handlers,
         _errorFlow,
-    ) { chatHistory, isLoading, error ->
+    ) { chatHistory, isLoading, handlers, error ->
         when (chatHistory) {
             is Result.Success -> {
                 StateChat(
                     listMessage = chatHistory.data,
                     isLoading = isLoading,
                     error = error,
+                    listHandler = handlers.toPersistentList()
                 )
             }
 
@@ -103,7 +106,8 @@ class ChatBotViewModel @Inject constructor(
                 StateChat(
                     listMessage = persistentListOf(),
                     isLoading = isLoading,
-                    error = error
+                    error = error,
+                    listHandler = handlers.toPersistentList()
                 )
             }
         }
