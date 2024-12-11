@@ -1,7 +1,9 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import android.util.Log
 import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -18,7 +20,7 @@ interface AiHandlerRepository {
     suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError>
     suspend fun addHandler(handler: AiModelHandler)
     suspend fun removeHandler(handler: AiModelHandler)
-    suspend fun updateHandlers(handlers: List<AiModelHandler>)
+    suspend fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo)
 }
 
 class AiHandlerRepositoryImpl @Inject constructor(
@@ -54,10 +56,11 @@ class AiHandlerRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun updateHandlers(handlers: List<AiModelHandler>) {
-        _handlerFlow().update {
-            handlers.toPersistentList()
-        }
+    override suspend fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {
+        Log.d("AiHandler Repository", "updateHandler: $aiHandlerInfo")
+        handler.setAiHandlerInfo(
+            aiHandlerInfo
+        )
         dataStoreHandler.saveAiHandlerList(_handlerFlow().value)
     }
 
