@@ -7,9 +7,10 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.coroutines.flow.StateFlow
 
 interface AiModelHandler {
-    val aiHandlerInfo: AiHandlerInfo
+    val aiHandlerInfo: StateFlow<AiHandlerInfo>
 
     suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
@@ -17,4 +18,6 @@ interface AiModelHandler {
 
     suspend fun getModels(
     ): Result<List<AiModel>, AppError>
+
+    fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo)
 }
