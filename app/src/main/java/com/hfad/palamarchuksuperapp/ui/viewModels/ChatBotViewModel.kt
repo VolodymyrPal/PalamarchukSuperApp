@@ -127,6 +127,8 @@ class ChatBotViewModel @Inject constructor(
         data class ShowToast(val message: String) : Event()
         data object GetModels : Event()
         data class ChooseSubMessage(val messageAiIndex: Int, val subMessageIndex: Int) : Event()
+        data class UpdateHandler(val handler: AiModelHandler, val aiHandlerInfo: AiHandlerInfo) :
+            Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -139,7 +141,12 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
             is Event.GetModels -> getModels()
-            is Event.ChooseSubMessage -> chooseSubMessage(event.messageAiIndex, event.subMessageIndex)
+            is Event.ChooseSubMessage -> chooseSubMessage(
+                event.messageAiIndex,
+                event.subMessageIndex
+            )
+
+            is Event.UpdateHandler -> updateHandler(event.handler, event.aiHandlerInfo)
         }
     }
 
@@ -154,7 +161,7 @@ class ChatBotViewModel @Inject constructor(
                     otherContent = image,
                     type = MessageType.IMAGE,
                 ),
-                aiHandlerRepository.getHandlerFlow().value
+                handlers = _handlers.value
             )
             _loading.update { false }
         }
@@ -170,7 +177,7 @@ class ChatBotViewModel @Inject constructor(
                     content = text,
                     type = MessageType.TEXT
                 ),
-                aiHandlerRepository.getHandlerFlow().value
+                handlers = _handlers.value
             )
             _loading.update { false }
         }
@@ -187,8 +194,16 @@ class ChatBotViewModel @Inject constructor(
             chooseMessageAiUseCase(messageAiIndex, subMessageIndex)
         }
     }
+
     private fun getModels() {
         viewModelScope.launch(ioDispatcher) {
+        }
+    }
+
+    private fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {
+        Log.d("ViewModel: ", "updateHandler: $aiHandlerInfo")
+        viewModelScope.launch(ioDispatcher) {
+            aiHandlerRepository.updateHandler(handler, aiHandlerInfo)
         }
     }
 }
