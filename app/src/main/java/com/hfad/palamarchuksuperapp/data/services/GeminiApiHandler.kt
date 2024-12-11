@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
+import android.util.Log
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
@@ -22,12 +23,18 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.request.get
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class GeminiApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    @Assisted override val aiHandlerInfo: AiHandlerInfo,
+    @Assisted val initAiHandlerInfo: AiHandlerInfo,
 ) : AiModelHandler {
 
+    private val _aiHandlerInfo: MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
+    override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
 
     private val apiKey = BuildConfig.GEMINI_AI_KEY
     private fun getUrl(model: AiModel = AiModel.GEMINI_BASE_MODEL, key: String = apiKey) =
@@ -47,12 +54,17 @@ class GeminiApiHandler @AssistedInject constructor(
         }
     }
 
+    override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
+        Log.d("GeminiApiHandler", "setAiHandlerInfo: $aiHandlerInfo")
+        _aiHandlerInfo.update { aiHandlerInfo }
+    }
+
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
-                httpClient.post(getUrl(model = aiHandlerInfo.model)) {
+                httpClient.post(getUrl(model = initAiHandlerInfo.model)) {
                     contentType(ContentType.Application.Json)
                     setBody(
                         messageList.toGeminiRequest(
@@ -64,7 +76,7 @@ class GeminiApiHandler @AssistedInject constructor(
                 val response = request.body<GeminiResponse>()
                 val responseMessage = SubMessageAI(
                     message = response.candidates[0].content.parts[0].text,
-                    model = aiHandlerInfo.model
+                    model = initAiHandlerInfo.model
                 )
                 return Result.Success(responseMessage)
             } else {
