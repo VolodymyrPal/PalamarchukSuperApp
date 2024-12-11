@@ -29,6 +29,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
@@ -120,6 +122,10 @@ abstract class AiModelHandlerModule {
 
 @Module
 interface UseCaseModule {
+
+    @Singleton
+    @Binds
+    fun bindGetAiHandlersUseCase(getAiHandlersUseCaseImpl: GetAiHandlersUseCaseImpl): GetAiHandlersUseCase
 
     @Singleton
     @Binds
