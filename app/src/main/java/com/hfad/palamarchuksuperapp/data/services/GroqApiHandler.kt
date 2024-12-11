@@ -24,14 +24,19 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class GroqApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    @Assisted override val aiHandlerInfo: AiHandlerInfo,
+    @Assisted val initAiHandlerInfo: AiHandlerInfo,
 ) : AiModelHandler {
 
+    private val _aiHandlerInfo : MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
+    override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
     private val apiKey = BuildConfig.GROQ_KEY
-
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
     override suspend fun getResponse(
@@ -39,9 +44,9 @@ class GroqApiHandler @AssistedInject constructor(
     ): Result<SubMessageAI, AppError> {
 
         val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(aiHandlerInfo.model)
+            messageList.last().toGroqRequest(initAiHandlerInfo.model)
         } else {
-            messageList.toGroqRequest(aiHandlerInfo.model)
+            messageList.toGroqRequest(initAiHandlerInfo.model)
         }
 
         val request = httpClient.post(url) {
@@ -57,7 +62,7 @@ class GroqApiHandler @AssistedInject constructor(
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = SubMessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = aiHandlerInfo.model
+                    model = initAiHandlerInfo.model
                 )
                 return Result.Success(responseMessage)
             } else {
@@ -80,6 +85,11 @@ class GroqApiHandler @AssistedInject constructor(
             return Result.Success(list.data)
         } else {
             Result.Error(AppError.Network.RequestError.BadRequest)
+        }
+    }
+    override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
+        _aiHandlerInfo.update {
+            aiHandlerInfo
         }
     }
 }
