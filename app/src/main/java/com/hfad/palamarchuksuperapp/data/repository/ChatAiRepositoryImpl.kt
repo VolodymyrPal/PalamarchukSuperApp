@@ -159,7 +159,7 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
     )
 
     override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>> =
-        MutableStateFlow(mockChat.toPersistentList())
+        MutableStateFlow(persistentListOf())//mockChat.toPersistentList())
 
     override val errorFlow: MutableSharedFlow<AppError?> = MutableSharedFlow()
 
