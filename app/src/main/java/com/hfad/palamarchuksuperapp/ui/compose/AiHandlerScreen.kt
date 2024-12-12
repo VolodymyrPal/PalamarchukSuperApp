@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -9,7 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,11 +34,34 @@ import kotlinx.collections.immutable.persistentListOf
 fun AiHandlerScreen(
     modifier: Modifier = Modifier,
     listAiModelHandler: PersistentList<AiModelHandler>,
-    event: (ChatBotViewModel.Event) -> Unit = {}
+    event: (ChatBotViewModel.Event) -> Unit = {},
 ) {
-    LazyColumn (
+    LazyColumn(
         modifier = modifier
-    ){
+    ) {
+        item {
+            IconButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    event.invoke(
+                        ChatBotViewModel.Event.AddAiHandler(
+                            aiHandlerInfo = AiHandlerInfo(
+                                name = "New Model",
+                                isSelected = true,
+                                isActive = true,
+                                model = AiModel.GeminiModel(),
+                                aiApiKey = ""
+                            )
+                        )
+                    )
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add"
+                )
+            }
+        }
         itemsIndexed(listAiModelHandler) { index, item ->
             AiHandlerBox(
                 modifier = Modifier,
@@ -52,7 +78,7 @@ fun AiHandlerBox(
     modifier: Modifier = Modifier,
     aiModelHandler: AiModelHandler,
     index: Int,
-    event: (ChatBotViewModel.Event) -> Unit
+    event: (ChatBotViewModel.Event) -> Unit,
 ) {
     val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
     Box(modifier = modifier.fillMaxWidth()) {
@@ -61,14 +87,13 @@ fun AiHandlerBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${index+1}. ")
+            Text(text = "${index + 1}. ")
             Text(text = handlerInfo.name)
             Checkbox(
                 checked = handlerInfo.isSelected,
                 onCheckedChange = {
-                    Log.d("AiHandlerBox", "onCheckedChange: $it")
                     event.invoke(
-                        ChatBotViewModel.Event.UpdateHandler (
+                        ChatBotViewModel.Event.UpdateHandler(
                             handler = aiModelHandler,
                             aiHandlerInfo = handlerInfo.copy(isSelected = !handlerInfo.isSelected)
                         )
