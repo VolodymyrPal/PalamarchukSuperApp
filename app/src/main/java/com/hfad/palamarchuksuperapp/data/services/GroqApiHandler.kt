@@ -36,7 +36,6 @@ class GroqApiHandler @AssistedInject constructor(
 
     private val _aiHandlerInfo : MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
     override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
-    private val apiKey = BuildConfig.GROQ_KEY
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
     override suspend fun getResponse(
@@ -50,7 +49,7 @@ class GroqApiHandler @AssistedInject constructor(
         }
 
         val request = httpClient.post(url) {
-            header("Authorization", "Bearer $apiKey")
+            header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
             contentType(ContentType.Application.Json)
             setBody(
                 listToPass
@@ -77,7 +76,7 @@ class GroqApiHandler @AssistedInject constructor(
         val response = httpClient.get(
             "https://api.groq.com/openai/v1/models"
         ) {
-            header("Authorization", "Bearer $apiKey")
+            header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
             contentType(ContentType.Application.Json)
         }
         return if (response.status == HttpStatusCode.OK) {
