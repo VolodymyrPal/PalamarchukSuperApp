@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -187,16 +186,6 @@ fun ChatScreen(
                             listAiModelHandler = state.value.listHandler,
                             event = event
                         )
-//                        for (item in myState.value.listHandler.filter {
-//                            it.aiHandlerInfo.model.isSupported
-//                        }) {
-//                            DropdownMenuItem(
-//                                text = { Text(item.aiHandlerInfo.name) },
-//                                onClick = {
-//                                    isExpanded.value = false
-//                                }
-//                            )
-//                        }
                     }
                     IconButton(
                         onClick = {
