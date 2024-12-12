@@ -23,6 +23,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCase
@@ -39,6 +41,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
@@ -122,6 +126,14 @@ abstract class AiModelHandlerModule {
 
 @Module
 interface UseCaseModule {
+
+    @Singleton
+    @Binds
+    fun bindAddAiHandlerUseCase(addAiHandlerUseCaseImpl: AddAiHandlerUseCaseImpl): AddAiHandlerUseCase
+
+    @Singleton
+    @Binds
+    fun bindUpdateAiHandlerUseCase(updateAiHandlerUseCaseImpl: UpdateAiHandlerUseCaseImpl): UpdateAiHandlerUseCase
 
     @Singleton
     @Binds
