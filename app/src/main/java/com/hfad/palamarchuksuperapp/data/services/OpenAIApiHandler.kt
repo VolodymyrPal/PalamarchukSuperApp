@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
@@ -35,7 +34,6 @@ class OpenAIApiHandler @AssistedInject constructor(
 
     private val _aiHandlerInfo : MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
     override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
-    private val openAiKey = BuildConfig.OPEN_AI_KEY_USER
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
@@ -45,7 +43,7 @@ class OpenAIApiHandler @AssistedInject constructor(
         return try {
             val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
                 contentType(ContentType.Application.Json)
-                header("Authorization", "Bearer $openAiKey")
+                header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
                 setBody(gptRequest)
             }
 
@@ -56,8 +54,10 @@ class OpenAIApiHandler @AssistedInject constructor(
                     model = initAiHandlerInfo.model
                 )
                 Result.Success(responseMessage)
+            } else  if (response.status == HttpStatusCode.Unauthorized) {
+                Result.Error(AppError.Network.RequestError.Unauthorized)
             } else {
-                Result.Error(AppError.Network.RequestError.BadRequest)
+                throw CodeError(response.status.value)
             }
         } catch (e: Exception) {
             Result.Error(handleException(e))
