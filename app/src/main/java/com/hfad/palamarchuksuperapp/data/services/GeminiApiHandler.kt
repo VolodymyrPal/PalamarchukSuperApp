@@ -36,15 +36,14 @@ class GeminiApiHandler @AssistedInject constructor(
     private val _aiHandlerInfo: MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
     override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
 
-    private val apiKey = BuildConfig.GEMINI_AI_KEY
-    private fun getUrl(model: AiModel = AiModel.GEMINI_BASE_MODEL, key: String = apiKey) =
+    private fun getUrl(model: AiModel = AiModel.GEMINI_BASE_MODEL, key: String = aiHandlerInfo.value.aiApiKey) =
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
 
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
 
         val response = httpClient.get(
-            "https://generativelanguage.googleapis.com/v1beta/models?key=$apiKey"
+            "https://generativelanguage.googleapis.com/v1beta/models?key=${aiHandlerInfo.value.aiApiKey}"
         )
         return if (response.status == HttpStatusCode.OK) {
             val list = response.body<GeminiModelsResponse>()
