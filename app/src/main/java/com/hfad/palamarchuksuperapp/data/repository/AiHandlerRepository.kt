@@ -34,19 +34,17 @@ class AiHandlerRepositoryImpl @Inject constructor(
 
     override suspend fun addHandler(handlerInfo: AiHandlerInfo) {
         val newHandler = mapAiModelHandlerUseCase(handlerInfo)
-        _handlerFlow().update { currentList ->
-            val newList = currentList.add(newHandler)
-            newList
+        val newList = aiHandlerFlow.first().toMutableList().apply {
+            add(newHandler)
         }
-        Log.d("Handler", _handlerFlow().value.toString())
-        dataStoreHandler.saveAiHandlerList(_handlerFlow().value)
+        dataStoreHandler.saveAiHandlerList(newList)
     }
 
     override suspend fun removeHandler(handler: AiModelHandler) {
-        _handlerFlow().update {
-            it.remove(handler)
+        val newList = aiHandlerFlow.first().toMutableList().apply {
+            remove(handler)
         }
-        dataStoreHandler.saveAiHandlerList(_handlerFlow().value)
+        dataStoreHandler.saveAiHandlerList(newList)
 
     }
 
@@ -54,7 +52,7 @@ class AiHandlerRepositoryImpl @Inject constructor(
         handler.setAiHandlerInfo(
             aiHandlerInfo
         )
-        dataStoreHandler.saveAiHandlerList(_handlerFlow().value)
+        dataStoreHandler.saveAiHandlerList(aiHandlerFlow.first())
     }
 
 }
