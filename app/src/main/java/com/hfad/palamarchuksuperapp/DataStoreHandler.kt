@@ -27,18 +27,15 @@ class DataStoreHandler @Inject constructor(
             preferences[AI_HANDLER_LIST] = jsonToSave
         }
 
-    suspend fun getAiHandlerList(): List<AiModelHandler> {
-        return if (!aiHandlerList.data.first()[AI_HANDLER_LIST].isNullOrBlank()) {
+    val getAiHandlerList : Flow<List<AiModelHandler>> = aiHandlerList.data.map {
+        if (!it[AI_HANDLER_LIST].isNullOrBlank()) {
             mapAiModelHandlerUseCase(
                 Json.decodeFromString<List<AiHandlerInfo>>(
-                    aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
+                    it[AI_HANDLER_LIST] ?: ""
                 )
             )
         } else {
-            val list = AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO
-            val listAiHandlerInfo = mapAiModelHandlerUseCase(list)
-            saveAiHandlerList(listAiHandlerInfo)
-            listAiHandlerInfo
+            mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO)
         }
     }
 }
