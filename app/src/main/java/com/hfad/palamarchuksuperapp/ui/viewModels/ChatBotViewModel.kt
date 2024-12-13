@@ -47,22 +47,15 @@ class ChatBotViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(mainDispatcher) {
-            launch(mainDispatcher) {
-                getErrorUseCase().collect { error ->
-                    when (error) { //TODO Better error handler
-                        is AppError.CustomError -> {
-                            effect(Effect.ShowToast(error.error.toString()))
-                        }
-
-                        else -> {
-                            effect(Effect.ShowToast(error.toString()))
-                        }
+            getErrorUseCase().collect { error ->
+                when (error) { //TODO Better error handler
+                    is AppError.CustomError -> {
+                        effect(Effect.ShowToast(error.error.toString()))
                     }
-                }
-            }
-            launch(mainDispatcher) {
-                getAiHandlersUseCase().collect { handlerList ->
-                    _handlers.update { handlerList }
+
+                    else -> {
+                        effect(Effect.ShowToast(error.toString()))
+                    }
                 }
             }
         }
