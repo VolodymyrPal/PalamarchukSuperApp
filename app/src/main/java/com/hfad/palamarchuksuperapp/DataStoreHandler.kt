@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -10,7 +9,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -27,18 +27,15 @@ class DataStoreHandler @Inject constructor(
             preferences[AI_HANDLER_LIST] = jsonToSave
         }
 
-    suspend fun getAiHandlerList(): List<AiModelHandler> {
-        return if (!aiHandlerList.data.first()[AI_HANDLER_LIST].isNullOrBlank()) {
+    val getAiHandlerList : Flow<List<AiModelHandler>> = aiHandlerList.data.map {
+        if (!it[AI_HANDLER_LIST].isNullOrBlank()) {
             mapAiModelHandlerUseCase(
                 Json.decodeFromString<List<AiHandlerInfo>>(
-                    aiHandlerList.data.first()[AI_HANDLER_LIST] ?: ""
+                    it[AI_HANDLER_LIST] ?: ""
                 )
             )
         } else {
-            val list = AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO
-            val listAiHandlerInfo = mapAiModelHandlerUseCase(list)
-            saveAiHandlerList(listAiHandlerInfo)
-            listAiHandlerInfo
+            mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO)
         }
     }
 }
