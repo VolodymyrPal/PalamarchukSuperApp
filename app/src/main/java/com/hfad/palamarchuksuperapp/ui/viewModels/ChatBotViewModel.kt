@@ -42,7 +42,7 @@ class ChatBotViewModel @Inject constructor(
     private val getErrorUseCase: GetErrorUseCase,
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
     private val updateAiHandlerUseCase: UpdateAiHandlerUseCase,
-    private val addAiHandlerUseCase: AddAiHandlerUseCase
+    private val addAiHandlerUseCase: AddAiHandlerUseCase,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
@@ -73,7 +73,11 @@ class ChatBotViewModel @Inject constructor(
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
     override val _dataFlow: StateFlow<PersistentList<MessageAI>> = getAiChatUseCase()
-    private val _handlers: MutableStateFlow<List<AiModelHandler>> = MutableStateFlow(emptyList())
+    private val _handlers: StateFlow<List<AiModelHandler>> = getAiHandlersUseCase().stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
@@ -105,7 +109,9 @@ class ChatBotViewModel @Inject constructor(
         data class ChooseSubMessage(val messageAiIndex: Int, val subMessageIndex: Int) : Event()
         data class UpdateHandler(
             val handler: AiModelHandler,
-            val aiHandlerInfo: AiHandlerInfo) : Event()
+            val aiHandlerInfo: AiHandlerInfo,
+        ) : Event()
+
         data class AddAiHandler(val aiHandlerInfo: AiHandlerInfo) : Event()
     }
 
@@ -123,6 +129,7 @@ class ChatBotViewModel @Inject constructor(
                 event.messageAiIndex,
                 event.subMessageIndex
             )
+
             is Event.UpdateHandler -> updateHandler(event.handler, event.aiHandlerInfo)
             is Event.AddAiHandler -> addAiHandler(event.aiHandlerInfo)
         }
