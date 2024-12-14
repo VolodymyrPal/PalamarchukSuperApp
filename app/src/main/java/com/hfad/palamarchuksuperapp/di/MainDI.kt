@@ -27,6 +27,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
@@ -126,6 +128,10 @@ abstract class AiModelHandlerModule {
 
 @Module
 interface UseCaseModule {
+
+    @Singleton
+    @Binds
+    fun bindDeleteAiHandlerUseCase(deleteAiHandlerUseCaseImpl: DeleteAiHandlerUseCaseImpl): DeleteAiHandlerUseCase
 
     @Singleton
     @Binds
