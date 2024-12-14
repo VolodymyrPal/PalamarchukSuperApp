@@ -139,26 +139,20 @@ fun AiHandlerScreen(
         modifier = modifier
     ) {
         item {
-            IconButton(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    event.invoke(
-                        ChatBotViewModel.Event.AddAiHandler(
-                            aiHandlerInfo = AiHandlerInfo(
-                                name = "New Model",
-                                isSelected = true,
-                                isActive = true,
-                                model = AiModel.GeminiModel(),
-                                aiApiKey = ""
-                            )
-                        )
+            ) {
+                IconButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        dialogShown.value = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add"
                     )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add"
-                )
             }
         }
         itemsIndexed(listAiModelHandler) { index, item ->
