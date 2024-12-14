@@ -41,11 +41,10 @@ class AiHandlerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeHandler(handler: AiModelHandler) {
-        val newList = aiHandlerFlow.first().toMutableList().apply {
-            remove(handler)
+        val list = aiHandlerFlow.first().toMutableList().also { handlerList ->
+            handlerList.removeIf { it.aiHandlerInfo.value.id == handler.aiHandlerInfo.value.id }
         }
-        dataStoreHandler.saveAiHandlerList(newList)
-
+        dataStoreHandler.saveAiHandlerList(list)
     }
 
     override suspend fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {

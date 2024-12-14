@@ -14,6 +14,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
@@ -43,6 +44,7 @@ class ChatBotViewModel @Inject constructor(
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
     private val updateAiHandlerUseCase: UpdateAiHandlerUseCase,
     private val addAiHandlerUseCase: AddAiHandlerUseCase,
+    private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
@@ -111,8 +113,8 @@ class ChatBotViewModel @Inject constructor(
             val handler: AiModelHandler,
             val aiHandlerInfo: AiHandlerInfo,
         ) : Event()
-
         data class AddAiHandler(val aiHandlerInfo: AiHandlerInfo) : Event()
+        data class DeleteHandler(val handler: AiModelHandler) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -132,6 +134,7 @@ class ChatBotViewModel @Inject constructor(
 
             is Event.UpdateHandler -> updateHandler(event.handler, event.aiHandlerInfo)
             is Event.AddAiHandler -> addAiHandler(event.aiHandlerInfo)
+            is Event.DeleteHandler -> deleteHandler(event.handler)
         }
     }
 
@@ -194,6 +197,12 @@ class ChatBotViewModel @Inject constructor(
     private fun addAiHandler(aiHandlerInfo: AiHandlerInfo) {
         viewModelScope.launch(ioDispatcher) {
             addAiHandlerUseCase(aiHandlerInfo)
+        }
+    }
+
+    private fun deleteHandler(handler: AiModelHandler) {
+        viewModelScope.launch(ioDispatcher) {
+            deleteAiHandlerUseCase(handler)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,15 +11,27 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
@@ -29,6 +42,7 @@ import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("FunctionNaming")
 fun AiHandlerScreen(
@@ -36,14 +50,72 @@ fun AiHandlerScreen(
     listAiModelHandler: PersistentList<AiModelHandler>,
     event: (ChatBotViewModel.Event) -> Unit = {},
 ) {
-    LazyColumn(
-        modifier = modifier
+    val dialogShown = remember { mutableStateOf(false) }
+    if (dialogShown.value) Dialog(
+        onDismissRequest = { dialogShown.value = false },
+        properties = DialogProperties()
     ) {
-        item {
+        Surface(modifier = Modifier.wrapContentSize()) {
+            Column {
+                val name = remember { mutableStateOf("") }
+
+                TextField(
+                    placeholder = { Text("Put name here", color = Color.Black.copy(alpha = 0.4f)) },
+                    value = name.value,
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                TextField(
+                    value = "Choose model",
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                val options = listOf("Option 1", "Option 2", "Option 3")
+                var expanded by remember { mutableStateOf(false) }
+                var selectedOption by remember { mutableStateOf(options[0]) }
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = {
+                        expanded = true
+                    },
+                    modifier = Modifier
+                ) {
+                    TextField(
+                        value = selectedOption,
+                        onValueChange = { selectedOption = it },
+                        label = { Text("Select an option") },
+                        readOnly = true,
+                        modifier = Modifier.menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        options.forEach { option ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    selectedOption = option
+                                    expanded = false
+                                },
+                                text = { Text(option) }
+                            )
+                        }
+                    }
+                }
+                TextField(
+                    value = "Put api key here",
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+
+            }
             IconButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     event.invoke(
+
                         ChatBotViewModel.Event.AddAiHandler(
                             aiHandlerInfo = AiHandlerInfo(
                                 name = "New Model",
@@ -60,6 +132,27 @@ fun AiHandlerScreen(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add"
                 )
+            }
+        }
+    }
+    LazyColumn(
+        modifier = modifier
+    ) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                IconButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        dialogShown.value = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add"
+                    )
+                }
             }
         }
         itemsIndexed(listAiModelHandler) { index, item ->
@@ -100,6 +193,20 @@ fun AiHandlerBox(
                     )
                 }
             )
+            IconButton(
+                onClick = {
+                    event.invoke(
+                        ChatBotViewModel.Event.DeleteHandler(
+                            handler = aiModelHandler
+                        )
+                    )
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Add"
+                )
+            }
         }
     }
 }
