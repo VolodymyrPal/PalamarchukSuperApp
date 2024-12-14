@@ -193,6 +193,20 @@ fun AiHandlerBox(
                     )
                 }
             )
+            IconButton(
+                onClick = {
+                    event.invoke(
+                        ChatBotViewModel.Event.DeleteHandler(
+                            handler = aiModelHandler
+                        )
+                    )
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Add"
+                )
+            }
         }
     }
 }
