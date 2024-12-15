@@ -70,28 +70,31 @@ fun AiHandlerScreen(
                     onValueChange = { name.value = it },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                TextField(
-                    value = "Choose model",
-                    onValueChange = {},
-                    modifier = Modifier.fillMaxWidth(),
-                )
+
                 val options = listOf("Option 1", "Option 2", "Option 3")
                 var expanded by remember { mutableStateOf(false) }
-                var selectedOption by remember { mutableStateOf(options[0]) }
+                var selectedOption by remember { mutableStateOf("") }
 
                 ExposedDropdownMenuBox(
+                    modifier = Modifier.fillMaxWidth(),
                     expanded = expanded,
                     onExpandedChange = {
                         expanded = true
                     },
-                    modifier = Modifier
                 ) {
                     TextField(
                         value = selectedOption,
                         onValueChange = { selectedOption = it },
-                        label = { Text("Select an option") },
+                        placeholder = {
+                            if (selectedOption.isBlank()) Text(
+                                "Select an option",
+                                color = Color.Black.copy(0.4f)
+                            )
+                        },
                         readOnly = true,
-                        modifier = Modifier.menuAnchor()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
