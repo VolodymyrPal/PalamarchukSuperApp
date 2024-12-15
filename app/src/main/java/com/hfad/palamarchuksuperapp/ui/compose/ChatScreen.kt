@@ -204,7 +204,7 @@ fun ChatScreen(
         },
         floatingActionButton = {
             FabScrollLastItem(
-                modifier = Modifier.offset(0.dp, 25.dp),
+                modifier = Modifier.offset(0.dp, 25.dp).doublePulseEffect(), //TODO pulse effect улучшить
                 listState = listState,
                 list = { state.value.listMessage },
             )
