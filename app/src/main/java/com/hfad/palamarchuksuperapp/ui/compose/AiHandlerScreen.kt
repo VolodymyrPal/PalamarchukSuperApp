@@ -60,9 +60,14 @@ fun AiHandlerScreen(
                 val name = remember { mutableStateOf("") }
 
                 TextField(
-                    placeholder = { Text("Put name here", color = Color.Black.copy(alpha = 0.4f)) },
+                    placeholder = {
+                        if (name.value.isBlank()) Text(
+                            "Put name here",
+                            color = Color.Black.copy(alpha = 0.4f)
+                        )
+                    },
                     value = name.value,
-                    onValueChange = {},
+                    onValueChange = { name.value = it },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 TextField(
