@@ -94,6 +94,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Error
+import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -203,7 +204,7 @@ fun ChatScreen(
         },
         floatingActionButton = {
             FabScrollLastItem(
-                modifier = Modifier.offset(0.dp, 25.dp),
+                modifier = Modifier.offset(0.dp, 25.dp).doublePulseEffect(), //TODO pulse effect улучшить
                 listState = listState,
                 list = { state.value.listMessage },
             )

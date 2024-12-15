@@ -60,33 +60,41 @@ fun AiHandlerScreen(
                 val name = remember { mutableStateOf("") }
 
                 TextField(
-                    placeholder = { Text("Put name here", color = Color.Black.copy(alpha = 0.4f)) },
+                    placeholder = {
+                        if (name.value.isBlank()) Text(
+                            "Put name here",
+                            color = Color.Black.copy(alpha = 0.4f)
+                        )
+                    },
                     value = name.value,
-                    onValueChange = {},
+                    onValueChange = { name.value = it },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                TextField(
-                    value = "Choose model",
-                    onValueChange = {},
-                    modifier = Modifier.fillMaxWidth(),
-                )
+
                 val options = listOf("Option 1", "Option 2", "Option 3")
                 var expanded by remember { mutableStateOf(false) }
-                var selectedOption by remember { mutableStateOf(options[0]) }
+                var selectedOption by remember { mutableStateOf("") }
 
                 ExposedDropdownMenuBox(
+                    modifier = Modifier.fillMaxWidth(),
                     expanded = expanded,
                     onExpandedChange = {
                         expanded = true
                     },
-                    modifier = Modifier
                 ) {
                     TextField(
                         value = selectedOption,
                         onValueChange = { selectedOption = it },
-                        label = { Text("Select an option") },
+                        placeholder = {
+                            if (selectedOption.isBlank()) Text(
+                                "Select an option",
+                                color = Color.Black.copy(0.4f)
+                            )
+                        },
                         readOnly = true,
-                        modifier = Modifier.menuAnchor()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
@@ -103,35 +111,45 @@ fun AiHandlerScreen(
                         }
                     }
                 }
+                val apiKey = remember { mutableStateOf("") }
+
                 TextField(
-                    value = "Put api key here",
-                    onValueChange = {},
+                    value = apiKey.value,
+                    placeholder = {
+                        if (apiKey.value.isBlank()) Text(
+                            text = "Put api key here",
+                            color = Color.Black.copy(alpha = 0.4f)
+                        )
+                    },
+                    onValueChange = {
+                        apiKey.value = it
+                    },
                     modifier = Modifier.fillMaxWidth(),
                 )
 
 
-            }
-            IconButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    event.invoke(
+                IconButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        event.invoke(
 
-                        ChatBotViewModel.Event.AddAiHandler(
-                            aiHandlerInfo = AiHandlerInfo(
-                                name = "New Model",
-                                isSelected = true,
-                                isActive = true,
-                                model = AiModel.GeminiModel(),
-                                aiApiKey = ""
+                            ChatBotViewModel.Event.AddAiHandler(
+                                aiHandlerInfo = AiHandlerInfo(
+                                    name = "New Model",
+                                    isSelected = true,
+                                    isActive = true,
+                                    model = AiModel.GeminiModel(),
+                                    aiApiKey = ""
+                                )
                             )
                         )
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add"
                     )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add"
-                )
             }
         }
     }
