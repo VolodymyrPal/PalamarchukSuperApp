@@ -128,28 +128,28 @@ fun AiHandlerScreen(
                 )
 
 
-            }
-            IconButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    event.invoke(
+                IconButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        event.invoke(
 
-                        ChatBotViewModel.Event.AddAiHandler(
-                            aiHandlerInfo = AiHandlerInfo(
-                                name = "New Model",
-                                isSelected = true,
-                                isActive = true,
-                                model = AiModel.GeminiModel(),
-                                aiApiKey = ""
+                            ChatBotViewModel.Event.AddAiHandler(
+                                aiHandlerInfo = AiHandlerInfo(
+                                    name = "New Model",
+                                    isSelected = true,
+                                    isActive = true,
+                                    model = AiModel.GeminiModel(),
+                                    aiApiKey = ""
+                                )
                             )
                         )
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add"
                     )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add"
-                )
             }
         }
     }
