@@ -10,6 +10,9 @@ import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 interface AiHandlerRepository {
@@ -26,7 +29,17 @@ class AiHandlerRepositoryImpl @Inject constructor(
     private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
 ) : AiHandlerRepository {
 
-    override val aiHandlerFlow: Flow<List<AiModelHandler>> = dataStoreHandler.getAiHandlerList
+    override val aiHandlerFlow: Flow<List<AiModelHandler>> = dataStoreHandler.getAiHandlerList.map {
+        if (it.isNotBlank()) {
+            mapAiModelHandlerUseCase(
+                Json.decodeFromString<List<AiHandlerInfo>>(
+                    it
+                )
+            )
+        } else {
+            mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO)
+        }
+    }
 
     override suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError> {
         return getModelsUseCase(handler)
@@ -37,21 +50,24 @@ class AiHandlerRepositoryImpl @Inject constructor(
         val newList = aiHandlerFlow.first().toMutableList().apply {
             add(newHandler)
         }
-        dataStoreHandler.saveAiHandlerList(newList)
+        val jsonToSave = Json.encodeToString(newList.map { it.aiHandlerInfo.value })
+        dataStoreHandler.saveAiHandlerList(jsonToSave)
     }
 
     override suspend fun removeHandler(handler: AiModelHandler) {
         val list = aiHandlerFlow.first().toMutableList().also { handlerList ->
             handlerList.removeIf { it.aiHandlerInfo.value.id == handler.aiHandlerInfo.value.id }
         }
-        dataStoreHandler.saveAiHandlerList(list)
+        val jsonToSave = Json.encodeToString(list.map { it.aiHandlerInfo.value })
+        dataStoreHandler.saveAiHandlerList(jsonToSave)
     }
 
     override suspend fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {
         handler.setAiHandlerInfo(
             aiHandlerInfo
         )
-        dataStoreHandler.saveAiHandlerList(aiHandlerFlow.first())
+        val jsonToSave = Json.encodeToString(aiHandlerFlow.first().map { it.aiHandlerInfo })
+        dataStoreHandler.saveAiHandlerList(jsonToSave)
     }
 
 }

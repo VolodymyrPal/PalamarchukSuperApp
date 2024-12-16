@@ -8,9 +8,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
-import android.util.Log
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,12 +22,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -45,7 +38,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -58,10 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -71,15 +59,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
+import com.hfad.palamarchuksuperapp.DataStoreHandler
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
@@ -120,7 +106,9 @@ fun MainScreenRow(
             LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
         }
 
-        val prefRepository = remember { PreferencesRepository.get() }
+        val dataStore = remember {
+            context.appComponent.provideDataStoreHandler()
+        }
 
         @Suppress("DEPRECATION")
         fun onClickVibro() {
@@ -149,7 +137,7 @@ fun MainScreenRow(
                 verticalArrangement = Arrangement.Top,
             ) {
                 item {
-                    val dayNightMode by prefRepository.storedQuery.collectAsState(false)
+                    val dayNightMode by dataStore.storedQuery.collectAsState(false)
 
                     TopRowMainScreen(
                         modifier = Modifier
@@ -162,7 +150,7 @@ fun MainScreenRow(
                                 key = ActivityKey.ActivityXML
                             )
                         },
-                        prefRepository = prefRepository,
+                        prefRepository = dataStore,
                         buttonColor = buttonColor,
                         dayNightMode = dayNightMode
                     )
@@ -351,7 +339,7 @@ fun TopRowMainScreen(
     modifier: Modifier = Modifier,
     actionForActivity: () -> Unit = {},
     dayNightMode: Boolean = false,
-    prefRepository: PreferencesRepository? = null,
+    prefRepository: DataStoreHandler? = null,
     buttonColor: ButtonColors = ButtonDefaults.buttonColors(),
 ) {
     Row(
