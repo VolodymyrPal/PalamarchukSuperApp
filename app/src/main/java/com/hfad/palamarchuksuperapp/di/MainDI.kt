@@ -3,6 +3,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
+import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
@@ -15,7 +16,6 @@ import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
-import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
@@ -89,6 +89,7 @@ interface AppComponent {
     fun inject(storeFragment: StoreFragment)
     fun getHttpClient(): HttpClient
     fun getAiHandlerDispatcher(): AiHandlerRepositoryImpl
+    fun provideDataStoreHandler(): DataStoreHandler
 
     @Component.Builder
     interface Builder {
@@ -265,10 +266,6 @@ object NetworkModule {
 @Module
 object DatabaseModule {
 
-    @Provides
-    fun providePreferencesRepository(): PreferencesRepository {
-        return PreferencesRepository.get()
-    }
 
     @Singleton
     @Provides
