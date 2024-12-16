@@ -1,47 +1,58 @@
 package com.hfad.palamarchuksuperapp
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
-import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
+typealias JsonListAiHandlerInfo = String
+typealias DayNightMode = Boolean
+
 class DataStoreHandler @Inject constructor(
-    val context: Context,
-    private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
+    val context: Context
 ) {
-    private val aiHandlerList = context.aiHandlerList
+    val getAiHandlerList: Flow<JsonListAiHandlerInfo> = context.aiHandlerList.data.map {
+        it[AI_HANDLER_LIST]?: ""
+    }
 
-    suspend fun saveAiHandlerList(list: List<AiModelHandler>) =
-        aiHandlerList.edit { preferences ->
-            val jsonToSave = Json.encodeToString(list.map { it.aiHandlerInfo.value })
-            preferences[AI_HANDLER_LIST] = jsonToSave
+    suspend fun saveAiHandlerList(aiHandlerList: JsonListAiHandlerInfo) {
+        context.aiHandlerList.edit {
+            it[AI_HANDLER_LIST] = aiHandlerList
         }
+    }
 
-    val getAiHandlerList : Flow<List<AiModelHandler>> = aiHandlerList.data.map {
-        if (!it[AI_HANDLER_LIST].isNullOrBlank()) {
-            mapAiModelHandlerUseCase(
-                Json.decodeFromString<List<AiHandlerInfo>>(
-                    it[AI_HANDLER_LIST] ?: ""
-                )
-            )
-        } else {
-            mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_LIST_AI_HANDLER_INFO)
+
+    val storedQuery: Flow<Boolean> = context.appSettingsStore.data.map {
+        it[NIGHT_MODE_KEY] ?: true
+    }.distinctUntilChanged()
+
+    suspend fun setStoredNightMode(userNightMode: DayNightMode) {
+        context.appSettingsStore.edit {
+            it[NIGHT_MODE_KEY] = userNightMode
         }
+        delay(200)
+        setNightMode(userNightMode)
+    }
+
+    fun setNightMode(userNightMode: DayNightMode) {
+        AppCompatDelegate.setDefaultNightMode(
+            if (userNightMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 }
 
-val AI_HANDLER_LIST = stringPreferencesKey("ai_handler_list")
-
+val NIGHT_MODE_KEY = booleanPreferencesKey("nightModeOn")
 val Context.appSettingsStore: DataStore<Preferences> by preferencesDataStore(name = "app_settings")
-val Context.chatScreenInfoStore: DataStore<Preferences> by preferencesDataStore(name = "chat_screen_info")
+
+val AI_HANDLER_LIST = stringPreferencesKey("ai_handler_list")
 val Context.aiHandlerList: DataStore<Preferences> by preferencesDataStore(name = "ai_handler_list")
