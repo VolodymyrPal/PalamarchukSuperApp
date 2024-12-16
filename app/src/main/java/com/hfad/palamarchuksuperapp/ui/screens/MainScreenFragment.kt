@@ -3,11 +3,7 @@ package com.hfad.palamarchuksuperapp.ui.screens
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,26 +12,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
+import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.Role
-import com.hfad.palamarchuksuperapp.data.repository.PreferencesRepository
-import com.hfad.palamarchuksuperapp.data.services.GeminiBuilder
-import com.hfad.palamarchuksuperapp.data.services.toGeminiRequest
 import com.hfad.palamarchuksuperapp.databinding.FragmentMainScreenBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.net.URL
 import javax.inject.Inject
 
 
@@ -45,7 +31,7 @@ class MainScreenFragment : Fragment() {
     private val binding get() = _binding!!
 
     @Inject
-    lateinit var preferencesRepository: PreferencesRepository
+    lateinit var dataStoreHandler: DataStoreHandler
 
     @Inject
     lateinit var appImages: AppImages
@@ -69,14 +55,14 @@ class MainScreenFragment : Fragment() {
         updatePhoto()
 
         lifecycleScope.launch {
-            binding.dayNightButton.isChecked = preferencesRepository.storedQuery.first()
+            binding.dayNightButton.isChecked = dataStoreHandler.storedQuery.first()
         }
 
 
         binding.dayNightButton.setOnCheckedChangeListener { _, isChecked ->
             vibe.standardClickVibration()
             lifecycleScope.launch {
-                preferencesRepository.setStoredNightMode(isChecked)
+                dataStoreHandler.setStoredNightMode(isChecked)
             }
         }
 
