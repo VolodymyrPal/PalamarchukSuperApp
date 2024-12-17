@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -62,6 +63,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.hfad.palamarchuksuperapp.DataStoreHandler
@@ -75,8 +77,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreenRow(
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    dataStore: DataStoreHandler? = remember {
+        context.appComponent.provideDataStoreHandler()
+    }
 ) {
-    val navController = LocalNavController.current
+
+    val navController: NavHostController =
+        if (LocalInspectionMode.current)
+            NavHostController(context) // If preview - create Mock object for NavHostController
+        else LocalNavController.current
+
     Scaffold(
         modifier = modifier,
         bottomBar = {
@@ -87,7 +98,6 @@ fun MainScreenRow(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onBackground
         )
-        val context = LocalContext.current
         val timestamp = remember { mutableLongStateOf(System.currentTimeMillis()) }
         val mainPhoto = AppImages.MainImage(context).mainPhoto
         val fileObserver = object : FileObserver(mainPhoto.parentFile?.path, ALL_EVENTS) {
@@ -99,15 +109,11 @@ fun MainScreenRow(
         }
         val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val vibratorManager =
-                LocalContext.current.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             vibratorManager.defaultVibrator
         } else {
             @Suppress("DEPRECATION")
-            LocalContext.current.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
-        }
-
-        val dataStore = remember {
-            context.appComponent.provideDataStoreHandler()
+            context.getSystemService(AppCompatActivity.VIBRATOR_SERVICE) as Vibrator
         }
 
         @Suppress("DEPRECATION")
@@ -137,7 +143,7 @@ fun MainScreenRow(
                 verticalArrangement = Arrangement.Top,
             ) {
                 item {
-                    val dayNightMode by dataStore.storedQuery.collectAsState(false)
+                    val dayNightMode = dataStore?.storedQuery?.collectAsState(false)
 
                     TopRowMainScreen(
                         modifier = Modifier
@@ -152,7 +158,7 @@ fun MainScreenRow(
                         },
                         prefRepository = dataStore,
                         buttonColor = buttonColor,
-                        dayNightMode = dayNightMode
+                        dayNightMode = dayNightMode?.value ?: false
                     )
                 }
                 item {
@@ -198,14 +204,14 @@ fun MainScreenRow(
                         ) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.navigate(Routes.SkillScreen) },
+                                action = { navController?.navigate(Routes.SkillScreen) },
                                 text = "S K I L L S",
                                 position = Modifier.offset(15.dp, 15.dp)
                             )
 
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.navigate(Routes.StoreScreen) },
+                                action = { navController?.navigate(Routes.StoreScreen) },
                                 imagePath = R.drawable.store_image,
                                 text = "S T O R E",
                                 position = Modifier.offset((-15).dp, 15.dp)
@@ -227,7 +233,7 @@ fun MainScreenRow(
                         ) {
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.navigate(Routes.ChatBotScreen) },
+                                action = { navController?.navigate(Routes.ChatBotScreen) },
                                 imagePath = R.drawable.lock_outlined,
                                 text = "L O C K E D",
                                 position = Modifier.offset(15.dp, (-15).dp),
@@ -235,7 +241,7 @@ fun MainScreenRow(
                             )
                             ButtonToNavConstraint(
                                 modifier = Modifier,
-                                action = { navController.navigate(Routes.Settings) },
+                                action = { navController?.navigate(Routes.Settings) },
                                 imagePath = R.drawable.lock_outlined,
                                 text = "L O C K E D",
                                 position = Modifier.offset((-15).dp, (-15).dp),
@@ -252,12 +258,7 @@ fun MainScreenRow(
     }
 }
 
-@Composable
-@Preview
-fun ButtonToScreenPreview() {
-    ButtonToNavConstraint(modifier = Modifier)
-}
-
+@Suppress("LongParameterList", "FunctionNaming")
 @Composable
 fun ButtonToNavConstraint(
     modifier: Modifier,
@@ -408,7 +409,9 @@ fun TopRowMainScreenPreview(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun MainScreenConstraintPreview() {
-    MainScreenRow()
+    MainScreenRow(
+        dataStore = null
+    )
 }
 
 

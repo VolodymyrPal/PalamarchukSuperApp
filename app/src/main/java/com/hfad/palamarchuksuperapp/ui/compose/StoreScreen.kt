@@ -94,6 +94,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -110,6 +111,8 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.room.Room
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
@@ -117,6 +120,12 @@ import com.chargemap.compose.numberpicker.NumberPicker
 import com.example.compose.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
+import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
+import com.hfad.palamarchuksuperapp.data.entities.Product
+import com.hfad.palamarchuksuperapp.data.entities.ProductRating
+import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
+import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
@@ -124,7 +133,9 @@ import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -137,7 +148,10 @@ fun StoreScreen(
     modifier: Modifier = Modifier,
     viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
 ) {
-    val navController = LocalNavController.current
+    val navController: NavHostController =
+        if (!LocalInspectionMode.current) LocalNavController.current else
+            NavHostController(LocalContext.current) // If preview - create Mock object for NavHostController
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -446,7 +460,22 @@ fun GridItem(
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
     onEvent: (StoreViewModel.Event) -> Unit,
-    productList: List<ProductDomainRW>,
+    productList: List<ProductDomainRW> = listOf(
+        ProductDomainRW(
+            product = Product(
+                id = 2890,
+                title = "vidisse",
+                price = 0.1,
+                description = "ornare",
+                category = "delicata",
+                image = "sollicitudin",
+                rating = ProductRating(
+                    rate = 2.3,
+                    count = 4066
+                )
+            )
+        )
+    ),
 ) {
     Column(
         modifier = modifier,
@@ -454,8 +483,8 @@ fun StoreLazyCard(
     ) {
         Card(
             modifier = Modifier
-                //  .padding(4.dp)
-                .fillMaxWidth(),
+            //  .padding(4.dp)
+            ,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary),
             elevation = CardDefaults.cardElevation(5.dp)
         ) {
@@ -533,105 +562,107 @@ fun ListItemProduct(
         Row(
             modifier = Modifier.matchParentSize()
         ) {
-            Box(modifier = Modifier
-                .weight(0.4f)
-                .fillMaxHeight()
-                .alpha(0f)
-                .pointerInput(item) {
-                    detectTapGestures(
-                        onTap = {
-                            if (quantityToBuy > 0) quantityToBuy--
-                            if (!isPressed) onEvent(
-                                StoreViewModel.Event.SetItemToBasket(
-                                    item,
-                                    quantityToBuy
-                                )
-                            )
-                        },
-                        onPress = {
-                            isPressed = true
-                            isVisible = true
-                            job = scope.launch {
-                                delay(500)
-                                while (isPressed) {
-                                    if (quantityToBuy > 0) quantityToBuy--
-                                    delay(20)
-                                }
-                            }
-                            try {
-
-                                awaitRelease()
-                                job?.cancel()
-                                onEvent(
+            Box(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxHeight()
+                    .alpha(0f)
+                    .pointerInput(item) {
+                        detectTapGestures(
+                            onTap = {
+                                if (quantityToBuy > 0) quantityToBuy--
+                                if (!isPressed) onEvent(
                                     StoreViewModel.Event.SetItemToBasket(
                                         item,
                                         quantityToBuy
                                     )
                                 )
-                                isPressed = false
+                            },
+                            onPress = {
+                                isPressed = true
                                 isVisible = true
-                            } catch (e: CancellationException) {
-                                isPressed = false
-                                isVisible = false
-                            } catch (e: Exception) {
-                                job?.cancel()
-                                isPressed = false
-                                isVisible = false
-                            }
-                        }
-                    )
-                })
-            Box(modifier = Modifier
-                .weight(0.6f)
-                .fillMaxHeight()  // Use fillMaxHeight instead of fillMaxSize to avoid expanding beyond parent
-                .alpha(0f)
-                .pointerInput(item) {
-                    detectTapGestures(
+                                job = scope.launch {
+                                    delay(500)
+                                    while (isPressed) {
+                                        if (quantityToBuy > 0) quantityToBuy--
+                                        delay(20)
+                                    }
+                                }
+                                try {
 
-                        onTap = {
-                            if (quantityToBuy >= 0) quantityToBuy++
-                            if (!isPressed) onEvent(
-                                StoreViewModel.Event.SetItemToBasket(
-                                    item,
-                                    item.quantity
-                                )
-                            )
-                        },
-                        onPress = {
-                            isPressed = true
-                            isVisible = true
-                            job = scope.launch {
-                                delay(500)
-                                isVisible = true
-                                while (isPressed) {
-                                    if (quantityToBuy >= 0) quantityToBuy++
-                                    delay(20)
+                                    awaitRelease()
+                                    job?.cancel()
+                                    onEvent(
+                                        StoreViewModel.Event.SetItemToBasket(
+                                            item,
+                                            quantityToBuy
+                                        )
+                                    )
+                                    isPressed = false
+                                    isVisible = true
+                                } catch (e: CancellationException) {
+                                    isPressed = false
+                                    isVisible = false
+                                } catch (e: Exception) {
+                                    job?.cancel()
+                                    isPressed = false
+                                    isVisible = false
                                 }
                             }
-                            try {
-                                awaitRelease()
-                                job?.cancel()
-                                onEvent(
+                        )
+                    })
+            Box(
+                modifier = Modifier
+                    .weight(0.6f)
+                    .fillMaxHeight()  // Use fillMaxHeight instead of fillMaxSize to avoid expanding beyond parent
+                    .alpha(0f)
+                    .pointerInput(item) {
+                        detectTapGestures(
+
+                            onTap = {
+                                if (quantityToBuy >= 0) quantityToBuy++
+                                if (!isPressed) onEvent(
                                     StoreViewModel.Event.SetItemToBasket(
                                         item,
-                                        quantityToBuy
+                                        item.quantity
                                     )
                                 )
-                                isPressed = false
+                            },
+                            onPress = {
+                                isPressed = true
                                 isVisible = true
-                            } catch (e: CancellationException) {
-                                job?.cancel()
-                                isPressed = false
-                                isVisible = false
-                            } catch (e: Exception) {
-                                job?.cancel()
-                                Log.d("Store screen exception: ", "event: ${e.message}")
-                                isPressed = false
-                                isVisible = true
+                                job = scope.launch {
+                                    delay(500)
+                                    isVisible = true
+                                    while (isPressed) {
+                                        if (quantityToBuy >= 0) quantityToBuy++
+                                        delay(20)
+                                    }
+                                }
+                                try {
+                                    awaitRelease()
+                                    job?.cancel()
+                                    onEvent(
+                                        StoreViewModel.Event.SetItemToBasket(
+                                            item,
+                                            quantityToBuy
+                                        )
+                                    )
+                                    isPressed = false
+                                    isVisible = true
+                                } catch (e: CancellationException) {
+                                    job?.cancel()
+                                    isPressed = false
+                                    isVisible = false
+                                } catch (e: Exception) {
+                                    job?.cancel()
+                                    Log.d("Store screen exception: ", "event: ${e.message}")
+                                    isPressed = false
+                                    isVisible = true
+                                }
                             }
-                        }
-                    )
-                }
+                        )
+                    }
             )
         }
 
@@ -802,7 +833,6 @@ fun StoreLazyListForPreview(
     viewModel: StoreViewModel? = null,
 ) {
     StoreLazyCard(
-        productList = emptyList(),
         onEvent = { }
     )
 }
@@ -811,7 +841,21 @@ fun StoreLazyListForPreview(
 @Preview
 fun StoreScreenPreview() {
     StoreScreen(
-        viewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory())
+        viewModel = StoreViewModel(
+            repository = StoreRepositoryImpl(
+                storeApi = FakeStoreApiRepository(HttpClient()),
+                storeDao = Room.databaseBuilder(
+                    context = LocalContext.current.applicationContext,
+                    klass = StoreDatabase::class.java,
+                    name = DATABASE_MAIN_ENTITY_PRODUCT
+                ).fallbackToDestructiveMigration()
+                    .build().storeDao()
+            ),
+            ioDispatcher = Dispatchers.IO,
+            mainDispatcher = Dispatchers.Main
+
+        )
+        //daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory())
     )
 }
 

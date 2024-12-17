@@ -5,12 +5,14 @@ import MainDispatcher
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.LLMName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
@@ -18,6 +20,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
 import kotlinx.collections.immutable.PersistentList
@@ -44,7 +48,9 @@ class ChatBotViewModel @Inject constructor(
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
     private val updateAiHandlerUseCase: UpdateAiHandlerUseCase,
     private val addAiHandlerUseCase: AddAiHandlerUseCase,
-    private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase
+    private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase,
+    private val getModelsUseCase: GetModelsUseCase,
+    private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
@@ -107,12 +113,13 @@ class ChatBotViewModel @Inject constructor(
         data class SendImage(val text: String, val image: String) : Event()
         data class SendText(val text: String) : Event()
         data class ShowToast(val message: String) : Event()
-        data object GetModels : Event()
+        data class GetModels(val llmName: LLMName) : Event()
         data class ChooseSubMessage(val messageAiIndex: Int, val subMessageIndex: Int) : Event()
         data class UpdateHandler(
             val handler: AiModelHandler,
             val aiHandlerInfo: AiHandlerInfo,
         ) : Event()
+
         data class AddAiHandler(val aiHandlerInfo: AiHandlerInfo) : Event()
         data class DeleteHandler(val handler: AiModelHandler) : Event()
     }
@@ -126,7 +133,7 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendImage -> sendImage(event.text, event.image)
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
-            is Event.GetModels -> getModels()
+            is Event.GetModels -> getModels(event.llmName)
             is Event.ChooseSubMessage -> chooseSubMessage(
                 event.messageAiIndex,
                 event.subMessageIndex
@@ -183,8 +190,28 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun getModels() {
+    private fun getModels(llmName: LLMName): List<AiModel> {
         viewModelScope.launch(ioDispatcher) {
+
+            var aiModelList: Result<List<AiModel>, AppError> = when (llmName) {
+                LLMName.OPENAI -> {
+                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_OPEN_AI))
+                }
+
+                LLMName.GEMINI -> {
+                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GEMINI))
+                }
+
+                LLMName.GROQ -> {
+                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GROQ))
+                }
+            }
+            if (aiModelList is Result.Success) {
+                return@launch aiModelList.data
+            } else {
+                _errorFlow.emit(AppError.CustomError((aiModelList as Result.Error).error.toString()))
+                return@launch emptyList()
+            }
         }
     }
 
