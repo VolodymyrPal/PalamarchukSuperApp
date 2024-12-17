@@ -83,7 +83,6 @@ fun SkillScreen(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
 ) {
-    val navController = LocalNavController.current
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
