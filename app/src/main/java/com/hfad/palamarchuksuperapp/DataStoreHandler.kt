@@ -18,10 +18,10 @@ typealias JsonListAiHandlerInfo = String
 typealias DayNightMode = Boolean
 
 class DataStoreHandler @Inject constructor(
-    val context: Context
+    val context: Context,
 ) {
     val getAiHandlerList: Flow<JsonListAiHandlerInfo> = context.aiHandlerList.data.map {
-        it[AI_HANDLER_LIST]?: ""
+        it[AI_HANDLER_LIST] ?: ""
     }
 
     suspend fun saveAiHandlerList(aiHandlerList: JsonListAiHandlerInfo) {
@@ -29,7 +29,6 @@ class DataStoreHandler @Inject constructor(
             it[AI_HANDLER_LIST] = aiHandlerList
         }
     }
-
 
     val storedQuery: Flow<Boolean> = context.appSettingsStore.data.map {
         it[NIGHT_MODE_KEY] ?: true

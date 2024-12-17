@@ -93,6 +93,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
 import com.hfad.palamarchuksuperapp.data.entities.Role
 import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
@@ -100,6 +101,7 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -614,7 +616,6 @@ fun TextFieldRequest(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun RequestPanelPreview() {
@@ -637,7 +638,7 @@ fun ChatScreenPreview() {
         navController = null,
         state = mutableStateOf(
             ChatBotViewModel.StateChat(
-                listMessage = persistentListOf(MessageAI(1, role = Role.USER, "Text message"))
+                listMessage = MockChat.value.toPersistentList()
             )
         )
     )
