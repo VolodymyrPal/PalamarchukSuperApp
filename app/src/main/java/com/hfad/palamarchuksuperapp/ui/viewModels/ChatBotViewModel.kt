@@ -50,7 +50,6 @@ class ChatBotViewModel @Inject constructor(
     private val addAiHandlerUseCase: AddAiHandlerUseCase,
     private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase,
     private val getModelsUseCase: GetModelsUseCase,
-    private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
