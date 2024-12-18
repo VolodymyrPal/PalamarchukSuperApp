@@ -75,6 +75,7 @@ class ChatBotViewModel @Inject constructor(
         val error: AppError? = null,
         val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
         val currentModel: AiModel = AiModel.OPENAI_BASE_MODEL,
+        val modelListL: PersistentList<AiModel>,
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -85,18 +86,21 @@ class ChatBotViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000),
         emptyList()
     )
+    private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
         _loading,
         _handlers,
         _errorFlow,
-    ) { chatHistory, isLoading, handlers, error ->
+        _choosenAiModelList
+    ) { chatHistory, isLoading, handlers, error, modelList ->
         StateChat(
             listMessage = chatHistory,
             isLoading = isLoading,
             error = error,
-            listHandler = handlers.toPersistentList()
+            listHandler = handlers.toPersistentList(),
+            modelListL = modelList.toPersistentList()
         )
     }.stateIn(
         viewModelScope,
@@ -104,7 +108,8 @@ class ChatBotViewModel @Inject constructor(
         initialValue = StateChat(
             listMessage = persistentListOf(),
             isLoading = false,
-            error = null
+            error = null,
+            modelListL = persistentListOf()
         )
     )
 
