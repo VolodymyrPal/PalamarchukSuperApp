@@ -190,27 +190,13 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun getModels(llmName: LLMName): List<AiModel> {
-        viewModelScope.launch(ioDispatcher) {
-
-            var aiModelList: Result<List<AiModel>, AppError> = when (llmName) {
-                LLMName.OPENAI -> {
-                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_OPEN_AI))
-                }
-
-                LLMName.GEMINI -> {
-                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GEMINI))
-                }
-
-                LLMName.GROQ -> {
-                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GROQ))
-                }
-            }
-            if (aiModelList is Result.Success) {
-                return@launch aiModelList.data
-            } else {
-                _errorFlow.emit(AppError.CustomError((aiModelList as Result.Error).error.toString()))
-                return@launch emptyList()
+    private fun getModels(llmName: LLMName) {
+        viewModelScope.launch {
+            val resultModels = getModelsUseCase(llmName)
+            if (resultModels is Result.Success) {
+                _choosenAiModelList.update { it }
+            } else { //TODO better error handling
+                _choosenAiModelList.update { persistentListOf() }
             }
         }
     }
