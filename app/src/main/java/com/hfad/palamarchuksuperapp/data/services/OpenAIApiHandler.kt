@@ -29,10 +29,11 @@ import kotlinx.coroutines.flow.update
 
 class OpenAIApiHandler @AssistedInject constructor(
     private val httpClient: HttpClient,
-    @Assisted val initAiHandlerInfo: AiHandlerInfo
+    @Assisted val initAiHandlerInfo: AiHandlerInfo,
 ) : AiModelHandler {
 
-    private val _aiHandlerInfo : MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
+    private val _aiHandlerInfo: MutableStateFlow<AiHandlerInfo> =
+        MutableStateFlow(initAiHandlerInfo)
     override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
 
     override suspend fun getResponse(
@@ -54,7 +55,7 @@ class OpenAIApiHandler @AssistedInject constructor(
                     model = initAiHandlerInfo.model
                 )
                 Result.Success(responseMessage)
-            } else  if (response.status == HttpStatusCode.Unauthorized) {
+            } else if (response.status == HttpStatusCode.Unauthorized) {
                 Result.Error(AppError.Network.RequestError.Unauthorized)
             } else {
                 throw CodeError(response.status.value)
