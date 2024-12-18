@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.LLMName
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
@@ -21,6 +22,7 @@ interface AiHandlerRepository {
     suspend fun addHandler(handlerInfo: AiHandlerInfo)
     suspend fun removeHandler(handler: AiModelHandler)
     suspend fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo)
+    suspend fun getBaseModels(llmName: LLMName): Result<List<AiModel>, AppError>
 }
 
 class AiHandlerRepositoryImpl @Inject constructor(
@@ -70,4 +72,16 @@ class AiHandlerRepositoryImpl @Inject constructor(
         dataStoreHandler.saveAiHandlerList(jsonToSave)
     }
 
+    private val mutableBaseHandlerMap: MutableMap<LLMName, AiModelHandler> by lazy { mutableMapOf() }
+
+    override suspend fun getBaseModels(llmName: LLMName): Result<List<AiModel>, AppError> {
+        val baseHandler = mutableBaseHandlerMap.getOrPut(llmName) {
+            when (llmName) {
+                LLMName.OPENAI -> mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_OPEN_AI)
+                LLMName.GEMINI -> mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GEMINI)
+                LLMName.GROQ -> mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GROQ)
+            }
+        }
+        return baseHandler.getModels()
+    }
 }

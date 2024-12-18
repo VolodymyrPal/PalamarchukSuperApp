@@ -50,7 +50,6 @@ class ChatBotViewModel @Inject constructor(
     private val addAiHandlerUseCase: AddAiHandlerUseCase,
     private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase,
     private val getModelsUseCase: GetModelsUseCase,
-    private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
 ) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
@@ -76,6 +75,7 @@ class ChatBotViewModel @Inject constructor(
         val error: AppError? = null,
         val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
         val currentModel: AiModel = AiModel.OPENAI_BASE_MODEL,
+        val modelListL: PersistentList<AiModel>,
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -86,18 +86,21 @@ class ChatBotViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000),
         emptyList()
     )
+    private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
         _loading,
         _handlers,
         _errorFlow,
-    ) { chatHistory, isLoading, handlers, error ->
+        _choosenAiModelList
+    ) { chatHistory, isLoading, handlers, error, modelList ->
         StateChat(
             listMessage = chatHistory,
             isLoading = isLoading,
             error = error,
-            listHandler = handlers.toPersistentList()
+            listHandler = handlers.toPersistentList(),
+            modelListL = modelList.toPersistentList()
         )
     }.stateIn(
         viewModelScope,
@@ -105,7 +108,8 @@ class ChatBotViewModel @Inject constructor(
         initialValue = StateChat(
             listMessage = persistentListOf(),
             isLoading = false,
-            error = null
+            error = null,
+            modelListL = persistentListOf()
         )
     )
 
@@ -190,27 +194,13 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun getModels(llmName: LLMName): List<AiModel> {
-        viewModelScope.launch(ioDispatcher) {
-
-            var aiModelList: Result<List<AiModel>, AppError> = when (llmName) {
-                LLMName.OPENAI -> {
-                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_OPEN_AI))
-                }
-
-                LLMName.GEMINI -> {
-                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GEMINI))
-                }
-
-                LLMName.GROQ -> {
-                    getModelsUseCase(mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GROQ))
-                }
-            }
-            if (aiModelList is Result.Success) {
-                return@launch aiModelList.data
-            } else {
-                _errorFlow.emit(AppError.CustomError((aiModelList as Result.Error).error.toString()))
-                return@launch emptyList()
+    private fun getModels(llmName: LLMName) {
+        viewModelScope.launch {
+            val resultModels = getModelsUseCase(llmName)
+            if (resultModels is Result.Success) {
+                _choosenAiModelList.update { it }
+            } else { //TODO better error handling
+                _choosenAiModelList.update { persistentListOf() }
             }
         }
     }
