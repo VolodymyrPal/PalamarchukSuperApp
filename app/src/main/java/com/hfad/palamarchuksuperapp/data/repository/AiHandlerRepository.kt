@@ -27,7 +27,6 @@ interface AiHandlerRepository {
 
 class AiHandlerRepositoryImpl @Inject constructor(
     private val dataStoreHandler: DataStoreHandler,
-    private val getModelsUseCase: GetModelsUseCase,
     private val mapAiModelHandlerUseCase: MapAiModelHandlerUseCase,
 ) : AiHandlerRepository {
 
@@ -44,7 +43,7 @@ class AiHandlerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError> {
-        return getModelsUseCase(handler)
+        return handler.getModels()
     }
 
     override suspend fun addHandler(handlerInfo: AiHandlerInfo) {
@@ -68,7 +67,7 @@ class AiHandlerRepositoryImpl @Inject constructor(
         handler.setAiHandlerInfo(
             aiHandlerInfo
         )
-        val jsonToSave = Json.encodeToString(aiHandlerFlow.first().map { it.aiHandlerInfo })
+        val jsonToSave = Json.encodeToString(aiHandlerFlow.first().map { it.aiHandlerInfo.value })
         dataStoreHandler.saveAiHandlerList(jsonToSave)
     }
 
