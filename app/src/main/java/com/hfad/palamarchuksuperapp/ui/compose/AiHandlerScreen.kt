@@ -55,7 +55,6 @@ fun AiHandlerScreen(
     if (dialogShown.value) DialogAiHandler(
         modifier = Modifier,
         event = event,
-        onDismiss = { dialogShown.value = false }
         onDismiss = { dialogShown.value = false },
         modelList = aiModelList
     )
