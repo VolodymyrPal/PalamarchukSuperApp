@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.LLMName
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
 import com.hfad.palamarchuksuperapp.data.entities.MessageType
@@ -10,6 +11,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.data.entities.AiModel.OpenAIModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -66,8 +68,57 @@ class OpenAIApiHandler @AssistedInject constructor(
     }
 
     override suspend fun getModels(): Result<List<AiModel>, AppError> {
-        // Заглушка, так как OpenAI API не предоставляет endpoint для получения списка моделей
-        return Result.Success(emptyList())
+        return Result.Success(
+            listOf(
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "gpt-4o",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "gpt-4o-mini",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "o1",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "gpt-4o-realtime-preview",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "gpt-4-turbo",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "gpt-4",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "gpt-3.5-turbo",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "dall-e-3",
+                    isSupported = true
+                ),
+                OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "dall-e-2",
+                    isSupported = true
+                ),
+
+
+            )
+        )
     }
 
     override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
