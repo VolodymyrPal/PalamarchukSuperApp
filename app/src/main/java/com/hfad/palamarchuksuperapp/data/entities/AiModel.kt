@@ -11,29 +11,23 @@ sealed interface AiModel {
     val modelName: String
     val isSupported: Boolean
 
-    companion object {
-        val GROQ_BASE_MODEL = GroqModel(llmName = LLMName.GROQ, modelName = "llama-3.2-11b-vision-preview")
-        val GEMINI_BASE_MODEL = GeminiModel(llmName = LLMName.GEMINI, modelName = "models/gemini-1.5-flash-8b")
-        val OPENAI_BASE_MODEL = OpenAIModel(llmName = LLMName.OPENAI, modelName = "gpt-4o-mini")
-    }
-
     @Serializable
     data class GroqModel(
+//        @Required
         @SerialName("LLM")
-        @Required
         override val llmName: LLMName = LLMName.GROQ,
-        @SerialName("name")
-        @Required
+//        @Required
+        @SerialName("id")
         override val modelName: String = "llama-3.2-11b-vision-preview",
-        @SerialName("isSupported")
-        @Required
+//        @Required
+        @SerialName("active")
         override val isSupported: Boolean = true,
     ) : AiModel
 
     @Serializable
     data class GeminiModel(
+//        @Required
         @SerialName("LLM")
-        @Required
         override val llmName: LLMName = LLMName.GEMINI,
         @SerialName("name")
         @Required
@@ -42,8 +36,8 @@ sealed interface AiModel {
         val displayName: String = "Gemini",
         val description: String = "Gemini is a language model that can generate images using the LLM",
         val supportedGenerationMethods: List<String> = emptyList(),
+//        @Required
         @SerialName("isSupported")
-        @Required
         override val isSupported: Boolean = supportedGenerationMethods.contains("generateContent"),
     ) : AiModel
 

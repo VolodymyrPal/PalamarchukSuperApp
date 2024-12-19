@@ -21,7 +21,6 @@ import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
 import kotlinx.collections.immutable.PersistentList
@@ -74,8 +73,7 @@ class ChatBotViewModel @Inject constructor(
         val isLoading: Boolean = false,
         val error: AppError? = null,
         val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
-        val currentModel: AiModel = AiModel.OPENAI_BASE_MODEL,
-        val modelListL: PersistentList<AiModel>,
+        val modelList: PersistentList<AiModel>,
     ) : State<PersistentList<MessageAI>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -100,7 +98,7 @@ class ChatBotViewModel @Inject constructor(
             isLoading = isLoading,
             error = error,
             listHandler = handlers.toPersistentList(),
-            modelListL = modelList.toPersistentList()
+            modelList = modelList
         )
     }.stateIn(
         viewModelScope,
@@ -109,7 +107,7 @@ class ChatBotViewModel @Inject constructor(
             listMessage = persistentListOf(),
             isLoading = false,
             error = null,
-            modelListL = persistentListOf()
+            modelList = persistentListOf()
         )
     )
 
@@ -198,7 +196,7 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope.launch {
             val resultModels = getModelsUseCase(llmName)
             if (resultModels is Result.Success) {
-                _choosenAiModelList.update { it }
+                _choosenAiModelList.update { resultModels.data.toPersistentList() }
             } else { //TODO better error handling
                 _choosenAiModelList.update { persistentListOf() }
             }

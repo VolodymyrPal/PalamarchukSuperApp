@@ -145,7 +145,9 @@ fun ChatScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController? = LocalNavController.current,
     event: (ChatBotViewModel.Event) -> Unit,
-    state: State<ChatBotViewModel.StateChat> = mutableStateOf(ChatBotViewModel.StateChat()),
+    state: State<ChatBotViewModel.StateChat> = mutableStateOf(
+        ChatBotViewModel.StateChat(modelList = persistentListOf())
+    ),
 ) {
     val listState = rememberLazyListState()
 
@@ -187,7 +189,8 @@ fun ChatScreen(
                         AiHandlerScreen(
                             modifier = Modifier.size(200.dp),
                             listAiModelHandler = state.value.listHandler,
-                            event = event
+                            event = event,
+                            aiModelList = state.value.modelList
                         )
                     }
                     IconButton(
@@ -206,7 +209,9 @@ fun ChatScreen(
         },
         floatingActionButton = {
             FabScrollLastItem(
-                modifier = Modifier.offset(0.dp, 25.dp).doublePulseEffect(), //TODO pulse effect улучшить
+                modifier = Modifier
+                    .offset(0.dp, 25.dp)
+                    .doublePulseEffect(), //TODO pulse effect улучшить
                 listState = listState,
                 list = { state.value.listMessage },
             )
@@ -638,7 +643,8 @@ fun ChatScreenPreview() {
         navController = null,
         state = mutableStateOf(
             ChatBotViewModel.StateChat(
-                listMessage = MockChat.value.toPersistentList()
+                listMessage = MockChat.value.toPersistentList(),
+                modelList = persistentListOf()
             )
         )
     )

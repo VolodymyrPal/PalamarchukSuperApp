@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import android.util.Log
-import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
 import com.hfad.palamarchuksuperapp.data.entities.MessageAI
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
@@ -33,10 +32,14 @@ class GeminiApiHandler @AssistedInject constructor(
     @Assisted val initAiHandlerInfo: AiHandlerInfo,
 ) : AiModelHandler {
 
-    private val _aiHandlerInfo: MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
+    private val _aiHandlerInfo: MutableStateFlow<AiHandlerInfo> =
+        MutableStateFlow(initAiHandlerInfo)
     override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
 
-    private fun getUrl(model: AiModel = AiModel.GEMINI_BASE_MODEL, key: String = aiHandlerInfo.value.aiApiKey) =
+    private fun getUrl(
+        model: AiModel = aiHandlerInfo.value.model,
+        key: String = aiHandlerInfo.value.aiApiKey,
+    ) =
         "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
 
 

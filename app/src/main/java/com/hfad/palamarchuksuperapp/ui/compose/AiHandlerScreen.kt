@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,12 +49,14 @@ fun AiHandlerScreen(
     modifier: Modifier = Modifier,
     listAiModelHandler: PersistentList<AiModelHandler>,
     event: (ChatBotViewModel.Event) -> Unit = {},
+    aiModelList: PersistentList<AiModel> = persistentListOf(),
 ) {
     val dialogShown = remember { mutableStateOf(false) }
     if (dialogShown.value) DialogAiHandler(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier,
         event = event,
-        onDismiss = { dialogShown.value = false }
+        onDismiss = { dialogShown.value = false },
+        modelList = aiModelList
     )
 
     LazyColumn(
@@ -80,7 +81,7 @@ fun AiHandlerScreen(
         }
         itemsIndexed(listAiModelHandler) { index, item ->
             AiHandlerBox(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxWidth(),
                 aiModelHandler = item,
                 index = index,
                 event = event
@@ -96,7 +97,7 @@ fun DialogAiHandler(
     modifier: Modifier = Modifier,
     event: (ChatBotViewModel.Event) -> Unit,
     onDismiss: () -> Unit,
-    modelList : List<AiModel> = listOf(AiModel.GROQ_BASE_MODEL, AiModel.GEMINI_BASE_MODEL, AiModel.OPENAI_BASE_MODEL)
+    modelList: PersistentList<AiModel> = persistentListOf(),
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -111,9 +112,9 @@ fun DialogAiHandler(
 
                 val name = remember { mutableStateOf("") }
                 var expandedLLMMenu by remember { mutableStateOf(false) }
-                var selectedLLMOption by remember { mutableStateOf("") }
+                var selectedLLMOption by remember { mutableStateOf<LLMName?>(null) }
                 var expandedModelMenu by remember { mutableStateOf(false) }
-                var selectedModelOption by remember { mutableStateOf("") }
+                var selectedModelOption by remember { mutableStateOf<AiModel?>(null) }
                 val apiKey = remember { mutableStateOf("") }
 
                 TextField(
@@ -136,10 +137,10 @@ fun DialogAiHandler(
                     },
                 ) {
                     TextField(
-                        value = selectedLLMOption,
-                        onValueChange = { selectedLLMOption = it },
+                        value = selectedLLMOption?.name ?: "",
+                        onValueChange = { },
                         placeholder = {
-                            if (selectedLLMOption.isBlank()) Text(
+                            if (selectedLLMOption?.name.isNullOrBlank()) Text(
                                 "Select language model",
                                 color = Color.Black.copy(0.4f)
                             )
@@ -156,7 +157,9 @@ fun DialogAiHandler(
                         LLMName.entries.forEach { option ->
                             DropdownMenuItem(
                                 onClick = {
-                                    selectedLLMOption = option.name
+                                    selectedModelOption = null
+                                    selectedLLMOption = option
+                                    event(ChatBotViewModel.Event.GetModels(option))
                                     expandedLLMMenu = false
                                 },
                                 text = { Text(option.name) }
@@ -173,10 +176,10 @@ fun DialogAiHandler(
                     },
                 ) {
                     TextField(
-                        value = selectedModelOption,
-                        onValueChange = { selectedModelOption = it },
+                        value = selectedModelOption?.modelName ?: "",
+                        onValueChange = { },
                         placeholder = {
-                            if (selectedModelOption.isBlank()) Text(
+                            if (selectedModelOption?.modelName.isNullOrBlank()) Text(
                                 "Select model of language model",
                                 color = Color.Black.copy(0.4f)
                             )
@@ -193,7 +196,7 @@ fun DialogAiHandler(
                         modelList.forEach { option ->
                             DropdownMenuItem(
                                 onClick = {
-                                    selectedModelOption = option.modelName
+                                    selectedModelOption = option
                                     expandedModelMenu = false
                                 },
                                 text = { Text(option.modelName) }
@@ -216,21 +219,23 @@ fun DialogAiHandler(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-
                 IconButton(
                     modifier = Modifier,
                     onClick = {
-                        event.invoke(
-                            ChatBotViewModel.Event.AddAiHandler(
-                                aiHandlerInfo = AiHandlerInfo(
-                                    name = "New Model",
-                                    isSelected = true,
-                                    isActive = true,
-                                    model = AiModel.GeminiModel(),
-                                    aiApiKey = ""
+                        if (selectedModelOption != null) {
+                            event.invoke(
+                                ChatBotViewModel.Event.AddAiHandler(
+                                    aiHandlerInfo = AiHandlerInfo(
+                                        name = name.value.ifBlank { "New Model" },
+                                        isSelected = true,
+                                        isActive = true,
+                                        model = selectedModelOption!!,
+                                        aiApiKey = apiKey.value
+                                    )
                                 )
                             )
-                        )
+                            onDismiss()
+                        }
                     }
                 ) {
                     Icon(
@@ -251,15 +256,16 @@ fun AiHandlerBox(
     event: (ChatBotViewModel.Event) -> Unit,
 ) {
     val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
-    Box(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier) {
         Row(
-            modifier = Modifier,
+            modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${index + 1}. ")
-            Text(text = handlerInfo.name)
+            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.1f))
+            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.8f))
             Checkbox(
+                modifier = Modifier.weight(0.1f),
                 checked = handlerInfo.isSelected,
                 onCheckedChange = {
                     event.invoke(
@@ -271,6 +277,7 @@ fun AiHandlerBox(
                 }
             )
             IconButton(
+                modifier = Modifier.weight(0.1f),
                 onClick = {
                     event.invoke(
                         ChatBotViewModel.Event.DeleteHandler(
@@ -298,12 +305,7 @@ fun AiHandlerScreenPreview() {
         listAiModelHandler = persistentListOf(
             GroqApiHandler(
                 httpClient = HttpClient(),
-                initAiHandlerInfo = AiHandlerInfo(
-                    name = "Gemini fast",
-                    isSelected = true,
-                    isActive = false,
-                    model = AiModel.GROQ_BASE_MODEL
-                )
+                initAiHandlerInfo = AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GROQ
             )
         )
     )
@@ -315,6 +317,6 @@ fun DialogAiHandlerPreview() {
     DialogAiHandler(
         modifier = Modifier,
         event = {},
-        onDismiss = {  }
+        onDismiss = { }
     )
 }

@@ -3,6 +3,10 @@ package com.hfad.palamarchuksuperapp.domain.models
 import androidx.compose.runtime.Stable
 import com.hfad.palamarchuksuperapp.BuildConfig
 import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.entities.AiModel.GeminiModel
+import com.hfad.palamarchuksuperapp.data.entities.AiModel.GroqModel
+import com.hfad.palamarchuksuperapp.data.entities.AiModel.OpenAIModel
+import com.hfad.palamarchuksuperapp.data.entities.LLMName
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import kotlin.random.Random
@@ -25,7 +29,10 @@ data class AiHandlerInfo(
                 name = "OpenAI",
                 isSelected = true,
                 isActive = true,
-                model = AiModel.OPENAI_BASE_MODEL,
+                model = OpenAIModel(
+                    llmName = LLMName.OPENAI,
+                    modelName = "gpt-4o-mini"
+                ),
                 aiApiKey = BuildConfig.OPEN_AI_KEY_USER
             )
         }
@@ -35,7 +42,10 @@ data class AiHandlerInfo(
                 name = "Gemini",
                 isSelected = true,
                 isActive = true,
-                model = AiModel.GEMINI_BASE_MODEL,
+                model = GeminiModel(
+                    llmName = LLMName.GEMINI,
+                    modelName = "models/gemini-1.5-flash-8b"
+                ),
                 aiApiKey = BuildConfig.GEMINI_AI_KEY
             )
         }
@@ -45,7 +55,10 @@ data class AiHandlerInfo(
                 name = "Groq",
                 isSelected = true,
                 isActive = true,
-                model = AiModel.GROQ_BASE_MODEL,
+                model = GroqModel(
+                    llmName = LLMName.GROQ,
+                    modelName = "llama-3.2-11b-vision-preview"
+                ),
                 aiApiKey = BuildConfig.GROQ_KEY
             )
         }
