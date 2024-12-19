@@ -11,12 +11,6 @@ sealed interface AiModel {
     val modelName: String
     val isSupported: Boolean
 
-    companion object {
-        val GROQ_BASE_MODEL = GroqModel(llmName = LLMName.GROQ, modelName = "llama-3.2-11b-vision-preview")
-        val GEMINI_BASE_MODEL = GeminiModel(llmName = LLMName.GEMINI, modelName = "models/gemini-1.5-flash-8b")
-        val OPENAI_BASE_MODEL = OpenAIModel(llmName = LLMName.OPENAI, modelName = "gpt-4o-mini")
-    }
-
     @Serializable
     data class GroqModel(
         @SerialName("LLM")
