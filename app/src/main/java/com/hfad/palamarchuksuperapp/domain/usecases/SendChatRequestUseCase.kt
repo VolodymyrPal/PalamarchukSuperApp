@@ -36,7 +36,12 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         }
 
         addAiMessageUseCase(message)
-
+        /**
+         *
+         *
+         * Need to better handler error message and loading messages.
+         *
+         */
         val listToSend: PersistentList<MessageAI> = getAiChatUseCase().first()
 
         supervisorScope {
@@ -70,9 +75,9 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
             requests.forEach { (requestIndex, request) ->
                 launch {
-                    val result = request.await()
                     val updatedContent =
                         getAiChatUseCase().first()[indexOfRequest].content.mapIndexed { index, subMessage ->
+                            val result = request.await()
                             if (index == requestIndex) {
                                 when (result) {
                                     is Result.Success -> subMessage.copy(
