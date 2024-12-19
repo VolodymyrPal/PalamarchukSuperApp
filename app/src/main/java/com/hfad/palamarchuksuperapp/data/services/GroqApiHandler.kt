@@ -163,7 +163,7 @@ fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
  *
  */
 
-fun List<MessageAI>.toGroqRequest(model: AiModel = AiModel.GROQ_BASE_MODEL): GroqRequest {
+fun List<MessageAI>.toGroqRequest(model: AiModel): GroqRequest {
     val groqRequest = GroqContentBuilder.Builder().also { builder ->
         for (message in this) {
             when (message.type) {
