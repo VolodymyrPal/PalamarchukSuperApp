@@ -15,6 +15,7 @@ interface ChatAiRepository {
     suspend fun getModels(handlers: List<AiModelHandler>): List<AiModel>
     suspend fun addMessage(messageAI: MessageAI)
     suspend fun updateMessage(index: Int, updatedContent: MessageAI)
-    suspend fun updateSubMessage(index: Int, subMessageList: PersistentList<SubMessageAI>)
+    suspend fun updateSubMessages(index: Int, subMessageList: PersistentList<SubMessageAI>)
+    suspend fun updateSubMessage(index: Int, subMessageAI: SubMessageAI, indexSubMessage: Int)
     suspend fun updateChat(listOfMessageAI: PersistentList<MessageAI>)
 }
