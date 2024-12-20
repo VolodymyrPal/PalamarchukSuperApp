@@ -25,7 +25,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
     private val chatAiRepository: ChatAiRepository,
     private val addAiMessageUseCase: AddAiMessageUseCase,
     private val getAiChatUseCase: GetAiChatUseCase,
-    private val updateAiMessageUseCase: UpdateAiMessageUseCase
+    private val updateAiMessageUseCase: UpdateAiMessageUseCase,
 ) : SendChatRequestUseCase {
 
     override suspend operator fun invoke(message: MessageAI, handlers: List<AiModelHandler>) {
@@ -75,28 +75,39 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
             requests.forEach { (requestIndex, request) ->
                 launch {
-                    val updatedContent =
-                        getAiChatUseCase().first()[indexOfRequest].content.mapIndexed { index, subMessage ->
-                            val result = request.await()
-                            if (index == requestIndex) {
-                                when (result) {
-                                    is Result.Success -> subMessage.copy(
-                                        message = result.data.message,
-                                        model = result.data.model,
-                                        loading = false
-                                    )
-
-                                    is Result.Error -> subMessage.copy(
-                                        message = "Error",
-                                        loading = false
-                                    )
-                                }
-                            } else {
-                                subMessage // остальные остаются без изменений
+                    val result: Result<SubMessageAI, AppError> = request.await()
+                    if (result is Result.Success) {
+                        updateAiMessageUseCase.invoke(
+                            subMessageAI =
+                                SubMessageAI(
+                                    id = requestIndex,
+                                    message = result.data.message,
+                                    model = result.data.model
+                                ),
+                            messageIndex = indexOfRequest,
+                            subMessageIndex = requestIndex
+                        )
+                    } else {
+                        val errorMessage = when ((result as Result.Error<SubMessageAI, AppError>).error) {
+                            is AppError.CustomError -> {
+                                "Undefined error: ${(result.error as AppError.CustomError).error}"
                             }
-                        }.toPersistentList()
-
-                    updateAiMessageUseCase(updatedContent, indexOfRequest)
+                            is AppError.Network -> {
+                                "Error with network"
+                            }
+                            else ->  "Undefined error"
+                        }
+                        updateAiMessageUseCase.invoke(
+                            subMessageAI =
+                                SubMessageAI(
+                                    id = requestIndex,
+                                    message = errorMessage,
+                                    model = result.data?.model
+                                ),
+                            messageIndex = indexOfRequest,
+                            subMessageIndex = requestIndex
+                        )
+                    }
                 }
             }
         }

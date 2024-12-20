@@ -62,12 +62,25 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun updateSubMessage(
+    override suspend fun updateSubMessages(
         index: Int,
         subMessageList: PersistentList<SubMessageAI>,
     ) {
         chatAiChatFlow.update {
             it.set(index, it[index].copy(content = subMessageList))
+        }
+    }
+
+    override suspend fun updateSubMessage(
+        index: Int,
+        subMessageAI: SubMessageAI,
+        indexSubMessage: Int,
+    ) {
+        chatAiChatFlow.update {
+            it.set(
+                index,
+                it[index].copy(content = it[index].content.set(indexSubMessage, subMessageAI))
+            )
         }
     }
 
