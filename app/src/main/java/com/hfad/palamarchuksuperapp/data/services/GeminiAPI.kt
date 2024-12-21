@@ -105,3 +105,15 @@ class GeminiBuilder {
 
     }
 }
+
+@Serializable
+data class GeminiError(
+    val error: GeminiErrorDetails
+)
+
+@Serializable
+data class GeminiErrorDetails(
+    val code: Int,
+    val message: String,
+    val status: String
+)
