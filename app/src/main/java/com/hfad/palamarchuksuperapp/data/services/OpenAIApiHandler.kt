@@ -57,8 +57,12 @@ class OpenAIApiHandler @AssistedInject constructor(
                     model = initAiHandlerInfo.model
                 )
                 Result.Success(responseMessage)
-            } else if (response.status == HttpStatusCode.Unauthorized) {
-                Result.Error(AppError.Network.RequestError.Unauthorized)
+            } else if (response.status.value in 401..599) {
+                val openAiError = response.body<OpenAIError>()
+                Result.Error(AppError.CustomError(openAiError.error.message),
+                    data = SubMessageAI(
+                        model = initAiHandlerInfo.model
+                    ))
             } else {
                 throw CodeError(response.status.value)
             }
