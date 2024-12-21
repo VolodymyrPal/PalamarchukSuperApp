@@ -140,3 +140,15 @@ data class GroqModelList(
     val objectType: String,
     val data: List<AiModel.GroqModel>
 )
+
+@Serializable
+data class GroqError (
+    val error: GroqErrorDetails
+)
+
+@Serializable
+data class GroqErrorDetails (
+    val message: String,
+    val type: String,
+    val code: String
+)
