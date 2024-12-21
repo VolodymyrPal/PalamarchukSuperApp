@@ -90,7 +90,7 @@ class GeminiApiHandler @AssistedInject constructor(
     }
 }
 
-fun handleException(e: Exception): AppError {
+fun handleException(e: Exception): AppError { //TODO улучшить или изменить проблемы с запросом
     return when (e) {
         is CodeError -> {
             when (e.value) {
