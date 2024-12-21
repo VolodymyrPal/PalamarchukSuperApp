@@ -88,15 +88,19 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             subMessageIndex = requestIndex
                         )
                     } else {
-                        val errorMessage = when ((result as Result.Error<SubMessageAI, AppError>).error) {
-                            is AppError.CustomError -> {
-                                "Undefined error: ${(result.error as AppError.CustomError).error}"
+                        val errorMessage =
+                            when ((result as Result.Error<SubMessageAI, AppError>).error) {
+                                is AppError.CustomError -> {
+                                    (result.error as AppError.CustomError).errorText
+                                        ?: "Undefined Error"
+                                }
+//TODO update other errors
+                                is AppError.Network -> {
+                                    "Error with network"
+                                }
+
+                                else -> "Undefined error"
                             }
-                            is AppError.Network -> {
-                                "Error with network"
-                            }
-                            else ->  "Undefined error"
-                        }
                         updateAiMessageUseCase.invoke(
                             subMessageAI =
                                 SubMessageAI(
