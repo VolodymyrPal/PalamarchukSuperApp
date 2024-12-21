@@ -81,6 +81,12 @@ class GeminiApiHandler @AssistedInject constructor(
                     model = initAiHandlerInfo.model
                 )
                 return Result.Success(responseMessage)
+            } else if (request.status.value in 400..599) {
+                val geminiError = request.body<GeminiError>()
+                return Result.Error(
+                    data = SubMessageAI(model = initAiHandlerInfo.model),
+                    error = AppError.CustomError(geminiError.error.message)
+                )
             } else {
                 throw CodeError(request.status.value)
             }
@@ -90,7 +96,7 @@ class GeminiApiHandler @AssistedInject constructor(
     }
 }
 
-fun handleException(e: Exception): AppError {
+fun handleException(e: Exception): AppError { //TODO улучшить или изменить проблемы с запросом
     return when (e) {
         is CodeError -> {
             when (e.value) {

@@ -361,14 +361,14 @@ fun MessageBox(
                             if (subMessageList[page].model != null) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = "Powered by ${
+                                    text = "${
                                         subMessageList[page].model?.modelName?.replace(
                                             "models/",
                                             ""
                                         )
                                     }",
                                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                                    fontSize = TextUnit(12f, TextUnitType.Sp),
+                                    fontSize = TextUnit(8f, TextUnitType.Sp),
                                     textAlign = TextAlign.End,
                                     fontStyle = FontStyle.Italic
                                 )

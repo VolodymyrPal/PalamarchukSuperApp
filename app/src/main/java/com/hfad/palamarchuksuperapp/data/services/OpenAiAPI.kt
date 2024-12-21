@@ -82,3 +82,16 @@ data class TokensDetails(
     @SerialName("accepted_prediction_tokens") val acceptedPredictionTokens: Int? = null,
     @SerialName("rejected_prediction_tokens") val rejectedPredictionTokens: Int? = null
 )
+
+@Serializable
+data class OpenAIError(
+    val error: OpenAIErrorDetails
+)
+
+@Serializable
+data class OpenAIErrorDetails(
+    val message: String,
+    val type: String,
+    val param: String?, // Can be null
+    val code: String
+)
