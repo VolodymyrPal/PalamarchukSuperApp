@@ -33,7 +33,8 @@ class GroqApiHandler @AssistedInject constructor(
     @Assisted val initAiHandlerInfo: AiHandlerInfo,
 ) : AiModelHandler {
 
-    private val _aiHandlerInfo : MutableStateFlow<AiHandlerInfo> = MutableStateFlow(initAiHandlerInfo)
+    private val _aiHandlerInfo: MutableStateFlow<AiHandlerInfo> =
+        MutableStateFlow(initAiHandlerInfo)
     override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -63,6 +64,14 @@ class GroqApiHandler @AssistedInject constructor(
                     model = initAiHandlerInfo.model
                 )
                 return Result.Success(responseMessage)
+            } else if (request.status.value in 400..599) {
+                val groqError = request.body<GroqError>()
+                return Result.Error(
+                    error = AppError.CustomError(groqError.error.message),
+                    SubMessageAI(
+                        model = initAiHandlerInfo.model
+                    )
+                )
             } else {
                 throw CodeError(request.status.value)
             }
