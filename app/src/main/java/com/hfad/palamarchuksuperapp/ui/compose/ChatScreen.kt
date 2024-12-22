@@ -368,7 +368,7 @@ fun MessageBox(
                                         )
                                     }",
                                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                                    fontSize = TextUnit(8f, TextUnitType.Sp),
+                                    fontSize = TextUnit(12f, TextUnitType.Sp),
                                     textAlign = TextAlign.End,
                                     fontStyle = FontStyle.Italic
                                 )

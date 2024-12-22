@@ -194,6 +194,7 @@ class ChatBotViewModel @Inject constructor(
 
     private fun getModels(llmName: LLMName) {
         viewModelScope.launch {
+            _choosenAiModelList.update { persistentListOf() }
             val resultModels = getModelsUseCase(llmName)
             if (resultModels is Result.Success) {
                 _choosenAiModelList.update { resultModels.data.toPersistentList() }
