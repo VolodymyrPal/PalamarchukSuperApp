@@ -55,6 +55,30 @@ sealed interface AiModel {
     ) : AiModel
 }
 
+fun AiModel.toGroqModelDTO(): GroqModelDTO {
+    return GroqModelDTO(
+        llmName = llmName,
+        modelName = modelName,
+        isSupported = isSupported
+    )
+}
+
+fun AiModel.toGeminiModelDTO(): GeminiModelDTO {
+    return GeminiModelDTO(
+        llmName = llmName,
+        modelName = modelName,
+        isSupported = isSupported
+    )
+}
+
+fun AiModel.toOpenAIModelDTO(): OpenAIModelDTO {
+    return OpenAIModelDTO(
+        llmName = llmName,
+        modelName = modelName,
+        isSupported = isSupported
+    )
+}
+
 @Serializable
 enum class LLMName {
     OPENAI,
