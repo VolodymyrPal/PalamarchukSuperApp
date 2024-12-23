@@ -13,12 +13,12 @@ class FakeStoreApiRepository @Inject constructor(
     private val httpClient: HttpClient
 ) : FakeStoreApi {
 
-    override suspend fun fetchProducts() : List<Product> {
+    override suspend fun fetchProducts() : List<ProductDTO> {
         val request =  httpClient.get("https://fakestoreapi.com/products")
-        val products = request.body<List<Product>>()
-        return products
+        val productDTOS = request.body<List<ProductDTO>>()
+        return productDTOS
     }
 
-    override suspend fun getProductsDomainRw() = fetchProducts().map { it.toProductDomainRW() }
+    override suspend fun getProductsDomainRw() = fetchProducts().map { it.toProduct() }
 
 }
