@@ -42,7 +42,7 @@ data class AiHandlerInfo(
                 isActive = true,
                 model = GeminiModel(
                     llmName = LLMName.GEMINI,
-                    modelName = "models/gemini-1.5-flash-8b"
+                    modelName = "gemini-1.5-flash-8b"
                 ),
                 aiApiKey = BuildConfig.GEMINI_AI_KEY
             )
