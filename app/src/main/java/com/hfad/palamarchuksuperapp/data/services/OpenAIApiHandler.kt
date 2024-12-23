@@ -1,17 +1,18 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.LLMName
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.Role
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
+import com.hfad.palamarchuksuperapp.domain.models.LLMName
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.data.dtos.OpenAIModelDTO
+import com.hfad.palamarchuksuperapp.domain.models.Role
+import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.data.dtos.toOpenAIModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.data.entities.AiModel.OpenAIModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -59,10 +60,12 @@ class OpenAIApiHandler @AssistedInject constructor(
                 Result.Success(responseMessage)
             } else if (response.status.value in 401..599) {
                 val openAiError = response.body<OpenAIError>()
-                Result.Error(AppError.CustomError(openAiError.error.message),
+                Result.Error(
+                    AppError.CustomError(openAiError.error.message),
                     data = SubMessageAI(
                         model = initAiHandlerInfo.model
-                    ))
+                    )
+                )
             } else {
                 throw CodeError(response.status.value)
             }
@@ -71,57 +74,57 @@ class OpenAIApiHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun getModels(): Result<List<AiModel>, AppError> {
+    override suspend fun getModels(): Result<List<AiModel.OpenAIModel>, AppError> {
         return Result.Success(
             listOf(
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4o",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4o-mini",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "o1",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4o-realtime-preview",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4-turbo",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-3.5-turbo",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "dall-e-3",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "dall-e-2",
                     isSupported = true
                 ),
-
-
-            )
+            ).map {
+                it.toOpenAIModel()
+            }
         )
     }
 

@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.dtos.GroqModelDTO
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -138,7 +138,7 @@ data class XGroq(
 data class GroqModelList(
     @SerialName(value = "object")
     val objectType: String,
-    val data: List<AiModel.GroqModel>
+    val data: List<GroqModelDTO>
 )
 
 @Serializable

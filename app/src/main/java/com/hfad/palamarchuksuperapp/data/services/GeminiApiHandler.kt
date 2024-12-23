@@ -1,11 +1,12 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import android.util.Log
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -40,7 +41,7 @@ class GeminiApiHandler @AssistedInject constructor(
         model: AiModel = aiHandlerInfo.value.model,
         key: String = aiHandlerInfo.value.aiApiKey,
     ) =
-        "https://generativelanguage.googleapis.com/v1beta/${model.modelName}:generateContent?key=$key"
+        "https://generativelanguage.googleapis.com/v1beta/models/${model.modelName}:generateContent?key=$key"
 
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
@@ -50,7 +51,7 @@ class GeminiApiHandler @AssistedInject constructor(
         )
         return if (response.status == HttpStatusCode.OK) {
             val list = response.body<GeminiModelsResponse>()
-            return Result.Success(list.models)
+            return Result.Success(list.models.map { it.toGeminiModel() })
         } else {
             Result.Error(AppError.Network.RequestError.BadRequest)
         }

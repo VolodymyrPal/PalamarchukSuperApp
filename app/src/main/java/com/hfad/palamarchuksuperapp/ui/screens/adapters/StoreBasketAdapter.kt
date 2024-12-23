@@ -9,15 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemBasketProductBinding
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 
 class StoreBasketAdapter (val viewModel: StoreViewModel)
-    : ListAdapter<ProductDomainRW, StoreBasketAdapter.ProductBasketItemHolder>(
+    : ListAdapter<Product, StoreBasketAdapter.ProductBasketItemHolder>(
     ProductBasketItemHolder.ProductDiffItemCallback()
 ) {
 
-    fun setData(productList: List<ProductDomainRW>) {
+    fun setData(productList: List<Product>) {
         Log.d("STORE BASKET ADAPTER", "setData: $productList")
         submitList(productList)
     }
@@ -43,7 +43,7 @@ class StoreBasketAdapter (val viewModel: StoreViewModel)
         private val binding: ListItemBasketProductBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: ProductDomainRW) {
+        fun bind(product: Product) {
             binding.apply {
                 quantityToBuy.minValue = 1
                 quantityToBuy.maxValue = 255
@@ -51,31 +51,31 @@ class StoreBasketAdapter (val viewModel: StoreViewModel)
                 quantityToBuy.setOnValueChangedListener { _, _, newVal ->
                     viewModel.event(
                         event = StoreViewModel.Event.SetItemToBasket(
-                            productDomainRW = product,
+                            product = product,
                             quantity = newVal
                         )
                     )
                 }
             }
-            val summ = "%.2f".format(product.product.price/2)
+            val summ = "%.2f".format(product.productDTO.price/2)
             binding.productPrice.text = binding.root.context.getString(
                 R.string.product_sum,
                 summ)
             binding.quantityToBuy.value = product.quantity
-            binding.productDescription.text = product.product.description
+            binding.productDescription.text = product.productDTO.description
 
-            binding.shapeableImageView.load(product.product.image)
+            binding.shapeableImageView.load(product.productDTO.image)
         }
 
-        class ProductDiffItemCallback : DiffUtil.ItemCallback<ProductDomainRW>() {
+        class ProductDiffItemCallback : DiffUtil.ItemCallback<Product>() {
             override fun areItemsTheSame(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
-            ): Boolean = oldItem.product.id == newItem.product.id
+                oldItem: Product,
+                newItem: Product,
+            ): Boolean = oldItem.productDTO.id == newItem.productDTO.id
 
             override fun areContentsTheSame(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
+                oldItem: Product,
+                newItem: Product,
             ): Boolean {
                 return oldItem.quantity == newItem.quantity
             }

@@ -1,11 +1,12 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.Role
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.domain.models.Role
+import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.data.dtos.toGroqModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
@@ -80,7 +81,7 @@ class GroqApiHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun getModels(): Result<List<AiModel>, AppError> {
+    override suspend fun getModels(): Result<List<AiModel.GroqModel>, AppError> {
         val response = httpClient.get(
             "https://api.groq.com/openai/v1/models"
         ) {
@@ -89,7 +90,7 @@ class GroqApiHandler @AssistedInject constructor(
         }
         return if (response.status == HttpStatusCode.OK) {
             val list = response.body<GroqModelList>()
-            return Result.Success(list.data)
+            return Result.Success(list.data.map { it.toGroqModel() })
         } else {
             Result.Error(AppError.Network.RequestError.BadRequest)
         }

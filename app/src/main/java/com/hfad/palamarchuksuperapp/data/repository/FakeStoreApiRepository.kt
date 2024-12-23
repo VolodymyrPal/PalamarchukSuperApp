@@ -1,8 +1,8 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import com.hfad.palamarchuksuperapp.data.entities.Product
+import com.hfad.palamarchuksuperapp.data.dtos.ProductDTO
+import com.hfad.palamarchuksuperapp.data.dtos.toProduct
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
-import com.hfad.palamarchuksuperapp.ui.common.toProductDomainRW
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -13,12 +13,12 @@ class FakeStoreApiRepository @Inject constructor(
     private val httpClient: HttpClient
 ) : FakeStoreApi {
 
-    override suspend fun fetchProducts() : List<Product> {
+    override suspend fun fetchProducts() : List<ProductDTO> {
         val request =  httpClient.get("https://fakestoreapi.com/products")
-        val products = request.body<List<Product>>()
-        return products
+        val productDTOS = request.body<List<ProductDTO>>()
+        return productDTOS
     }
 
-    override suspend fun getProductsDomainRw() = fetchProducts().map { it.toProductDomainRW() }
+    override suspend fun getProductsDomainRw() = fetchProducts().map { it.toProduct() }
 
 }

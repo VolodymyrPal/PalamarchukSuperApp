@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
+import com.hfad.palamarchuksuperapp.data.dtos.GeminiModelDTO
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -69,7 +69,7 @@ data class GeminiTextResponse(
 
 @Serializable
 data class GeminiModelsResponse(
-    val models: List<AiModel.GeminiModel>,
+    val models: List<GeminiModelDTO>,
 )
 
 

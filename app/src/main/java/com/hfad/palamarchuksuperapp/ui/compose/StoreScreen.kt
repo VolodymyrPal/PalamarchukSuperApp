@@ -122,13 +122,13 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
-import com.hfad.palamarchuksuperapp.data.entities.Product
-import com.hfad.palamarchuksuperapp.data.entities.ProductRating
+import com.hfad.palamarchuksuperapp.data.dtos.ProductDTO
+import com.hfad.palamarchuksuperapp.data.dtos.ProductRating
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
@@ -311,7 +311,7 @@ fun StoreScreen(
 @Composable
 fun StoreScreenContent(
     modifier: Modifier = Modifier,
-    items: List<ProductDomainRW>? = emptyList(),
+    items: List<Product>? = emptyList(),
     error: AppError?,
     onEvent: (StoreViewModel.Event) -> Unit,
     snackBarHost: SnackbarHostState,
@@ -371,7 +371,7 @@ fun StoreScreenContent(
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                         onEvent = onEvent,
-                        productList = items.filter { items[0].product.category == it.product.category },
+                        productDTOList = items.filter { items[0].productDTO.category == it.productDTO.category },
                     )
                 }
 
@@ -379,22 +379,22 @@ fun StoreScreenContent(
                 item(span = { GridItemSpan(itemSpan) }) {
 
                     val productListInter = items.filter {
-                        items[0].product.category != it.product.category
+                        items[0].productDTO.category != it.productDTO.category
                     }
 
                     val finalProductList = productListInter.filter {
-                        productListInter[0].product.category == it.product.category
+                        productListInter[0].productDTO.category == it.productDTO.category
                     }
 
                     StoreLazyCard(
                         modifier = Modifier,
                         onEvent = onEvent,
-                        productList = finalProductList
+                        productDTOList = finalProductList
                     )
                 }
                 items(
                     items = items,
-                    key = { item: ProductDomainRW -> item.id },
+                    key = { item: Product -> item.id },
                 ) { item ->
                     GridItem(
                         modifier = Modifier.animateItem(),
@@ -434,7 +434,7 @@ fun StoreScreenContent(
 @Composable
 fun GridItem(
     modifier: Modifier,
-    item: ProductDomainRW,
+    item: Product,
     onEvent: (StoreViewModel.Event) -> Unit,
 ) {
     AnimatedVisibility(
@@ -460,9 +460,9 @@ fun GridItem(
 fun StoreLazyCard(
     modifier: Modifier = Modifier,
     onEvent: (StoreViewModel.Event) -> Unit,
-    productList: List<ProductDomainRW> = listOf(
-        ProductDomainRW(
-            product = Product(
+    productDTOList: List<Product> = listOf(
+        Product(
+            productDTO = ProductDTO(
                 id = 2890,
                 title = "vidisse",
                 price = 0.1,
@@ -490,7 +490,7 @@ fun StoreLazyCard(
         ) {
             Text(
                 modifier = Modifier.padding(start = 8.dp, top = 8.dp),
-                text = productList[0].product.category.uppercase(),
+                text = productDTOList[0].productDTO.category.uppercase(),
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
             )
@@ -501,8 +501,8 @@ fun StoreLazyCard(
                 ),
             ) {
                 items(
-                    items = productList,
-                    key = { item: ProductDomainRW -> item.id },
+                    items = productDTOList,
+                    key = { item: Product -> item.id },
                 ) { item ->
                     AnimatedVisibility(
                         modifier = Modifier
@@ -538,7 +538,7 @@ fun StoreLazyCard(
 @Composable
 fun ListItemProduct(
     modifier: Modifier = Modifier,
-    item: ProductDomainRW,
+    item: Product,
     onEvent: (StoreViewModel.Event) -> Unit = {},
 ) {
     Box(modifier = modifier.size(WIDTH_ITEM.dp, HEIGHT_ITEM.dp)) {
@@ -675,7 +675,7 @@ fun ListItemProduct(
 
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.product.image)
+                    .data(item.productDTO.image)
                     .placeholder(R.drawable.bicon_camera_selector)
                     .error(R.drawable.bicon_home_black_filled)
                     .size(33)
@@ -689,7 +689,7 @@ fun ListItemProduct(
                     .clip(RoundedCornerShape(percent = 12))
             )
             Text(
-                text = item.product.title.uppercase(),
+                text = item.productDTO.title.uppercase(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                 fontSize = TextUnit(12f, TextUnitType.Sp),
@@ -699,7 +699,7 @@ fun ListItemProduct(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 StarRatingBar(
                     maxStars = 5,
-                    rating = item.product.rating.rate.toFloat(),
+                    rating = item.productDTO.rating.rate.toFloat(),
                     onRatingChanged = { },
                     modifier = Modifier
                 )
@@ -717,7 +717,7 @@ fun ListItemProduct(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${item.product.price}$",
+                    text = "${item.productDTO.price}$",
                     style = MaterialTheme.typography.bodySmall.copy(
                         color = Color.DarkGray,
                         fontStyle = FontStyle.Italic,
@@ -728,7 +728,7 @@ fun ListItemProduct(
                 )
 
                 Text(
-                    text = "${item.product.price / 2}$",
+                    text = "${item.productDTO.price / 2}$",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     fontSize = TextUnit(18f, TextUnitType.Sp),
                     modifier = Modifier
@@ -865,7 +865,7 @@ fun SubDrawerContent(
     modifier: Modifier = Modifier,
     closeDrawerEvent: () -> Unit = {},
     onEvent: (StoreViewModel.Event) -> Unit = {},
-    items: List<ProductDomainRW> = emptyList(),
+    items: List<Product> = emptyList(),
 ) {
     val openAlertDialog = remember { mutableStateOf(false) }
     Column(
@@ -897,7 +897,7 @@ fun SubDrawerContent(
             verticalArrangement = Arrangement.Center
         ) {
             items(
-                key = { item: ProductDomainRW -> item.product.id },
+                key = { item: Product -> item.productDTO.id },
                 items = items,
             ) {
                 Box(
@@ -906,7 +906,7 @@ fun SubDrawerContent(
                         .fillMaxSize()
                         .border(1.dp, Color.Black)
                 ) {
-                    val summ = "%.2f".format(it.product.price / 2 * it.quantity)
+                    val summ = "%.2f".format(it.productDTO.price / 2 * it.quantity)
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -914,10 +914,10 @@ fun SubDrawerContent(
                     ) {
                         AsyncImage(
                             modifier = Modifier.weight(0.2f),
-                            model = it.product.image,
+                            model = it.productDTO.image,
                             contentDescription = "Product Image"
                         )
-                        Text(modifier = Modifier.weight(0.5f), text = it.product.description)
+                        Text(modifier = Modifier.weight(0.5f), text = it.productDTO.description)
                         NumberPicker(
                             modifier = Modifier
                                 .weight(0.2f)
@@ -942,7 +942,7 @@ fun SubDrawerContent(
             }
         }
         val summ =
-            "%.2f".format(items.sumOf { item -> item.product.price * item.quantity } * 0.5)
+            "%.2f".format(items.sumOf { item -> item.productDTO.price * item.quantity } * 0.5)
         Text(
             text = stringResource(R.string.to_pay, summ),
             fontSize = 24.sp,

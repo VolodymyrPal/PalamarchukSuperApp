@@ -5,7 +5,7 @@ import MainDispatcher
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
-import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Skill
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +24,7 @@ class SkillsViewModel @Inject constructor(
     private val repository: SkillRepository,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-) : GenericViewModel<PersistentList<SkillDomainRW>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
+) : GenericViewModel<PersistentList<Skill>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
 //    data class SkillStateExpanded(
 //        val stateInfo: String = "Volodymyr",
@@ -49,12 +49,12 @@ class SkillsViewModel @Inject constructor(
 
 
     data class SkillState(
-        val items: PersistentList<SkillDomainRW> = persistentListOf(),
+        val items: PersistentList<Skill> = persistentListOf(),
         val loading: Boolean = false,
         val error: AppError? = null,
-    ) : State<PersistentList<SkillDomainRW>>
+    ) : State<PersistentList<Skill>>
 
-    override val _dataFlow: Flow<Result<PersistentList<SkillDomainRW>, AppError>> =
+    override val _dataFlow: Flow<Result<PersistentList<Skill>, AppError>> =
         repository.getSkillsFromDB().map { Result.Success(it) }
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -86,13 +86,13 @@ class SkillsViewModel @Inject constructor(
 
     sealed class Event : BaseEvent {
         object GetSkills : Event()
-        data class MoveToFirstPosition(val item: SkillDomainRW) : Event()
-        data class EditItem(val item: SkillDomainRW, val skillsChangeConst: SkillsChangeConst) :
+        data class MoveToFirstPosition(val item: Skill) : Event()
+        data class EditItem(val item: Skill, val skillsChangeConst: SkillsChangeConst) :
             Event()
 
-        data class DeleteItem(val item: SkillDomainRW) : Event()
+        data class DeleteItem(val item: Skill) : Event()
         object DeleteAllChosen : Event()
-        data class AddItem(val item: SkillDomainRW) : Event()
+        data class AddItem(val item: Skill) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -130,7 +130,7 @@ class SkillsViewModel @Inject constructor(
         }
     }
 
-    fun moveToFirstPosition(skillDomainRW: SkillDomainRW) {
+    fun moveToFirstPosition(skill: Skill) {
         viewModelScope.launch(mainDispatcher) {
 //            val minPosition = _dataFlow.first().minOfOrNull { it.skill.position } ?: 0
 //            repository.updateSkill(
@@ -143,9 +143,9 @@ class SkillsViewModel @Inject constructor(
         }
     }
 
-    fun deleteSkill(skillDomainRW: SkillDomainRW) {
+    fun deleteSkill(skill: Skill) {
         viewModelScope.launch(ioDispatcher) {
-            repository.deleteSkill(skillDomainRW)
+            repository.deleteSkill(skill)
         }
     }
 
@@ -158,13 +158,13 @@ class SkillsViewModel @Inject constructor(
     }
 
 
-    private fun addSkill(skillDomainRW: SkillDomainRW) {
+    private fun addSkill(skill: Skill) {
         viewModelScope.launch(mainDispatcher) {
-            repository.addSkill(skillDomainRW)
+            repository.addSkill(skill)
         }
     }
 
-    fun updateSkillOrAdd(skillDomainRW: SkillDomainRW, changeConst: SkillsChangeConst) {
+    fun updateSkillOrAdd(skill: Skill, changeConst: SkillsChangeConst) {
         viewModelScope.launch(mainDispatcher) {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
