@@ -4,10 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
-import com.hfad.palamarchuksuperapp.data.entities.Converters
-import com.hfad.palamarchuksuperapp.data.entities.Skill
+import com.hfad.palamarchuksuperapp.data.dtos.Converters
+import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 
-@Database(entities = [Skill::class], version = 1, exportSchema = true)
+@Database(entities = [SkillEntity::class], version = 1, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class SkillsDatabase : RoomDatabase() {
     abstract fun skillsDao(): SkillsDao

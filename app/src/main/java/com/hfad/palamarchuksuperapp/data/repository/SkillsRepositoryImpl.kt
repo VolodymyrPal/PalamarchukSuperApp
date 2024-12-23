@@ -1,16 +1,18 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
-import com.hfad.palamarchuksuperapp.data.entities.Skill
+import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
+import com.hfad.palamarchuksuperapp.data.dtos.toSkill
+import com.hfad.palamarchuksuperapp.data.dtos.toSkillEntity
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
-import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
-import com.hfad.palamarchuksuperapp.ui.common.toDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Skill
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 
@@ -18,106 +20,153 @@ class SkillsRepositoryImpl @Inject constructor(
     private val skillsDao: SkillsDao,
 ) : SkillRepository {
 
-    override fun getSkillsFromDB(): Flow<PersistentList<SkillDomainRW>> =
-        skillsDao.getAllSkillsFromDB().map { list -> list.map { it.toDomainRW() }.toPersistentList() }
+    override fun getSkillsFromDB(): Flow<PersistentList<Skill>> =
+        skillsDao.getAllSkillsFromDB().map { list -> list.map { it.toSkill() }.toPersistentList() }
 
 
-    override suspend fun deleteSkill(skill: SkillDomainRW) =
-        skillsDao.deleteSkill(skill = skill.skill)
+    override suspend fun deleteSkill(skill: Skill) =
+        skillsDao.deleteSkill(skillEntity = skill.toSkillEntity())
 
 
-    override suspend fun addSkill(skill: SkillDomainRW) = skillsDao.addSkill(skill.skill)
+    override suspend fun addSkill(skill: Skill) = skillsDao.addSkill(skill.toSkillEntity())
 
-    override suspend fun updateSkill(skill: SkillDomainRW) = skillsDao.updateSkill(skill.skill)
+    override suspend fun updateSkill(skill: Skill) = skillsDao.updateSkill(skill.toSkillEntity())
 }
 
 class SkillsRepositoryImplForPreview : SkillRepository {
-    override fun getSkillsFromDB(): Flow<PersistentList<SkillDomainRW>> {
-        val one = SkillDomainRW(
-            Skill(name = "some skills", description = "One, Two, Three", uuid = UUID.randomUUID())
+    override fun getSkillsFromDB(): Flow<PersistentList<Skill>> {
+        val one = Skill(
+            uuid = UUID.randomUUID(),
+            name = "Charles Jarvis",
+            description = "neque",
+            date = Date(),
+            position = 0,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
-        val two = SkillDomainRW(
-            Skill(
-                name = "XML",
-                description = "One, Two, Three",
-                uuid = UUID.randomUUID()
-            )
+        val two = Skill(
+            uuid = UUID.randomUUID(),
+            name = "David Bowie",
+            description = "Some vere interesting description",
+            date = Date(),
+            position = 1,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
-        val three = SkillDomainRW(
-            Skill(
-                name = "Recycler View",
-                description = "Paging, DiffUtil, Adapter",
-                uuid = UUID.randomUUID()
-            )
+        val three = Skill(
+            uuid = UUID.randomUUID(),
+            name = "Freddie Mercury",
+            description = "The show must go on",
+            date = Date(),
+            position = 2,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
-        val four = SkillDomainRW(
-            Skill(name = "Retrofit", description = "One, Two, Three", uuid = UUID.randomUUID())
+        val four = Skill(
+            uuid = UUID.randomUUID(),
+            name = "John Deacon",
+            description = "Another One Bites the Dust",
+            date = Date(),
+            position = 3,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
-        val five = SkillDomainRW(
-            Skill(
-                name = "Async",
-                description = "One, Two, Three",
-                uuid = UUID.randomUUID()
-            )
+        val five = Skill(
+            uuid = UUID.randomUUID(),
+            name = "Brian May",
+            description = "We will rock you",
+            date = Date(),
+            position = 4,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
-        val six = SkillDomainRW(
-            Skill(
-                name = "Dependency injections",
-                description = "Multi-module architecture, Component Dependencies, Multibindings, " + "Components, Scope, Injections" + " Libraries: Dagger 2, Hilt, ---Kodein, ---Koin",
-                uuid = UUID.randomUUID()
-            )
+        val six = Skill(
+            uuid = UUID.randomUUID(),
+            name = "Roger Taylor",
+            description = "I'm in love with my car",
+            date = Date(),
+            position = 5,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
         val seven =
-            SkillDomainRW(
-                Skill(
-                    name = "RxJava",
-                    description = "One, Two, Three",
-                    uuid = UUID.randomUUID()
-                )
-            )
-        val eight = SkillDomainRW(
             Skill(
-                name = "To learn",
-                description = "Firebase!!!, GITFLOW, GIT, SOLID, MVVM, MVP, " + "RESTful API!!!, JSON!, PUSH NOTIFICATIONS!!!, ",
-                uuid = UUID.randomUUID()
+                uuid = UUID.randomUUID(),
+                name = "Charles Jarvis",
+                description = "neque",
+                date = Date(),
+                position = 6,
+                chosen = false,
+                isExpanded = false,
+                isVisible = true
             )
+        val eight = Skill(
+            uuid = UUID.randomUUID(),
+            name = "David Bowie",
+            description = "Some vere interesting description",
+            date = Date(),
+            position = 7,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
         val nine =
-            SkillDomainRW(
-                Skill(
-                    name = "Recycler View",
-                    description = "One, Two, Three",
-                    uuid = UUID.randomUUID()
-                )
-            )
-        val ten = SkillDomainRW(
             Skill(
-                name = "Project Pattern",
-                description = "MVVM",
-                uuid = UUID.randomUUID()
+                uuid = UUID.randomUUID(),
+                name = "Freddie Mercury",
+                description = "The show must go on",
+                date = Date(),
+                position = 8,
+                chosen = false,
+                isExpanded = false,
+                isVisible = true
             )
+        val ten = Skill(
+            uuid = UUID.randomUUID(),
+            name = "John Deacon",
+            description = "Another One Bites the Dust",
+            date = Date(),
+            position = 9,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
         val eleven =
-            SkillDomainRW(
-                Skill(
-                    name = "Compose",
-                    description = "Composition tracing",
-                    uuid = UUID.randomUUID()
-                )
-            )
-        val twelve = SkillDomainRW(
             Skill(
-                name = "Work with Image",
-                description = "FileProvider,Coil",
-                uuid = UUID.randomUUID()
+                uuid = UUID.randomUUID(),
+                name = "Brian May",
+                description = "We will rock you",
+                date = Date(),
+                position = 10,
+                chosen = false,
+                isExpanded = false,
+                isVisible = true
             )
+        val twelve = Skill(
+            uuid = UUID.randomUUID(),
+            name = "Roger Taylor",
+            description = "I'm in love with my car",
+            date = Date(),
+            position = 11,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
-        val thirteen = SkillDomainRW(
-            Skill(
-                name = "Work with Image",
-                description = "FileProvider,Coil",
-                uuid = UUID.randomUUID()
-            )
+        val thirteen = Skill(
+            uuid = UUID.randomUUID(),
+            name = "Roger Taylor",
+            description = "I'm in love with my car",
+            date = Date(),
+            position = 12,
+            chosen = false,
+            isExpanded = false,
+            isVisible = true
         )
         val _skillsList = MutableStateFlow(
             persistentListOf(
@@ -139,14 +188,14 @@ class SkillsRepositoryImplForPreview : SkillRepository {
         return _skillsList
     }
 
-    override suspend fun deleteSkill(skill: SkillDomainRW) {
+    override suspend fun deleteSkill(skill: Skill) {
     }
 
-    override suspend fun addSkill(skill: SkillDomainRW) {
+    override suspend fun addSkill(skill: Skill) {
 
     }
 
-    override suspend fun updateSkill(skill: SkillDomainRW) {
+    override suspend fun updateSkill(skill: Skill) {
 
     }
 }

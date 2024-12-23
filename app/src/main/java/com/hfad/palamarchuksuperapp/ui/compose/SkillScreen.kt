@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -63,9 +64,8 @@ import androidx.fragment.app.FragmentActivity
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
-import com.hfad.palamarchuksuperapp.data.entities.Skill
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImplForPreview
-import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
@@ -140,10 +140,10 @@ fun SkillScreen(
                 )
             }
 
-            if (!state.items.isNullOrEmpty()) {
+            if (!state.items.isEmpty()) {
                 LazyList(
                     modifier = Modifier.fillMaxSize(),
-                    item = state.items ?: emptyList(),
+                    skillList = state.items,
                     viewModelEvent = viewModel::event
                 )
             }
@@ -161,17 +161,17 @@ fun SkillScreen(
 @Composable
 fun LazyList(
     modifier: Modifier = Modifier,
-    item: List<SkillDomainRW>,
+    skillList: List<Skill>,
     viewModelEvent: (SkillsViewModel.Event) -> Unit,
 ) {
     LazyColumn {
         items(
-            items = item,
-            key = { item: SkillDomainRW -> item.skill.uuid.toString() }
-        ) { item ->
+            items = skillList,
+            key = { item: Skill -> item.uuid.toString() }
+        ) { skill ->
             AnimatedVisibility(
                 modifier = Modifier.animateItem(),
-                visible = item.isVisible,
+                visible = skill.isVisible,
                 exit = fadeOut(
                     animationSpec = TweenSpec(100, 100, LinearEasing)
                 ),
@@ -180,7 +180,7 @@ fun LazyList(
                 )
             ) {
                 ItemListSkill(
-                    item = item,
+                    item = skill,
                     onEvent = viewModelEvent,
                 )
             }
@@ -203,7 +203,7 @@ fun LazyList(
 )
 fun ItemListSkill(
     modifier: Modifier = Modifier,
-    item: SkillDomainRW,
+    item: Skill,
     onEvent: (SkillsViewModel.Event) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -264,7 +264,7 @@ fun ItemListSkill(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = item.skill.name,
+                        text = item.name,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Serif,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -276,7 +276,7 @@ fun ItemListSkill(
                     ) {
                         Text(
                             modifier = Modifier,
-                            text = item.skill.description,
+                            text = item.description,
                             maxLines = if (!isExpanded) 2 else Int.MAX_VALUE,
                             overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -312,7 +312,7 @@ fun ItemListSkill(
                             {
                                 val bottomSheetFragment = BottomSheetFragment(
                                     viewModelEvent = onEvent,
-                                    skillDomainRW = item
+                                    skillEntityDomainRW = item
                                 )
                                 bottomSheetFragment.show(
                                     (context as FragmentActivity).supportFragmentManager,
@@ -350,7 +350,7 @@ fun ItemListSkill(
                 text = SimpleDateFormat(
                     "dd MMMM yyyy: HH:mm",
                     Locale.US
-                ).format(item.skill.date),
+                ).format(item.date),
                 style = TextStyle(
                     fontStyle = FontStyle.Italic,
                     fontSize = 11.sp,
@@ -395,7 +395,7 @@ fun ItemListSkill(
 fun MyDropDownMenus(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    item: SkillDomainRW,
+    item: Skill,
     onEvent: (SkillsViewModel.Event) -> Unit,
     modifier: Modifier = Modifier,
     onEdit: () -> Unit,
@@ -464,12 +464,11 @@ fun MyDropDownMenus(
 @Preview
 fun ListItemSkillPreview() {
     ItemListSkill(
-        item = SkillDomainRW(
-            skill = Skill(
-                name = "MySkill",
-                description = "Some good skills, that i know",
-                date = Date()
-            )
+        item = Skill(
+            id = 1,
+            name = "name",
+            date = Date(),
+            chosen = false
         ),
         onEvent = {
         },

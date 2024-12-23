@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.ListItemSkillsBinding
-import com.hfad.palamarchuksuperapp.ui.common.SkillDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import kotlinx.collections.immutable.PersistentList
@@ -25,12 +25,12 @@ import java.util.Locale
 class SkillsListAdapter(
     private val viewModel: SkillsViewModel,
     private val fragmentManager: FragmentManager,
-) : ListAdapter<SkillDomainRW, SkillsListAdapter.SkillHolder>(SkillDiffItemCallback()) {
+) : ListAdapter<Skill, SkillsListAdapter.SkillHolder>(SkillDiffItemCallback()) {
 
 
     private val asyncListDiffer = AsyncListDiffer(this, SkillDiffItemCallback())
 
-    fun setData(skillList: PersistentList<SkillDomainRW>) {
+    fun setData(skillList: PersistentList<Skill>) {
         asyncListDiffer.submitList(skillList)
     }
 
@@ -56,12 +56,12 @@ class SkillsListAdapter(
         private val startedHeight = binding.skillCard.layoutParams.height
         private val vibe = this.binding.root.context.appComponent.appVibrator()
 
-        fun bind(skill: SkillDomainRW) {
+        fun bind(skill: Skill) {
             binding.materialCheckBox.isChecked = skill.chosen
             binding.skillTitle.text =
-                skill.skill.name.uppercase(Locale.getDefault())
+                skill.name.uppercase(Locale.getDefault())
             binding.skillDate.text =
-                SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(skill.skill.date)
+                SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(skill.date)
             binding.moreButton.setOnClickListener {
                 val popupMenu = PopupMenu(binding.root.context, binding.moreButton)
                 popupMenu.inflate(R.menu.skill_recycler_menu)
@@ -153,7 +153,7 @@ class SkillsListAdapter(
                 expandOrHide(skill)
             }
 
-            binding.skillDescription.text = skill.skill.description
+            binding.skillDescription.text = skill.description
             binding.materialCheckBox.isChecked = skill.chosen
 
 
@@ -170,11 +170,11 @@ class SkillsListAdapter(
         }
 
 
-        private fun expandOrHide(skillDomainRW: SkillDomainRW) {
+        private fun expandOrHide(skill: Skill) {
 
-            if (!skillDomainRW.isExpanded) {
+            if (!skill.isExpanded) {
                 binding.skillDescription.maxLines = Int.MAX_VALUE
-                binding.skillDescription.text = skillDomainRW.skill.description
+                binding.skillDescription.text = skill.description
 
                 val layoutParamsDescription = binding.skillDescription.layoutParams
                 layoutParamsDescription.height = LayoutParams.MATCH_PARENT
@@ -185,7 +185,7 @@ class SkillsListAdapter(
                 binding.skillCard.layoutParams = layoutParamsCard
 
                 binding.expandDetails.text = "<< Hide"
-                skillDomainRW.isExpanded = true
+                skill.isExpanded = true
 
             } else {
 //                binding.skillDescription.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(100))
@@ -201,22 +201,22 @@ class SkillsListAdapter(
                 binding.skillCard.layoutParams = layoutParamsCard
 
                 binding.expandDetails.text = "Details >>"
-                skillDomainRW.isExpanded = false
+                skill.isExpanded = false
             }
         }
     }
 
-    class SkillDiffItemCallback : DiffUtil.ItemCallback<SkillDomainRW>() {
+    class SkillDiffItemCallback : DiffUtil.ItemCallback<Skill>() {
         override fun areItemsTheSame(
-            oldItem: SkillDomainRW,
-            newItem: SkillDomainRW,
+            oldItem: Skill,
+            newItem: Skill,
         ): Boolean =
             oldItem == newItem
 
         override fun areContentsTheSame(
-            oldItem: SkillDomainRW,
-            newItem: SkillDomainRW,
+            oldItem: Skill,
+            newItem: Skill,
         ): Boolean =
-            oldItem.skill.description == newItem.skill.description
+            oldItem.description == newItem.description
     }
 }

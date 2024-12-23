@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.data.entities
+package com.hfad.palamarchuksuperapp.data.dtos
 
 import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
@@ -13,7 +13,7 @@ import java.util.UUID
 @Entity(tableName = DATABASE_SKILLS_NAME)
 @TypeConverters (Converters::class)
 @Stable
-data class Skill(
+data class SkillEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo (name = "SkillID") val id: Int = 0,
     @ColumnInfo (name = "SkillUUID") val uuid: UUID = UUID.randomUUID(),
