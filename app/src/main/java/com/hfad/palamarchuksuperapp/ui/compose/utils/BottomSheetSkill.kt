@@ -49,16 +49,17 @@ import com.hfad.palamarchuksuperapp.domain.models.Skill
 
 
 @Suppress("detekt.FunctionNaming", "detekt.UnusedParameter", "detekt.LongMethod")
-@OptIn(ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalMaterial3Api::class,
     ExperimentalComposeUiApi::class
 )
 @Composable
 fun BottomSheetSkill(
     modifier: Modifier = Modifier,
-    onEvent: (skillDomainRW: SkillDomainRW) -> Unit = {},
+    onEvent: (skill: Skill) -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismiss: () -> Unit,
-    skillDomainRW: SkillDomainRW = SkillDomainRW(Skill()),
+    skill: Skill = Skill(),
 ) {
 
 
@@ -68,7 +69,9 @@ fun BottomSheetSkill(
     val focusRequesterDate = remember { FocusRequester() }
 
     ModalBottomSheet(
-        modifier = modifier.wrapContentSize().focusRequester(focusRequesterName),
+        modifier = modifier
+            .wrapContentSize()
+            .focusRequester(focusRequesterName),
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -85,14 +88,16 @@ fun BottomSheetSkill(
             ) {
                 var textName by remember {
                     mutableStateOf(
-                        skillDomainRW.skill.name
+                        skill.name
                     )
                 }
 
 
 
                 OutlinedHintText(
-                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterName),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequesterName),
                     value = textName,
                     onValueChange = {
                         textName = it
@@ -112,11 +117,13 @@ fun BottomSheetSkill(
 
                 var textDescription by remember {
                     mutableStateOf(
-                        skillDomainRW.skill.description
+                        skill.description
                     )
                 }
                 OutlinedHintText(
-                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterDescription),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequesterDescription),
                     value = textDescription,
                     onValueChange = {
                         textDescription = it
@@ -129,12 +136,12 @@ fun BottomSheetSkill(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             localFocusManager.moveFocus(FocusDirection.Exit)
-                    })
+                        })
                 )
 
                 val textDate by remember {
                     mutableStateOf(
-                        skillDomainRW.skill.date
+                        skill.date
                     )
                 }
                 OutlinedHintText(
@@ -150,13 +157,11 @@ fun BottomSheetSkill(
                     modifier = Modifier.wrapContentSize(),
                     onClick = {
                         onEvent(
-                            skillDomainRW.copy(
-                                skill = skillDomainRW.skill.copy(
-                                    uuid = skillDomainRW.skill.uuid ?: UUID.randomUUID(),
-                                    name = textName,
-                                    description = textDescription,
-                                    date = textDate
-                                )
+                            skill.copy(
+                                uuid = skill.uuid,
+                                name = textName,
+                                description = textDescription,
+                                date = textDate
                             )
                         )
                         onDismiss()
