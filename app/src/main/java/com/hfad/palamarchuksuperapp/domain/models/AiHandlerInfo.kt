@@ -2,11 +2,9 @@ package com.hfad.palamarchuksuperapp.domain.models
 
 import androidx.compose.runtime.Stable
 import com.hfad.palamarchuksuperapp.BuildConfig
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.AiModel.GeminiModel
-import com.hfad.palamarchuksuperapp.data.entities.AiModel.GroqModel
-import com.hfad.palamarchuksuperapp.data.entities.AiModel.OpenAIModel
-import com.hfad.palamarchuksuperapp.data.entities.LLMName
+import com.hfad.palamarchuksuperapp.domain.models.AiModel.GeminiModel
+import com.hfad.palamarchuksuperapp.domain.models.AiModel.GroqModel
+import com.hfad.palamarchuksuperapp.domain.models.AiModel.OpenAIModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.Serializable
 import kotlin.random.Random

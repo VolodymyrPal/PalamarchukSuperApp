@@ -1,9 +1,9 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.Role
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.domain.models.Role
+import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
 import kotlinx.collections.immutable.persistentListOf
 
 object MockChat {

@@ -1,8 +1,8 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import com.hfad.palamarchuksuperapp.data.entities.Product
+import com.hfad.palamarchuksuperapp.data.dtos.ProductDTO
+import com.hfad.palamarchuksuperapp.data.dtos.toProduct
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
-import com.hfad.palamarchuksuperapp.ui.common.toProductDomainRW
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
-import com.hfad.palamarchuksuperapp.data.entities.LLMName
+import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.data.services.GeminiAIApiHandlerFactory
 import com.hfad.palamarchuksuperapp.data.services.GroqAIApiHandlerFactory
 import com.hfad.palamarchuksuperapp.data.services.OpenAIApiHandlerFactory

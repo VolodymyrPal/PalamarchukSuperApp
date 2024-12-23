@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.data.entities
+package com.hfad.palamarchuksuperapp.domain.models
 
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName

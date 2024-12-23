@@ -1,5 +1,6 @@
-package com.hfad.palamarchuksuperapp.data.entities
+package com.hfad.palamarchuksuperapp.data.dtos
 
+import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

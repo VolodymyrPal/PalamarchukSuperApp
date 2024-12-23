@@ -4,11 +4,11 @@ import IoDispatcher
 import MainDispatcher
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.LLMName
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.Role
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
+import com.hfad.palamarchuksuperapp.domain.models.LLMName
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError

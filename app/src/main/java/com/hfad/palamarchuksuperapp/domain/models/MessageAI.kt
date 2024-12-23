@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.data.entities
+package com.hfad.palamarchuksuperapp.domain.models
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

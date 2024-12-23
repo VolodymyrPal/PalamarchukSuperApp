@@ -1,11 +1,12 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import android.util.Log
-import com.hfad.palamarchuksuperapp.data.entities.AiModel
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler

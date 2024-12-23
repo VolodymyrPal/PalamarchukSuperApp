@@ -88,11 +88,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.entities.MessageAI
-import com.hfad.palamarchuksuperapp.data.entities.MessageAiContent
-import com.hfad.palamarchuksuperapp.data.entities.MessageType
-import com.hfad.palamarchuksuperapp.data.entities.Role
-import com.hfad.palamarchuksuperapp.data.entities.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.domain.models.Role
+import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
