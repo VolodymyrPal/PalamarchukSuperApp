@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -312,7 +311,7 @@ fun ItemListSkill(
                             {
                                 val bottomSheetFragment = BottomSheetFragment(
                                     viewModelEvent = onEvent,
-                                    skillEntityDomainRW = item
+                                    skill = item
                                 )
                                 bottomSheetFragment.show(
                                     (context as FragmentActivity).supportFragmentManager,
