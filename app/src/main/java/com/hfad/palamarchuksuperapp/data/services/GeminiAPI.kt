@@ -69,7 +69,7 @@ data class GeminiTextResponse(
 
 @Serializable
 data class GeminiModelsResponse(
-    val models: List<AiModel.GeminiModel>,
+    val models: List<GeminiModelDTO>,
 )
 
 
