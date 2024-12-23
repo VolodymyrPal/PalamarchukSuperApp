@@ -6,7 +6,7 @@ import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
@@ -21,10 +21,10 @@ class StoreRepositoryImpl @Inject constructor(
     private val storeDao: StoreDao,
 ) : StoreRepository {
 
-    override val fetchProductsAsFlowFromDB: Flow<PersistentList<ProductDomainRW>> =
+    override val fetchProductsAsFlowFromDB: Flow<PersistentList<Product>> =
         storeDao.getAllProductsFromDB().map { list -> list.toPersistentList() }
 
-    suspend fun products(): Result<Flow<PersistentList<ProductDomainRW>>, Error> {
+    suspend fun products(): Result<Flow<PersistentList<Product>>, Error> {
         return try {
             Result.Success(fetchProductsAsFlowFromDB)
         } catch (e: HttpException) {
@@ -47,10 +47,10 @@ class StoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getProductWithErrors(): Result<PersistentList<ProductDomainRW>, Error> { //}: List<ProductDomainRW> {
+    private suspend fun getProductWithErrors(): Result<PersistentList<Product>, Error> { //}: List<ProductDomainRW> {
 
         return try {
-            val storeProducts: PersistentList<ProductDomainRW> = storeApi.getProductsDomainRw().toPersistentList()
+            val storeProducts: PersistentList<Product> = storeApi.getProductsDomainRw().toPersistentList()
 
             Result.Success(storeProducts)
         } catch (e: RuntimeException) {
@@ -70,11 +70,11 @@ class StoreRepositoryImpl @Inject constructor(
 //        }
     }
 
-    override suspend fun upsertAll(products: PersistentList<ProductDomainRW>) {
+    override suspend fun upsertAll(products: PersistentList<Product>) {
         storeDao.insertOrIgnoreProducts(products)
     }
 
-    override suspend fun updateProduct(product: ProductDomainRW) {
+    override suspend fun updateProduct(product: Product) {
         storeDao.updateProduct(product)
     }
 

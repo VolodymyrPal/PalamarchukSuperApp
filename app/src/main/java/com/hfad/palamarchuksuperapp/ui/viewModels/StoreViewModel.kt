@@ -6,7 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +21,6 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 
@@ -30,17 +29,17 @@ class StoreViewModel @Inject constructor(
     private val repository: StoreRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher
-) : GenericViewModel<PersistentList<ProductDomainRW>, StoreViewModel.Event, StoreViewModel.Effect>() {
+) : GenericViewModel<PersistentList<Product>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     data class StoreState(
-        val items: PersistentList<ProductDomainRW> = persistentListOf(),
+        val items: PersistentList<Product> = persistentListOf(),
         val loading: Boolean = false,
         val error: AppError? = null,
-    ) : State<PersistentList<ProductDomainRW>>
+    ) : State<PersistentList<Product>>
 
-    override val _dataFlow: Flow<Result<PersistentList<ProductDomainRW>, AppError>> =
+    override val _dataFlow: Flow<Result<PersistentList<Product>, AppError>> =
         repository.fetchProductsAsFlowFromDB
-            .map<PersistentList<ProductDomainRW>, Result<PersistentList<ProductDomainRW>, AppError>> {
+            .map<PersistentList<Product>, Result<PersistentList<Product>, AppError>> {
                 Result.Success(it)
             }
             .catch {
@@ -98,8 +97,8 @@ class StoreViewModel @Inject constructor(
         object OnSoftRefresh : Event()
         object OnHardRefresh : Event()
         data class ShowToast(val message: String) : Event()
-        data class AddProduct(val productDomainRW: ProductDomainRW, val quantity: Int = 1) : Event()
-        data class SetItemToBasket(val productDomainRW: ProductDomainRW, val quantity: Int = 1) :
+        data class AddProduct(val product: Product, val quantity: Int = 1) : Event()
+        data class SetItemToBasket(val product: Product, val quantity: Int = 1) :
             Event()
     }
 
@@ -141,25 +140,25 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.AddProduct -> {
-                addProduct(event.productDomainRW, event.quantity)
+                addProduct(event.product, event.quantity)
             }
 
             is Event.SetItemToBasket -> {
-                setItemToBasket(event.productDomainRW, event.quantity)
+                setItemToBasket(event.product, event.quantity)
             }
         }
     }
 
-    private fun setItemToBasket(productDomainRW: ProductDomainRW, quantity: Int = 1) {
+    private fun setItemToBasket(product: Product, quantity: Int = 1) {
         viewModelScope.launch (mainDispatcher) {
-            repository.updateProduct(productDomainRW.copy(quantity = quantity))
+            repository.updateProduct(product.copy(quantity = quantity))
         }
     }
 
-    private fun addProduct(productDomainRW: ProductDomainRW, quantity: Int = 1) {
+    private fun addProduct(product: Product, quantity: Int = 1) {
         viewModelScope.launch (mainDispatcher) {
-            val newQuantity = productDomainRW.quantity + quantity
-            repository.updateProduct(productDomainRW.copy(quantity = if (newQuantity < 0) 0 else newQuantity))
+            val newQuantity = product.quantity + quantity
+            repository.updateProduct(product.copy(quantity = if (newQuantity < 0) 0 else newQuantity))
         }
     }
 }

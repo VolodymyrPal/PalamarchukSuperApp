@@ -6,14 +6,14 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StoreDao {
 
     @Query("SELECT * FROM $DATABASE_MAIN_ENTITY_PRODUCT")
-    fun getAllProductsFromDB(): Flow<List<ProductDomainRW>>
+    fun getAllProductsFromDB(): Flow<List<Product>>
 
     @Query(value = "DELETE FROM $DATABASE_MAIN_ENTITY_PRODUCT")
     suspend fun deleteAllProducts()
@@ -22,8 +22,8 @@ interface StoreDao {
     suspend fun updateCompleted(taskId: String, query: Int)
 
     @Update
-    suspend fun updateProduct(product: ProductDomainRW)
+    suspend fun updateProduct(product: Product)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertOrIgnoreProducts(products: List<ProductDomainRW>): List<Long>
+    suspend fun insertOrIgnoreProducts(products: List<Product>): List<Long>
 }

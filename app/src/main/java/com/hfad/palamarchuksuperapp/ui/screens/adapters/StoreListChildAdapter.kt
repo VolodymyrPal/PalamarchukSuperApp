@@ -19,7 +19,7 @@ import coil.load
 import coil.size.Scale
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -27,9 +27,9 @@ import kotlinx.coroutines.launch
 
 class StoreListChildAdapter(
     private val viewModel: StoreViewModel,
-) : ListAdapter<ProductDomainRW, StoreListChildAdapter.ProductItemHolder>(ProductItemHolder.ProductDiffItemCallback()) {
+) : ListAdapter<Product, StoreListChildAdapter.ProductItemHolder>(ProductItemHolder.ProductDiffItemCallback()) {
 
-    fun setData(productList: List<ProductDomainRW>) {
+    fun setData(productList: List<Product>) {
         Log.d("STORE LIST CHILD ADAPTER", "setData: $productList")
         submitList(productList)
     }
@@ -77,13 +77,13 @@ class StoreListChildAdapter(
             }
         }
 
-        fun updateQuantity(bundle: Bundle, product: ProductDomainRW) {
+        fun updateQuantity(bundle: Bundle, product: Product) {
             val quantity = bundle.getInt(PAYLOAD_QUANTITY)
             binding.quantity.text = quantity.toString()
             binding.quantityPlus.setOnClickListener {
                 viewModel.event(
                     event = StoreViewModel.Event.AddProduct(
-                        productDomainRW = product,
+                        product = product,
                         quantity = 1
                     )
                 )
@@ -91,7 +91,7 @@ class StoreListChildAdapter(
             binding.quantityMinus.setOnClickListener {
                 viewModel.event(
                     event = StoreViewModel.Event.AddProduct(
-                        productDomainRW = product,
+                        product = product,
                         quantity = -1
                     )
                 )
@@ -100,22 +100,22 @@ class StoreListChildAdapter(
         }
 
         @SuppressLint("ClickableViewAccessibility")
-        fun bind(product: ProductDomainRW) {
+        fun bind(product: Product) {
             Log.d("Bind", "bind: $product")
             binding.apply {
                 cardView.layoutParams.width = WRAP_CONTENT
-                productName.text = "${product.product.title}"
-                productPrice.text = "${product.product.price}$"
-                productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
+                productName.text = "${product.productDTO.title}"
+                productPrice.text = "${product.productDTO.price}$"
+                productPriceDiscounted.text = "${(product.productDTO.price * 0.5)}$"
                 quantity.text = product.quantity.toString()
 
-                productRating.rating = product.product.rating.rate.toFloat()
+                productRating.rating = product.productDTO.rating.rate.toFloat()
 
                 quantityPlusCard.alpha = 0f
                 quantityMinusCard.alpha = 0f
                 quantity.alpha = if (product.quantity == 0) 0f else 1f
 
-                productImage.load(product.product.image) {
+                productImage.load(product.productDTO.image) {
                     size(100)
                     crossfade(true)
                     placeholder(R.drawable.lion_jpg_21)
@@ -131,7 +131,7 @@ class StoreListChildAdapter(
                 quantityPlus.setOnLongClickListener {
                     viewModel.event(
                         event = StoreViewModel.Event.SetItemToBasket(
-                            productDomainRW = product,
+                            product = product,
                             quantity = 1
                         )
                     )
@@ -150,7 +150,7 @@ class StoreListChildAdapter(
                                     delay(20)
                                     viewModel.event(
                                         event = StoreViewModel.Event.AddProduct(
-                                            productDomainRW = product,
+                                            product = product,
                                             quantity = 1
                                         )
                                     )
@@ -164,7 +164,7 @@ class StoreListChildAdapter(
                             if (event.downTime - event.eventTime < ViewConfiguration.getLongPressTimeout()) {
                                 viewModel.event(
                                     event = StoreViewModel.Event.AddProduct(
-                                        productDomainRW = product,
+                                        product = product,
                                         quantity = 1
                                     )
                                 )
@@ -189,24 +189,24 @@ class StoreListChildAdapter(
             }
         }
 
-        class ProductDiffItemCallback : DiffUtil.ItemCallback<ProductDomainRW>() {
+        class ProductDiffItemCallback : DiffUtil.ItemCallback<Product>() {
             override fun areItemsTheSame(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
-            ): Boolean = oldItem.product.id == newItem.product.id
+                oldItem: Product,
+                newItem: Product,
+            ): Boolean = oldItem.productDTO.id == newItem.productDTO.id
 
             override fun areContentsTheSame(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
+                oldItem: Product,
+                newItem: Product,
             ): Boolean {
                 return oldItem.quantity == newItem.quantity
             }
 
             override fun getChangePayload(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
+                oldItem: Product,
+                newItem: Product,
             ): Any? {
-                if (oldItem.product.id == newItem.product.id) {
+                if (oldItem.productDTO.id == newItem.productDTO.id) {
                     return if (oldItem.quantity == newItem.quantity) {
                         super.getChangePayload(oldItem, newItem)
                     } else {

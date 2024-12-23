@@ -3,9 +3,9 @@ package com.hfad.palamarchuksuperapp.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 
-@Database(entities = [ProductDomainRW::class], version = 1, exportSchema = true)
+@Database(entities = [Product::class], version = 1, exportSchema = true)
 abstract class StoreDatabase : RoomDatabase() {
     abstract fun storeDao(): StoreDao
 }

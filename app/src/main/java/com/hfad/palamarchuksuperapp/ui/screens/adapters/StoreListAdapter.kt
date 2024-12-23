@@ -20,7 +20,7 @@ import coil.size.Scale
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductBinding
 import com.hfad.palamarchuksuperapp.databinding.ListItemProductRecyclerBinding
-import com.hfad.palamarchuksuperapp.ui.common.ProductDomainRW
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,23 +29,23 @@ import kotlinx.coroutines.launch
 class StoreListAdapter(
     private val viewModel: StoreViewModel,
     private val numOfRecyclerRows: Int = 4,
-) : ListAdapter<ProductDomainRW, StoreListAdapter.ProductHolder>(ProductHolder.ProductDiffItemCallback()) {
+) : ListAdapter<Product, StoreListAdapter.ProductHolder>(ProductHolder.ProductDiffItemCallback()) {
 
     private val listChildRecycler: MutableList<ChildRecycler> = mutableListOf()
 
-    fun setData(productList: List<ProductDomainRW>) {
+    fun setData(productList: List<Product>) {
 
         val uniqProducts =
-            productList.map { it.product.category }.toSet()  // list of unique categories
+            productList.map { it.productDTO.category }.toSet()  // list of unique categories
 
         uniqProducts.forEachIndexed { index, s ->
             if (index < numOfRecyclerRows) {
                 if (listChildRecycler.getOrNull(index) != null) {
-                    listChildRecycler[index].adapter.setData(productList.filter { it.product.category == s })
+                    listChildRecycler[index].adapter.setData(productList.filter { it.productDTO.category == s })
                 } else {
                     listChildRecycler.add(
                         ChildRecycler(
-                            data = productList.filter { it.product.category == s },
+                            data = productList.filter { it.productDTO.category == s },
                             viewModel = viewModel
                         )
                     )
@@ -104,13 +104,13 @@ class StoreListAdapter(
 
     sealed class ProductHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        abstract fun bind(product: ProductDomainRW)
+        abstract fun bind(product: Product)
 
         class ProductRecyclerHolder(
             private val binding: ListItemProductRecyclerBinding,
             viewModel: StoreViewModel,
             adapter: StoreListChildAdapter = StoreListChildAdapter(viewModel),
-            firstInfo: List<ProductDomainRW> = emptyList(),
+            firstInfo: List<Product> = emptyList(),
         ) : ProductHolder(binding.root) {
 
             init {
@@ -118,14 +118,14 @@ class StoreListAdapter(
                     LinearLayoutManager(binding.root.context, LinearLayoutManager.HORIZONTAL, false)
                 this.binding.section1RecyclerView.adapter =
                     adapter
-                this.binding.section1Title.text = firstInfo.first().product.category.uppercase()
+                this.binding.section1Title.text = firstInfo.first().productDTO.category.uppercase()
                 adapter.setData(firstInfo)
             }
 
-            override fun bind(product: ProductDomainRW) {
+            override fun bind(product: Product) {
             }
 
-            fun bind(product: List<ProductDomainRW>) {
+            fun bind(product: List<Product>) {
             }
         }
 
@@ -153,13 +153,13 @@ class StoreListAdapter(
                 }
             }
 
-            fun updateQuantity(bundle: Bundle, product: ProductDomainRW) {
+            fun updateQuantity(bundle: Bundle, product: Product) {
                 val quantity = bundle.getInt(PAYLOAD_QUANTITY)
                 binding.quantity.text = quantity.toString()
                 binding.quantityPlus.setOnClickListener {
                     viewModel.event(
                         event = StoreViewModel.Event.AddProduct(
-                            productDomainRW = product,
+                            product = product,
                             quantity = 1
                         )
                     )
@@ -167,7 +167,7 @@ class StoreListAdapter(
                 binding.quantityMinus.setOnClickListener {
                     viewModel.event(
                         event = StoreViewModel.Event.AddProduct(
-                            productDomainRW = product,
+                            product = product,
                             quantity = -1
                         )
                     )
@@ -176,14 +176,14 @@ class StoreListAdapter(
             }
 
             @SuppressLint("ClickableViewAccessibility")
-            override fun bind(product: ProductDomainRW) {
+            override fun bind(product: Product) {
                 binding.apply {
-                    productName.text = "${product.product.title}"
-                    productPrice.text = "${product.product.price}$"
-                    productPriceDiscounted.text = "${(product.product.price * 0.5)}$"
+                    productName.text = product.productDTO.title
+                    productPrice.text = "${product.productDTO.price}$"
+                    productPriceDiscounted.text = "${(product.productDTO.price * 0.5)}$"
                     quantity.text = product.quantity.toString()
 
-                    productRating.rating = product.product.rating.rate.toFloat()
+                    productRating.rating = product.productDTO.rating.rate.toFloat()
 
                     quantityPlusCard.alpha = 0f
                     quantityMinusCard.alpha = 0f
@@ -191,7 +191,7 @@ class StoreListAdapter(
 
 
 
-                    productImage.load(product.product.image) {
+                    productImage.load(product.productDTO.image) {
                         size(100)
                         crossfade(true)
                         placeholder(R.drawable.lion_jpg_21)
@@ -206,7 +206,7 @@ class StoreListAdapter(
                     quantityPlus.setOnLongClickListener {
                         viewModel.event(
                             event = StoreViewModel.Event.SetItemToBasket(
-                                productDomainRW = product,
+                                product = product,
                                 quantity = 1
                             )
                         )
@@ -225,7 +225,7 @@ class StoreListAdapter(
                                         delay(20)
                                         viewModel.event(
                                             event = StoreViewModel.Event.AddProduct(
-                                                productDomainRW = product,
+                                                product = product,
                                                 quantity = 1
                                             )
                                         )
@@ -239,7 +239,7 @@ class StoreListAdapter(
                                 if (event.downTime - event.eventTime < ViewConfiguration.getLongPressTimeout()) {
                                     viewModel.event(
                                         event = StoreViewModel.Event.AddProduct(
-                                            productDomainRW = product,
+                                            product = product,
                                             quantity = 1
                                         )
                                     )
@@ -265,24 +265,24 @@ class StoreListAdapter(
             }
         }
 
-        class ProductDiffItemCallback : DiffUtil.ItemCallback<ProductDomainRW>() {
+        class ProductDiffItemCallback : DiffUtil.ItemCallback<Product>() {
             override fun areItemsTheSame(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
-            ): Boolean = oldItem.product.id == newItem.product.id
+                oldItem: Product,
+                newItem: Product,
+            ): Boolean = oldItem.productDTO.id == newItem.productDTO.id
 
             override fun areContentsTheSame(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
+                oldItem: Product,
+                newItem: Product,
             ): Boolean {
                 return oldItem.quantity == newItem.quantity
             }
 
             override fun getChangePayload(
-                oldItem: ProductDomainRW,
-                newItem: ProductDomainRW,
+                oldItem: Product,
+                newItem: Product,
             ): Any? {
-                if (oldItem.product.id == newItem.product.id) {
+                if (oldItem.productDTO.id == newItem.productDTO.id) {
                     return if (oldItem.quantity == newItem.quantity) {
                         super.getChangePayload(oldItem, newItem)
                     } else {
@@ -302,7 +302,7 @@ class StoreListAdapter(
 }
 
 data class ChildRecycler(
-    var data: List<ProductDomainRW>? = emptyList(),
+    var data: List<Product>? = emptyList(),
     val viewModel: StoreViewModel,
     val adapter: StoreListChildAdapter = StoreListChildAdapter(viewModel),
     var holder: StoreListAdapter.ProductHolder.ProductRecyclerHolder? = null,
