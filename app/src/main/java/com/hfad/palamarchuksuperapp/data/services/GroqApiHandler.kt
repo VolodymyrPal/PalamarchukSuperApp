@@ -81,7 +81,7 @@ class GroqApiHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun getModels(): Result<List<AiModel>, AppError> {
+    override suspend fun getModels(): Result<List<AiModel.GroqModel>, AppError> {
         val response = httpClient.get(
             "https://api.groq.com/openai/v1/models"
         ) {
@@ -90,7 +90,7 @@ class GroqApiHandler @AssistedInject constructor(
         }
         return if (response.status == HttpStatusCode.OK) {
             val list = response.body<GroqModelList>()
-            return Result.Success(list.data)
+            return Result.Success(list.data.map { it.toGroqModel() })
         } else {
             Result.Error(AppError.Network.RequestError.BadRequest)
         }
