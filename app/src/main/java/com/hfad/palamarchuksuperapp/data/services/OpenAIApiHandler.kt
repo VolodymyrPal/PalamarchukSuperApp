@@ -60,10 +60,12 @@ class OpenAIApiHandler @AssistedInject constructor(
                 Result.Success(responseMessage)
             } else if (response.status.value in 401..599) {
                 val openAiError = response.body<OpenAIError>()
-                Result.Error(AppError.CustomError(openAiError.error.message),
+                Result.Error(
+                    AppError.CustomError(openAiError.error.message),
                     data = SubMessageAI(
                         model = initAiHandlerInfo.model
-                    ))
+                    )
+                )
             } else {
                 throw CodeError(response.status.value)
             }
@@ -72,57 +74,57 @@ class OpenAIApiHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun getModels(): Result<List<AiModel>, AppError> {
+    override suspend fun getModels(): Result<List<AiModel.OpenAIModel>, AppError> {
         return Result.Success(
             listOf(
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4o",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4o-mini",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "o1",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4o-realtime-preview",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4-turbo",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-4",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "gpt-3.5-turbo",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "dall-e-3",
                     isSupported = true
                 ),
-                OpenAIModel(
+                OpenAIModelDTO(
                     llmName = LLMName.OPENAI,
                     modelName = "dall-e-2",
                     isSupported = true
                 ),
-
-
-            )
+            ).map {
+                it.toOpenAIModel()
+            }
         )
     }
 
