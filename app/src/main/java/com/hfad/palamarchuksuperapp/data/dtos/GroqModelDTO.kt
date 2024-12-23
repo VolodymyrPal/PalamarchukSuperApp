@@ -13,11 +13,3 @@ data class GroqModelDTO(
     @SerialName("active")
     val isSupported: Boolean = true,
 )
-
-fun GroqModelDTO.toGroqModel () : AiModel.GroqModel {
-    return AiModel.GroqModel(
-        llmName = llmName,
-        modelName = modelName,
-        isSupported = isSupported
-    )
-}
