@@ -361,12 +361,7 @@ fun MessageBox(
                             if (subMessageList[page].model != null) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = "${
-                                        subMessageList[page].model?.modelName?.replace(
-                                            "models/",
-                                            ""
-                                        )
-                                    }",
+                                    text = subMessageList[page].model?.modelName?: "Undefined",
                                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                                     fontSize = TextUnit(12f, TextUnitType.Sp),
                                     textAlign = TextAlign.End,
