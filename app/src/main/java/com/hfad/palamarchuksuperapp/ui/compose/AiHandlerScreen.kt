@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +23,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,12 +54,12 @@ fun AiHandlerScreen(
     event: (ChatBotViewModel.Event) -> Unit = {},
     aiModelList: PersistentList<AiModel> = persistentListOf(),
 ) {
-    val dialogShown = remember { mutableStateOf(false) }
-    if (dialogShown.value) DialogAiHandler(
+    val dialogState = remember { DialogAiHandlerState() }
+    DialogAiHandler(
         modifier = Modifier,
         event = event,
-        onDismiss = { dialogShown.value = false },
-        modelList = aiModelList
+        modelList = aiModelList,
+        dialogAiHandlerState = dialogState
     )
 
     LazyColumn(
@@ -90,14 +93,33 @@ fun AiHandlerScreen(
     }
 }
 
+@Stable
+class DialogAiHandlerState(
+    isShowing: Boolean = false,
+    handler: AiHandlerInfo? = null,
+) {
+    var isShowing by mutableStateOf(isShowing)
+    var handler by mutableStateOf(handler)
+
+    fun dismiss() {
+        isShowing = false
+        handler = null
+    }
+
+    fun show(handler: AiHandlerInfo? = null) {
+        this.handler = handler
+        isShowing = true
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("FunctionNaming", "LongMethod", "MagicNumber")
 @Composable
 fun DialogAiHandler(
     modifier: Modifier = Modifier,
     event: (ChatBotViewModel.Event) -> Unit,
-    onDismiss: () -> Unit,
     modelList: PersistentList<AiModel> = persistentListOf(),
+    dialogAiHandlerState: DialogAiHandlerState = remember { DialogAiHandlerState() },
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -317,6 +339,6 @@ fun DialogAiHandlerPreview() {
     DialogAiHandler(
         modifier = Modifier,
         event = {},
-        onDismiss = { }
+        dialogAiHandlerState = DialogAiHandlerState(isShowing = true)
     )
 }
