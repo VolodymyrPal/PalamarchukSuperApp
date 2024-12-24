@@ -129,119 +129,130 @@ fun DialogAiHandler(
         ) {
             Surface(modifier = modifier.wrapContentSize()) {
 
-            Column(
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                val name = remember { mutableStateOf("") }
-                var expandedLLMMenu by remember { mutableStateOf(false) }
-                var selectedLLMOption by remember { mutableStateOf<LLMName?>(null) }
-                var expandedModelMenu by remember { mutableStateOf(false) }
-                var selectedModelOption by remember { mutableStateOf<AiModel?>(null) }
-                val apiKey = remember { mutableStateOf("") }
-
-                TextField(
-                    placeholder = {
-                        if (name.value.isBlank()) Text(
-                            "Put name here",
-                            color = Color.Black.copy(alpha = 0.4f)
-                        )
-                    },
-                    value = name.value,
-                    onValueChange = { name.value = it },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = expandedLLMMenu,
-                    onExpandedChange = {
-                        expandedLLMMenu = true
-                    },
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TextField(
-                        value = selectedLLMOption?.name ?: "",
-                        onValueChange = { },
-                        placeholder = {
-                            if (selectedLLMOption?.name.isNullOrBlank()) Text(
-                                "Select language model",
-                                color = Color.Black.copy(0.4f)
-                            )
+
+                    val name = remember { mutableStateOf(dialogAiHandlerState.handler?.name ?: "") }
+                    var isLLMMenuExpanded by remember { mutableStateOf(false) }
+                    val selectedLLM = remember {
+                        mutableStateOf(
+                            dialogAiHandlerState.handler?.model?.llmName
+                        )
+                    }
+                    val expandedModelMenu = remember { mutableStateOf(false) }
+                    val selectedModelOption =
+                        remember { mutableStateOf(dialogAiHandlerState.handler?.model) }
+                    val apiKey =
+                        remember { mutableStateOf(dialogAiHandlerState.handler?.aiApiKey ?: "") }
+
+                    key(name) {
+                        TextField(
+                            placeholder = {
+                                if (name.value.isBlank()) Text(
+                                    "Put name here",
+                                    color = Color.Black.copy(alpha = 0.4f)
+                                )
+                            },
+                            value = name.value,
+                            onValueChange = { name.value = it },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+
+                    ExposedDropdownMenuBox(
+                        modifier = Modifier.fillMaxWidth(),
+                        expanded = isLLMMenuExpanded,
+                        onExpandedChange = {
+                            isLLMMenuExpanded = !isLLMMenuExpanded
                         },
-                        readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expandedLLMMenu,
-                        onDismissRequest = { expandedLLMMenu = false }
                     ) {
-                        LLMName.entries.forEach { option ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedModelOption = null
-                                    selectedLLMOption = option
-                                    event(ChatBotViewModel.Event.GetModels(option))
-                                    expandedLLMMenu = false
-                                },
-                                text = { Text(option.name) }
-                            )
+                        TextField(
+                            value = selectedLLM.value?.name ?: "",
+                            onValueChange = { },
+                            placeholder = {
+                                if (selectedLLM.value?.name.isNullOrBlank()) Text(
+                                    "Select language model",
+                                    color = Color.Black.copy(0.4f)
+                                )
+                            },
+                            readOnly = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = isLLMMenuExpanded,
+                            onDismissRequest = { isLLMMenuExpanded = false }
+                        ) {
+                            LLMName.entries.forEach { option ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        selectedModelOption.value = null
+                                        selectedLLM.value = option
+                                        event(ChatBotViewModel.Event.GetModels(option))
+                                        isLLMMenuExpanded = false
+                                    },
+                                    text = { Text(option.name) }
+                                )
+                            }
                         }
                     }
-                }
 
-                ExposedDropdownMenuBox(
-                    modifier = Modifier.fillMaxWidth(),
-                    expanded = expandedModelMenu,
-                    onExpandedChange = {
-                        expandedModelMenu = true
-                    },
-                ) {
-                    TextField(
-                        value = selectedModelOption?.modelName ?: "",
-                        onValueChange = { },
-                        placeholder = {
-                            if (selectedModelOption?.modelName.isNullOrBlank()) Text(
-                                "Select model of language model",
-                                color = Color.Black.copy(0.4f)
-                            )
+                    ExposedDropdownMenuBox(
+                        modifier = Modifier.fillMaxWidth(),
+                        expanded = expandedModelMenu.value,
+                        onExpandedChange = {
+                            expandedModelMenu.value = !isLLMMenuExpanded
                         },
-                        readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expandedModelMenu,
-                        onDismissRequest = { expandedModelMenu = false }
                     ) {
-                        modelList.forEach { option ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    selectedModelOption = option
-                                    expandedModelMenu = false
-                                },
-                                text = { Text(option.modelName) }
-                            )
+                        TextField(
+                            value = selectedModelOption.value?.modelName ?: "",
+                            onValueChange = { },
+                            placeholder = {
+                                if (selectedModelOption.value?.modelName.isNullOrBlank()) Text(
+                                    "Select model of language model",
+                                    color = Color.Black.copy(0.4f)
+                                )
+                            },
+                            readOnly = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expandedModelMenu.value,
+                            onDismissRequest = { expandedModelMenu.value = false }
+                        ) {
+                            modelList.forEach { option ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        selectedModelOption.value = option
+                                        expandedModelMenu.value = false
+                                    },
+                                    text = { Text(option.modelName) }
+                                )
+                            }
                         }
                     }
-                }
 
-                TextField(
-                    value = apiKey.value,
-                    placeholder = {
-                        if (apiKey.value.isBlank()) Text(
-                            text = "Put api key here",
-                            color = Color.Black.copy(alpha = 0.4f)
+                    key(apiKey) {
+                        TextField(
+                            value = apiKey.value,
+                            placeholder = {
+                                if (apiKey.value.isBlank()) Text(
+                                    text = "Put api key here",
+                                    color = Color.Black.copy(alpha = 0.4f)
+                                )
+                            },
+                            label = { if (apiKey.value.isNotBlank()) Text("API Key") },
+                            onValueChange = {
+                                apiKey.value = it
+                            },
+                            modifier = Modifier.fillMaxWidth(),
                         )
-                    },
-                    onValueChange = {
-                        apiKey.value = it
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    }
 
                     IconButton(
                         modifier = Modifier,
