@@ -290,6 +290,7 @@ fun AiHandlerBox(
     aiModelHandler: AiModelHandler,
     index: Int,
     event: (ChatBotViewModel.Event) -> Unit,
+    eventToDialog: (AiHandlerInfo) -> Unit,
 ) {
     val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
     Box(modifier = modifier) {
@@ -300,6 +301,17 @@ fun AiHandlerBox(
         ) {
             Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.1f))
             Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.8f))
+            IconButton(
+                modifier = Modifier.weight(0.1f),
+                onClick = {
+                    eventToDialog.invoke(handlerInfo)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Create,
+                    contentDescription = "Change"
+                )
+            }
             Checkbox(
                 modifier = Modifier.weight(0.1f),
                 checked = handlerInfo.isSelected,
