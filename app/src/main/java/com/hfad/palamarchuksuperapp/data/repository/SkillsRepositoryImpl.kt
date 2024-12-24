@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
-import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 import com.hfad.palamarchuksuperapp.data.dtos.toSkill
 import com.hfad.palamarchuksuperapp.data.dtos.toSkillEntity
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
