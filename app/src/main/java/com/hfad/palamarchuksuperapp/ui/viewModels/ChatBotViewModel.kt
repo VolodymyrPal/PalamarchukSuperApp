@@ -140,7 +140,6 @@ class ChatBotViewModel @Inject constructor(
                 event.messageAiIndex,
                 event.subMessageIndex
             )
-
             is Event.UpdateHandler -> updateHandler(event.handler, event.aiHandlerInfo)
             is Event.AddAiHandler -> addAiHandler(event.aiHandlerInfo)
             is Event.DeleteHandler -> deleteHandler(event.handler)

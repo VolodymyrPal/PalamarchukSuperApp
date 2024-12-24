@@ -55,7 +55,7 @@ data class AiHandlerInfo(
                 isActive = true,
                 model = GroqModel(
                     llmName = LLMName.GROQ,
-                    modelName = "llama-3.2-11b-vision-preview"
+                    modelName = "llama-3.3-70b-versatile"
                 ),
                 aiApiKey = BuildConfig.GROQ_KEY
             )
