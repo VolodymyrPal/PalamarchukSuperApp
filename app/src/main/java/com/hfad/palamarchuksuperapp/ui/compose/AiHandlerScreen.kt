@@ -72,7 +72,7 @@ fun AiHandlerScreen(
                 IconButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        dialogShown.value = true
+                        dialogState.show()
                     }
                 ) {
                     Icon(
@@ -87,7 +87,8 @@ fun AiHandlerScreen(
                 modifier = Modifier.fillMaxWidth(),
                 aiModelHandler = item,
                 index = index,
-                event = event
+                event = event,
+                eventToDialog = dialogState::show
             )
         }
     }
@@ -121,11 +122,12 @@ fun DialogAiHandler(
     modelList: PersistentList<AiModel> = persistentListOf(),
     dialogAiHandlerState: DialogAiHandlerState = remember { DialogAiHandlerState() },
 ) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties()
-    ) {
-        Surface(modifier = modifier.wrapContentSize()) {
+    if (dialogAiHandlerState.isShowing) {
+        Dialog(
+            onDismissRequest = { dialogAiHandlerState.dismiss() },
+            properties = DialogProperties()
+        ) {
+            Surface(modifier = modifier.wrapContentSize()) {
 
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -241,29 +243,30 @@ fun DialogAiHandler(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                IconButton(
-                    modifier = Modifier,
-                    onClick = {
-                        if (selectedModelOption != null) {
-                            event.invoke(
-                                ChatBotViewModel.Event.AddAiHandler(
-                                    aiHandlerInfo = AiHandlerInfo(
-                                        name = name.value.ifBlank { "New Model" },
-                                        isSelected = true,
-                                        isActive = true,
-                                        model = selectedModelOption!!,
-                                        aiApiKey = apiKey.value
+                    IconButton(
+                        modifier = Modifier,
+                        onClick = {
+                            if (selectedModelOption.value != null) {
+                                event.invoke(
+                                    ChatBotViewModel.Event.AddAiHandler(
+                                        aiHandlerInfo = AiHandlerInfo(
+                                            name = name.value.ifBlank { "New Model" },
+                                            isSelected = true,
+                                            isActive = true,
+                                            model = selectedModelOption.value!!,
+                                            aiApiKey = apiKey.value
+                                        )
                                     )
                                 )
-                            )
-                            onDismiss()
+                                dialogAiHandlerState.dismiss()
+                            }
                         }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add"
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add"
-                    )
                 }
             }
         }
