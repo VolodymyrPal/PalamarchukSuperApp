@@ -290,8 +290,22 @@ fun DialogAiHandler(
                                         )
                                     )
                                 )
-                                dialogAiHandlerState.dismiss()
+                            } else {
+                                if (selectedModelOption.value != null) {
+                                    event.invoke(
+                                        ChatBotViewModel.Event.AddAiHandler(
+                                            aiHandlerInfo = AiHandlerInfo(
+                                                name = name.value.ifBlank { "New Model" },
+                                                isSelected = true,
+                                                isActive = true,
+                                                model = selectedModelOption.value!!,
+                                                aiApiKey = apiKey.value
+                                            )
+                                        )
+                                    )
+                                }
                             }
+                            dialogAiHandlerState.dismiss()
                         }
                     ) {
                         Icon(
