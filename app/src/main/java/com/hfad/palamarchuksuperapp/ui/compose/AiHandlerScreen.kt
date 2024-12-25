@@ -217,39 +217,45 @@ fun DialogAiHandler(
                         }
                     }
 
-                    ExposedDropdownMenuBox(
-                        modifier = Modifier.fillMaxWidth(),
-                        expanded = expandedModelMenu.value,
-                        onExpandedChange = {
-                            expandedModelMenu.value = !isLLMMenuExpanded
-                        },
-                    ) {
-                        TextField(
-                            value = selectedModelOption.value?.modelName ?: "",
-                            onValueChange = { },
-                            placeholder = {
-                                if (selectedModelOption.value?.modelName.isNullOrBlank()) Text(
-                                    "Select model of language model",
-                                    color = Color.Black.copy(0.4f)
-                                )
-                            },
-                            readOnly = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor()
-                        )
-                        ExposedDropdownMenu(
+                    if (selectedLLM.value != null) {
+                        ExposedDropdownMenuBox(
+                            modifier = Modifier.fillMaxWidth(),
                             expanded = expandedModelMenu.value,
-                            onDismissRequest = { expandedModelMenu.value = false }
+                            onExpandedChange = {
+                                expandedModelMenu.value = !isLLMMenuExpanded
+                            },
                         ) {
-                            modelList.forEach { option ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        selectedModelOption.value = option
-                                        expandedModelMenu.value = false
-                                    },
-                                    text = { Text(option.modelName) }
-                                )
+                            TextField(
+                                value = selectedModelOption.value?.llmName?.name ?: "",
+                                onValueChange = { },
+                                label = {
+                                    Text(
+                                        "Select model of language model",
+                                        color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                            Color.Black.copy(alpha = 0.4f)
+                                        } else {
+                                            Color.Black
+                                        }
+                                    )
+                                },
+                                readOnly = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = expandedModelMenu.value,
+                                onDismissRequest = { expandedModelMenu.value = false }
+                            ) {
+                                modelList.forEach { option ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            selectedModelOption.value = option
+                                            expandedModelMenu.value = false
+                                        },
+                                        text = { Text(option.modelName) }
+                                    )
+                                }
                             }
                         }
                     }
@@ -334,12 +340,12 @@ fun AiHandlerBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.1f))
-            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.8f))
+            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.2f))
+            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.4f))
             IconButton(
-                modifier = Modifier.weight(0.1f),
+                modifier = Modifier.weight(0.2f),
                 onClick = {
-                    eventToDialog.invoke(handlerInfo)
+                    eventToDialog.invoke(aiModelHandler)
                 }
             ) {
                 Icon(
@@ -348,7 +354,7 @@ fun AiHandlerBox(
                 )
             }
             Checkbox(
-                modifier = Modifier.weight(0.1f),
+                modifier = Modifier.weight(0.2f),
                 checked = handlerInfo.isSelected,
                 onCheckedChange = {
                     event.invoke(
@@ -360,7 +366,7 @@ fun AiHandlerBox(
                 }
             )
             IconButton(
-                modifier = Modifier.weight(0.1f),
+                modifier = Modifier.weight(0.2f),
                 onClick = {
                     event.invoke(
                         ChatBotViewModel.Event.DeleteHandler(
