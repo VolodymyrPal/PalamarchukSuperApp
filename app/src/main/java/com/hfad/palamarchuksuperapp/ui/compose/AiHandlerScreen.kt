@@ -257,13 +257,16 @@ fun DialogAiHandler(
                     key(apiKey) {
                         TextField(
                             value = apiKey.value,
-                            placeholder = {
-                                if (apiKey.value.isBlank()) Text(
-                                    text = "Put api key here",
-                                    color = Color.Black.copy(alpha = 0.4f)
+                            label = {
+                                Text(
+                                    "API Key",
+                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                        Color.Black.copy(alpha = 0.4f)
+                                    } else {
+                                        Color.Black
+                                    }
                                 )
                             },
-                            label = { if (apiKey.value.isNotBlank()) Text("API Key") },
                             onValueChange = {
                                 apiKey.value = it
                             },
