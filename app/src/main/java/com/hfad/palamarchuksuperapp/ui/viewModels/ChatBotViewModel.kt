@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import IoDispatcher
 import MainDispatcher
+import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
@@ -27,6 +28,7 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -140,7 +142,7 @@ class ChatBotViewModel @Inject constructor(
                 event.messageAiIndex,
                 event.subMessageIndex
             )
-            is Event.UpdateHandler -> updateHandler(event.handler, event.aiHandlerInfo)
+            is Event.UpdateHandler -> updateOrAddHandler(event.handler, event.aiHandlerInfo)
             is Event.AddAiHandler -> addAiHandler(event.aiHandlerInfo)
             is Event.DeleteHandler -> deleteHandler(event.handler)
         }
@@ -162,9 +164,13 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { false }
         }
     }
+    val handler = CoroutineExceptionHandler { context, exception ->
+        Log.e("CoroutineExceptionHandler", "Необработанное исключение: $exception", exception)
+        // Дополнительная обработка исключения, например, показ сообщения пользователю
+    }
 
     private fun sendText(text: String) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch(ioDispatcher + handler) {
             _loading.update { true }
             sendChatRequestUseCase(
                 MessageAI(

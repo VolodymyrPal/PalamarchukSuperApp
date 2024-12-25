@@ -95,6 +95,7 @@ class GroqApiHandler @AssistedInject constructor(
             Result.Error(AppError.Network.RequestError.BadRequest)
         }
     }
+
     override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
         _aiHandlerInfo.update {
             aiHandlerInfo
