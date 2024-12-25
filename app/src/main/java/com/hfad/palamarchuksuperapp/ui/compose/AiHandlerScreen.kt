@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -97,7 +98,7 @@ fun AiHandlerScreen(
 @Stable
 class DialogAiHandlerState(
     isShowing: Boolean = false,
-    handler: AiHandlerInfo? = null,
+    handler: AiModelHandler? = null,
 ) {
     var isShowing by mutableStateOf(isShowing)
     var handler by mutableStateOf(handler)
@@ -107,7 +108,7 @@ class DialogAiHandlerState(
         handler = null
     }
 
-    fun show(handler: AiHandlerInfo? = null) {
+    fun show(handler: AiModelHandler? = null) {
         this.handler = handler
         isShowing = true
     }
@@ -134,25 +135,37 @@ fun DialogAiHandler(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    val name = remember { mutableStateOf(dialogAiHandlerState.handler?.name ?: "") }
+                    val name = remember {
+                        mutableStateOf(
+                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.name ?: ""
+                        )
+                    }
                     var isLLMMenuExpanded by remember { mutableStateOf(false) }
                     val selectedLLM = remember {
                         mutableStateOf(
-                            dialogAiHandlerState.handler?.model?.llmName
+                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model?.llmName
                         )
                     }
                     val expandedModelMenu = remember { mutableStateOf(false) }
-                    val selectedModelOption =
-                        remember { mutableStateOf(dialogAiHandlerState.handler?.model) }
+                    val selectedModelOption: MutableState<AiModel?> =
+                        remember { mutableStateOf(dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model) }
                     val apiKey =
-                        remember { mutableStateOf(dialogAiHandlerState.handler?.aiApiKey ?: "") }
+                        remember {
+                            mutableStateOf(
+                                dialogAiHandlerState.handler?.aiHandlerInfo?.value?.aiApiKey ?: ""
+                            )
+                        }
 
                     key(name) {
                         TextField(
-                            placeholder = {
-                                if (name.value.isBlank()) Text(
-                                    "Put name here",
-                                    color = Color.Black.copy(alpha = 0.4f)
+                            label = {
+                                Text(
+                                    "Description",
+                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                        Color.Black.copy(alpha = 0.4f)
+                                    } else {
+                                        Color.Black
+                                    }
                                 )
                             },
                             value = name.value,
@@ -171,10 +184,14 @@ fun DialogAiHandler(
                         TextField(
                             value = selectedLLM.value?.name ?: "",
                             onValueChange = { },
-                            placeholder = {
-                                if (selectedLLM.value?.name.isNullOrBlank()) Text(
-                                    "Select language model",
-                                    color = Color.Black.copy(0.4f)
+                            label = {
+                                Text(
+                                    "Language model",
+                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                        Color.Black.copy(alpha = 0.4f)
+                                    } else {
+                                        Color.Black
+                                    }
                                 )
                             },
                             readOnly = true,
@@ -200,39 +217,45 @@ fun DialogAiHandler(
                         }
                     }
 
-                    ExposedDropdownMenuBox(
-                        modifier = Modifier.fillMaxWidth(),
-                        expanded = expandedModelMenu.value,
-                        onExpandedChange = {
-                            expandedModelMenu.value = !isLLMMenuExpanded
-                        },
-                    ) {
-                        TextField(
-                            value = selectedModelOption.value?.modelName ?: "",
-                            onValueChange = { },
-                            placeholder = {
-                                if (selectedModelOption.value?.modelName.isNullOrBlank()) Text(
-                                    "Select model of language model",
-                                    color = Color.Black.copy(0.4f)
-                                )
-                            },
-                            readOnly = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor()
-                        )
-                        ExposedDropdownMenu(
+                    if (selectedLLM.value != null) {
+                        ExposedDropdownMenuBox(
+                            modifier = Modifier.fillMaxWidth(),
                             expanded = expandedModelMenu.value,
-                            onDismissRequest = { expandedModelMenu.value = false }
+                            onExpandedChange = {
+                                expandedModelMenu.value = !isLLMMenuExpanded
+                            },
                         ) {
-                            modelList.forEach { option ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        selectedModelOption.value = option
-                                        expandedModelMenu.value = false
-                                    },
-                                    text = { Text(option.modelName) }
-                                )
+                            TextField(
+                                value = selectedModelOption.value?.llmName?.name ?: "",
+                                onValueChange = { },
+                                label = {
+                                    Text(
+                                        "Select model of language model",
+                                        color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                            Color.Black.copy(alpha = 0.4f)
+                                        } else {
+                                            Color.Black
+                                        }
+                                    )
+                                },
+                                readOnly = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = expandedModelMenu.value,
+                                onDismissRequest = { expandedModelMenu.value = false }
+                            ) {
+                                modelList.forEach { option ->
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            selectedModelOption.value = option
+                                            expandedModelMenu.value = false
+                                        },
+                                        text = { Text(option.modelName) }
+                                    )
+                                }
                             }
                         }
                     }
@@ -240,13 +263,16 @@ fun DialogAiHandler(
                     key(apiKey) {
                         TextField(
                             value = apiKey.value,
-                            placeholder = {
-                                if (apiKey.value.isBlank()) Text(
-                                    text = "Put api key here",
-                                    color = Color.Black.copy(alpha = 0.4f)
+                            label = {
+                                Text(
+                                    "API Key",
+                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                        Color.Black.copy(alpha = 0.4f)
+                                    } else {
+                                        Color.Black
+                                    }
                                 )
                             },
-                            label = { if (apiKey.value.isNotBlank()) Text("API Key") },
                             onValueChange = {
                                 apiKey.value = it
                             },
@@ -257,11 +283,12 @@ fun DialogAiHandler(
                     IconButton(
                         modifier = Modifier,
                         onClick = {
-                            if (selectedModelOption.value != null) {
+                            if (dialogAiHandlerState.handler != null) {
                                 event.invoke(
-                                    ChatBotViewModel.Event.AddAiHandler(
-                                        aiHandlerInfo = AiHandlerInfo(
-                                            name = name.value.ifBlank { "New Model" },
+                                    ChatBotViewModel.Event.UpdateHandler(
+                                        handler = dialogAiHandlerState.handler!!,
+                                        aiHandlerInfo = dialogAiHandlerState.handler!!.aiHandlerInfo.value.copy(
+                                            name = name.value,
                                             isSelected = true,
                                             isActive = true,
                                             model = selectedModelOption.value!!,
@@ -269,8 +296,22 @@ fun DialogAiHandler(
                                         )
                                     )
                                 )
-                                dialogAiHandlerState.dismiss()
+                            } else {
+                                if (selectedModelOption.value != null) {
+                                    event.invoke(
+                                        ChatBotViewModel.Event.AddAiHandler(
+                                            aiHandlerInfo = AiHandlerInfo(
+                                                name = name.value.ifBlank { "New Model" },
+                                                isSelected = true,
+                                                isActive = true,
+                                                model = selectedModelOption.value!!,
+                                                aiApiKey = apiKey.value
+                                            )
+                                        )
+                                    )
+                                }
                             }
+                            dialogAiHandlerState.dismiss()
                         }
                     ) {
                         Icon(
@@ -290,7 +331,7 @@ fun AiHandlerBox(
     aiModelHandler: AiModelHandler,
     index: Int,
     event: (ChatBotViewModel.Event) -> Unit,
-    eventToDialog: (AiHandlerInfo) -> Unit,
+    eventToDialog: (AiModelHandler) -> Unit,
 ) {
     val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
     Box(modifier = modifier) {
@@ -299,12 +340,12 @@ fun AiHandlerBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.1f))
-            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.8f))
+            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.2f))
+            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.4f))
             IconButton(
-                modifier = Modifier.weight(0.1f),
+                modifier = Modifier.weight(0.2f),
                 onClick = {
-                    eventToDialog.invoke(handlerInfo)
+                    eventToDialog.invoke(aiModelHandler)
                 }
             ) {
                 Icon(
@@ -313,7 +354,7 @@ fun AiHandlerBox(
                 )
             }
             Checkbox(
-                modifier = Modifier.weight(0.1f),
+                modifier = Modifier.weight(0.2f),
                 checked = handlerInfo.isSelected,
                 onCheckedChange = {
                     event.invoke(
@@ -325,7 +366,7 @@ fun AiHandlerBox(
                 }
             )
             IconButton(
-                modifier = Modifier.weight(0.1f),
+                modifier = Modifier.weight(0.2f),
                 onClick = {
                     event.invoke(
                         ChatBotViewModel.Event.DeleteHandler(

@@ -42,21 +42,21 @@ class GroqApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageAI>,
     ): Result<SubMessageAI, AppError> {
-
-        val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(initAiHandlerInfo.model)
-        } else {
-            messageList.toGroqRequest(initAiHandlerInfo.model)
-        }
-
-        val request = httpClient.post(url) {
-            header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
-            contentType(ContentType.Application.Json)
-            setBody(
-                listToPass
-            )
-        }
         try {
+            val listToPass = if (messageList.last().type == MessageType.IMAGE) {
+                messageList.last().toGroqRequest(initAiHandlerInfo.model)
+            } else {
+                messageList.toGroqRequest(initAiHandlerInfo.model)
+            }
+
+            val request = httpClient.post(url) {
+                header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
+                contentType(ContentType.Application.Json)
+                setBody(
+                    listToPass
+                )
+            }
+
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<GroqChatCompletionResponse>()
                 val responseText = response.groqChoices[0].groqMessage
@@ -95,6 +95,7 @@ class GroqApiHandler @AssistedInject constructor(
             Result.Error(AppError.Network.RequestError.BadRequest)
         }
     }
+
     override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
         _aiHandlerInfo.update {
             aiHandlerInfo
