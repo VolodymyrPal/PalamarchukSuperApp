@@ -158,10 +158,14 @@ fun DialogAiHandler(
 
                     key(name) {
                         TextField(
-                            placeholder = {
-                                if (name.value.isBlank()) Text(
-                                    "Put name here",
-                                    color = Color.Black.copy(alpha = 0.4f)
+                            label = {
+                                Text(
+                                    "Description",
+                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                        Color.Black.copy(alpha = 0.4f)
+                                    } else {
+                                        Color.Black
+                                    }
                                 )
                             },
                             value = name.value,
@@ -180,10 +184,14 @@ fun DialogAiHandler(
                         TextField(
                             value = selectedLLM.value?.name ?: "",
                             onValueChange = { },
-                            placeholder = {
-                                if (selectedLLM.value?.name.isNullOrBlank()) Text(
-                                    "Select language model",
-                                    color = Color.Black.copy(0.4f)
+                            label = {
+                                Text(
+                                    "Language model",
+                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
+                                        Color.Black.copy(alpha = 0.4f)
+                                    } else {
+                                        Color.Black
+                                    }
                                 )
                             },
                             readOnly = true,
