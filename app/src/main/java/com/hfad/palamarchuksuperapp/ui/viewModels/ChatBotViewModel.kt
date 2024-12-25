@@ -209,7 +209,7 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {
+    private fun updateOrAddHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {
         viewModelScope.launch(ioDispatcher) {
             updateAiHandlerUseCase(handler, aiHandlerInfo)
         }

@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -97,7 +98,7 @@ fun AiHandlerScreen(
 @Stable
 class DialogAiHandlerState(
     isShowing: Boolean = false,
-    handler: AiHandlerInfo? = null,
+    handler: AiModelHandler? = null,
 ) {
     var isShowing by mutableStateOf(isShowing)
     var handler by mutableStateOf(handler)
@@ -107,7 +108,7 @@ class DialogAiHandlerState(
         handler = null
     }
 
-    fun show(handler: AiHandlerInfo? = null) {
+    fun show(handler: AiModelHandler? = null) {
         this.handler = handler
         isShowing = true
     }
