@@ -135,18 +135,26 @@ fun DialogAiHandler(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    val name = remember { mutableStateOf(dialogAiHandlerState.handler?.name ?: "") }
+                    val name = remember {
+                        mutableStateOf(
+                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.name ?: ""
+                        )
+                    }
                     var isLLMMenuExpanded by remember { mutableStateOf(false) }
                     val selectedLLM = remember {
                         mutableStateOf(
-                            dialogAiHandlerState.handler?.model?.llmName
+                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model?.llmName
                         )
                     }
                     val expandedModelMenu = remember { mutableStateOf(false) }
-                    val selectedModelOption =
-                        remember { mutableStateOf(dialogAiHandlerState.handler?.model) }
+                    val selectedModelOption: MutableState<AiModel?> =
+                        remember { mutableStateOf(dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model) }
                     val apiKey =
-                        remember { mutableStateOf(dialogAiHandlerState.handler?.aiApiKey ?: "") }
+                        remember {
+                            mutableStateOf(
+                                dialogAiHandlerState.handler?.aiHandlerInfo?.value?.aiApiKey ?: ""
+                            )
+                        }
 
                     key(name) {
                         TextField(
@@ -258,11 +266,12 @@ fun DialogAiHandler(
                     IconButton(
                         modifier = Modifier,
                         onClick = {
-                            if (selectedModelOption.value != null) {
+                            if (dialogAiHandlerState.handler != null) {
                                 event.invoke(
-                                    ChatBotViewModel.Event.AddAiHandler(
-                                        aiHandlerInfo = AiHandlerInfo(
-                                            name = name.value.ifBlank { "New Model" },
+                                    ChatBotViewModel.Event.UpdateHandler(
+                                        handler = dialogAiHandlerState.handler!!,
+                                        aiHandlerInfo = dialogAiHandlerState.handler!!.aiHandlerInfo.value.copy(
+                                            name = name.value,
                                             isSelected = true,
                                             isActive = true,
                                             model = selectedModelOption.value!!,
@@ -291,7 +300,7 @@ fun AiHandlerBox(
     aiModelHandler: AiModelHandler,
     index: Int,
     event: (ChatBotViewModel.Event) -> Unit,
-    eventToDialog: (AiHandlerInfo) -> Unit,
+    eventToDialog: (AiModelHandler) -> Unit,
 ) {
     val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
     Box(modifier = modifier) {
