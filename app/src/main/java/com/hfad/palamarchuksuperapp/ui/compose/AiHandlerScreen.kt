@@ -161,11 +161,7 @@ fun DialogAiHandler(
                             label = {
                                 Text(
                                     "Description",
-                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
-                                        Color.Black.copy(alpha = 0.4f)
-                                    } else {
-                                        Color.Black
-                                    }
+                                    color = Color.Black.copy(alpha = 0.4f)
                                 )
                             },
                             value = name.value,
@@ -187,11 +183,7 @@ fun DialogAiHandler(
                             label = {
                                 Text(
                                     "Language model",
-                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
-                                        Color.Black.copy(alpha = 0.4f)
-                                    } else {
-                                        Color.Black
-                                    }
+                                    color = Color.Black.copy(alpha = 0.4f)
                                 )
                             },
                             readOnly = true,
@@ -231,11 +223,7 @@ fun DialogAiHandler(
                                 label = {
                                     Text(
                                         "Select model of language model",
-                                        color = if (selectedLLM.value?.name.isNullOrBlank()) {
-                                            Color.Black.copy(alpha = 0.4f)
-                                        } else {
-                                            Color.Black
-                                        }
+                                        color = Color.Black.copy(alpha = 0.4f)
                                     )
                                 },
                                 readOnly = true,
@@ -266,11 +254,7 @@ fun DialogAiHandler(
                             label = {
                                 Text(
                                     "API Key",
-                                    color = if (selectedLLM.value?.name.isNullOrBlank()) {
-                                        Color.Black.copy(alpha = 0.4f)
-                                    } else {
-                                        Color.Black
-                                    }
+                                    color = Color.Black.copy(alpha = 0.4f)
                                 )
                             },
                             onValueChange = {
