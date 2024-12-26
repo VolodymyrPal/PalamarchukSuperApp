@@ -1,6 +1,8 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
@@ -63,17 +65,16 @@ import androidx.fragment.app.FragmentActivity
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
-import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImplForPreview
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
-import kotlinx.coroutines.Dispatchers
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
 fun SkillScreen(
@@ -81,79 +82,89 @@ fun SkillScreen(
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
+    animatedContentScope: AnimatedVisibilityScope, //TODO
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        bottomBar = {
-            BottomNavBar()
-        },
-        floatingActionButton = {
-            val context = LocalContext.current
-            FloatingActionButton(
-                shape = RoundedCornerShape(33),
-                modifier = Modifier,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onClick = remember {
-                    {
-                        val bottomSheetFragment = BottomSheetFragment(
-                            viewModelEvent = viewModel::event
-                        )
-                        bottomSheetFragment.show(
-                            (context as FragmentActivity).supportFragmentManager, "BSDialogFragment"
+    val localTransitionScope = LocalSharedTransitionScope.current //TODO
+    with(localTransitionScope ?: return) {//TODO
+        Scaffold(
+            modifier = modifier
+                .fillMaxSize()
+                .sharedBounds(
+                    this.rememberSharedContentState("key"),
+                    animatedContentScope
+                ),
+            bottomBar = {
+                BottomNavBar()
+            },
+            floatingActionButton = {
+                val context = LocalContext.current
+                FloatingActionButton(
+                    shape = RoundedCornerShape(33),
+                    modifier = Modifier,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    onClick = remember {
+                        {
+                            val bottomSheetFragment = BottomSheetFragment(
+                                viewModelEvent = viewModel::event
+                            )
+                            bottomSheetFragment.show(
+                                (context as FragmentActivity).supportFragmentManager,
+                                "BSDialogFragment"
+                            )
+                        }
+                    },
+                    content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.add_fab_button),
+                            "Floating action button."
                         )
                     }
-                },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.add_fab_button),
-                        "Floating action button."
+                )
+            }
+        ) { paddingValues ->
+            Surface(
+                color = Color.Transparent, modifier = modifier
+                    .fillMaxSize()
+                    .padding(bottom = paddingValues.calculateBottomPadding())
+            ) {
+                val state by viewModel.uiState.collectAsState()
+                //viewModel.fetchSkills()
+                if (state.loading) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                        )
+                    }
+                }
+
+                if (state.items.isNullOrEmpty()) {
+                    Text(text = "No data. Please refresh by swipe!")
+                }
+
+
+                if (state.error != null) {
+                    Text(
+                        text = "Error: ${state.error ?: "Unknown error"}",
+                        color = Color.Red
                     )
                 }
-            )
+
+                if (!state.items.isEmpty()) {
+                    LazyList(
+                        modifier = Modifier.fillMaxSize(),
+                        skillList = state.items,
+                        viewModelEvent = viewModel::event
+                    )
+                }
+
+            }
         }
-    ) { paddingValues ->
-        Surface(
-            color = Color.Transparent, modifier = modifier
-                .fillMaxSize()
-                .padding(bottom = paddingValues.calculateBottomPadding())
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.End
         ) {
-            val state by viewModel.uiState.collectAsState()
-            //viewModel.fetchSkills()
-            if (state.loading) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
-            }
-
-            if (state.items.isNullOrEmpty()) {
-                Text(text = "No data. Please refresh by swipe!")
-            }
-
-
-            if (state.error != null) {
-                Text(
-                    text = "Error: ${state.error ?: "Unknown error"}",
-                    color = Color.Red
-                )
-            }
-
-            if (!state.items.isEmpty()) {
-                LazyList(
-                    modifier = Modifier.fillMaxSize(),
-                    skillList = state.items,
-                    viewModelEvent = viewModel::event
-                )
-            }
-
         }
-    }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.End
-    ) {
     }
 }
 
@@ -475,13 +486,15 @@ fun ListItemSkillPreview() {
     println("true".toBooleanStrictOrNull())
 }
 
-@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
-@Composable
-@Preview
-fun SkillScreenPreview() {
-    SkillScreen(
-        viewModel = SkillsViewModel(SkillsRepositoryImplForPreview(),
-            mainDispatcher = Dispatchers.Main,
-            ioDispatcher = Dispatchers.IO),
-    )
-}
+//@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
+//@Composable
+//@Preview   //TODO
+//fun SkillScreenPreview() {
+//    SkillScreen(
+//        viewModel = SkillsViewModel(
+//            SkillsRepositoryImplForPreview(),
+//            mainDispatcher = Dispatchers.Main,
+//            ioDispatcher = Dispatchers.IO
+//        ),
+//    )
+//}

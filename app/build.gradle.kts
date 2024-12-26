@@ -129,7 +129,7 @@ dependencies {
 
     implementation(libs.kotlinx.collections.immutable) // Immutable collection for better compose handling
 
-    implementation("androidx.compose.animation:animation:1.7.4")
+    implementation("androidx.compose.animation:animation:1.7.6")
     implementation("io.ktor:ktor-client-logging:2.3.12")
 
     implementation("io.github.theapache64:rebugger:1.0.0-rc03")   //TODO using for checking number of recompositions

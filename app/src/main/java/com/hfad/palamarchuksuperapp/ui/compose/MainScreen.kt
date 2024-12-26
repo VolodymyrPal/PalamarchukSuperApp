@@ -8,6 +8,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -74,13 +76,15 @@ import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreenRow(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     dataStore: DataStoreHandler? = remember {
         context.appComponent.provideDataStoreHandler()
-    }
+    },
+    animatedContentScope: AnimatedVisibilityScope,
 ) {
 
     val navController: NavHostController =
@@ -136,122 +140,141 @@ fun MainScreenRow(
         Surface(
             color = Color.Transparent, modifier = modifier
         ) {
-            LazyColumn(
-                modifier = modifier
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top,
-            ) {
-                item {
-                    val dayNightMode = dataStore?.storedQuery?.collectAsState(false)
+            val scope = LocalSharedTransitionScope.current // TODO
+            with(scope!!) {//TODO
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top,
+                ) {
+                    item {
+                        val dayNightMode = dataStore?.storedQuery?.collectAsState(false)
 
-                    TopRowMainScreen(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp, 16.dp, 16.dp, 0.dp),
-                        actionForActivity = {
-                            onClickVibro()
-                            SwitchToActivityUseCase()(
-                                context as Activity,
-                                key = ActivityKey.ActivityXML
-                            )
-                        },
-                        prefRepository = dataStore,
-                        buttonColor = buttonColor,
-                        dayNightMode = dayNightMode?.value ?: false
-                    )
-                }
-                item {
-                    Card(
-                        modifier = modifier
-                            .size(320.dp)
-                            .border((2.5).dp, Color.Gray.copy(0.3f), CircleShape)
-                            .padding((10).dp),
-                        shape = CircleShape
-                    ) {
-
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(mainPhoto)
-                                .setParameter(key = "timestamp", value = timestamp.longValue, null)
-                                .crossfade(true)
-                                .error(R.drawable.lion_jpg_21)
-                                .build(),
-                            contentDescription = "Users photo",
-                            contentScale = ContentScale.Crop,
+                        TopRowMainScreen(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape),
+                                .fillMaxWidth()
+                                .padding(16.dp, 16.dp, 16.dp, 0.dp),
+                            actionForActivity = {
+                                onClickVibro()
+                                SwitchToActivityUseCase()(
+                                    context as Activity,
+                                    key = ActivityKey.ActivityXML
+                                )
+                            },
+                            prefRepository = dataStore,
+                            buttonColor = buttonColor,
+                            dayNightMode = dayNightMode?.value ?: false
                         )
                     }
-                }
-                item {
-                    Column(
-                        modifier = Modifier.defaultMinSize(minHeight = 250.dp),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(0.1f)
-                        )
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(0.4f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                    item {
+                        Card(
+                            modifier = modifier
+                                .size(320.dp)
+                                .border((2.5).dp, Color.Gray.copy(0.3f), CircleShape)
+                                .padding((10).dp),
+                            shape = CircleShape
                         ) {
-                            ButtonToNavConstraint(
-                                modifier = Modifier,
-                                action = { navController?.navigate(Routes.SkillScreen) },
-                                text = "S K I L L S",
-                                position = Modifier.offset(15.dp, 15.dp)
-                            )
 
-                            ButtonToNavConstraint(
-                                modifier = Modifier,
-                                action = { navController?.navigate(Routes.StoreScreen) },
-                                imagePath = R.drawable.store_image,
-                                text = "S T O R E",
-                                position = Modifier.offset((-15).dp, 15.dp)
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(0.2f)
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(0.4f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            ButtonToNavConstraint(
-                                modifier = Modifier,
-                                action = { navController?.navigate(Routes.ChatBotScreen) },
-                                imagePath = R.drawable.lock_outlined,
-                                text = "L O C K E D",
-                                position = Modifier.offset(15.dp, (-15).dp),
-                                enable = true
-                            )
-                            ButtonToNavConstraint(
-                                modifier = Modifier,
-                                action = { navController?.navigate(Routes.Settings) },
-                                imagePath = R.drawable.lock_outlined,
-                                text = "L O C K E D",
-                                position = Modifier.offset((-15).dp, (-15).dp),
-                                enable = false
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(mainPhoto)
+                                    .setParameter(
+                                        key = "timestamp",
+                                        value = timestamp.longValue,
+                                        null
+                                    )
+                                    .crossfade(true)
+                                    .error(R.drawable.lion_jpg_21)
+                                    .build(),
+                                contentDescription = "Users photo",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape),
                             )
                         }
                     }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding() + 10.dp))
+                    item {
+                        Column(
+                            modifier = Modifier.defaultMinSize(minHeight = 250.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.1f)
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.4f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                ButtonToNavConstraint(
+                                    modifier = Modifier.sharedBounds(
+                                        rememberSharedContentState("key"),
+                                        animatedContentScope
+                                    ),
+                                    action = { navController?.navigate(Routes.SkillScreen) },
+                                    text = "S K I L L S",
+                                    position = Modifier.offset(15.dp, 15.dp)
+                                )
+
+                                ButtonToNavConstraint(
+                                    modifier = Modifier.sharedBounds(
+                                        rememberSharedContentState("key"),
+                                        animatedContentScope
+                                    ),
+                                    action = { navController?.navigate(Routes.StoreScreen) },
+                                    imagePath = R.drawable.store_image,
+                                    text = "S T O R E",
+                                    position = Modifier.offset((-15).dp, 15.dp)
+                                )
+                            }
+
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.2f)
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.4f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                ButtonToNavConstraint(
+                                    modifier = Modifier.sharedBounds(
+                                        rememberSharedContentState("key"),
+                                        animatedContentScope
+                                    ),
+                                    action = { navController?.navigate(Routes.ChatBotScreen) },
+                                    imagePath = R.drawable.lock_outlined,
+                                    text = "C H A T",
+                                    position = Modifier.offset(15.dp, (-15).dp),
+                                    enable = true
+                                )
+                                ButtonToNavConstraint(
+                                    modifier = Modifier.sharedBounds(
+                                        rememberSharedContentState("key"),
+                                        animatedContentScope
+                                    ),
+                                    action = { navController?.navigate(Routes.Settings) },
+                                    imagePath = R.drawable.lock_outlined,
+                                    text = "L O C K E D",
+                                    position = Modifier.offset((-15).dp, (-15).dp),
+                                    enable = false
+                                )
+                            }
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding() + 10.dp))
+                    }
                 }
             }
         }
@@ -295,11 +318,11 @@ fun ButtonToNavConstraint(
         modifier = modifier
             .size(WIDTH_BIG_BUTTON.dp, HEIGHT_BIG_BUTTON.dp)
             .background(
-                MaterialTheme.colorScheme.onSecondaryContainer.copy(if (enable) 0.75f else 0.25f),
+                MaterialTheme.colorScheme.onSecondaryContainer.copy(if (enable) 0.5f else 0.25f),
                 RoundedCornerShape(20.dp)
             )
             .then(position)
-            .alpha(if (enable) 1f else 0.75f),
+            .alpha(if (enable) 0.95f else 0.75f),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -328,6 +351,7 @@ fun ButtonToNavConstraint(
                     .weight(0.25f),
                 textAlign = TextAlign.Center,
                 text = text,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif
             )
@@ -406,13 +430,14 @@ fun TopRowMainScreenPreview(
     TopRowMainScreen(modifier.fillMaxWidth())
 }
 
-@Composable
-@Preview(showSystemUi = true, showBackground = true)
-fun MainScreenConstraintPreview() {
-    MainScreenRow(
-        dataStore = null
-    )
-}
+//@Composable //TODO
+//@Preview(showSystemUi = true, showBackground = true)
+//fun MainScreenConstraintPreview() {
+//    MainScreenRow(
+//        dataStore = null,
+//        animatedContentScope = null
+//    )
+//}
 
 
 // Old implementing of MainScreen but with constraint layout

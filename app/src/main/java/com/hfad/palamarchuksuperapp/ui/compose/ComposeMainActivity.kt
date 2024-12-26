@@ -3,11 +3,10 @@ package com.hfad.palamarchuksuperapp.ui.compose
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,7 +31,13 @@ class ComposeMainActivity : AppCompatActivity() {
 val LocalNavController = compositionLocalOf<NavHostController> {
     error("NavController not provided")
 }
+val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null } //TODO
 
+@OptIn(ExperimentalSharedTransitionApi::class) //TODO
+val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null } //TODO
+
+
+@OptIn(ExperimentalSharedTransitionApi::class) //TODO
 @Suppress("detekt.FunctionNaming")
 @Composable
 fun MainContent() {
@@ -52,26 +57,37 @@ fun MainContent() {
 //        return fadeOut(tween(delayMillis = 90))
 //    }
 
-    CompositionLocalProvider(LocalNavController provides navController) {
-        AppTheme {
-            NavHost(
-                navController = LocalNavController.current,
-                startDestination = Routes.MainScreenConstraint
-            ) {
-                composable<Routes.MainScreenConstraint> {
-                    MainScreenRow()
-                }
-                composable<Routes.SkillScreen> {
-                    SkillScreen()
-                }
-                composable<Routes.Settings> {
-                    Text(text = "Settings")
-                }
-                composable<Routes.StoreScreen> {
-                    StoreScreen()
-                }
-                composable<Routes.ChatBotScreen> {
-                    RootChatScreen()
+    SharedTransitionLayout { //TODO
+        CompositionLocalProvider(
+            LocalNavController provides navController,
+            LocalSharedTransitionScope provides this //TODO
+        ) {
+            AppTheme {
+                NavHost(
+                    navController = LocalNavController.current,
+                    startDestination = Routes.MainScreenConstraint
+                ) {
+                    composable<Routes.MainScreenConstraint> {
+                        MainScreenRow(
+                            animatedContentScope = this //TODO
+                        )
+                    }
+                    composable<Routes.SkillScreen> {
+                        SkillScreen(
+                            animatedContentScope = this //TODO
+                        )
+                    }
+                    composable<Routes.Settings> {
+                        Text(text = "Settings")
+                    }
+                    composable<Routes.StoreScreen> {
+                        StoreScreen()
+                    }
+                    composable<Routes.ChatBotScreen> {
+                        RootChatScreen(
+                            animatedContentScope = this //TODO
+                        )
+                    }
                 }
             }
         }

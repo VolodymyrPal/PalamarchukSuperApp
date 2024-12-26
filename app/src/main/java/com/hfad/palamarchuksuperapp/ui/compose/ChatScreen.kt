@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -107,6 +109,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
 fun RootChatScreen(
@@ -115,8 +118,8 @@ fun RootChatScreen(
         (factory = LocalContext.current.appComponent.viewModelFactory()),
     navController: NavHostController? = LocalNavController.current,
     context: Context = LocalContext.current,
-
-    ) {
+    animatedContentScope: AnimatedVisibilityScope, //TOOD
+) {
     LaunchedEffect(Unit) {
         chatBotViewModel.effect.collect { effect ->
             when (effect) {
@@ -127,17 +130,22 @@ fun RootChatScreen(
         }
     }
     val myState = chatBotViewModel.uiState.collectAsStateWithLifecycle()
-
-    ChatScreen(
-        modifier = modifier,
-        navController = navController,
-        event = chatBotViewModel::event,
-        state = myState
-    )
+    val localTransitionScope = LocalSharedTransitionScope.current //TODO
+    with(localTransitionScope?: return) { //TODO
+        ChatScreen(
+            modifier = modifier.sharedBounds(
+                this.rememberSharedContentState("key"),
+                animatedContentScope
+            ),
+            navController = navController,
+            event = chatBotViewModel::event,
+            state = myState
+        )
+    }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @NonRestartableComposable
 @Composable
@@ -508,7 +516,11 @@ fun RequestPanel(
                             else -> {
 
                                 val imgByteCode = ByteArrayOutputStream().let {
-                                    imageBitmap.value?.compress(Bitmap.CompressFormat.JPEG, 80, it)
+                                    imageBitmap.value?.compress(
+                                        Bitmap.CompressFormat.JPEG,
+                                        80,
+                                        it
+                                    )
                                     Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP)
                                 }
 

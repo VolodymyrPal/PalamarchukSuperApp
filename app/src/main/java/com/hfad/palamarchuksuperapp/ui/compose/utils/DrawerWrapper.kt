@@ -100,6 +100,7 @@ fun MyNavigationDrawer(
         DrawerWrapper.Both -> {
 
             BoxWithConstraints(modifier.fillMaxSize()) {
+                this.minHeight // Just to remove error
                 val fullWidth = constraints.maxWidth.toFloat()
                 val drawerWidthPx = with(density) { drawerWidth.toPx() }
 
@@ -217,6 +218,7 @@ fun DrawerBox(
     drawerContent: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier) {
+        this.minHeight // Just to remove error
         val fullWidth = constraints.maxWidth.toFloat()
 
         val drawerOffset by animateFloatAsState(
