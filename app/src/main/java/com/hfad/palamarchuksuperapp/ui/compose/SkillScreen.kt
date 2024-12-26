@@ -142,12 +142,12 @@ fun SkillScreen(
                 }
 
 
-            if (state.error != null) {
-                Text(
-                    text = "Error: ${state.error ?: "Unknown error"}",
-                    color = Color.Red
-                )
-            }
+                if (state.error != null) {
+                    Text(
+                        text = "Error: ${state.error ?: "Unknown error"}",
+                        color = Color.Red
+                    )
+                }
 
                 if (!state.items.isEmpty()) {
                     LazyList(
