@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
@@ -82,17 +81,17 @@ fun SkillScreen(
     viewModel: SkillsViewModel = daggerViewModel<SkillsViewModel>(
         factory = LocalContext.current.appComponent.viewModelFactory()
     ),
-    animatedContentScope: AnimatedVisibilityScope, //TODO
 ) {
-    val localTransitionScope = LocalSharedTransitionScope.current //TODO
-    with(localTransitionScope ?: return) {//TODO
+
+    val localTransitionScope = LocalSharedTransitionScope.current
+        ?: error(IllegalStateException("No SharedElementScope found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+        ?: error(IllegalStateException("No AnimatedVisibility found"))
+
+    with(localTransitionScope) {//TODO
         Scaffold(
             modifier = modifier
-                .fillMaxSize()
-                .sharedBounds(
-                    this.rememberSharedContentState("key"),
-                    animatedContentScope
-                ),
+                .fillMaxSize(),
             bottomBar = {
                 BottomNavBar()
             },
@@ -124,7 +123,10 @@ fun SkillScreen(
         ) { paddingValues ->
             Surface(
                 color = Color.Transparent, modifier = modifier
-                    .fillMaxSize()
+                    .fillMaxSize().sharedBounds(
+                        this.rememberSharedContentState("skill"),
+                        animatedContentScope
+                    )
                     .padding(bottom = paddingValues.calculateBottomPadding())
             ) {
                 val state by viewModel.uiState.collectAsState()
@@ -137,7 +139,7 @@ fun SkillScreen(
                     }
                 }
 
-                if (state.items.isNullOrEmpty()) {
+                if (state.items.isEmpty()) {
                     Text(text = "No data. Please refresh by swipe!")
                 }
 
@@ -158,12 +160,6 @@ fun SkillScreen(
                 }
 
             }
-        }
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End
-        ) {
         }
     }
 }

@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.ui.compose
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
@@ -142,7 +143,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Suppress("LongParameterList", "FunctionNaming", "LongMethod", "MagicNumber")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
@@ -214,93 +215,104 @@ fun StoreScreen(
 //                }
 //            })
         }
-        Scaffold(
-            modifier = modifier
-                .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            topBar = {
-                MediumTopAppBar(
-                    colors = TopAppBarDefaults.mediumTopAppBarColors(
-                        containerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onPrimary,             // Hiding top bar
-                        titleContentColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
-                        else MaterialTheme.colorScheme.onPrimaryContainer,
-                        scrolledContainerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onPrimary      // Expanded top bar
-                    ),
-                    title = {
-                        Text(
-                            "MY SUPPA SHOP FOR CHICKS",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.popBackStack()
-                        }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Localized description"
+        val localTransitionScope = LocalSharedTransitionScope.current
+            ?: error(IllegalStateException("No SharedElementScope found"))
+        val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+            ?: error(IllegalStateException("No AnimatedVisibility found"))
+
+        with(localTransitionScope) {
+            Scaffold(
+                modifier = modifier
+                    .fillMaxSize()
+                    .sharedBounds(
+                        rememberSharedContentState("store"),
+                        animatedContentScope
+                    )
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                topBar = {
+                    MediumTopAppBar(
+                        colors = TopAppBarDefaults.mediumTopAppBarColors(
+                            containerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onPrimary,             // Hiding top bar
+                            titleContentColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer
+                            else MaterialTheme.colorScheme.onPrimaryContainer,
+                            scrolledContainerColor = if (!isSystemInDarkTheme()) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onPrimary      // Expanded top bar
+                        ),
+                        title = {
+                            Text(
+                                "MY SUPPA SHOP FOR CHICKS",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnHardRefresh) }) {
-                            if (myState.loading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = Color.Yellow
-                                )
-                            } else {
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                navController.popBackStack()
+                            }) {
                                 Icon(
-                                    imageVector = Icons.Filled.Menu,
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Localized description"
                                 )
                             }
-                        }
-                    },
-                    scrollBehavior = scrollBehavior
-                )
-            },
-            bottomBar = { BottomNavBar() },
-            floatingActionButton = {
-                FloatingActionButton(
-                    shape = RoundedCornerShape(33),
-                    modifier = Modifier,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    onClick = {
-                        coroutineScope.launch { subDrawerState.open() }
-                    },
-                    content = {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
-                                "Floating action button."
-                            )
-                            if (myBasket.isNotEmpty()) {
-                                Text(text = myBasket.sumOf { it.quantity }.toString())
+                        },
+                        actions = {
+                            IconButton(onClick = { viewModel.event(StoreViewModel.Event.OnHardRefresh) }) {
+                                if (myState.loading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = Color.Yellow
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Filled.Menu,
+                                        contentDescription = "Localized description"
+                                    )
+                                }
+                            }
+                        },
+                        scrollBehavior = scrollBehavior
+                    )
+                },
+                bottomBar = { BottomNavBar() },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        shape = RoundedCornerShape(33),
+                        modifier = Modifier,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        onClick = {
+                            coroutineScope.launch { subDrawerState.open() }
+                        },
+                        content = {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_shopping_basket_24),
+                                    "Floating action button."
+                                )
+                                if (myBasket.isNotEmpty()) {
+                                    Text(text = myBasket.sumOf { it.quantity }.toString())
+                                }
                             }
                         }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Surface(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(
-                        bottom = paddingValues.calculateBottomPadding(),
-                        top = paddingValues.calculateTopPadding(),
                     )
-            ) {
-                StoreScreenContent(
-                    items = myState.items,
-                    onEvent = viewModel::event,
-                    error = myState.error,
-                    snackBarHost = snackbarHostState,
-                )
+                }
+            ) { paddingValues ->
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(
+                            bottom = paddingValues.calculateBottomPadding(),
+                            top = paddingValues.calculateTopPadding(),
+                        )
+                ) {
+                    StoreScreenContent(
+                        items = myState.items,
+                        onEvent = viewModel::event,
+                        error = myState.error,
+                        snackBarHost = snackbarHostState,
+                    )
+                }
             }
         }
     }
