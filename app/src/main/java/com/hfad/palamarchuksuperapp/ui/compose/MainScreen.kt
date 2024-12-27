@@ -294,6 +294,7 @@ fun ButtonToNavConstraint(
     text: String = "S K I L L S",
     position: Modifier = Modifier.offset(15.dp, 15.dp),
     enable: Boolean = true,
+    modifierToTransit: Modifier = Modifier
 ) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
@@ -344,7 +345,8 @@ fun ButtonToNavConstraint(
                 model = ImageRequest.Builder(LocalContext.current).data(imagePath).build(),
                 modifier = Modifier
                     .padding(start = 10.dp, end = 10.dp, top = 5.dp)
-                    .weight(0.9f),
+                    .weight(0.9f)
+                    .then(modifierToTransit),
                 contentScale = ContentScale.FillBounds,
                 //imageVector = imageVector,
                 contentDescription = text
@@ -434,14 +436,13 @@ fun TopRowMainScreenPreview(
     TopRowMainScreen(modifier.fillMaxWidth())
 }
 
-//@Composable //TODO
-//@Preview(showSystemUi = true, showBackground = true)
-//fun MainScreenConstraintPreview() {
-//    MainScreenRow(
-//        dataStore = null,
-//        animatedContentScope = null
-//    )
-//}
+@Composable
+@Preview(showSystemUi = true, showBackground = true)
+fun MainScreenConstraintPreview() {
+    MainScreenRow(
+        dataStore = null,
+    )
+}
 
 
 // Old implementing of MainScreen but with constraint layout
