@@ -8,7 +8,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,8 +83,11 @@ fun MainScreenRow(
     dataStore: DataStoreHandler? = remember {
         context.appComponent.provideDataStoreHandler()
     },
-    animatedContentScope: AnimatedVisibilityScope,
 ) {
+    val localTransitionScope = LocalSharedTransitionScope.current
+        ?: error(IllegalStateException("No SharedElementScope found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+        ?: error(IllegalStateException("No AnimatedVisibility found"))
 
     val navController: NavHostController =
         if (LocalInspectionMode.current)
