@@ -91,11 +91,7 @@ fun SkillScreen(
     with(localTransitionScope) {//TODO
         Scaffold(
             modifier = modifier
-                .fillMaxSize()
-                .sharedBounds(
-                    this.rememberSharedContentState("key"),
-                    animatedContentScope
-                ),
+                .fillMaxSize(),
             bottomBar = {
                 BottomNavBar()
             },
@@ -127,7 +123,10 @@ fun SkillScreen(
         ) { paddingValues ->
             Surface(
                 color = Color.Transparent, modifier = modifier
-                    .fillMaxSize()
+                    .fillMaxSize().sharedBounds(
+                        this.rememberSharedContentState("skill"),
+                        animatedContentScope
+                    )
                     .padding(bottom = paddingValues.calculateBottomPadding())
             ) {
                 val state by viewModel.uiState.collectAsState()
@@ -140,7 +139,7 @@ fun SkillScreen(
                     }
                 }
 
-                if (state.items.isNullOrEmpty()) {
+                if (state.items.isEmpty()) {
                     Text(text = "No data. Please refresh by swipe!")
                 }
 
@@ -161,12 +160,6 @@ fun SkillScreen(
                 }
 
             }
-        }
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End
-        ) {
         }
     }
 }
