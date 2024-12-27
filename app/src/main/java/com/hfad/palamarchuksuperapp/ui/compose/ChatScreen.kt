@@ -135,11 +135,10 @@ fun RootChatScreen(
         }
     }
     val myState = chatBotViewModel.uiState.collectAsStateWithLifecycle()
-    val localTransitionScope = LocalSharedTransitionScope.current //TODO
-    with(localTransitionScope?: return) { //TODO
+    with(localTransitionScope) { //TODO
         ChatScreen(
             modifier = modifier.sharedBounds(
-                this.rememberSharedContentState("key"),
+                this.rememberSharedContentState("chat"),
                 animatedContentScope
             ),
             navController = navController,
@@ -374,7 +373,7 @@ fun MessageBox(
                             if (subMessageList[page].model != null) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
-                                    text = subMessageList[page].model?.modelName?: "Undefined",
+                                    text = subMessageList[page].model?.modelName ?: "Undefined",
                                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                                     fontSize = TextUnit(12f, TextUnitType.Sp),
                                     textAlign = TextAlign.End,
