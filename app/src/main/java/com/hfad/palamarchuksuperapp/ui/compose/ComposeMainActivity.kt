@@ -68,25 +68,29 @@ fun MainContent() {
                     startDestination = Routes.MainScreenConstraint
                 ) {
                     composable<Routes.MainScreenConstraint> {
-                        MainScreenRow(
-                            animatedContentScope = this //TODO
-                        )
+                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                            MainScreenRow()
+                        }
                     }
                     composable<Routes.SkillScreen> {
-                        SkillScreen(
-                            animatedContentScope = this //TODO
-                        )
+                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                            SkillScreen()
+                        }
                     }
                     composable<Routes.Settings> {
-                        Text(text = "Settings")
+                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                            Text(text = "Settings")
+                        }
                     }
                     composable<Routes.StoreScreen> {
-                        StoreScreen()
+                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                            StoreScreen()
+                        }
                     }
                     composable<Routes.ChatBotScreen> {
-                        RootChatScreen(
-                            animatedContentScope = this //TODO
-                        )
+                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                            RootChatScreen()
+                        }
                     }
                 }
             }
