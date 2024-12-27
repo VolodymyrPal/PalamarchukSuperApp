@@ -118,8 +118,13 @@ fun RootChatScreen(
         (factory = LocalContext.current.appComponent.viewModelFactory()),
     navController: NavHostController? = LocalNavController.current,
     context: Context = LocalContext.current,
-    animatedContentScope: AnimatedVisibilityScope, //TOOD
 ) {
+
+    val localTransitionScope = LocalSharedTransitionScope.current
+        ?: error(IllegalStateException("No SharedElementScope found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+        ?: error(IllegalStateException("No AnimatedVisibility found"))
+
     LaunchedEffect(Unit) {
         chatBotViewModel.effect.collect { effect ->
             when (effect) {
