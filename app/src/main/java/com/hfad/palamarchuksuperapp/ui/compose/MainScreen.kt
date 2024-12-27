@@ -142,8 +142,7 @@ fun MainScreenRow(
         Surface(
             color = Color.Transparent, modifier = modifier
         ) {
-            val scope = LocalSharedTransitionScope.current // TODO
-            with(scope!!) {//TODO
+            with(localTransitionScope) {//TODO
                 LazyColumn(
                     modifier = modifier
                         .fillMaxWidth(),
@@ -166,7 +165,7 @@ fun MainScreenRow(
                             },
                             prefRepository = dataStore,
                             buttonColor = buttonColor,
-                            dayNightMode = dayNightMode?.value ?: false
+                            dayNightMode = dayNightMode?.value == true
                         )
                     }
                     item {
@@ -215,24 +214,26 @@ fun MainScreenRow(
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 ButtonToNavConstraint(
-                                    modifier = Modifier.sharedBounds(
-                                        rememberSharedContentState("key"),
-                                        animatedContentScope
-                                    ),
-                                    action = { navController?.navigate(Routes.SkillScreen) },
+                                    modifier = Modifier,
+                                    action = { navController.navigate(Routes.SkillScreen) },
                                     text = "S K I L L S",
-                                    position = Modifier.offset(15.dp, 15.dp)
+                                    position = Modifier.offset(15.dp, 15.dp),
+                                    modifierToTransit = Modifier.sharedBounds(
+                                        rememberSharedContentState("skill"),
+                                        animatedContentScope
+                                    )
                                 )
 
                                 ButtonToNavConstraint(
-                                    modifier = Modifier.sharedBounds(
-                                        rememberSharedContentState("key"),
-                                        animatedContentScope
-                                    ),
-                                    action = { navController?.navigate(Routes.StoreScreen) },
+                                    modifier = Modifier,
+                                    action = { navController.navigate(Routes.StoreScreen) },
                                     imagePath = R.drawable.store_image,
                                     text = "S T O R E",
-                                    position = Modifier.offset((-15).dp, 15.dp)
+                                    position = Modifier.offset((-15).dp, 15.dp),
+                                    modifierToTransit = Modifier.sharedBounds(
+                                        rememberSharedContentState("store"),
+                                        animatedContentScope
+                                    )
                                 )
                             }
 
@@ -250,22 +251,23 @@ fun MainScreenRow(
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 ButtonToNavConstraint(
-                                    modifier = Modifier.sharedBounds(
-                                        rememberSharedContentState("key"),
-                                        animatedContentScope
-                                    ),
-                                    action = { navController?.navigate(Routes.ChatBotScreen) },
+                                    modifier = Modifier,
+                                    action = { navController.navigate(Routes.ChatBotScreen) },
                                     imagePath = R.drawable.lock_outlined,
                                     text = "C H A T",
                                     position = Modifier.offset(15.dp, (-15).dp),
-                                    enable = true
+                                    enable = true,
+                                    modifierToTransit = Modifier.sharedBounds(
+                                        rememberSharedContentState("chat"),
+                                        animatedContentScope
+                                    )
                                 )
                                 ButtonToNavConstraint(
                                     modifier = Modifier.sharedBounds(
                                         rememberSharedContentState("key"),
                                         animatedContentScope
                                     ),
-                                    action = { navController?.navigate(Routes.Settings) },
+                                    action = { navController.navigate(Routes.Settings) },
                                     imagePath = R.drawable.lock_outlined,
                                     text = "L O C K E D",
                                     position = Modifier.offset((-15).dp, (-15).dp),
