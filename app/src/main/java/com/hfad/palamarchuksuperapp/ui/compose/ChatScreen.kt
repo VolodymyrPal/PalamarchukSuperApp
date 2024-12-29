@@ -360,12 +360,18 @@ fun LazyChatScreen(
 @Suppress("LongParameterList")
 fun MessageBox(
     modifier: Modifier = Modifier,
-    subMessageList: PersistentList<SubMessageAI> = persistentListOf(SubMessageAI(message = "test")),
+    subMessageList: PersistentList<SubMessageAI> = persistentListOf(
+        SubMessageAI(
+            message = "test",
+            messageAiID = 0
+        )
+    ),
     isUser: Boolean = true,
     event: (ChatBotViewModel.Event) -> Unit,
     messageAiIndex: () -> Int = { 0 },
     pagerState: PagerState = rememberPagerState(pageCount = { subMessageList.size }),
 ) {
+
     HorizontalPager(
         modifier = modifier.fillMaxWidth(),
         state = pagerState,
@@ -403,7 +409,11 @@ fun MessageBox(
                         Column(
                             verticalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            MarkdownText(subMessageList[page].message.trimEnd())
+                            key(
+                                subMessageList[page].message
+                            ) {
+                                MarkdownText(subMessageList[page].message.trimEnd())
+                            }
                             if (subMessageList[page].model != null) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
