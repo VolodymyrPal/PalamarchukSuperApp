@@ -12,7 +12,7 @@ object MockChat {
             id = 0,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! Can u help me?")
+                SubMessageAI(message = "Hello! Can u help me?", messageAiID = 0)
             )
         ),
         // Model response (image)
@@ -42,10 +42,17 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n" +
-                            "\n "
+                            "\n ",
+                    messageAiID = 1
                 ),
-                SubMessageAI(message = "Hello! /n /n \n \n How can I help you today?"),
-                SubMessageAI(message = "Hello! \n \n \n \n \n \n How can I help you today?")
+                SubMessageAI(
+                    message = "Hello! /n /n \n \n How can I help you today?",
+                    messageAiID = 1
+                ),
+                SubMessageAI(
+                    message = "Hello! \n \n \n \n \n \n How can I help you today?",
+                    messageAiID = 1
+                )
 
             )
         ),
@@ -54,7 +61,10 @@ object MockChat {
             id = 2,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "That looks great! Can you tell me more about it?"),
+                SubMessageAI(
+                    message = "That looks great! Can you tell me more about it?",
+                    messageAiID = 2
+                ),
             )
         ),
         // Model response with additional information (text)
@@ -82,10 +92,17 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n" +
-                            "\n?"
+                            "\n?",
+                    messageAiID = 3
                 ),
-                SubMessageAI(message = "Hello! /n /n \n \n How can I help you today?"),
-                SubMessageAI(message = "Hello! \n \n \n \n \n \n How can I help you today?")
+                SubMessageAI(
+                    message = "Hello! /n /n \n \n How can I help you today?",
+                    messageAiID = 3
+                ),
+                SubMessageAI(
+                    message = "Hello! \n \n \n \n \n \n How can I help you today?",
+                    messageAiID = 3
+                )
             )
         ),
         // User message with chosen sub-message
@@ -93,14 +110,18 @@ object MockChat {
             id = 4,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "This one is perfect, thank you!", isChosen = true),
+                SubMessageAI(
+                    message = "This one is perfect, thank you!",
+                    isChosen = true,
+                    messageAiID = 4
+                ),
             )
         ),
         MessageAI(
             id = 5,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?"),
+                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 5),
                 SubMessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of socks, " +
                             "inseparable companions. They were always together, whether it was snuggled " +
@@ -114,35 +135,54 @@ object MockChat {
                             "In the end, it was a kind and thoughtful human who found the lost sock. They " +
                             "reunited the pair, and the two socks were overjoyed. They learned a valuable " +
                             "lesson that day: even in the darkest of times, hope and kindness can lead to " +
-                            "unexpected reunions.\n"
+                            "unexpected reunions.\n",
+                    messageAiID = 5
                 ),
-                SubMessageAI(message = "Hello! \n \n \n \n \n \n How can I help you today?")
+                SubMessageAI(
+                    message = "Hello! \n \n \n \n \n \n How can I help you today?",
+                    messageAiID = 5
+                )
             )
         ),
         MessageAI(
             id = 6,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?"),
-                SubMessageAI(message = "Hello! /n /n \n \n How can I help you today?"),
-                SubMessageAI(message = "Hello! \n \n \n \n \n \n How can I help you today?")
+                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 6),
+                SubMessageAI(
+                    message = "Hello! /n /n \n \n How can I help you today?",
+                    messageAiID = 6
+                ),
+                SubMessageAI(
+                    message = "Hello! \n \n \n \n \n \n How can I help you today?",
+                    messageAiID = 6
+                )
             )
         ),
         MessageAI(
             id = 7,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?"),
-                SubMessageAI(message = "Hello! /n /n \n \n How can I help you today?"),
-                SubMessageAI(message = "Hello! \n \n \n \n \n \n How can I help you today?")
+                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 7),
+                SubMessageAI(
+                    message = "Hello! /n /n \n \n How can I help you today?",
+                    messageAiID = 7
+                ),
+                SubMessageAI(
+                    message = "Hello! \n \n \n \n \n \n How can I help you today?",
+                    messageAiID = 7
+                )
             )
         ),
         MessageAI(
             id = 8,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?"),
-                SubMessageAI(message = "Hello! /n /n \n \n How can I help you today?"),
+                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 8),
+                SubMessageAI(
+                    message = "Hello! /n /n \n \n How can I help you today?",
+                    messageAiID = 8
+                ),
                 SubMessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of " +
                             "socks, inseparable companions. They were always together, whether it was " +
@@ -163,7 +203,7 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n" +
-                            "\n"
+                            "\n", messageAiID = 8
                 )
             )
         ),
@@ -171,9 +211,15 @@ object MockChat {
             id = 9,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?"),
-                SubMessageAI(message = "Hello! /n /n \n \n How can I help you today?"),
-                SubMessageAI(message = "Hello! \n \n \n \n \n \n How can I help you today?")
+                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 9),
+                SubMessageAI(
+                    message = "Hello! /n /n \n \n How can I help you today?",
+                    messageAiID = 9
+                ),
+                SubMessageAI(
+                    message = "Hello! \n \n \n \n \n \n How can I help you today?",
+                    messageAiID = 9
+                )
             )
         ),
     )
