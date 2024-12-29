@@ -45,10 +45,16 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         val listToSend: PersistentList<MessageAI> = getAiChatUseCase().first()
 
         supervisorScope {
+
+            val newMessageIndex = listToSend.size
+
             val requests: List<Pair<Int, Deferred<Result<SubMessageAI, AppError>>>> =
                 handlers.filter { it.aiHandlerInfo.value.isSelected }.mapIndexed { index, handler ->
                     index to async {
-                        handler.getResponse(listToSend)
+                        handler.getResponse(
+                            listToSend,
+                            newMessageIndex
+                        ) //TODO dealing with newMessageIndex not the best
                     }
                 }
 
@@ -57,13 +63,14 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                     id = index,
                     message = "",
                     model = null,
-                    loading = true
+                    loading = true,
+                    messageAiID = newMessageIndex
                 )
             }.toPersistentList()
 
 
             val messageToAdd = MessageAI(
-                id = listToSend.size,
+                id = newMessageIndex,
                 role = Role.MODEL,
                 content = loadingContent,
                 type = MessageType.TEXT
@@ -82,7 +89,8 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                 SubMessageAI(
                                     id = requestIndex,
                                     message = result.data.message,
-                                    model = result.data.model
+                                    model = result.data.model,
+                                    messageAiID = result.data.messageAiID
                                 ),
                             messageIndex = indexOfRequest,
                             subMessageIndex = requestIndex
@@ -106,7 +114,9 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                 SubMessageAI(
                                     id = requestIndex,
                                     message = errorMessage,
-                                    model = result.data?.model
+                                    model = result.data?.model,
+                                    messageAiID = result.data?.messageAiID
+                                        ?: requestIndex //TODO it pass info from API, change it
                                 ),
                             messageIndex = indexOfRequest,
                             subMessageIndex = requestIndex

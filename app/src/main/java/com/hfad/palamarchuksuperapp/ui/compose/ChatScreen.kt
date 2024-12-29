@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +14,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +46,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -68,6 +71,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -91,13 +95,13 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.repository.MockChat
+import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
-import com.hfad.palamarchuksuperapp.data.repository.MockChat
-import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
@@ -170,11 +174,39 @@ fun ChatScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(
-                        "Chat",
-                        color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center
-                    )
+                    val isExpandedChats = remember { mutableStateOf(false) }
+                    Row(
+                        modifier = Modifier.clickable(
+                            interactionSource = null,
+                            indication = null,
+                            onClick = { isExpandedChats.value = true }
+                        ),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Chat #1",
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Center
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = isExpandedChats.value,
+                        onDismissRequest = { isExpandedChats.value = false },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        AiHandlerScreen(
+                            modifier = Modifier.size(200.dp),
+                            listAiModelHandler = state.value.listHandler,
+                            event = event,
+                            aiModelList = state.value.modelList
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -328,12 +360,18 @@ fun LazyChatScreen(
 @Suppress("LongParameterList")
 fun MessageBox(
     modifier: Modifier = Modifier,
-    subMessageList: PersistentList<SubMessageAI> = persistentListOf(SubMessageAI(message = "test")),
+    subMessageList: PersistentList<SubMessageAI> = persistentListOf(
+        SubMessageAI(
+            message = "test",
+            messageAiID = 0
+        )
+    ),
     isUser: Boolean = true,
     event: (ChatBotViewModel.Event) -> Unit,
     messageAiIndex: () -> Int = { 0 },
     pagerState: PagerState = rememberPagerState(pageCount = { subMessageList.size }),
 ) {
+
     HorizontalPager(
         modifier = modifier.fillMaxWidth(),
         state = pagerState,
@@ -371,7 +409,11 @@ fun MessageBox(
                         Column(
                             verticalArrangement = Arrangement.SpaceEvenly
                         ) {
-                            MarkdownText(subMessageList[page].message.trimEnd())
+                            key(
+                                subMessageList[page].message
+                            ) {
+                                MarkdownText(subMessageList[page].message.trimEnd())
+                            }
                             if (subMessageList[page].model != null) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),

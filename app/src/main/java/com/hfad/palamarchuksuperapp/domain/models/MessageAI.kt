@@ -20,7 +20,8 @@ data class MessageAI(
         content = persistentListOf(
             SubMessageAI(
                 timestamp = Clock.System.now().toString(),
-                message = content
+                message = content,
+                messageAiID = id
             )
         ),
         type = type
@@ -39,25 +40,12 @@ data class MessageAI(
             SubMessageAI(
                 timestamp = Clock.System.now().toString(),
                 message = content,
-                otherContent = MessageAiContent.Image(otherContent)
+                otherContent = MessageAiContent.Image(otherContent),
+                messageAiID = id
             ),
         ),
         type = type
     )
-}
-
-data class SubMessageAI(
-    val id: Int = 0,
-    val timestamp: String = Clock.System.now().toString(),
-    val message: String = "",
-    val otherContent: MessageAiContent? = null,
-    val model: AiModel? = null,
-    val isChosen: Boolean = false,
-    val loading: Boolean = false,
-)
-
-sealed class MessageAiContent {
-    data class Image(val image: Base64) : MessageAiContent()
 }
 
 enum class MessageType {
