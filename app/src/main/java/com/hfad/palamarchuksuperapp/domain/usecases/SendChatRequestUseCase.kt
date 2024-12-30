@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
@@ -18,7 +18,7 @@ import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 interface SendChatRequestUseCase {
-    suspend operator fun invoke(message: MessageAI, handlers: List<AiModelHandler>)
+    suspend operator fun invoke(message: MessageGroup, handlers: List<AiModelHandler>)
 }
 
 class SendAiRequestUseCaseImpl @Inject constructor(
@@ -28,7 +28,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
     private val updateAiMessageUseCase: UpdateAiMessageUseCase,
 ) : SendChatRequestUseCase {
 
-    override suspend operator fun invoke(message: MessageAI, handlers: List<AiModelHandler>) {
+    override suspend operator fun invoke(message: MessageGroup, handlers: List<AiModelHandler>) {
 
         if (handlers.isEmpty()) {
             chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided"))
@@ -42,7 +42,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
          * Need to better handler error message and loading messages.
          *
          */
-        val listToSend: PersistentList<MessageAI> = getAiChatUseCase().first()
+        val listToSend: PersistentList<MessageGroup> = getAiChatUseCase().first()
 
         supervisorScope {
 
@@ -69,7 +69,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
             }.toPersistentList()
 
 
-            val messageToAdd = MessageAI(
+            val messageToAdd = MessageGroup(
                 id = newMessageIndex,
                 role = Role.MODEL,
                 content = loadingContent,

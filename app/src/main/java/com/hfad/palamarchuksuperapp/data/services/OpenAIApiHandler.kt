@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.data.dtos.OpenAIModelDTO
@@ -40,7 +40,7 @@ class OpenAIApiHandler @AssistedInject constructor(
     override val aiHandlerInfo: StateFlow<AiHandlerInfo> = _aiHandlerInfo.asStateFlow()
 
     override suspend fun getResponse(
-        messageList: PersistentList<MessageAI>,
+        messageList: PersistentList<MessageGroup>,
         messageAiID: Int,
     ): Result<SubMessageAI, AppError> {
         val gptRequest = messageList.toOpenAIRequest(model = initAiHandlerInfo.model)
@@ -138,7 +138,7 @@ class OpenAIApiHandler @AssistedInject constructor(
     }
 }
 
-fun PersistentList<MessageAI>.toOpenAIRequest(model: AiModel): GptRequested {
+fun PersistentList<MessageGroup>.toOpenAIRequest(model: AiModel): GptRequested {
     return GptRequested(
         model = model.modelName,
         messages = this.map { message ->

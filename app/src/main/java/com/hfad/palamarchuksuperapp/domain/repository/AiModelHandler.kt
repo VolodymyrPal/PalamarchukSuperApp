@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -13,7 +13,7 @@ interface AiModelHandler {
     val aiHandlerInfo: StateFlow<AiHandlerInfo>
 
     suspend fun getResponse(
-        messageList: PersistentList<MessageAI>,
+        messageList: PersistentList<MessageGroup>,
         messageAiID: Int
     ): Result<SubMessageAI, AppError>
 
