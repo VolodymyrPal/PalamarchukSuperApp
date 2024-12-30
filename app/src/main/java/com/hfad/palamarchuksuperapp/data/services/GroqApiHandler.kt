@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
@@ -40,7 +40,7 @@ class GroqApiHandler @AssistedInject constructor(
     private val url = "https://api.groq.com/openai/v1/chat/completions"
 
     override suspend fun getResponse(
-        messageList: PersistentList<MessageAI>,
+        messageList: PersistentList<MessageGroup>,
         messageAiID: Int
     ): Result<SubMessageAI, AppError> {
         try {
@@ -148,7 +148,7 @@ class GroqContentBuilder {
     }
 }
 
-fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
+fun MessageGroup.toGroqRequest(model: AiModel): GroqRequest {
     val builder = GroqContentBuilder.Builder().also {
         when (this.type) {
             MessageType.IMAGE -> {
@@ -177,7 +177,7 @@ fun MessageAI.toGroqRequest(model: AiModel): GroqRequest {
  *
  */
 
-fun List<MessageAI>.toGroqRequest(model: AiModel): GroqRequest {
+fun List<MessageGroup>.toGroqRequest(model: AiModel): GroqRequest {
     val groqRequest = GroqContentBuilder.Builder().also { builder ->
         for (message in this) {
             when (message.type) {

@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import android.util.Log
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
@@ -63,8 +63,8 @@ class GeminiApiHandler @AssistedInject constructor(
     }
 
     override suspend fun getResponse(
-        messageList: PersistentList<MessageAI>,
-        messageAiInt: Int
+        messageList: PersistentList<MessageGroup>,
+        messageAiInt: Int,
     ): Result<SubMessageAI, AppError> {
         try {
             val request =
@@ -87,7 +87,10 @@ class GeminiApiHandler @AssistedInject constructor(
             } else if (request.status.value in 400..599) {
                 val geminiError = request.body<GeminiError>()
                 return Result.Error(
-                    data = SubMessageAI(model = initAiHandlerInfo.model, messageAiID = messageAiInt),
+                    data = SubMessageAI(
+                        model = initAiHandlerInfo.model,
+                        messageAiID = messageAiInt
+                    ),
                     error = AppError.CustomError(geminiError.error.message)
                 )
             } else {
@@ -116,7 +119,7 @@ fun handleException(e: Exception): AppError { //TODO улучшить или и�
     }
 }
 
-fun List<MessageAI>.toGeminiRequest(): GeminiRequest {
+fun List<MessageGroup>.toGeminiRequest(): GeminiRequest {
     val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->
         for (message in this) {
             when (message.type) {

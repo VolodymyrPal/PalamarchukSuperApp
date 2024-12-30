@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 object MockChat {
     val value = listOf(
-        MessageAI(
+        MessageGroup(
             id = 0,
             role = Role.USER,
             content = persistentListOf(
@@ -16,7 +16,7 @@ object MockChat {
             )
         ),
         // Model response (image)
-        MessageAI(
+        MessageGroup(
             id = 1,
             role = Role.MODEL,
             type = MessageType.TEXT,
@@ -57,7 +57,7 @@ object MockChat {
             )
         ),
         // User message with multiple sub-messages (text)
-        MessageAI(
+        MessageGroup(
             id = 2,
             role = Role.USER,
             content = persistentListOf(
@@ -68,7 +68,7 @@ object MockChat {
             )
         ),
         // Model response with additional information (text)
-        MessageAI(
+        MessageGroup(
             id = 3,
             role = Role.MODEL,
             content = persistentListOf(
@@ -106,7 +106,7 @@ object MockChat {
             )
         ),
         // User message with chosen sub-message
-        MessageAI(
+        MessageGroup(
             id = 4,
             role = Role.USER,
             content = persistentListOf(
@@ -117,7 +117,7 @@ object MockChat {
                 ),
             )
         ),
-        MessageAI(
+        MessageGroup(
             id = 5,
             role = Role.MODEL,
             content = persistentListOf(
@@ -144,7 +144,7 @@ object MockChat {
                 )
             )
         ),
-        MessageAI(
+        MessageGroup(
             id = 6,
             role = Role.USER,
             content = persistentListOf(
@@ -159,7 +159,7 @@ object MockChat {
                 )
             )
         ),
-        MessageAI(
+        MessageGroup(
             id = 7,
             role = Role.MODEL,
             content = persistentListOf(
@@ -174,7 +174,7 @@ object MockChat {
                 )
             )
         ),
-        MessageAI(
+        MessageGroup(
             id = 8,
             role = Role.USER,
             content = persistentListOf(
@@ -207,7 +207,7 @@ object MockChat {
                 )
             )
         ),
-        MessageAI(
+        MessageGroup(
             id = 9,
             role = Role.MODEL,
             content = persistentListOf(

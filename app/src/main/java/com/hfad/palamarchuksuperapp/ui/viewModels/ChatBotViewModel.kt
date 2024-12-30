@@ -7,7 +7,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.data.services.Base64
@@ -51,7 +51,7 @@ class ChatBotViewModel @Inject constructor(
     private val addAiHandlerUseCase: AddAiHandlerUseCase,
     private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase,
     private val getModelsUseCase: GetModelsUseCase,
-) : GenericViewModel<PersistentList<MessageAI>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+) : GenericViewModel<PersistentList<MessageGroup>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
         viewModelScope.launch(mainDispatcher) {
@@ -71,16 +71,16 @@ class ChatBotViewModel @Inject constructor(
 
     @Stable
     data class StateChat(
-        val listMessage: PersistentList<MessageAI> = persistentListOf(),
+        val listMessage: PersistentList<MessageGroup> = persistentListOf(),
         val isLoading: Boolean = false,
         val error: AppError? = null,
         val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
         val modelList: PersistentList<AiModel>,
-    ) : State<PersistentList<MessageAI>>
+    ) : State<PersistentList<MessageGroup>>
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val _dataFlow: StateFlow<PersistentList<MessageAI>> = getAiChatUseCase()
+    override val _dataFlow: StateFlow<PersistentList<MessageGroup>> = getAiChatUseCase()
     private val _handlers: StateFlow<List<AiModelHandler>> = getAiHandlersUseCase().stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -152,7 +152,7 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _loading.update { true }
             sendChatRequestUseCase(
-                MessageAI(
+                MessageGroup(
                     id = getAiChatUseCase().value.size,
                     role = Role.USER,
                     content = text,
@@ -173,7 +173,7 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher + handler) {
             _loading.update { true }
             sendChatRequestUseCase(
-                MessageAI(
+                MessageGroup(
                     id = getAiChatUseCase().value.size,
                     role = Role.USER,
                     content = text,

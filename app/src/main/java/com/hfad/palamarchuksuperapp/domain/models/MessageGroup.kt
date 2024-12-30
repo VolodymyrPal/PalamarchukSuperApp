@@ -6,7 +6,7 @@ import kotlinx.datetime.Clock
 
 typealias Base64 = String
 
-data class MessageAI(
+data class MessageGroup(
     val id: Int = 0,
     val role: Role = Role.USER,
     val content: PersistentList<SubMessageAI> = persistentListOf(),

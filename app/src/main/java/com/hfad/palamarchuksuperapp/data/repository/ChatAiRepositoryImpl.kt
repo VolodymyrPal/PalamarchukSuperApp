@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 
 class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
 
-    override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageAI>> =
+    override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageGroup>> =
         MutableStateFlow(persistentListOf())
 
     override val errorFlow: MutableSharedFlow<AppError?> = MutableSharedFlow()
@@ -48,15 +48,15 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun addMessage(messageAI: MessageAI) {
-        chatAiChatFlow.update { it.add(messageAI) }
+    override suspend fun addMessage(messageGroup: MessageGroup) {
+        chatAiChatFlow.update { it.add(messageGroup) }
     }
 
-    override suspend fun updateChat(listOfMessageAI: PersistentList<MessageAI>) {
-        chatAiChatFlow.update { listOfMessageAI }
+    override suspend fun updateChat(listOfMessageGroup: PersistentList<MessageGroup>) {
+        chatAiChatFlow.update { listOfMessageGroup }
     }
 
-    override suspend fun updateMessage(index: Int, updatedContent: MessageAI) {
+    override suspend fun updateMessage(index: Int, updatedContent: MessageGroup) {
         chatAiChatFlow.update {
             it.set(index, it[index].copy(content = updatedContent.content))
         }

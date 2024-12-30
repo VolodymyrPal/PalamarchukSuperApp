@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -97,7 +96,7 @@ import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.Error
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
@@ -300,7 +299,7 @@ fun ChatScreen(
 @Suppress("LongParameterList", "FunctionNaming")
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
-    messagesList: () -> PersistentList<MessageAI> = { persistentListOf() }, // TODO lambda passing
+    messagesList: () -> PersistentList<MessageGroup> = { persistentListOf() }, // TODO lambda passing
     loading: () -> Boolean = { false }, // TODO lambda passing
     event: (ChatBotViewModel.Event) -> Unit = {},
     error: () -> Error? = { null }, // TODO lambda passing
@@ -601,7 +600,7 @@ fun RequestPanel(
 fun FabScrollLastItem(
     modifier: Modifier = Modifier,
     listState: LazyListState,
-    list: () -> List<MessageAI> = { emptyList() },
+    list: () -> List<MessageGroup> = { emptyList() },
 ) {
     val coroutineScope = rememberCoroutineScope()
     val showFab = remember {
