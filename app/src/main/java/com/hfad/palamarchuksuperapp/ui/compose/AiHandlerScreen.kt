@@ -539,59 +539,172 @@ fun DialogAiHandler(
 fun AiHandlerBox(
     modifier: Modifier = Modifier,
     aiModelHandler: AiModelHandler,
-    index: Int,
     event: (ChatBotViewModel.Event) -> Unit,
     eventToDialog: (AiModelHandler) -> Unit,
 ) {
     val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
-    Box(modifier = modifier) {
+
+    Surface(
+        modifier = modifier
+            .animateContentSize()
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        //color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+        tonalElevation = 1.dp,
+        shadowElevation = 2.dp
+    ) {
         Row(
-            modifier = modifier,
+            modifier = Modifier
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.2f))
-            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.4f))
-            IconButton(
-                modifier = Modifier.weight(0.2f),
-                onClick = {
-                    eventToDialog.invoke(aiModelHandler)
-                }
+            // Информация о модели
+            Column(
+                modifier = Modifier.weight(0.3f)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    contentDescription = "Change"
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    text = handlerInfo.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    text = handlerInfo.model.modelName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Checkbox(
-                modifier = Modifier.weight(0.2f),
-                checked = handlerInfo.isSelected,
-                onCheckedChange = {
-                    event.invoke(
-                        ChatBotViewModel.Event.UpdateHandler(
-                            handler = aiModelHandler,
-                            aiHandlerInfo = handlerInfo.copy(isSelected = !handlerInfo.isSelected)
-                        )
-                    )
-                }
-            )
-            IconButton(
-                modifier = Modifier.weight(0.2f),
-                onClick = {
-                    event.invoke(
-                        ChatBotViewModel.Event.DeleteHandler(
-                            handler = aiModelHandler
-                        )
-                    )
-                }
+            Row(
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "Add"
+                // Кнопка редактирования
+                IconButton(
+                    onClick = { eventToDialog(aiModelHandler) },
+                    modifier = Modifier
+                        .size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Create,
+                        contentDescription = "Редактировать",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // Переключатель активности
+                Switch(
+                    modifier = Modifier.scale(0.7f),
+                    checked = handlerInfo.isSelected,
+                    onCheckedChange = {
+                        event(
+                            ChatBotViewModel.Event.UpdateHandler(
+                                handler = aiModelHandler,
+                                aiHandlerInfo = handlerInfo.copy(isSelected = !handlerInfo.isSelected)
+                            )
+                        )
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colorScheme.primary,
+                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
                 )
+
+                // Кнопка удаления
+                IconButton(
+                    onClick = {
+                        event(ChatBotViewModel.Event.DeleteHandler(handler = aiModelHandler))
+                    },
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Удалить",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
+}
+
+//@Composable
+//fun AiHandlerBox(
+//    modifier: Modifier = Modifier,
+//    aiModelHandler: AiModelHandler,
+//    index: Int,
+//    event: (ChatBotViewModel.Event) -> Unit,
+//    eventToDialog: (AiModelHandler) -> Unit,
+//) {
+//    val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
+//    Box(modifier = modifier) {
+//        Row(
+//            modifier = modifier,
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.2f))
+//            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.4f))
+//            IconButton(
+//                modifier = Modifier.weight(0.2f),
+//                onClick = {
+//                    eventToDialog.invoke(aiModelHandler)
+//                }
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Create,
+//                    contentDescription = "Change"
+//                )
+//            }
+//            Checkbox(
+//                modifier = Modifier.weight(0.2f),
+//                checked = handlerInfo.isSelected,
+//                onCheckedChange = {
+//                    event.invoke(
+//                        ChatBotViewModel.Event.UpdateHandler(
+//                            handler = aiModelHandler,
+//                            aiHandlerInfo = handlerInfo.copy(isSelected = !handlerInfo.isSelected)
+//                        )
+//                    )
+//                }
+//            )
+//            IconButton(
+//                modifier = Modifier.weight(0.2f),
+//                onClick = {
+//                    event.invoke(
+//                        ChatBotViewModel.Event.DeleteHandler(
+//                            handler = aiModelHandler
+//                        )
+//                    )
+//                }
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Clear,
+//                    contentDescription = "Add"
+//                )
+//            }
+//        }
+//    }
+//}
+
+@Preview
+@Composable
+fun AiHandlerBoxPreview() {
+    AiHandlerBox(
+        aiModelHandler = GroqApiHandler(
+            httpClient = HttpClient(),
+            initAiHandlerInfo = AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_GROQ
+        ),
+        event = {},
+        eventToDialog = {}
+    )
 }
 
 @Preview
@@ -616,6 +729,7 @@ fun DialogAiHandlerPreview() {
     DialogAiHandler(
         modifier = Modifier,
         event = {},
-        dialogAiHandlerState = DialogAiHandlerState(isShowing = true)
+        dialogAiHandlerState = DialogAiHandlerState(isShowing = true),
+        modelList = persistentListOf()
     )
 }
