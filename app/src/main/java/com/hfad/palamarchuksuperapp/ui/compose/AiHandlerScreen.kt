@@ -77,7 +77,7 @@ fun AiHandlerScreen(
     )
 
     LazyColumn(
-        modifier = modifier
+        modifier = modifier,
     ) {
         item {
             Row(
@@ -445,6 +445,7 @@ fun DialogAiHandler(
                                 },
                                 modifier = Modifier
                                     .menuAnchor()
+                                    .fillMaxWidth(),
                                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                             )
 
