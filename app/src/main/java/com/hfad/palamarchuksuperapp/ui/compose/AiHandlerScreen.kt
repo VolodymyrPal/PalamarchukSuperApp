@@ -500,8 +500,7 @@ fun AiHandlerBoxPreview() {
 fun AiHandlerScreenPreview() {
     AiHandlerScreen(
         modifier = Modifier
-            .wrapContentSize()
-            .background(Color.White),
+            .wrapContentSize(),
         listAiModelHandler = persistentListOf(
             GroqApiHandler(
                 httpClient = HttpClient(),
