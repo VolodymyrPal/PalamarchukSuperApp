@@ -383,9 +383,10 @@ fun AiHandlerBox(
             .animateContentSize()
             .fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
-        //color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+        color = MaterialTheme.colorScheme.primaryContainer,
         tonalElevation = 1.dp,
-        shadowElevation = 2.dp
+        shadowElevation = 2.dp,
+        border = BorderStroke(0.1.dp, MaterialTheme.colorScheme.primary)
     ) {
         Row(
             modifier = Modifier
@@ -415,25 +416,25 @@ fun AiHandlerBox(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Кнопка редактирования
                 IconButton(
                     onClick = { eventToDialog(aiModelHandler) },
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(18.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Create,
                         contentDescription = "Редактировать",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
 
                 // Переключатель активности
                 Switch(
-                    modifier = Modifier.scale(0.7f),
+                    modifier = Modifier.scale(0.65f),
                     checked = handlerInfo.isSelected,
                     onCheckedChange = {
                         event(
@@ -444,19 +445,19 @@ fun AiHandlerBox(
                         )
                     },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colorScheme.primary,
-                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        checkedThumbColor = MaterialTheme.colorScheme.primaryContainer,
+                        checkedTrackColor = MaterialTheme.colorScheme.primary,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.error,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.errorContainer
                     )
                 )
-
+                val isDeleteDialogShow = remember { mutableStateOf(false) }
                 // Кнопка удаления
                 IconButton(
                     onClick = {
-                        event(ChatBotViewModel.Event.DeleteHandler(handler = aiModelHandler))
+                        isDeleteDialogShow.value = true
                     },
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(18.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -464,6 +465,18 @@ fun AiHandlerBox(
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
+                ConfirmationDialog(
+                    modifier = Modifier.wrapContentSize(),
+                    show = isDeleteDialogShow.value,
+                    onDismiss = {
+                        isDeleteDialogShow.value = !isDeleteDialogShow.value
+                    },
+                    onConfirm = {
+                        event(ChatBotViewModel.Event.DeleteHandler(handler = aiModelHandler))
+                    },
+                    title = "Удалить ${aiModelHandler.aiHandlerInfo.value.name}?",
+                    description = ""
+                )
             }
         }
     }
