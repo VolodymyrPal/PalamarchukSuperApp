@@ -197,13 +197,13 @@ fun ChatScreen(
                     DropdownMenu(
                         expanded = isExpandedChats.value,
                         onDismissRequest = { isExpandedChats.value = false },
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = Color.Transparent
                     ) {
                         AiHandlerScreen(
                             modifier = Modifier.size(200.dp),
                             listAiModelHandler = state.value.listHandler,
                             event = event,
-                            aiModelList = state.value.modelList
+                            aiModelList = state.value.modelList,
                         )
                     }
                 },
@@ -229,13 +229,13 @@ fun ChatScreen(
                     DropdownMenu(
                         expanded = isExpanded.value,
                         onDismissRequest = { isExpanded.value = false },
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
                     ) {
                         AiHandlerScreen(
-                            modifier = Modifier.size(200.dp),
+                            modifier = Modifier.size(250.dp, 200.dp) ,//sizeIn(50.dp, 150.dp, 250.dp, 350.dp ),
                             listAiModelHandler = state.value.listHandler,
                             event = event,
-                            aiModelList = state.value.modelList
+                            aiModelList = state.value.modelList,
                         )
                     }
                     IconButton(

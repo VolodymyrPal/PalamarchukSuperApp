@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +35,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -44,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -55,6 +55,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.ui.reusable.ConfirmationDialog
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
@@ -77,7 +78,7 @@ fun AiHandlerScreen(
     )
 
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier
     ) {
         item {
             Row(
@@ -128,202 +129,6 @@ class DialogAiHandlerState(
     }
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Suppress("FunctionNaming", "LongMethod", "MagicNumber")
-//@Composable
-//fun DialogAiHandler(
-//    modifier: Modifier = Modifier,
-//    event: (ChatBotViewModel.Event) -> Unit,
-//    modelList: PersistentList<AiModel> = persistentListOf(),
-//    dialogAiHandlerState: DialogAiHandlerState = remember { DialogAiHandlerState() },
-//) {
-//    if (dialogAiHandlerState.isShowing) {
-//        Dialog(
-//            onDismissRequest = { dialogAiHandlerState.dismiss() },
-//            properties = DialogProperties()
-//        ) {
-//            Surface(modifier = modifier.wrapContentSize()) {
-//
-//                Column(
-//                    verticalArrangement = Arrangement.SpaceEvenly,
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//
-//                    val name = remember {
-//                        mutableStateOf(
-//                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.name ?: ""
-//                        )
-//                    }
-//                    var isLLMMenuExpanded by remember { mutableStateOf(false) }
-//                    val selectedLLM = remember {
-//                        mutableStateOf(
-//                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model?.llmName
-//                        )
-//                    }
-//                    val expandedModelMenu = remember { mutableStateOf(false) }
-//                    val selectedModelOption: MutableState<AiModel?> =
-//                        remember { mutableStateOf(dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model) }
-//                    val apiKey =
-//                        remember {
-//                            mutableStateOf(
-//                                dialogAiHandlerState.handler?.aiHandlerInfo?.value?.aiApiKey ?: ""
-//                            )
-//                        }
-//
-//                    key(name) {
-//                        TextField(
-//                            label = {
-//                                Text(
-//                                    "Description",
-//                                    color = Color.Black.copy(alpha = 0.4f)
-//                                )
-//                            },
-//                            value = name.value,
-//                            onValueChange = { name.value = it },
-//                            modifier = Modifier.fillMaxWidth(),
-//                        )
-//                    }
-//
-//                    ExposedDropdownMenuBox(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        expanded = isLLMMenuExpanded,
-//                        onExpandedChange = {
-//                            isLLMMenuExpanded = !isLLMMenuExpanded
-//                        },
-//                    ) {
-//                        TextField(
-//                            value = selectedLLM.value?.name ?: "",
-//                            onValueChange = { },
-//                            label = {
-//                                Text(
-//                                    "Language model",
-//                                    color = Color.Black.copy(alpha = 0.4f)
-//                                )
-//                            },
-//                            readOnly = true,
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .menuAnchor()
-//                        )
-//                        ExposedDropdownMenu(
-//                            expanded = isLLMMenuExpanded,
-//                            onDismissRequest = { isLLMMenuExpanded = false }
-//                        ) {
-//                            LLMName.entries.forEach { option ->
-//                                DropdownMenuItem(
-//                                    onClick = {
-//                                        selectedModelOption.value = null
-//                                        selectedLLM.value = option
-//                                        event(ChatBotViewModel.Event.GetModels(option))
-//                                        isLLMMenuExpanded = false
-//                                    },
-//                                    text = { Text(option.name) }
-//                                )
-//                            }
-//                        }
-//                    }
-//
-//                    if (selectedLLM.value != null) {
-//                        ExposedDropdownMenuBox(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            expanded = expandedModelMenu.value,
-//                            onExpandedChange = {
-//                                expandedModelMenu.value = !isLLMMenuExpanded
-//                            },
-//                        ) {
-//                            TextField(
-//                                value = selectedModelOption.value?.llmName?.name ?: "",
-//                                onValueChange = { },
-//                                label = {
-//                                    Text(
-//                                        "Select model of language model",
-//                                        color = Color.Black.copy(alpha = 0.4f)
-//                                    )
-//                                },
-//                                readOnly = true,
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .menuAnchor()
-//                            )
-//                            ExposedDropdownMenu(
-//                                expanded = expandedModelMenu.value,
-//                                onDismissRequest = { expandedModelMenu.value = false }
-//                            ) {
-//                                modelList.forEach { option ->
-//                                    DropdownMenuItem(
-//                                        onClick = {
-//                                            selectedModelOption.value = option
-//                                            expandedModelMenu.value = false
-//                                        },
-//                                        text = { Text(option.modelName) }
-//                                    )
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//                    key(apiKey) {
-//                        TextField(
-//                            value = apiKey.value,
-//                            label = {
-//                                Text(
-//                                    "API Key",
-//                                    color = Color.Black.copy(alpha = 0.4f)
-//                                )
-//                            },
-//                            onValueChange = {
-//                                apiKey.value = it
-//                            },
-//                            modifier = Modifier.fillMaxWidth(),
-//                        )
-//                    }
-//
-//                    IconButton(
-//                        modifier = Modifier,
-//                        onClick = {
-//                            if (dialogAiHandlerState.handler != null) {
-//                                event.invoke(
-//                                    ChatBotViewModel.Event.UpdateHandler(
-//                                        handler = dialogAiHandlerState.handler!!,
-//                                        aiHandlerInfo = dialogAiHandlerState.handler!!.aiHandlerInfo.value.copy(
-//                                            name = name.value,
-//                                            isSelected = true,
-//                                            isActive = true,
-//                                            model = selectedModelOption.value!!,
-//                                            aiApiKey = apiKey.value
-//                                        )
-//                                    )
-//                                )
-//                            } else {
-//                                if (selectedModelOption.value != null) {
-//                                    event.invoke(
-//                                        ChatBotViewModel.Event.AddAiHandler(
-//                                            aiHandlerInfo = AiHandlerInfo(
-//                                                name = name.value.ifBlank { "New Model" },
-//                                                isSelected = true,
-//                                                isActive = true,
-//                                                model = selectedModelOption.value!!,
-//                                                aiApiKey = apiKey.value
-//                                            )
-//                                        )
-//                                    )
-//                                }
-//                            }
-//                            dialogAiHandlerState.dismiss()
-//                        }
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Add,
-//                            contentDescription = "Add"
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("FunctionNaming", "LongMethod", "MagicNumber")
 @Composable
@@ -331,7 +136,7 @@ fun DialogAiHandler(
     modifier: Modifier = Modifier,
     event: (ChatBotViewModel.Event) -> Unit,
     modelList: PersistentList<AiModel>,
-    dialogAiHandlerState: DialogAiHandlerState
+    dialogAiHandlerState: DialogAiHandlerState,
 ) {
     if (dialogAiHandlerState.isShowing) {
         Dialog(
@@ -343,7 +148,7 @@ fun DialogAiHandler(
                     .fillMaxWidth(0.92f)
                     .padding(16.dp),
                 shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onPrimary,
                 tonalElevation = 6.dp
             ) {
                 Column(
@@ -357,7 +162,7 @@ fun DialogAiHandler(
                         text = if (dialogAiHandlerState.handler != null)
                             "Редактировать модель" else "Добавить новую модель",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     // Поля ввода
@@ -386,8 +191,17 @@ fun DialogAiHandler(
                     OutlinedTextField(
                         value = name.value,
                         onValueChange = { name.value = it },
-                        label = { Text("Название") },
+                        label = {
+                            Text(
+                                "Название",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     )
 
                     // Выбор LLM
@@ -399,7 +213,12 @@ fun DialogAiHandler(
                             value = selectedLLM.value?.name ?: "",
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("Языковая модель") },
+                            label = {
+                                Text(
+                                    "Языковая модель",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
                             },
@@ -415,7 +234,12 @@ fun DialogAiHandler(
                         ) {
                             LLMName.entries.forEach { option ->
                                 DropdownMenuItem(
-                                    text = { Text(option.name) },
+                                    text = {
+                                        Text(
+                                            option.name,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    },
                                     onClick = {
                                         selectedModelOption.value = null
                                         selectedLLM.value = option
@@ -437,7 +261,12 @@ fun DialogAiHandler(
                                 value = selectedModelOption.value?.modelName ?: "",
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Модель") },
+                                label = {
+                                    Text(
+                                        "Модель",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(
                                         expanded = expandedModelMenu.value
@@ -455,7 +284,12 @@ fun DialogAiHandler(
                             ) {
                                 modelList.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(option.modelName) },
+                                        text = {
+                                            Text(
+                                                option.modelName,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        },
                                         onClick = {
                                             selectedModelOption.value = option
                                             expandedModelMenu.value = false
@@ -549,9 +383,10 @@ fun AiHandlerBox(
             .animateContentSize()
             .fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
-        //color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+        color = MaterialTheme.colorScheme.primaryContainer,
         tonalElevation = 1.dp,
-        shadowElevation = 2.dp
+        shadowElevation = 2.dp,
+        border = BorderStroke(0.1.dp, MaterialTheme.colorScheme.primary)
     ) {
         Row(
             modifier = Modifier
@@ -581,25 +416,25 @@ fun AiHandlerBox(
                 )
             }
             Row(
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Кнопка редактирования
                 IconButton(
                     onClick = { eventToDialog(aiModelHandler) },
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(18.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Create,
                         contentDescription = "Редактировать",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
 
                 // Переключатель активности
                 Switch(
-                    modifier = Modifier.scale(0.7f),
+                    modifier = Modifier.scale(0.65f),
                     checked = handlerInfo.isSelected,
                     onCheckedChange = {
                         event(
@@ -610,19 +445,19 @@ fun AiHandlerBox(
                         )
                     },
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = MaterialTheme.colorScheme.primary,
-                        checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                        uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                        uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        checkedThumbColor = MaterialTheme.colorScheme.primaryContainer,
+                        checkedTrackColor = MaterialTheme.colorScheme.primary,
+                        uncheckedThumbColor = MaterialTheme.colorScheme.error,
+                        uncheckedTrackColor = MaterialTheme.colorScheme.errorContainer
                     )
                 )
-
+                val isDeleteDialogShow = remember { mutableStateOf(false) }
                 // Кнопка удаления
                 IconButton(
                     onClick = {
-                        event(ChatBotViewModel.Event.DeleteHandler(handler = aiModelHandler))
+                        isDeleteDialogShow.value = true
                     },
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(18.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -630,69 +465,22 @@ fun AiHandlerBox(
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
+                ConfirmationDialog(
+                    modifier = Modifier.wrapContentSize(),
+                    show = isDeleteDialogShow.value,
+                    onDismiss = {
+                        isDeleteDialogShow.value = !isDeleteDialogShow.value
+                    },
+                    onConfirm = {
+                        event(ChatBotViewModel.Event.DeleteHandler(handler = aiModelHandler))
+                    },
+                    title = "Удалить ${aiModelHandler.aiHandlerInfo.value.name}?",
+                    description = ""
+                )
             }
         }
     }
 }
-
-//@Composable
-//fun AiHandlerBox(
-//    modifier: Modifier = Modifier,
-//    aiModelHandler: AiModelHandler,
-//    index: Int,
-//    event: (ChatBotViewModel.Event) -> Unit,
-//    eventToDialog: (AiModelHandler) -> Unit,
-//) {
-//    val handlerInfo by aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
-//    Box(modifier = modifier) {
-//        Row(
-//            modifier = modifier,
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Text(text = "${index + 1}. ", maxLines = 1, modifier = Modifier.weight(0.2f))
-//            Text(text = handlerInfo.name, maxLines = 1, modifier = Modifier.weight(0.4f))
-//            IconButton(
-//                modifier = Modifier.weight(0.2f),
-//                onClick = {
-//                    eventToDialog.invoke(aiModelHandler)
-//                }
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Create,
-//                    contentDescription = "Change"
-//                )
-//            }
-//            Checkbox(
-//                modifier = Modifier.weight(0.2f),
-//                checked = handlerInfo.isSelected,
-//                onCheckedChange = {
-//                    event.invoke(
-//                        ChatBotViewModel.Event.UpdateHandler(
-//                            handler = aiModelHandler,
-//                            aiHandlerInfo = handlerInfo.copy(isSelected = !handlerInfo.isSelected)
-//                        )
-//                    )
-//                }
-//            )
-//            IconButton(
-//                modifier = Modifier.weight(0.2f),
-//                onClick = {
-//                    event.invoke(
-//                        ChatBotViewModel.Event.DeleteHandler(
-//                            handler = aiModelHandler
-//                        )
-//                    )
-//                }
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Clear,
-//                    contentDescription = "Add"
-//                )
-//            }
-//        }
-//    }
-//}
 
 @Preview
 @Composable
@@ -712,8 +500,7 @@ fun AiHandlerBoxPreview() {
 fun AiHandlerScreenPreview() {
     AiHandlerScreen(
         modifier = Modifier
-            .wrapContentSize()
-            .background(Color.White),
+            .wrapContentSize(),
         listAiModelHandler = persistentListOf(
             GroqApiHandler(
                 httpClient = HttpClient(),
