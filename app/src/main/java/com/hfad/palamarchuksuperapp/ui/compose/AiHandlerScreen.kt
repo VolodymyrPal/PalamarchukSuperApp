@@ -148,7 +148,7 @@ fun DialogAiHandler(
                     .fillMaxWidth(0.92f)
                     .padding(16.dp),
                 shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onPrimary,
                 tonalElevation = 6.dp
             ) {
                 Column(
@@ -162,7 +162,7 @@ fun DialogAiHandler(
                         text = if (dialogAiHandlerState.handler != null)
                             "Редактировать модель" else "Добавить новую модель",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     // Поля ввода
@@ -191,8 +191,17 @@ fun DialogAiHandler(
                     OutlinedTextField(
                         value = name.value,
                         onValueChange = { name.value = it },
-                        label = { Text("Название") },
+                        label = {
+                            Text(
+                                "Название",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     )
 
                     // Выбор LLM
@@ -204,7 +213,12 @@ fun DialogAiHandler(
                             value = selectedLLM.value?.name ?: "",
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("Языковая модель") },
+                            label = {
+                                Text(
+                                    "Языковая модель",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
                             },
@@ -220,7 +234,12 @@ fun DialogAiHandler(
                         ) {
                             LLMName.entries.forEach { option ->
                                 DropdownMenuItem(
-                                    text = { Text(option.name) },
+                                    text = {
+                                        Text(
+                                            option.name,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    },
                                     onClick = {
                                         selectedModelOption.value = null
                                         selectedLLM.value = option
@@ -242,7 +261,12 @@ fun DialogAiHandler(
                                 value = selectedModelOption.value?.modelName ?: "",
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Модель") },
+                                label = {
+                                    Text(
+                                        "Модель",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(
                                         expanded = expandedModelMenu.value
@@ -260,7 +284,12 @@ fun DialogAiHandler(
                             ) {
                                 modelList.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(option.modelName) },
+                                        text = {
+                                            Text(
+                                                option.modelName,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        },
                                         onClick = {
                                             selectedModelOption.value = option
                                             expandedModelMenu.value = false
