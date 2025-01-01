@@ -12,6 +12,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
@@ -95,9 +97,9 @@ import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
-import com.hfad.palamarchuksuperapp.domain.models.Error
-import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
@@ -162,103 +164,41 @@ fun ChatScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController? = LocalNavController.current,
     event: (ChatBotViewModel.Event) -> Unit,
-    state: State<ChatBotViewModel.StateChat> = mutableStateOf(
-        ChatBotViewModel.StateChat(modelList = persistentListOf())
-    ),
+    state: State<ChatBotViewModel.StateChat> ,
 ) {
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    val isExpandedChats = remember { mutableStateOf(false) }
-                    Row(
-                        modifier = Modifier.clickable(
-                            interactionSource = null,
-                            indication = null,
-                            onClick = { isExpandedChats.value = true }
-                        ),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Chat #1",
-                            color = MaterialTheme.colorScheme.primary,
-                            textAlign = TextAlign.Center
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = isExpandedChats.value,
-                        onDismissRequest = { isExpandedChats.value = false },
-                        containerColor = Color.Transparent
-                    ) {
-                        AiHandlerScreen(
-                            modifier = Modifier.size(200.dp),
-                            listAiModelHandler = state.value.listHandler,
-                            event = event,
-                            aiModelList = state.value.modelList,
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController?.popBackStack()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                actions = {
-                    val isExpanded = remember { mutableStateOf(false) }
-                    DropdownMenu(
-                        expanded = isExpanded.value,
-                        onDismissRequest = { isExpanded.value = false },
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        AiHandlerScreen(
-                            modifier = Modifier.size(250.dp, 200.dp) ,//sizeIn(50.dp, 150.dp, 250.dp, 350.dp ),
-                            listAiModelHandler = state.value.listHandler,
-                            event = event,
-                            aiModelList = state.value.modelList,
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            isExpanded.value = !isExpanded.value
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Localized description",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+            ChatTopBar(
+                state = state,
+                event = event,
+                navController = navController
             )
         },
         floatingActionButton = {
+            val showFab = remember {
+                derivedStateOf {
+                    if (listState.layoutInfo.visibleItemsInfo.lastOrNull() == null) {
+                        false
+                    } else {
+                        listState.layoutInfo.visibleItemsInfo.lastOrNull()!!.index !=
+                                listState.layoutInfo.totalItemsCount - 1
+                    }
+                }
+            }
+
             FabScrollLastItem(
                 modifier = Modifier
-                    .offset(0.dp, 25.dp)
-                    .doublePulseEffect(), //TODO pulse effect улучшить
-                listState = listState,
-                list = { state.value.listMessage },
+                    .offset(0.dp, 25.dp),
+                visible = showFab.value,
+                onScroll = {
+                    scope.launch {
+                        listState.animateScrollToItem(state.value.listMessage.lastIndex + 1)
+                    }
+                }
             )
         },
         bottomBar = {
@@ -274,24 +214,173 @@ fun ChatScreen(
     ) { paddingValues ->
         Surface(
             color = Color.Transparent,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    //bottom = paddingValues.calculateBottomPadding(),
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
             LazyChatScreen(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                messagesList = { state.value.listMessage },
-                loading = { state.value.isLoading },
+                modifier = Modifier.fillMaxWidth(),
+                messagesList = state.value.listMessage,
                 event = event,
-                error = { state.value.error },
+                error = state.value.error,
                 bottomPaddings = paddingValues.calculateBottomPadding(),
                 state = listState
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChatTopBar(
+    state: State<ChatBotViewModel.StateChat>,
+    event: (ChatBotViewModel.Event) -> Unit,
+    navController: NavHostController?,
+) {
+    val isExpandedChats = remember { mutableStateOf(false) }
+    val isExpandedHandlers = remember { mutableStateOf(false) }
+
+    CenterAlignedTopAppBar(
+        title = {
+            ChatTitle(
+                isExpanded = isExpandedChats,
+                state = state,
+                event = event
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        navigationIcon = {
+            BackButton(navController = navController)
+        },
+        actions = {
+            MenuButton(
+                isExpanded = isExpandedHandlers,
+                state = state,
+                event = event
+            )
+        }
+    )
+}
+
+@Composable
+private fun ChatTitle(
+    isExpanded: MutableState<Boolean>,
+    state: State<ChatBotViewModel.StateChat>,
+    event: (ChatBotViewModel.Event) -> Unit,
+) {
+    Row(
+        modifier = Modifier.clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = { isExpanded.value = true }
+        ),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            "Chat #1",
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = "Expand",
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+
+    DropdownMenu(
+        expanded = isExpanded.value,
+        onDismissRequest = { isExpanded.value = false },
+        containerColor = Color.Transparent
+    ) {
+        AiHandlerScreen(
+            modifier = Modifier.size(200.dp),
+            listAiModelHandler = state.value.listHandler,
+            event = event,
+            aiModelList = state.value.modelList,
+        )
+    }
+}
+
+@Composable
+private fun BackButton(navController: NavHostController?) {
+    IconButton(
+        onClick = { navController?.popBackStack() }
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+            contentDescription = "Back",
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun MenuButton(
+    isExpanded: MutableState<Boolean>,
+    state: State<ChatBotViewModel.StateChat>,
+    event: (ChatBotViewModel.Event) -> Unit,
+) {
+    DropdownMenu(
+        expanded = isExpanded.value,
+        onDismissRequest = { isExpanded.value = false },
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+    ) {
+        AiHandlerScreen(
+            modifier = Modifier.size(250.dp, 200.dp),
+            listAiModelHandler = state.value.listHandler,
+            event = event,
+            aiModelList = state.value.modelList,
+        )
+    }
+
+    IconButton(
+        onClick = { isExpanded.value = !isExpanded.value }
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Menu,
+            contentDescription = "Menu",
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun FabScrollLastItem(
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    onScroll: () -> Unit,
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = visible,
+        enter = slideInVertically(initialOffsetY = {it / 2})+fadeIn(),
+        exit = slideOutVertically(targetOffsetY = {it / 2})+fadeOut()
+    ) {
+        SmallFloatingActionButton(
+            shape = CircleShape,
+            modifier = Modifier.doublePulseEffect(),
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f),
+            onClick = onScroll,
+            interactionSource = object : MutableInteractionSource {
+                override val interactions: Flow<Interaction> = emptyFlow()
+                override suspend fun emit(interaction: Interaction) {}
+                override fun tryEmit(interaction: Interaction) = true
+            },
+            elevation = FloatingActionButtonDefaults.elevation(0.dp),
+            content = {
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    "Scroll to bottom",
+                )
+            }
+        )
     }
 }
 
