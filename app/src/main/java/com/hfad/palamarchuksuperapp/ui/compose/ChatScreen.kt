@@ -415,24 +415,25 @@ fun LazyChatScreen(
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
         items(
-            messagesList(),
+            items = messagesList,
             key = { it.id }
-        ) {
-            when (it.type) {
+        ) { message ->
+            when (message.type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        subMessageList = it.content,
-                        isUser = it.role == Role.USER,
+                        subMessageList = message.content,
+                        isUser = message.role == Role.USER,
                         event = event,
-                        messageAiIndex = { it.id }
+                        messageAiIndex = message.id
                     )
                 }
 
-                else -> {
-
+                MessageType.IMAGE -> {
+                    // Обработка изображений
                 }
             }
         }
+
         item {
             Spacer(
                 modifier = Modifier
@@ -447,115 +448,150 @@ fun LazyChatScreen(
 @Suppress("LongParameterList")
 fun MessageBox(
     modifier: Modifier = Modifier,
-    subMessageList: PersistentList<SubMessageAI> = persistentListOf(
-        SubMessageAI(
-            message = "test",
-            messageAiID = 0
-        )
-    ),
-    isUser: Boolean = true,
+    subMessageList: PersistentList<SubMessageAI>,
+    isUser: Boolean,
     event: (ChatBotViewModel.Event) -> Unit,
-    messageAiIndex: () -> Int = { 0 },
+    messageAiIndex: Int,
     pagerState: PagerState = rememberPagerState(pageCount = { subMessageList.size }),
 ) {
+    LaunchedEffect(pagerState.currentPage) {
+        event(
+            ChatBotViewModel.Event.ChooseSubMessage(
+                messageAiIndex,
+                pagerState.currentPage
+            )
+        )
+    }
 
     HorizontalPager(
         modifier = modifier.fillMaxWidth(),
-        state = pagerState,
-        // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
+        state = pagerState
     ) { page ->
-        LaunchedEffect(pagerState.currentPage) {
-            event(
-                ChatBotViewModel.Event.ChooseSubMessage(
-                    messageAiIndex(),
-                    pagerState.currentPage
-                )
-            )
+        val currentMessage = remember(subMessageList[page]) {
+            subMessageList[page]
         }
-        when (subMessageList[page].otherContent == null) {
+
+        when (currentMessage.otherContent == null) {
             true -> {
-                Box {
-                    Box(
-                        modifier = modifier
-                            .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                            .fillMaxWidth(1f)
-                            .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                            .sizeIn(minWidth = 50.dp)
-                            .background(
-                                if (isUser) MaterialTheme.colorScheme.primaryContainer
-                                else Color.Transparent,
-                                shape = RoundedCornerShape(
-                                    10.dp,
-                                    10.dp,
-                                    if (isUser) 0.dp else 10.dp,
-                                    10.dp
-                                )
-                            )
-                            .padding(15.dp, 5.dp, 15.dp, 5.dp),
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            key(
-                                subMessageList[page].message
-                            ) {
-                                MarkdownText(subMessageList[page].message.trimEnd())
-                            }
-                            if (subMessageList[page].model != null) {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = subMessageList[page].model?.modelName ?: "Undefined",
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                                    fontSize = TextUnit(12f, TextUnitType.Sp),
-                                    textAlign = TextAlign.End,
-                                    fontStyle = FontStyle.Italic
-                                )
-                            }
-                        }
-                    }
-                }
+                TextMessage(
+                    message = currentMessage,
+                    isUser = isUser
+                )
             }
 
             false -> {
-                val imageBytes =
-                    Base64.decode(
-                        (subMessageList[page].otherContent as MessageAiContent.Image).image,
-                        Base64.DEFAULT
-                    )
-                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                AsyncImage(
-                    model = image,
-                    contentDescription = "Image u push to AI"
-                )
+                ImageMessage(message = currentMessage)
             }
         }
     }
+
     if (subMessageList.size > 1) {
-        LazyRow(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            items(subMessageList.size) {
-                val color =
-                    if (pagerState.currentPage == it) Color.DarkGray else Color.LightGray
-                if (subMessageList[it].loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .size(10.dp)
+        PagerIndicator(
+            totalPages = subMessageList.size,
+            currentPage = pagerState.currentPage,
+            loadingStates = subMessageList.map { it.loading }
+        )
+    }
+}
+
+@Composable
+private fun TextMessage(
+    message: SubMessageAI,
+    isUser: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box {
+        Box(
+            modifier = modifier
+                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                .fillMaxWidth(1f)
+                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                .sizeIn(minWidth = 50.dp)
+                .background(
+                    if (isUser) MaterialTheme.colorScheme.primaryContainer
+                    else Color.Transparent,
+                    shape = RoundedCornerShape(
+                        10.dp,
+                        10.dp,
+                        if (isUser) 0.dp else 10.dp,
+                        10.dp
                     )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(6.dp)
+                )
+                .padding(15.dp, 5.dp, 15.dp, 5.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                key(message.message) {
+                    MarkdownText(message.message.trimEnd())
+                }
+                if (message.model != null) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = message.model.modelName,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        fontSize = TextUnit(12f, TextUnitType.Sp),
+                        textAlign = TextAlign.End,
+                        fontStyle = FontStyle.Italic
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImageMessage(
+    message: SubMessageAI,
+    modifier: Modifier = Modifier,
+) {
+    val imageBytes = remember(message) {
+        Base64.decode(
+            (message.otherContent as MessageAiContent.Image).image,
+            Base64.DEFAULT
+        )
+    }
+    val image = remember(imageBytes) {
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
+    AsyncImage(
+        model = image,
+        contentDescription = "Image u push to AI",
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun PagerIndicator(
+    totalPages: Int,
+    currentPage: Int,
+    loadingStates: List<Boolean>,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        items(totalPages) { index ->
+            if (loadingStates[index]) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .size(10.dp)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (currentPage == index) Color.DarkGray else Color.LightGray
+                        )
+                        .size(6.dp)
+                )
             }
         }
     }
@@ -681,55 +717,6 @@ fun RequestPanel(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun FabScrollLastItem(
-    modifier: Modifier = Modifier,
-    listState: LazyListState,
-    list: () -> List<MessageGroup> = { emptyList() },
-) {
-    val coroutineScope = rememberCoroutineScope()
-    val showFab = remember {
-        derivedStateOf {
-            if (listState.layoutInfo.visibleItemsInfo.lastOrNull() == null) {
-                false
-            } else {
-                listState.layoutInfo.visibleItemsInfo.lastOrNull()!!.index !=
-                        listState.layoutInfo.totalItemsCount - 1
-            }
-        }
-    }
-
-    AnimatedVisibility(
-        modifier = modifier,
-        visible = showFab.value,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        SmallFloatingActionButton(
-            shape = CircleShape,
-            modifier = Modifier,
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f),
-            onClick = {
-                coroutineScope.launch {
-                    listState.animateScrollToItem(list().lastIndex + 1)
-                }
-            },
-            interactionSource = object : MutableInteractionSource {
-                override val interactions: Flow<Interaction> = emptyFlow()
-                override suspend fun emit(interaction: Interaction) {}
-                override fun tryEmit(interaction: Interaction) = true
-            },
-            elevation = FloatingActionButtonDefaults.elevation(0.dp),
-            content = {
-                Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    "Floating action button.",
-                )
-            }
-        )
     }
 }
 
