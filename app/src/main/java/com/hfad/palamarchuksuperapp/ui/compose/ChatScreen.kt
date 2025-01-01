@@ -388,12 +388,11 @@ fun FabScrollLastItem(
 @Suppress("LongParameterList", "FunctionNaming")
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
-    messagesList: () -> PersistentList<MessageGroup> = { persistentListOf() }, // TODO lambda passing
-    loading: () -> Boolean = { false }, // TODO lambda passing
-    event: (ChatBotViewModel.Event) -> Unit = {},
-    error: () -> Error? = { null }, // TODO lambda passing
-    state: LazyListState = rememberLazyListState(),
-    bottomPaddings: Dp = 0.dp,
+    messagesList: PersistentList<MessageGroup>,
+    event: (ChatBotViewModel.Event) -> Unit,
+    error: AppError?,
+    state: LazyListState,
+    bottomPaddings: Dp,
 ) {
     val brush = Brush.verticalGradient(
         listOf(
