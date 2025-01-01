@@ -12,6 +12,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
@@ -95,9 +97,9 @@ import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
-import com.hfad.palamarchuksuperapp.domain.models.Error
-import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
@@ -162,103 +164,41 @@ fun ChatScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController? = LocalNavController.current,
     event: (ChatBotViewModel.Event) -> Unit,
-    state: State<ChatBotViewModel.StateChat> = mutableStateOf(
-        ChatBotViewModel.StateChat(modelList = persistentListOf())
-    ),
+    state: State<ChatBotViewModel.StateChat>,
 ) {
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    val isExpandedChats = remember { mutableStateOf(false) }
-                    Row(
-                        modifier = Modifier.clickable(
-                            interactionSource = null,
-                            indication = null,
-                            onClick = { isExpandedChats.value = true }
-                        ),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Chat #1",
-                            color = MaterialTheme.colorScheme.primary,
-                            textAlign = TextAlign.Center
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = isExpandedChats.value,
-                        onDismissRequest = { isExpandedChats.value = false },
-                        containerColor = Color.Transparent
-                    ) {
-                        AiHandlerScreen(
-                            modifier = Modifier.size(200.dp),
-                            listAiModelHandler = state.value.listHandler,
-                            event = event,
-                            aiModelList = state.value.modelList,
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController?.popBackStack()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                actions = {
-                    val isExpanded = remember { mutableStateOf(false) }
-                    DropdownMenu(
-                        expanded = isExpanded.value,
-                        onDismissRequest = { isExpanded.value = false },
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    ) {
-                        AiHandlerScreen(
-                            modifier = Modifier.size(250.dp, 200.dp) ,//sizeIn(50.dp, 150.dp, 250.dp, 350.dp ),
-                            listAiModelHandler = state.value.listHandler,
-                            event = event,
-                            aiModelList = state.value.modelList,
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            isExpanded.value = !isExpanded.value
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Localized description",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+            ChatTopBar(
+                state = state,
+                event = event,
+                navController = navController
             )
         },
         floatingActionButton = {
+            val showFab = remember {
+                derivedStateOf {
+                    if (listState.layoutInfo.visibleItemsInfo.lastOrNull() == null) {
+                        false
+                    } else {
+                        listState.layoutInfo.visibleItemsInfo.lastOrNull()!!.index !=
+                                listState.layoutInfo.totalItemsCount - 1
+                    }
+                }
+            }
+
             FabScrollLastItem(
                 modifier = Modifier
-                    .offset(0.dp, 25.dp)
-                    .doublePulseEffect(), //TODO pulse effect улучшить
-                listState = listState,
-                list = { state.value.listMessage },
+                    .offset(0.dp, 25.dp),
+                visible = showFab.value,
+                onScroll = {
+                    scope.launch {
+                        listState.animateScrollToItem(state.value.listMessage.lastIndex + 1)
+                    }
+                }
             )
         },
         bottomBar = {
@@ -274,20 +214,17 @@ fun ChatScreen(
     ) { paddingValues ->
         Surface(
             color = Color.Transparent,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    //bottom = paddingValues.calculateBottomPadding(),
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
             LazyChatScreen(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                messagesList = { state.value.listMessage },
-                loading = { state.value.isLoading },
+                modifier = Modifier.fillMaxWidth(),
+                messagesList = state.value.listMessage,
                 event = event,
-                error = { state.value.error },
+                error = state.value.error,
                 bottomPaddings = paddingValues.calculateBottomPadding(),
                 state = listState
             )
@@ -295,16 +232,167 @@ fun ChatScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChatTopBar(
+    state: State<ChatBotViewModel.StateChat>,
+    event: (ChatBotViewModel.Event) -> Unit,
+    navController: NavHostController?,
+) {
+    val isExpandedChats = remember { mutableStateOf(false) }
+    val isExpandedHandlers = remember { mutableStateOf(false) }
+
+    CenterAlignedTopAppBar(
+        title = {
+            ChatTitle(
+                isExpanded = isExpandedChats,
+                state = state,
+                event = event
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        ),
+        navigationIcon = {
+            BackButton(navController = navController)
+        },
+        actions = {
+            MenuButton(
+                isExpanded = isExpandedHandlers,
+                state = state,
+                event = event
+            )
+        }
+    )
+}
+
+@Composable
+private fun ChatTitle(
+    isExpanded: MutableState<Boolean>,
+    state: State<ChatBotViewModel.StateChat>,
+    event: (ChatBotViewModel.Event) -> Unit,
+) {
+    Row(
+        modifier = Modifier.clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = { isExpanded.value = true }
+        ),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            "Chat #1",
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = "Expand",
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+
+    DropdownMenu(
+        expanded = isExpanded.value,
+        onDismissRequest = { isExpanded.value = false },
+        containerColor = Color.Transparent
+    ) {
+        AiHandlerScreen(
+            modifier = Modifier.size(200.dp),
+            listAiModelHandler = state.value.listHandler,
+            event = event,
+            aiModelList = state.value.modelList,
+        )
+    }
+}
+
+@Composable
+private fun BackButton(navController: NavHostController?) {
+    IconButton(
+        onClick = { navController?.popBackStack() }
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+            contentDescription = "Back",
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun MenuButton(
+    isExpanded: MutableState<Boolean>,
+    state: State<ChatBotViewModel.StateChat>,
+    event: (ChatBotViewModel.Event) -> Unit,
+) {
+    DropdownMenu(
+        expanded = isExpanded.value,
+        onDismissRequest = { isExpanded.value = false },
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+    ) {
+        AiHandlerScreen(
+            modifier = Modifier.size(250.dp, 200.dp),
+            listAiModelHandler = state.value.listHandler,
+            event = event,
+            aiModelList = state.value.modelList,
+        )
+    }
+
+    IconButton(
+        onClick = { isExpanded.value = !isExpanded.value }
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Menu,
+            contentDescription = "Menu",
+            tint = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun FabScrollLastItem(
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    onScroll: () -> Unit,
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = visible,
+        enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { it / 2 }) + fadeOut()
+    ) {
+        SmallFloatingActionButton(
+            shape = CircleShape,
+            modifier = Modifier.doublePulseEffect(),
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f),
+            onClick = onScroll,
+            interactionSource = object : MutableInteractionSource {
+                override val interactions: Flow<Interaction> = emptyFlow()
+                override suspend fun emit(interaction: Interaction) {}
+                override fun tryEmit(interaction: Interaction) = true
+            },
+            elevation = FloatingActionButtonDefaults.elevation(0.dp),
+            content = {
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    "Scroll to bottom",
+                )
+            }
+        )
+    }
+}
+
 @Composable
 @Suppress("LongParameterList", "FunctionNaming")
 fun LazyChatScreen(
     modifier: Modifier = Modifier,
-    messagesList: () -> PersistentList<MessageGroup> = { persistentListOf() }, // TODO lambda passing
-    loading: () -> Boolean = { false }, // TODO lambda passing
-    event: (ChatBotViewModel.Event) -> Unit = {},
-    error: () -> Error? = { null }, // TODO lambda passing
-    state: LazyListState = rememberLazyListState(),
-    bottomPaddings: Dp = 0.dp,
+    messagesList: PersistentList<MessageGroup>,
+    event: (ChatBotViewModel.Event) -> Unit,
+    error: AppError?,
+    state: LazyListState,
+    bottomPaddings: Dp,
 ) {
     val brush = Brush.verticalGradient(
         listOf(
@@ -314,9 +402,9 @@ fun LazyChatScreen(
         )
     )
 
-    LaunchedEffect(messagesList().size) { //TODO lambda invoke
-        launch {
-            state.animateScrollToItem(messagesList().lastIndex + 3)
+    LaunchedEffect(messagesList.size) {
+        if (messagesList.isNotEmpty()) {
+            state.animateScrollToItem(messagesList.lastIndex)
         }
     }
     LazyColumn(
@@ -327,24 +415,25 @@ fun LazyChatScreen(
         contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
     ) {
         items(
-            messagesList(),
+            items = messagesList,
             key = { it.id }
-        ) {
-            when (it.type) {
+        ) { message ->
+            when (message.type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        subMessageList = it.content,
-                        isUser = it.role == Role.USER,
+                        subMessageList = message.content,
+                        isUser = message.role == Role.USER,
                         event = event,
-                        messageAiIndex = { it.id }
+                        messageAiIndex = message.id
                     )
                 }
 
-                else -> {
-
+                MessageType.IMAGE -> {
+                    // Обработка изображений
                 }
             }
         }
+
         item {
             Spacer(
                 modifier = Modifier
@@ -359,115 +448,150 @@ fun LazyChatScreen(
 @Suppress("LongParameterList")
 fun MessageBox(
     modifier: Modifier = Modifier,
-    subMessageList: PersistentList<SubMessageAI> = persistentListOf(
-        SubMessageAI(
-            message = "test",
-            messageAiID = 0
-        )
-    ),
-    isUser: Boolean = true,
+    subMessageList: PersistentList<SubMessageAI>,
+    isUser: Boolean,
     event: (ChatBotViewModel.Event) -> Unit,
-    messageAiIndex: () -> Int = { 0 },
+    messageAiIndex: Int,
     pagerState: PagerState = rememberPagerState(pageCount = { subMessageList.size }),
 ) {
+    LaunchedEffect(pagerState.currentPage) {
+        event(
+            ChatBotViewModel.Event.ChooseSubMessage(
+                messageAiIndex,
+                pagerState.currentPage
+            )
+        )
+    }
 
     HorizontalPager(
         modifier = modifier.fillMaxWidth(),
-        state = pagerState,
-        // contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
+        state = pagerState
     ) { page ->
-        LaunchedEffect(pagerState.currentPage) {
-            event(
-                ChatBotViewModel.Event.ChooseSubMessage(
-                    messageAiIndex(),
-                    pagerState.currentPage
-                )
-            )
+        val currentMessage = remember(subMessageList[page]) {
+            subMessageList[page]
         }
-        when (subMessageList[page].otherContent == null) {
+
+        when (currentMessage.otherContent == null) {
             true -> {
-                Box {
-                    Box(
-                        modifier = modifier
-                            .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                            .fillMaxWidth(1f)
-                            .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                            .sizeIn(minWidth = 50.dp)
-                            .background(
-                                if (isUser) MaterialTheme.colorScheme.primaryContainer
-                                else Color.Transparent,
-                                shape = RoundedCornerShape(
-                                    10.dp,
-                                    10.dp,
-                                    if (isUser) 0.dp else 10.dp,
-                                    10.dp
-                                )
-                            )
-                            .padding(15.dp, 5.dp, 15.dp, 5.dp),
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            key(
-                                subMessageList[page].message
-                            ) {
-                                MarkdownText(subMessageList[page].message.trimEnd())
-                            }
-                            if (subMessageList[page].model != null) {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = subMessageList[page].model?.modelName ?: "Undefined",
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                                    fontSize = TextUnit(12f, TextUnitType.Sp),
-                                    textAlign = TextAlign.End,
-                                    fontStyle = FontStyle.Italic
-                                )
-                            }
-                        }
-                    }
-                }
+                TextMessage(
+                    message = currentMessage,
+                    isUser = isUser
+                )
             }
 
             false -> {
-                val imageBytes =
-                    Base64.decode(
-                        (subMessageList[page].otherContent as MessageAiContent.Image).image,
-                        Base64.DEFAULT
-                    )
-                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                AsyncImage(
-                    model = image,
-                    contentDescription = "Image u push to AI"
-                )
+                ImageMessage(message = currentMessage)
             }
         }
     }
+
     if (subMessageList.size > 1) {
-        LazyRow(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            items(subMessageList.size) {
-                val color =
-                    if (pagerState.currentPage == it) Color.DarkGray else Color.LightGray
-                if (subMessageList[it].loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .size(10.dp)
+        PagerIndicator(
+            totalPages = subMessageList.size,
+            currentPage = pagerState.currentPage,
+            loadingStates = subMessageList.map { it.loading }
+        )
+    }
+}
+
+@Composable
+private fun TextMessage(
+    message: SubMessageAI,
+    isUser: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box {
+        Box(
+            modifier = modifier
+                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                .fillMaxWidth(1f)
+                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                .sizeIn(minWidth = 50.dp)
+                .background(
+                    if (isUser) MaterialTheme.colorScheme.primaryContainer
+                    else Color.Transparent,
+                    shape = RoundedCornerShape(
+                        10.dp,
+                        10.dp,
+                        if (isUser) 0.dp else 10.dp,
+                        10.dp
                     )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .size(6.dp)
+                )
+                .padding(15.dp, 5.dp, 15.dp, 5.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                key(message.message) {
+                    MarkdownText(message.message.trimEnd())
+                }
+                if (message.model != null) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = message.model.modelName,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                        fontSize = TextUnit(12f, TextUnitType.Sp),
+                        textAlign = TextAlign.End,
+                        fontStyle = FontStyle.Italic
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImageMessage(
+    message: SubMessageAI,
+    modifier: Modifier = Modifier,
+) {
+    val imageBytes = remember(message) {
+        Base64.decode(
+            (message.otherContent as MessageAiContent.Image).image,
+            Base64.DEFAULT
+        )
+    }
+    val image = remember(imageBytes) {
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
+    AsyncImage(
+        model = image,
+        contentDescription = "Image u push to AI",
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun PagerIndicator(
+    totalPages: Int,
+    currentPage: Int,
+    loadingStates: List<Boolean>,
+    modifier: Modifier = Modifier,
+) {
+    LazyRow(
+        modifier = modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        items(totalPages) { index ->
+            if (loadingStates[index]) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .size(10.dp)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (currentPage == index) Color.DarkGray else Color.LightGray
+                        )
+                        .size(6.dp)
+                )
             }
         }
     }
@@ -593,55 +717,6 @@ fun RequestPanel(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun FabScrollLastItem(
-    modifier: Modifier = Modifier,
-    listState: LazyListState,
-    list: () -> List<MessageGroup> = { emptyList() },
-) {
-    val coroutineScope = rememberCoroutineScope()
-    val showFab = remember {
-        derivedStateOf {
-            if (listState.layoutInfo.visibleItemsInfo.lastOrNull() == null) {
-                false
-            } else {
-                listState.layoutInfo.visibleItemsInfo.lastOrNull()!!.index !=
-                        listState.layoutInfo.totalItemsCount - 1
-            }
-        }
-    }
-
-    AnimatedVisibility(
-        modifier = modifier,
-        visible = showFab.value,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        SmallFloatingActionButton(
-            shape = CircleShape,
-            modifier = Modifier,
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f),
-            onClick = {
-                coroutineScope.launch {
-                    listState.animateScrollToItem(list().lastIndex + 1)
-                }
-            },
-            interactionSource = object : MutableInteractionSource {
-                override val interactions: Flow<Interaction> = emptyFlow()
-                override suspend fun emit(interaction: Interaction) {}
-                override fun tryEmit(interaction: Interaction) = true
-            },
-            elevation = FloatingActionButtonDefaults.elevation(0.dp),
-            content = {
-                Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    "Floating action button.",
-                )
-            }
-        )
     }
 }
 
