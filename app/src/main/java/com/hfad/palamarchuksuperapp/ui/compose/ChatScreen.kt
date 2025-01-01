@@ -104,6 +104,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
 import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
+import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -475,7 +476,8 @@ fun MessageBox(
             true -> {
                 TextMessage(
                     message = currentMessage,
-                    isUser = isUser
+                    isUser = isUser,
+                    loading = currentMessage.loading
                 )
             }
 
@@ -499,12 +501,18 @@ private fun TextMessage(
     message: SubMessageAI,
     isUser: Boolean,
     modifier: Modifier = Modifier,
+    loading: Boolean
 ) {
     Box {
         Box(
             modifier = modifier
                 .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                 .fillMaxWidth(1f)
+                .then(
+                    if (loading) {
+                        Modifier.clip(CircleShape).shimmerLoading()
+                    } else Modifier
+                )
                 .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                 .sizeIn(minWidth = 50.dp)
                 .background(
