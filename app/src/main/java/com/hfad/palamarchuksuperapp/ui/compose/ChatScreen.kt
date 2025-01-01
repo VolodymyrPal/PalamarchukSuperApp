@@ -164,7 +164,7 @@ fun ChatScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController? = LocalNavController.current,
     event: (ChatBotViewModel.Event) -> Unit,
-    state: State<ChatBotViewModel.StateChat> ,
+    state: State<ChatBotViewModel.StateChat>,
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -360,8 +360,8 @@ fun FabScrollLastItem(
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
-        enter = slideInVertically(initialOffsetY = {it / 2})+fadeIn(),
-        exit = slideOutVertically(targetOffsetY = {it / 2})+fadeOut()
+        enter = slideInVertically(initialOffsetY = { it / 2 }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { it / 2 }) + fadeOut()
     ) {
         SmallFloatingActionButton(
             shape = CircleShape,
@@ -402,9 +402,9 @@ fun LazyChatScreen(
         )
     )
 
-    LaunchedEffect(messagesList().size) { //TODO lambda invoke
-        launch {
-            state.animateScrollToItem(messagesList().lastIndex + 3)
+    LaunchedEffect(messagesList.size) {
+        if (messagesList.isNotEmpty()) {
+            state.animateScrollToItem(messagesList.lastIndex)
         }
     }
     LazyColumn(
