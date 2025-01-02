@@ -110,7 +110,6 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -510,7 +509,7 @@ private fun TextMessage(
                 .fillMaxWidth(1f)
                 .then(
                     if (loading) {
-                        Modifier.clip(CircleShape).shimmerLoading()
+                        Modifier.height(100.dp).clip(RoundedCornerShape(10.dp)).shimmerLoading()
                     } else Modifier
                 )
                 .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
@@ -780,7 +779,7 @@ fun ChatScreenPreview() {
         navController = null,
         state = mutableStateOf(
             ChatBotViewModel.StateChat(
-                listMessage = MockChat.value.toPersistentList(),
+                listMessage = MockChat(),
                 modelList = persistentListOf()
             )
         )

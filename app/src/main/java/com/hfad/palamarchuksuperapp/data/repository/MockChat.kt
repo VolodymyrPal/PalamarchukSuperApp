@@ -4,11 +4,12 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 object MockChat {
-    operator fun invoke() : List<MessageGroup> = listOf(
+    operator fun invoke() : PersistentList<MessageGroup> = listOf(
         MessageGroup(
             id = 0,
             role = Role.USER,
