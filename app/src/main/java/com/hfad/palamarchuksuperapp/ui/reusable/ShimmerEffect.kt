@@ -47,21 +47,42 @@ fun Modifier.shimmerLoading(
     )
 
     // Применяем эффект мерцания, рисуя градиент
-    return drawBehind {
-        drawRect(
-            brush = Brush.linearGradient(
-                // Определяем цвета градиента с разной прозрачностью
-                colors = listOf(
-                    Color.LightGray.copy(alpha = 0.1f),
-                    Color.LightGray.copy(alpha = 0.6f),
-                    Color.LightGray.copy(alpha = 0.1f),
-                ),
-                start = Offset(x = translateAnimation.value, y = translateAnimation.value),
-                end = Offset(
-                    x = translateAnimation.value + 100f,
-                    y = translateAnimation.value + 100f
-                ),
+    return graphicsLayer {
+            alpha = 0.95f  // Небольшая прозрачность для смягчения эффекта
+            clip = true
+        }
+        .blur(
+            radius = 20.dp,
+            edgeTreatment = BlurredEdgeTreatment.Unbounded
+        )  // Легкое размытие по краям
+        .drawBehind {
+            val width = size.width  // Ширина элемента
+            val height = size.height // Высота элемента
+            val diagonal =
+                sqrt(width * width + height * height) // Диагональ элемента для повышения качества анимации
+            val startX =
+                -diagonal + (diagonal * 2 * shimmerFloatAnimation.value) // Старт градиента заранее
+            val startY = -diagonal + (diagonal * 2 * shimmerFloatAnimation.value)
+
+            drawRect(
+                brush = Brush.linearGradient(
+                    // Определяем цвета градиента с разной прозрачностью
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.LightGray.copy(alpha = 0.10f),
+                        Color.LightGray.copy(alpha = 0.7f),
+                        Color.LightGray.copy(alpha = 0.10f),
+                        Color.Transparent,
+                    ),
+                    start = Offset(
+                        x = startX, // Начало градиента по Х
+                        y = startY  // Начало градиента по Y
+                    ),
+                    end = Offset(
+                        x = startX + diagonal * 0.3f,  // Конец градиента по Х
+                        y = startY + diagonal * 0.3f  // Конец градиента по Y
+                    ),
+                )
             )
-        )
-    }
+        }
 }
