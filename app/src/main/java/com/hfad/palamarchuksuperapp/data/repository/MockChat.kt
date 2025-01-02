@@ -5,9 +5,10 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 
 object MockChat {
-    val value = listOf(
+    operator fun invoke() : List<MessageGroup> = listOf(
         MessageGroup(
             id = 0,
             role = Role.USER,
@@ -222,5 +223,12 @@ object MockChat {
                 )
             )
         ),
-    )
+        MessageGroup(
+            id = 10,
+            role = Role.MODEL,
+            content = persistentListOf(
+                SubMessageAI(message = "", loading = true, messageAiID = 10)
+            )
+        )
+    ).toPersistentList()
 }
