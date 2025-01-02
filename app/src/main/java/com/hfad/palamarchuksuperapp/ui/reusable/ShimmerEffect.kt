@@ -43,7 +43,7 @@ fun Modifier.shimmerLoading(
             ),
             repeatMode = RepeatMode.Restart,
         ),
-        label = "",
+        label = "Shimmer animation",
     )
 
     // Применяем эффект мерцания, рисуя градиент
