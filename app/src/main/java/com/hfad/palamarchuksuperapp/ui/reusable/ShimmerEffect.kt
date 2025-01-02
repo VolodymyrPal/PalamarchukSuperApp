@@ -8,13 +8,18 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
+import kotlin.math.sqrt
 
 /**
- * Расширение Modifier для создания эффекта мерцания (shimmer)
+ * Расширение Modifier для создания эффекта мерцания (shimmer) под адаптивный дизайн
  * @param durationMillis продолжительность одного цикла анимации в миллисекундах
  */
 @Composable
@@ -22,14 +27,17 @@ fun Modifier.shimmerLoading(
     durationMillis: Int = 1000,
 ): Modifier {
     // Создаем бесконечную анимацию
-    val transition = rememberInfiniteTransition(label = "")
+    val transition = rememberInfiniteTransition(label = "Shimmer transition")
 
     // Настраиваем параметры анимации перемещения
-    val translateAnimation = transition.animateFloat( // Анимация для изменения значения Float
+    val shimmerFloatAnimation = transition.animateFloat(
+        // Анимация для изменения значения Float
         initialValue = 0f,                                         // Начальное значение
-        targetValue = 500f,                                        // Целевое значение до которого начальное движется
-        animationSpec = infiniteRepeatable(                        // Настраиваем бесконечную анимацию
-            animation = tween(                                     // Тип анимации и характеристики
+        targetValue = 1f,                                         // Целевое значение до которого начальное движется
+        animationSpec = infiniteRepeatable(
+            // Настраиваем бесконечную анимацию
+            animation = tween(
+                // Тип анимации и характеристики
                 durationMillis = durationMillis,                   // Продолжительность одного цикла анимации
                 easing = LinearEasing,                             // Тип движения анимации
             ),
