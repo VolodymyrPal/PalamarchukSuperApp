@@ -104,12 +104,12 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
 import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
+import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -475,7 +475,8 @@ fun MessageBox(
             true -> {
                 TextMessage(
                     message = currentMessage,
-                    isUser = isUser
+                    isUser = isUser,
+                    loading = currentMessage.loading
                 )
             }
 
@@ -499,12 +500,18 @@ private fun TextMessage(
     message: SubMessageAI,
     isUser: Boolean,
     modifier: Modifier = Modifier,
+    loading: Boolean
 ) {
     Box {
         Box(
             modifier = modifier
                 .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                 .fillMaxWidth(1f)
+                .then(
+                    if (loading) {
+                        Modifier.height(100.dp).clip(RoundedCornerShape(10.dp)).shimmerLoading()
+                    } else Modifier
+                )
                 .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                 .sizeIn(minWidth = 50.dp)
                 .background(
@@ -772,7 +779,7 @@ fun ChatScreenPreview() {
         navController = null,
         state = mutableStateOf(
             ChatBotViewModel.StateChat(
-                listMessage = MockChat.value.toPersistentList(),
+                listMessage = MockChat(),
                 modelList = persistentListOf()
             )
         )
