@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -65,7 +65,7 @@ class GeminiApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
         messageAiInt: Int,
-    ): Result<SubMessageAI, AppError> {
+    ): Result<MessageAI, AppError> {
         try {
             val request =
                 httpClient.post(getUrl(model = initAiHandlerInfo.model)) {
@@ -78,18 +78,18 @@ class GeminiApiHandler @AssistedInject constructor(
 
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<GeminiResponse>()
-                val responseMessage = SubMessageAI(
+                val responseMessage = MessageAI(
                     message = response.candidates[0].content.parts[0].text,
                     model = initAiHandlerInfo.model,
-                    messageAiID = messageAiInt
+                    messageGroupId = messageAiInt
                 )
                 return Result.Success(responseMessage)
             } else if (request.status.value in 400..599) {
                 val geminiError = request.body<GeminiError>()
                 return Result.Error(
-                    data = SubMessageAI(
+                    data = MessageAI(
                         model = initAiHandlerInfo.model,
-                        messageAiID = messageAiInt
+                        messageGroupId = messageAiInt
                     ),
                     error = AppError.CustomError(geminiError.error.message)
                 )

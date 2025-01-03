@@ -4,10 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.DataStoreHandler
+import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
+import com.hfad.palamarchuksuperapp.data.database.DATABASE_MESSAGE_CHAT
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
+import com.hfad.palamarchuksuperapp.data.database.MessageChatDatabase
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
 import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
@@ -23,6 +26,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
+import com.hfad.palamarchuksuperapp.data.repository.MessageChatRepositoryImpl
+import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
@@ -266,6 +271,28 @@ object NetworkModule {
 @Module
 object DatabaseModule {
 
+    @Singleton
+    @Provides
+    fun provideMessageChatDB(context: Context): MessageChatDatabase {
+        return Room.databaseBuilder(
+            context = context.applicationContext,
+            klass = MessageChatDatabase::class.java,
+            name = DATABASE_MESSAGE_CHAT
+        ).fallbackToDestructiveMigration() //TODO Don't forget to remove this in production
+            .build()
+    }
+
+    @Provides
+    fun provideMessageChatDao(messageChatDatabase: MessageChatDatabase): MessageChatDao {
+        return messageChatDatabase.messageChatDao()
+    }
+
+    @Provides
+    fun provideMessageChatRepository(
+        messageChatDao: MessageChatDao,
+    ): MessageChatRepository {
+        return MessageChatRepositoryImpl(messageChatDao = messageChatDao)
+    }
 
     @Singleton
     @Provides

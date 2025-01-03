@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.domain.repository
 
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,7 +15,7 @@ interface ChatAiRepository {
     suspend fun getModels(handlers: List<AiModelHandler>): List<AiModel>
     suspend fun addMessage(messageGroup: MessageGroup)
     suspend fun updateMessage(index: Int, updatedContent: MessageGroup)
-    suspend fun updateSubMessages(index: Int, subMessageList: PersistentList<SubMessageAI>)
-    suspend fun updateSubMessage(index: Int, subMessageAI: SubMessageAI, indexSubMessage: Int)
+    suspend fun updateSubMessages(index: Int, subMessageList: PersistentList<MessageAI>)
+    suspend fun updateSubMessage(index: Int, messageAI: MessageAI, indexSubMessage: Int)
     suspend fun updateChat(listOfMessageGroup: PersistentList<MessageGroup>)
 }

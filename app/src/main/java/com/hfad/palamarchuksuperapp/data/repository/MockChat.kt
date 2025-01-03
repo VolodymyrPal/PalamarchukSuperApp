@@ -3,18 +3,18 @@ package com.hfad.palamarchuksuperapp.data.repository
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 
 object MockChat {
-    operator fun invoke() : PersistentList<MessageGroup> = listOf(
+    operator fun invoke(): PersistentList<MessageGroup> = listOf(
         MessageGroup(
             id = 0,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! Can u help me?", messageAiID = 0)
+                MessageAI(message = "Hello! Can u help me?", messageGroupId = 0)
             )
         ),
         // Model response (image)
@@ -23,7 +23,7 @@ object MockChat {
             role = Role.MODEL,
             type = MessageType.TEXT,
             content = persistentListOf(
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of socks," +
                             " inseparable companions. They were always together, whether it was snuggled " +
                             "in the drawer or adventuring on a foot.\n" +
@@ -45,15 +45,15 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n ",
-                    messageAiID = 1
+                    messageGroupId = 1
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageAiID = 1
+                    messageGroupId = 1
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageAiID = 1
+                    messageGroupId = 1
                 )
 
             )
@@ -63,9 +63,9 @@ object MockChat {
             id = 2,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(
+                MessageAI(
                     message = "That looks great! Can you tell me more about it?",
-                    messageAiID = 2
+                    messageGroupId = 2
                 ),
             )
         ),
@@ -74,7 +74,7 @@ object MockChat {
             id = 3,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of socks, " +
                             "inseparable companions. They were always together, whether it was" +
                             " snuggled in the drawer or adventuring on a foot.\n" +
@@ -95,15 +95,15 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n?",
-                    messageAiID = 3
+                    messageGroupId = 3
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageAiID = 3
+                    messageGroupId = 3
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageAiID = 3
+                    messageGroupId = 3
                 )
             )
         ),
@@ -112,10 +112,10 @@ object MockChat {
             id = 4,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(
+                MessageAI(
                     message = "This one is perfect, thank you!",
                     isChosen = true,
-                    messageAiID = 4
+                    messageGroupId = 4
                 ),
             )
         ),
@@ -123,8 +123,8 @@ object MockChat {
             id = 5,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 5),
-                SubMessageAI(
+                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 5),
+                MessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of socks, " +
                             "inseparable companions. They were always together, whether it was snuggled " +
                             "in the drawer or adventuring on a foot.\n" +
@@ -138,11 +138,11 @@ object MockChat {
                             "reunited the pair, and the two socks were overjoyed. They learned a valuable " +
                             "lesson that day: even in the darkest of times, hope and kindness can lead to " +
                             "unexpected reunions.\n",
-                    messageAiID = 5
+                    messageGroupId = 5
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageAiID = 5
+                    messageGroupId = 5
                 )
             )
         ),
@@ -150,14 +150,14 @@ object MockChat {
             id = 6,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 6),
-                SubMessageAI(
+                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 6),
+                MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageAiID = 6
+                    messageGroupId = 6
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageAiID = 6
+                    messageGroupId = 6
                 )
             )
         ),
@@ -165,14 +165,14 @@ object MockChat {
             id = 7,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 7),
-                SubMessageAI(
+                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 7),
+                MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageAiID = 7
+                    messageGroupId = 7
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageAiID = 7
+                    messageGroupId = 7
                 )
             )
         ),
@@ -180,12 +180,12 @@ object MockChat {
             id = 8,
             role = Role.USER,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 8),
-                SubMessageAI(
+                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 8),
+                MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageAiID = 8
+                    messageGroupId = 8
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of " +
                             "socks, inseparable companions. They were always together, whether it was " +
                             "snuggled in the drawer or adventuring on a foot.\n" +
@@ -205,7 +205,7 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n" +
-                            "\n", messageAiID = 8
+                            "\n", messageGroupId = 8
                 )
             )
         ),
@@ -213,14 +213,14 @@ object MockChat {
             id = 9,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(message = "Hello! How can I help you today?", messageAiID = 9),
-                SubMessageAI(
+                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 9),
+                MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageAiID = 9
+                    messageGroupId = 9
                 ),
-                SubMessageAI(
+                MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageAiID = 9
+                    messageGroupId = 9
                 )
             )
         ),
@@ -228,7 +228,7 @@ object MockChat {
             id = 10,
             role = Role.MODEL,
             content = persistentListOf(
-                SubMessageAI(message = "", loading = true, messageAiID = 10)
+                MessageAI(message = "", loading = true, messageGroupId = 10)
             )
         )
     ).toPersistentList()
