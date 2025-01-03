@@ -158,6 +158,7 @@ class ChatBotViewModel @Inject constructor(
                     content = text,
                     otherContent = image,
                     type = MessageType.IMAGE,
+                    chatGroupId = 0 // TODO
                 ),
                 handlers = _handlers.value
             )
@@ -177,6 +178,7 @@ class ChatBotViewModel @Inject constructor(
                     id = getAiChatUseCase().value.size,
                     role = Role.USER,
                     content = text,
+                    chatGroupId = 0, //TODO
                     type = MessageType.TEXT
                 ),
                 handlers = _handlers.value
