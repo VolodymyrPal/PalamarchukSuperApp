@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
@@ -48,7 +48,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
             val newMessageIndex = listToSend.size
 
-            val requests: List<Pair<Int, Deferred<Result<SubMessageAI, AppError>>>> =
+            val requests: List<Pair<Int, Deferred<Result<MessageAI, AppError>>>> =
                 handlers.filter { it.aiHandlerInfo.value.isSelected }.mapIndexed { index, handler ->
                     index to async {
                         handler.getResponse(
@@ -59,12 +59,12 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                 }
 
             val loadingContent = requests.map { (index, _) ->
-                SubMessageAI(
+                MessageAI(
                     id = index,
                     message = "",
                     model = null,
                     loading = true,
-                    messageAiID = newMessageIndex
+                    messageGroupId = newMessageIndex
                 )
             }.toPersistentList()
 
@@ -82,22 +82,22 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
             requests.forEach { (requestIndex, request) ->
                 launch {
-                    val result: Result<SubMessageAI, AppError> = request.await()
+                    val result: Result<MessageAI, AppError> = request.await()
                     if (result is Result.Success) {
                         updateAiMessageUseCase.invoke(
-                            subMessageAI =
-                                SubMessageAI(
+                            messageAI =
+                                MessageAI(
                                     id = requestIndex,
                                     message = result.data.message,
                                     model = result.data.model,
-                                    messageAiID = result.data.messageAiID
+                                    messageGroupId = result.data.messageGroupId
                                 ),
                             messageIndex = indexOfRequest,
                             subMessageIndex = requestIndex
                         )
                     } else {
                         val errorMessage =
-                            when ((result as Result.Error<SubMessageAI, AppError>).error) {
+                            when ((result as Result.Error<MessageAI, AppError>).error) {
                                 is AppError.CustomError -> {
                                     (result.error as AppError.CustomError).errorText
                                         ?: "Undefined Error"
@@ -110,12 +110,12 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                 else -> "Undefined error"
                             }
                         updateAiMessageUseCase.invoke(
-                            subMessageAI =
-                                SubMessageAI(
+                            messageAI =
+                                MessageAI(
                                     id = requestIndex,
                                     message = errorMessage,
                                     model = result.data?.model,
-                                    messageAiID = result.data?.messageAiID
+                                    messageGroupId = result.data?.messageGroupId
                                         ?: requestIndex //TODO it pass info from API, change it
                                 ),
                             messageIndex = indexOfRequest,

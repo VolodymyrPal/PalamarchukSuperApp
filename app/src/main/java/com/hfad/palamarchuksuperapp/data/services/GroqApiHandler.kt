@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toGroqModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -42,7 +42,7 @@ class GroqApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
         messageAiID: Int
-    ): Result<SubMessageAI, AppError> {
+    ): Result<MessageAI, AppError> {
         try {
             val listToPass = if (messageList.last().type == MessageType.IMAGE) {
                 messageList.last().toGroqRequest(initAiHandlerInfo.model)
@@ -61,19 +61,19 @@ class GroqApiHandler @AssistedInject constructor(
             if (request.status == HttpStatusCode.OK) {
                 val response = request.body<GroqChatCompletionResponse>()
                 val responseText = response.groqChoices[0].groqMessage
-                val responseMessage = SubMessageAI(
+                val responseMessage = MessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
                     model = initAiHandlerInfo.model,
-                    messageAiID = messageAiID
+                    messageGroupId = messageAiID
                 )
                 return Result.Success(responseMessage)
             } else if (request.status.value in 400..599) {
                 val groqError = request.body<GroqError>()
                 return Result.Error(
                     error = AppError.CustomError(groqError.error.message),
-                    SubMessageAI(
+                    MessageAI(
                         model = initAiHandlerInfo.model,
-                        messageAiID = messageAiID
+                        messageGroupId = messageAiID
                     )
                 )
             } else {

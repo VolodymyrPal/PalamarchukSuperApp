@@ -1,16 +1,16 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
 import javax.inject.Inject
 
 interface UpdateAiMessageUseCase {
     suspend operator fun invoke(list: PersistentList<MessageGroup>)
-    suspend operator fun invoke(listSubMessageAI: PersistentList<SubMessageAI>, messageAiIndex: Int)
+    suspend operator fun invoke(listMessageAI: PersistentList<MessageAI>, messageAiIndex: Int)
     suspend operator fun invoke(message: MessageGroup, messageIndex: Int)
-    suspend operator fun invoke(subMessageAI: SubMessageAI, messageIndex: Int, subMessageIndex: Int)
+    suspend operator fun invoke(messageAI: MessageAI, messageIndex: Int, subMessageIndex: Int)
 }
 
 class UpdateAiMessageUseCaseImpl @Inject constructor(
@@ -21,10 +21,10 @@ class UpdateAiMessageUseCaseImpl @Inject constructor(
     }
 
     override suspend operator fun invoke(
-        listSubMessageAI: PersistentList<SubMessageAI>,
+        listMessageAI: PersistentList<MessageAI>,
         messageAiIndex: Int,
     ) {
-        chatAiRepository.updateSubMessages(messageAiIndex, listSubMessageAI)
+        chatAiRepository.updateSubMessages(messageAiIndex, listMessageAI)
     }
 
     override suspend fun invoke(message: MessageGroup, messageIndex: Int) {
@@ -32,13 +32,13 @@ class UpdateAiMessageUseCaseImpl @Inject constructor(
     }
 
     override suspend fun invoke(
-        subMessageAI: SubMessageAI,
+        messageAI: MessageAI,
         messageIndex: Int,
         subMessageIndex: Int
     ) {
         chatAiRepository.updateSubMessage(
             messageIndex,
-            subMessageAI,
+            messageAI,
             indexSubMessage = subMessageIndex
         )
     }

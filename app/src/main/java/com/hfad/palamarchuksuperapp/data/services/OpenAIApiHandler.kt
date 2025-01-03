@@ -7,7 +7,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.data.dtos.OpenAIModelDTO
 import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toOpenAIModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -42,7 +42,7 @@ class OpenAIApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
         messageAiID: Int,
-    ): Result<SubMessageAI, AppError> {
+    ): Result<MessageAI, AppError> {
         val gptRequest = messageList.toOpenAIRequest(model = initAiHandlerInfo.model)
 
         return try {
@@ -54,19 +54,19 @@ class OpenAIApiHandler @AssistedInject constructor(
 
             if (response.status == HttpStatusCode.OK) {
                 val openAIResponse = response.body<ChatCompletionResponse>()
-                val responseMessage = SubMessageAI(
+                val responseMessage = MessageAI(
                     message = openAIResponse.choices[0].message.content,
                     model = initAiHandlerInfo.model,
-                    messageAiID = messageAiID
+                    messageGroupId = messageAiID
                 )
                 Result.Success(responseMessage)
             } else if (response.status.value in 401..599) {
                 val openAiError = response.body<OpenAIError>()
                 Result.Error(
                     AppError.CustomError(openAiError.error.message),
-                    data = SubMessageAI(
+                    data = MessageAI(
                         model = initAiHandlerInfo.model,
-                        messageAiID = messageAiID
+                        messageGroupId = messageAiID
                     )
                 )
             } else {

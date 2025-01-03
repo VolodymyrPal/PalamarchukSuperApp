@@ -2,9 +2,9 @@ package com.hfad.palamarchuksuperapp.domain.models
 
 import kotlinx.datetime.Clock
 
-data class SubMessageAI(
+data class MessageAI(
     val id: Int = 0,
-    val messageAiID: Int,
+    val messageGroupId: Int,
     val timestamp: String = Clock.System.now().toString(),
     val message: String = "",
     val otherContent: MessageAiContent? = null,

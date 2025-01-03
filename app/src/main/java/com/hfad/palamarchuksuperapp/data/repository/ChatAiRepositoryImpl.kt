@@ -4,7 +4,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.collections.immutable.PersistentList
@@ -63,7 +63,7 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
 
     override suspend fun updateSubMessages(
         index: Int,
-        subMessageList: PersistentList<SubMessageAI>,
+        subMessageList: PersistentList<MessageAI>,
     ) {
         chatAiChatFlow.update {
             it.set(index, it[index].copy(content = subMessageList))
@@ -72,13 +72,13 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
 
     override suspend fun updateSubMessage(
         index: Int,
-        subMessageAI: SubMessageAI,
+        messageAI: MessageAI,
         indexSubMessage: Int,
     ) {
         chatAiChatFlow.update {
             it.set(
                 index,
-                it[index].copy(content = it[index].content.set(indexSubMessage, subMessageAI))
+                it[index].copy(content = it[index].content.set(indexSubMessage, messageAI))
             )
         }
     }

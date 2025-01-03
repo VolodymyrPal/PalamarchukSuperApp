@@ -102,7 +102,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.SubMessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
 import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
@@ -448,7 +448,7 @@ fun LazyChatScreen(
 @Suppress("LongParameterList")
 fun MessageBox(
     modifier: Modifier = Modifier,
-    subMessageList: PersistentList<SubMessageAI>,
+    subMessageList: PersistentList<MessageAI>,
     isUser: Boolean,
     event: (ChatBotViewModel.Event) -> Unit,
     messageAiIndex: Int,
@@ -497,7 +497,7 @@ fun MessageBox(
 
 @Composable
 private fun TextMessage(
-    message: SubMessageAI,
+    message: MessageAI,
     isUser: Boolean,
     modifier: Modifier = Modifier,
     loading: Boolean
@@ -549,7 +549,7 @@ private fun TextMessage(
 
 @Composable
 private fun ImageMessage(
-    message: SubMessageAI,
+    message: MessageAI,
     modifier: Modifier = Modifier,
 ) {
     val imageBytes = remember(message) {
