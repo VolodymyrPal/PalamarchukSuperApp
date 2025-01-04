@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
-import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithMessages
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
@@ -14,19 +13,21 @@ class MessageChatRepositoryImpl @Inject constructor( //TODO
 ) : MessageChatRepository {
 
     override fun getAllChats(): List<MessageChat> {
-        return messageChatDao.getAllChatsWithMessages().map { it.toDomainModel() }
+    throw NotImplementedError()
+    // return messageChatDao.getAllChatsWithMessages()
     }
 
 
-    override suspend fun getChatById(chatId: Int): MessageChatWithMessages? {
-        return messageChatDao.getChatWithMessages(chatId)
+    override suspend fun getChatById(chatId: Int): MessageChat? {
+    throw NotImplementedError()
+    //return messageChatDao.getChatWithMessages(chatId)
     }
 
     override suspend fun createChat(name: String) {
         val chat = MessageChatEntity(
             name = name,
         )
-        return messageChatDao.insertChat(chat)
+        //return messageChatDao.insertChat(chat)
     }
 
     override suspend fun addMessageToChat(chatId: Int, message: MessageGroup) {
@@ -36,7 +37,7 @@ class MessageChatRepositoryImpl @Inject constructor( //TODO
     }
 
     override suspend fun updateChat(chat: MessageChat) {
-        messageChatDao.updateChat(chat.toEntity().chat)
+        //messageChatDao.updateChat(chat.toEntity())
     }
 
     override suspend fun updateMessage(message: MessageGroup) {
@@ -48,10 +49,10 @@ class MessageChatRepositoryImpl @Inject constructor( //TODO
     }
 
     override suspend fun deleteChat(chatId: Int) {
-        messageChatDao.deleteChat(chatId)
+        //messageChatDao.deleteChat(chatId)
     }
 
     override suspend fun clearAllChats() {
-        messageChatDao.clearAllChats()
+        //messageChatDao.clearAllChats()
     }
 } 
