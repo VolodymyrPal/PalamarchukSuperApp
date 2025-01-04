@@ -2,12 +2,32 @@ package com.hfad.palamarchuksuperapp.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.hfad.palamarchuksuperapp.data.database.DATABASE_MESSAGE_CHAT
+import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 
-@Entity(tableName = DATABASE_MESSAGE_CHAT)
-data class MessageChatEntity( //TODO
+/**
+ * Сущность, представляющая чат в базе данных.
+ * Является корневой таблицей для хранения информации о чатах.
+ */
+@Entity(tableName = "MessageChat")
+data class MessageChatEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String = "",
     val lastModified: Long = System.currentTimeMillis(),
-)
+) {
+    companion object {
+        fun from(chat: MessageChat): MessageChatEntity {
+            return MessageChatEntity(
+                name = chat.name,
+                lastModified = chat.lastModified
+            )
+        }
+
+        fun toDomain(chat: MessageChatEntity): MessageChat {
+            return MessageChat(
+                name = chat.name,
+                lastModified = chat.lastModified
+            )
+        }
+    }
+}
