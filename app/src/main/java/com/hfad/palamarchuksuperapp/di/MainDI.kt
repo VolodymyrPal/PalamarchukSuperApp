@@ -301,7 +301,7 @@ object DatabaseModule {
             context = context.applicationContext,
             klass = StoreDatabase::class.java,
             name = DATABASE_MAIN_ENTITY_PRODUCT
-        ).fallbackToDestructiveMigration()
+        ).fallbackToDestructiveMigration() //TODO Don't forget to remove this in production
             .build()
     }
 

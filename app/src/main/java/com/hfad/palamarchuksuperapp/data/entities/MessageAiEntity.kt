@@ -5,6 +5,9 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import kotlinx.serialization.json.Json
 
 typealias MessageAiContentString = String
 /**
@@ -18,7 +21,8 @@ typealias MessageAiContentString = String
             entity = MessageGroupEntity::class,
             parentColumns = ["id"],
             childColumns = ["messageGroupId"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["messageGroupId"])]
@@ -33,4 +37,16 @@ data class MessageAiEntity(
     val model: AiModel? = null,
     val isChosen: Boolean = false,
     val loading: Boolean = false
-) 
+) {
+    fun toDomainModel(): MessageAI {
+        return MessageAI(
+            id = id,
+            messageGroupId = messageGroupId,
+            timestamp = timestamp,
+            message = message,
+            otherContent = otherContent?.let { string -> Json.decodeFromString<MessageAiContent>(string) },
+            model = model,
+            isChosen = isChosen,
+        )
+    }
+}

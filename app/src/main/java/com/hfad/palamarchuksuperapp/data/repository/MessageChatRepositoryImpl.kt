@@ -8,19 +8,19 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import javax.inject.Inject
 
-class MessageChatRepositoryImpl @Inject constructor( //TODO
+class MessageChatRepositoryImpl @Inject constructor(
     private val messageChatDao: MessageChatDao,
 ) : MessageChatRepository {
 
+    var currentMessageList: MessageChat? = getAllChats().firstOrNull()
+
     override fun getAllChats(): List<MessageChat> {
-    throw NotImplementedError()
-    // return messageChatDao.getAllChatsWithMessages()
+        return messageChatDao.getAllChatsWithMessages().map { it.toDomainModel() }
     }
 
-
     override suspend fun getChatById(chatId: Int): MessageChat? {
-    throw NotImplementedError()
-    //return messageChatDao.getChatWithMessages(chatId)
+        throw NotImplementedError()
+        //return messageChatDao.getChatWithMessages(chatId)
     }
 
     override suspend fun createChat(name: String) {

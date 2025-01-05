@@ -13,20 +13,20 @@ data class MessageChatEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String = "",
-    val lastModified: Long = System.currentTimeMillis(),
+    val timestamp: Long = System.currentTimeMillis(),
 ) {
     companion object {
         fun from(chat: MessageChat): MessageChatEntity {
             return MessageChatEntity(
                 name = chat.name,
-                lastModified = chat.lastModified
+                timestamp = chat.timestamp
             )
         }
 
         fun toDomain(chat: MessageChatEntity): MessageChat {
             return MessageChat(
                 name = chat.name,
-                lastModified = chat.lastModified
+                timestamp = chat.timestamp
             )
         }
     }

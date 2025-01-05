@@ -15,6 +15,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCase
@@ -51,6 +52,7 @@ class ChatBotViewModel @Inject constructor(
     private val addAiHandlerUseCase: AddAiHandlerUseCase,
     private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase,
     private val getModelsUseCase: GetModelsUseCase,
+    private val messageChatRepository: MessageChatRepository
 ) : GenericViewModel<PersistentList<MessageGroup>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     init {
