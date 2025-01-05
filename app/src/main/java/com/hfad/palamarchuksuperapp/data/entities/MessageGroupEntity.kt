@@ -16,9 +16,10 @@ import com.hfad.palamarchuksuperapp.domain.models.Role
     foreignKeys = [
         ForeignKey(
             entity = MessageChatEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["chatId"],
-            onDelete = ForeignKey.CASCADE
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("chatId"),
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["chatId"])]
