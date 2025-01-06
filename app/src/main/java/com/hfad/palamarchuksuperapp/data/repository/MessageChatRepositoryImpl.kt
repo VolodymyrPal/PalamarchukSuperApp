@@ -2,9 +2,9 @@ package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import javax.inject.Inject
 
@@ -12,7 +12,7 @@ class MessageChatRepositoryImpl @Inject constructor(
     private val messageChatDao: MessageChatDao,
 ) : MessageChatRepository {
 
-    var currentMessageList: MessageChat? = getAllChats().firstOrNull()
+    //var currentMessageList: MessageChat? = getAllChats().firstOrNull()
 
     override fun getAllChats(): List<MessageChat> {
         return messageChatDao.getAllChatsWithMessages().map { it.toDomainModel() }
