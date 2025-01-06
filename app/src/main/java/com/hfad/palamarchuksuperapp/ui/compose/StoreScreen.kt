@@ -242,7 +242,7 @@ fun StoreScreen(
                         ),
                         title = {
                             Text(
-                                "MY SUPPA SHOP FOR CHICKS",
+                                stringResource(R.string.store_title),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -898,7 +898,7 @@ fun SubDrawerContent(
             }
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = "BASKET",
+                text = stringResource(R.string.basket_title),
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -963,7 +963,11 @@ fun SubDrawerContent(
         Button(modifier = Modifier.fillMaxWidth(), onClick = {
             openAlertDialog.value = !openAlertDialog.value
         }) {
-            Text(text = "ORDER", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = stringResource(R.string.order_proceed_button),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
     when {
@@ -974,12 +978,12 @@ fun SubDrawerContent(
             }
             AlertDialog(
                 title = {
-                    Text(text = "Order confirmation")
+                    Text(text = stringResource(R.string.order_confirmation_title))
                 },
                 text = {
                     var phone by remember { mutableStateOf("") }
                     Column {
-                        Text(text = "Please provide phone number for our managers to contact you")
+                        Text(stringResource(R.string.order_confirmation_message))
                         TextField(
                             value = phone,
                             onValueChange = { phone = it },
@@ -1024,7 +1028,7 @@ fun SubDrawerContent(
                             openAlertDialog.value = false
                         }
                     ) {
-                        Text("Send")
+                        Text(stringResource(R.string.order_proceed_button))
                     }
                 },
             )
