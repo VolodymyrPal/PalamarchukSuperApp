@@ -233,7 +233,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="S K I L L S"
+                        android:text="@string/skills_button_name"
                         android:textColor="@color/md_theme_onPrimaryContainer"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -247,11 +247,11 @@
             android:id="@+id/skill_button_3"
             android:layout_width="125dp"
             android:layout_height="110dp"
+            android:alpha="0.3"
             android:background="@android:color/transparent"
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
-            android:alpha="0.3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintHorizontal_bias="0.66"
@@ -299,7 +299,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="L O C K E D"
+                        android:text="@string/locked_button_name"
                         android:textColor="@color/md_theme_onPrimaryContainer"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -365,7 +365,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="S T O R E"
+                        android:text="@string/store_button_name"
                         android:textColor="@color/md_theme_onPrimaryContainer"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -425,11 +425,11 @@
             android:id="@+id/skill_Button_4"
             android:layout_width="125dp"
             android:layout_height="110dp"
+            android:alpha="0.3"
             android:background="@android:color/transparent"
             android:checkable="true"
             android:clickable="true"
             android:focusable="true"
-            android:alpha="0.3"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.33"
@@ -477,7 +477,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="L O C K E D"
+                        android:text="@string/locked_button_name"
                         android:textColor="@color/md_theme_onPrimaryContainer"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -541,8 +541,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintGuide_percent="0.5"
             app:layout_constraintStart_toStartOf="parent" />
 
 
