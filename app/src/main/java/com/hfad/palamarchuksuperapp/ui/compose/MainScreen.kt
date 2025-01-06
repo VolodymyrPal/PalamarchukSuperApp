@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -216,7 +217,7 @@ fun MainScreenRow(
                                 ButtonToNavConstraint(
                                     modifier = Modifier,
                                     action = { navController.navigate(Routes.SkillScreen) },
-                                    text = "S K I L L S",
+                                    text = stringResource(R.string.skills_button_name),
                                     position = Modifier.offset(15.dp, 15.dp),
                                     modifierToTransit = Modifier.sharedBounds(
                                         rememberSharedContentState("skill"),
@@ -228,7 +229,7 @@ fun MainScreenRow(
                                     modifier = Modifier,
                                     action = { navController.navigate(Routes.StoreScreen) },
                                     imagePath = R.drawable.store_image,
-                                    text = "S T O R E",
+                                    text = stringResource(R.string.store_button_name),
                                     position = Modifier.offset((-15).dp, 15.dp),
                                     modifierToTransit = Modifier.sharedBounds(
                                         rememberSharedContentState("store"),
@@ -254,7 +255,7 @@ fun MainScreenRow(
                                     modifier = Modifier,
                                     action = { navController.navigate(Routes.ChatBotScreen) },
                                     imagePath = R.drawable.lock_outlined,
-                                    text = "C H A T",
+                                    text = stringResource(R.string.chat_button_name),
                                     position = Modifier.offset(15.dp, (-15).dp),
                                     enable = true,
                                     modifierToTransit = Modifier.sharedBounds(
@@ -269,7 +270,7 @@ fun MainScreenRow(
                                     ),
                                     action = { navController.navigate(Routes.Settings) },
                                     imagePath = R.drawable.lock_outlined,
-                                    text = "L O C K E D",
+                                    text = stringResource(R.string.locked_button_name),
                                     position = Modifier.offset((-15).dp, (-15).dp),
                                     enable = false
                                 )
@@ -291,10 +292,10 @@ fun ButtonToNavConstraint(
     modifier: Modifier,
     action: () -> Unit = {},
     imagePath: Int = R.drawable.skills_image,
-    text: String = "S K I L L S",
+    text: String = stringResource(R.string.locked_button_name),
     position: Modifier = Modifier.offset(15.dp, 15.dp),
     enable: Boolean = true,
-    modifierToTransit: Modifier = Modifier
+    modifierToTransit: Modifier = Modifier,
 ) {
     val vibe: Vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager =
