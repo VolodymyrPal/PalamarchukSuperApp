@@ -83,6 +83,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -95,14 +96,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.BackgroundMusicService
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
 import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
@@ -175,7 +177,8 @@ fun ChatScreen(
             ChatTopBar(
                 state = state,
                 event = event,
-                navController = navController
+                navController = navController,
+                chatName = "Need to pass chat name" //TODO pass chat name
             )
         },
         floatingActionButton = {
@@ -237,6 +240,7 @@ fun ChatScreen(
 private fun ChatTopBar(
     state: State<ChatBotViewModel.StateChat>,
     event: (ChatBotViewModel.Event) -> Unit,
+    chatName: String = "Need to pass chat name",
     navController: NavHostController?,
 ) {
     val isExpandedChats = remember { mutableStateOf(false) }
@@ -247,7 +251,8 @@ private fun ChatTopBar(
             ChatTitle(
                 isExpanded = isExpandedChats,
                 state = state,
-                event = event
+                event = event,
+                chatName = chatName
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -272,6 +277,7 @@ private fun ChatTitle(
     isExpanded: MutableState<Boolean>,
     state: State<ChatBotViewModel.StateChat>,
     event: (ChatBotViewModel.Event) -> Unit,
+    chatName: String = "Need to pass chat name",
 ) {
     Row(
         modifier = Modifier.clickable(
@@ -283,7 +289,7 @@ private fun ChatTitle(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            "Chat #1",
+            chatName,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
         )
@@ -747,7 +753,7 @@ fun TextFieldRequest(
         ),
         placeholder = {
             if (promptText.value.isBlank()) Text(
-                "Enter a message",
+                stringResource(R.string.enter_a_message),
                 color = Color.Gray.copy(alpha = 0.5f)
             )
         },

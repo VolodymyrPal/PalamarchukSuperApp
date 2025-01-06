@@ -55,6 +55,7 @@ import com.hfad.palamarchuksuperapp.domain.models.Skill
 )
 @Composable
 fun BottomSheetSkill(
+    //TODO: it do not using in app due to bugged behavior
     modifier: Modifier = Modifier,
     onEvent: (skill: Skill) -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
