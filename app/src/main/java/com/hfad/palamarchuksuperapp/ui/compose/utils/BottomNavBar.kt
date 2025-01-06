@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -33,16 +32,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.TabBarItem
 import com.hfad.palamarchuksuperapp.ui.compose.LocalNavController
+import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
@@ -122,7 +122,7 @@ fun BottomNavBar(
             }
         })
 
-    val HomeTopLevelRoute = TabBarItem(title = "Home",
+    val HomeTopLevelRoute = TabBarItem(title = stringResource(R.string.bnav_home_title),
         route = Routes.MainScreenConstraint,
         selectedIcon = R.drawable.bicon_home_black_filled,
         unselectedIcon = R.drawable.bicon_home_black_outlined,
@@ -136,7 +136,7 @@ fun BottomNavBar(
             }
         })
 
-    val CameraTopLevelRoute = TabBarItem(title = "Camera",
+    val CameraTopLevelRoute = TabBarItem(title = stringResource(R.string.bnav_camera_title),
         route = "Camera",
         selectedIcon = R.drawable.bicon_camera_filled,
         unselectedIcon = R.drawable.bicon_camera_outlined,
@@ -147,7 +147,7 @@ fun BottomNavBar(
         })
 
 
-    val SettingTopLevelRoute = TabBarItem(title = "Settings",
+    val SettingTopLevelRoute = TabBarItem(title = stringResource(R.string.bnav_settings_title),
         route = Routes.Settings,
         selectedIcon = R.drawable.bicon_settings_filled,
         unselectedIcon = R.drawable.bicon_settings_outlined,
