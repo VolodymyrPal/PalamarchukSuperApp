@@ -13,24 +13,23 @@
         android:id="@+id/error_empty_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Empty or Error. Please refresh or add new Skill."
         android:enabled="false"
+        android:text="@string/error_refresh_or_add_skill_screen"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progressBarCalories"
         style="@style/Widget.Material3.CircularProgressIndicator.Medium"
-        app:showAnimationBehavior="outward"
-        app:hideAnimationBehavior="inward"
-        android:indeterminate="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:hideAnimationBehavior="inward"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:showAnimationBehavior="outward" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/skills_recycler_view"
@@ -45,9 +44,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="106dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="106dp"
         android:contentDescription="@string/add_skill"
         android:scaleType="center"
         app:fabSize="auto"

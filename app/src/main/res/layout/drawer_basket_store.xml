@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="35sp"
-        android:text="BASKET TO BUY" />
+        android:text="@string/basket_title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/basket_recyclerView"
@@ -36,7 +36,7 @@
         android:layout_weight="0.05"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ORDER ->"
+        android:text="@string/order_proceed_button"
         android:textSize="35sp"/>
 
 

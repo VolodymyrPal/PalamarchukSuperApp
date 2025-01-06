@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -63,8 +64,8 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
@@ -123,7 +124,8 @@ fun SkillScreen(
         ) { paddingValues ->
             Surface(
                 color = Color.Transparent, modifier = modifier
-                    .fillMaxSize().sharedBounds(
+                    .fillMaxSize()
+                    .sharedBounds(
                         this.rememberSharedContentState("skill"),
                         animatedContentScope
                     )
@@ -140,13 +142,16 @@ fun SkillScreen(
                 }
 
                 if (state.items.isEmpty()) {
-                    Text(text = "No data. Please refresh by swipe!")
+                    Text(text = stringResource(R.string.error_refresh_or_add_skill_screen))
                 }
 
 
                 if (state.error != null) {
                     Text(
-                        text = "Error: ${state.error ?: "Unknown error"}",
+                        text = stringResource(
+                            R.string.error_with_error,
+                            state.error ?: "Unknown error"
+                        ),
                         color = Color.Red
                     )
                 }
@@ -384,7 +389,11 @@ fun ItemListSkill(
                     textAlign = TextAlign.Left
                 ),
 
-                text = if (!isExpanded) "Details >>" else ("<< Hide"),
+                text = if (!isExpanded) {
+                    stringResource(R.string.details) + " >>"
+                } else {
+                    stringResource(R.string.hide) + " <<"
+                }
             )
         }
     }
@@ -418,7 +427,7 @@ fun MyDropDownMenus(
                 onDismissRequest = onDismissRequest
             ) {
                 DropdownMenuItem(
-                    text = { Text("Edit") },
+                    text = { Text(stringResource(R.string.edit)) },
                     onClick = remember {
                         {
                             onEdit()
@@ -428,7 +437,7 @@ fun MyDropDownMenus(
                 )
 
                 DropdownMenuItem(
-                    text = { Text("Delete") },
+                    text = { Text(stringResource(R.string.delete)) },
                     onClick = remember {
                         {
                             onEvent.invoke(SkillsViewModel.Event.DeleteItem(item))
@@ -438,7 +447,7 @@ fun MyDropDownMenus(
                 )
 
                 DropdownMenuItem(
-                    text = { Text("Delete chosen") },
+                    text = { Text(stringResource(R.string.delete_all_chosen)) },
                     onClick = {
                         onEvent.invoke(SkillsViewModel.Event.DeleteAllChosen)
                         onDismissRequest()
@@ -448,7 +457,7 @@ fun MyDropDownMenus(
                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
 
                 DropdownMenuItem(
-                    text = { Text("Move UP") },
+                    text = { Text(stringResource(R.string.move_up)) },
                     onClick = remember {
                         {
                             onEvent(

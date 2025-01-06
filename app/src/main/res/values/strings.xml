@@ -13,4 +13,42 @@
     <string name="add_skill">Add Skill</string>
     <string name="to_pay">To pay: $ %1$s</string>
     <string name="product_sum">%1$s $</string>
+    <string name="skills_button_name">S K I L L S</string>
+    <string name="store_button_name">S T O R E</string>
+    <string name="chat_button_name">C H A T</string>
+    <string name="locked_button_name">L O C K E D</string>
+    <string name="error_refresh_or_add_skill_screen">Error. Please refresh or add new Skill.</string>
+    <string name="error_with_error">Error: %1$s</string>
+    <string name="bucket_store_screen">Bucket</string>
+    <string name="basket_title">BASKET</string>
+    <string name="order_proceed_button"><![CDATA[ORDER ->]]></string>
+    <string name="skill_hint_skill_screen">Skill name</string>
+    <string name="description_hint_skill_screen">Description</string>
+    <string name="description_placeholder_skill_screen">State, composition, theme, etc.</string>
+    <string name="date_hint_skill_screen">Date</string>
+    <string name="delete_ai_handler">Delete %1$s</string>
+    <string name="edit_handler_title">Edit model</string>
+    <string name="add_handler_title">Add new model</string>
+    <string name="handler_name_hint">Name</string>
+    <string name="model_ai_hint">Model AI</string>
+    <string name="model_hint">Model</string>
+    <string name="api_key_hint">API key</string>
+    <string name="enter_a_message">Enter a message</string>
+    <string name="delete_all_chosen">Delete all chosen</string>
+    <string name="move_up">Move Up</string>
+    <string name="store_title">Supper Store</string>
+    <string name="order_confirmation_title">Order confirmation</string>
+    <string name="order_confirmation_message">Please provide mobile number for order confirmation</string>
+
+
+
+    <!-- Main strings -->
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="details">Details</string>
+    <string name="hide">Hide</string>
+
 </resources>

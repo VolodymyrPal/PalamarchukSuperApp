@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -28,13 +29,13 @@ class ComposeMainActivity : AppCompatActivity() {
     }
 }
 
-val LocalNavController = compositionLocalOf<NavHostController> {
+val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("NavController not provided")
 }
 val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null } //TODO
 
 @OptIn(ExperimentalSharedTransitionApi::class) //TODO
-val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null } //TODO
+val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?> { null } //TODO
 
 
 @OptIn(ExperimentalSharedTransitionApi::class) //TODO

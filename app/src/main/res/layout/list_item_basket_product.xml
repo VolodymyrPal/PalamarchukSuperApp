@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -24,7 +23,9 @@
             android:id="@+id/product_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="LONG description of chosen product to buy, where are a lot of different color, such as red, blue, white, green, orange, black, pink, grey, yellow etc..."
+            android:text="LONG description of chosen product to buy, where are a lot of
+            different color, such as red, blue, white, green, orange, black, pink, grey,
+             yellow etc..."
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/quantity_to_buy"
             app:layout_constraintStart_toEndOf="@+id/shapeableImageView"

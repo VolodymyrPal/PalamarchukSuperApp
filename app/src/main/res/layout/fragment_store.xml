@@ -2,7 +2,6 @@
 
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -64,9 +63,9 @@
                             android:id="@+id/section_3_recyclerView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:paddingBottom="160dp"
                             android:layout_gravity="center_horizontal"
                             android:nestedScrollingEnabled="false"
+                            android:paddingBottom="160dp"
                             android:scrollbars="horizontal" />
 
                     </LinearLayout>
@@ -81,9 +80,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
-            android:layout_marginBottom="106dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="106dp"
+            android:contentDescription="@string/bucket_store_screen"
             android:src="@drawable/baseline_shopping_basket_24"
             app:layout_anchorGravity="bottom|end" />
 
@@ -92,16 +92,15 @@
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginBottom="106dp"
-        android:layout_gravity="end">
+        android:layout_gravity="end"
+        android:layout_marginBottom="106dp">
 
         <ViewStub
             android:id="@+id/stub_basket_store"
-            android:inflatedId="@+id/drawer_basket_store"
-            android:layout="@layout/drawer_basket_store"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            android:inflatedId="@+id/drawer_basket_store"
+            android:layout="@layout/drawer_basket_store" />
 
     </com.google.android.material.navigation.NavigationView>
 

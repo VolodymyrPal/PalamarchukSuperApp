@@ -35,7 +35,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -45,11 +44,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
@@ -159,8 +160,13 @@ fun DialogAiHandler(
                 ) {
                     // Заголовок диалога
                     Text(
-                        text = if (dialogAiHandlerState.handler != null)
-                            "Редактировать модель" else "Добавить новую модель",
+                        text = stringResource(
+                            if (dialogAiHandlerState.handler != null) {
+                                R.string.edit_handler_title
+                            } else {
+                                R.string.add_handler_title
+                            }
+                        ),
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -193,15 +199,11 @@ fun DialogAiHandler(
                         onValueChange = { name.value = it },
                         label = {
                             Text(
-                                "Название",
+                                stringResource(R.string.handler_name_hint),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
                     )
 
                     // Выбор LLM
@@ -215,7 +217,7 @@ fun DialogAiHandler(
                             readOnly = true,
                             label = {
                                 Text(
-                                    "Языковая модель",
+                                    stringResource(R.string.model_ai_hint),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
@@ -255,7 +257,9 @@ fun DialogAiHandler(
                     if (selectedLLM.value != null) {
                         ExposedDropdownMenuBox(
                             expanded = expandedModelMenu.value,
-                            onExpandedChange = { expandedModelMenu.value = !expandedModelMenu.value }
+                            onExpandedChange = {
+                                expandedModelMenu.value = !expandedModelMenu.value
+                            }
                         ) {
                             OutlinedTextField(
                                 value = selectedModelOption.value?.modelName ?: "",
@@ -263,7 +267,7 @@ fun DialogAiHandler(
                                 readOnly = true,
                                 label = {
                                     Text(
-                                        "Модель",
+                                        stringResource(R.string.model_hint),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
@@ -304,7 +308,7 @@ fun DialogAiHandler(
                     OutlinedTextField(
                         value = apiKey.value,
                         onValueChange = { apiKey.value = it },
-                        label = { Text("API Ключ") },
+                        label = { Text(stringResource(R.string.api_key_hint)) },
                         modifier = Modifier.fillMaxWidth(),
                     )
 
@@ -317,7 +321,7 @@ fun DialogAiHandler(
                         TextButton(
                             onClick = { dialogAiHandlerState.dismiss() }
                         ) {
-                            Text("Отмена")
+                            Text(stringResource(R.string.cancel))
                         }
 
                         Spacer(modifier = Modifier.width(8.dp))
@@ -358,8 +362,14 @@ fun DialogAiHandler(
                             enabled = selectedModelOption.value != null && name.value.isNotBlank()
                         ) {
                             Text(
-                                if (dialogAiHandlerState.handler != null)
-                                    "Сохранить" else "Добавить"
+                                stringResource(
+                                    if (dialogAiHandlerState.handler != null) {
+                                        R.string.save
+                                    } else {
+                                        R.string.add
+                                    }
+
+                                )
                             )
                         }
                     }
@@ -427,7 +437,7 @@ fun AiHandlerBox(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Create,
-                        contentDescription = "Редактировать",
+                        contentDescription = "Edit",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
@@ -461,7 +471,7 @@ fun AiHandlerBox(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Удалить",
+                        contentDescription = "Delete",
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
@@ -474,7 +484,10 @@ fun AiHandlerBox(
                     onConfirm = {
                         event(ChatBotViewModel.Event.DeleteHandler(handler = aiModelHandler))
                     },
-                    title = "Удалить ${aiModelHandler.aiHandlerInfo.value.name}?",
+                    title = stringResource(
+                        R.string.delete_ai_handler,
+                        aiModelHandler.aiHandlerInfo.value.name
+                    ),
                     description = ""
                 )
             }

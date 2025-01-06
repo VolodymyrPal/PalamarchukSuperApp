@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,11 +16,11 @@
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
             app:dividerColor="@color/material_on_background_disabled"
-            app:dividerThickness="3dp"
-            />
+            app:dividerThickness="3dp" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,19 +30,19 @@
                 android:id="@+id/name_skill_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="6dp"
-                android:hint="Skill name"
-                app:placeholderText="Jetpack Compose"
-                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha"
+                android:hint="@string/skill_hint_skill_screen"
                 android:textColorHint="@color/md_theme_onPrimaryContainer_alpha"
                 app:boxStrokeColor="@color/md_theme_onPrimaryContainer"
                 app:hintTextColor="@color/md_theme_onPrimaryContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:placeholderText="Jetpack Compose"
+                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/skill_name_field"
@@ -51,27 +50,26 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="start"
-                    android:textColorHint="@color/md_theme_scrim"
                     android:imeOptions="actionDone"
-                    />
+                    android:textColorHint="@color/md_theme_scrim" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textField2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:layout_marginStart="24dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="6dp"
-                android:hint="Description"
-                app:placeholderText="State, composition, theme, etc."
-                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha"
+                android:hint="@string/description_hint_skill_screen"
                 android:textColorHint="@color/md_theme_onPrimaryContainer_alpha"
                 app:boxStrokeColor="@color/md_theme_onPrimaryContainer"
                 app:hintTextColor="@color/md_theme_onPrimaryContainer"
+                app:layout_constraintTop_toBottomOf="@+id/name_skill_layout"
+                app:placeholderText="@string/description_placeholder_skill_screen"
 
-                app:layout_constraintTop_toBottomOf="@+id/name_skill_layout">
+                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/skill_description_field"
@@ -79,26 +77,24 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:gravity="start"
-                    android:textColorHint="@color/md_theme_scrim"
-                     />
+                    android:textColorHint="@color/md_theme_scrim" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/date_skill_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
                 android:layout_marginStart="24dp"
+                android:layout_marginTop="6dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="6dp"
-                android:hint="Date"
-                app:placeholderText="12.12.2024"
-                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha"
+                android:hint="@string/date_hint_skill_screen"
                 android:textColorHint="@color/md_theme_onPrimaryContainer_alpha"
                 app:boxStrokeColor="@color/md_theme_onPrimaryContainer"
                 app:hintTextColor="@color/md_theme_onPrimaryContainer"
                 app:layout_constraintTop_toBottomOf="@+id/textField2"
-                >
+                app:placeholderText="12.12.2024"
+                app:placeholderTextColor="@color/md_theme_onPrimaryContainer_alpha">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/skill_date_field"
@@ -106,8 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="start"
-                    android:textColorHint="@color/md_theme_scrim"
-                    />
+                    android:textColorHint="@color/md_theme_scrim" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -116,9 +111,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="24dp"
-                android:text="save"
-                app:cornerRadius="12dp"
+                android:text="@string/save"
                 app:backgroundTint="@color/md_theme_onPrimaryContainer"
+                app:cornerRadius="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/date_skill_layout" />
