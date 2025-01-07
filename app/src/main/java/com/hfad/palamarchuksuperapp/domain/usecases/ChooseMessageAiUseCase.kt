@@ -1,28 +1,24 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
-import kotlinx.collections.immutable.toPersistentList
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import javax.inject.Inject
 
 interface ChooseMessageAiUseCase {
-    suspend operator fun invoke(messageAiIndex: Int, subMessageAiIndex: Int)
+    suspend operator fun invoke(messageAI: MessageAI)
 }
 
 class ChooseMessageAiUseCaseImpl @Inject constructor(
-    private val getAiChatUseCase: GetAiChatUseCase,
+    private val chatAiRepository: ChatAiRepository,
     private val updateMessageUseCase: UpdateAiMessageUseCase,
 ) : ChooseMessageAiUseCase {
-    override suspend operator fun invoke(messageAiIndex: Int, subMessageAiIndex: Int) {
-        val currentList = getAiChatUseCase().value.toMutableList().also { list ->
-            list[messageAiIndex] = list[messageAiIndex].copy(
-                content = getAiChatUseCase().value[messageAiIndex].content.map {
-                    if (it.id == subMessageAiIndex) {
-                        it.copy(isChosen = true)
-                    } else it.copy(
-                        isChosen = false
-                    )
-                }.toPersistentList()
-            )
+
+    override suspend operator fun invoke(messageAI: MessageAI) {
+        val group = chatAiRepository.getMessageGroupById(messageAI.messageGroupId).toDomainModel()
+
+        // Обновляем все сообщения в группе, устанавливая isChosen
+        group.content.forEach { message ->
+            updateMessageUseCase(message.copy(isChosen = message.id == messageAI.id))
         }
-        updateMessageUseCase(currentList.toPersistentList())
     }
 }
