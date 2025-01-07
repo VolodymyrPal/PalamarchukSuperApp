@@ -23,10 +23,11 @@ data class MessageChatEntity(
             )
         }
 
-        fun toDomain(chat: MessageChatEntity): MessageChat {
+        fun toDomain(messageChatEntity: MessageChatEntity): MessageChat {
             return MessageChat(
-                name = chat.name,
-                timestamp = chat.timestamp
+                name = messageChatEntity.name,
+                timestamp = messageChatEntity.timestamp,
+                id = messageChatEntity.id
             )
         }
     }
