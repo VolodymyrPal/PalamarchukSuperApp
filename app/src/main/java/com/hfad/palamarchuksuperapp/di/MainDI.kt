@@ -26,8 +26,6 @@ import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
-import com.hfad.palamarchuksuperapp.data.repository.MessageChatRepositoryImpl
-import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
@@ -285,13 +283,6 @@ object DatabaseModule {
     @Provides
     fun provideMessageChatDao(messageChatDatabase: MessageChatDatabase): MessageChatDao {
         return messageChatDatabase.messageChatDao()
-    }
-
-    @Provides
-    fun provideMessageChatRepository(
-        messageChatDao: MessageChatDao,
-    ): MessageChatRepository {
-        return MessageChatRepositoryImpl(messageChatDao = messageChatDao)
     }
 
     @Singleton
