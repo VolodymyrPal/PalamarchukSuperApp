@@ -11,6 +11,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelations
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessages
 
 @Dao
 interface MessageChatDao {
@@ -58,4 +59,7 @@ interface MessageChatDao {
 
     @Query("SELECT * FROM MessageAI WHERE messageGroupId = :groupId")
     suspend fun getMessagesForGroup(groupId: Int): List<MessageAiEntity>
-} 
+
+    @Query("SELECT * FROM MessageGroup WHERE id = :groupId")
+    suspend fun getMessageGroup(groupId: Int): MessageGroupWithMessages
+}
