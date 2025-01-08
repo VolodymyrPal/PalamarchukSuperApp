@@ -464,7 +464,6 @@ fun MessageBox(
     LaunchedEffect(pagerState.currentPage) {
         event(
             ChatBotViewModel.Event.ChooseSubMessage(
-                messageGroup.id,
                 messageGroup.content[pagerState.currentPage] // TODO check
             )
         )
