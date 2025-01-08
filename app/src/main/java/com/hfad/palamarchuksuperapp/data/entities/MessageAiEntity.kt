@@ -44,9 +44,20 @@ data class MessageAiEntity(
             messageGroupId = messageGroupId,
             timestamp = timestamp,
             message = message,
-            otherContent = otherContent?.let { string -> Json.decodeFromString<MessageAiContent>(string) },
+            otherContent = otherContent?.let { Json.decodeFromString<MessageAiContent>(it) },
             model = model,
-            isChosen = isChosen,
+            isChosen = isChosen
+        )
+    }
+    companion object {
+        fun from (messageAI: MessageAI) = MessageAiEntity(
+            id = messageAI.id,
+            messageGroupId = messageAI.messageGroupId,
+            timestamp = messageAI.timestamp,
+            message = messageAI.message,
+            otherContent = messageAI.otherContent?.toString(),
+            model = messageAI.model,
+            isChosen = messageAI.isChosen
         )
     }
 }

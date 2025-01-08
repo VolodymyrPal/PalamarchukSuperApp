@@ -5,7 +5,7 @@ import androidx.room.Relation
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 
-data class MessageChatWithRelations(
+data class MessageChatWithRelationsEntity(
     @Embedded
     val chat: MessageChatEntity, // Данные чата
 
