@@ -195,9 +195,9 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun chooseSubMessage(messageAiIndex: Int, subMessageIndex: Int) {
+    private fun chooseSubMessage(messageAI: MessageAI) {
         viewModelScope.launch(ioDispatcher) {
-            chooseMessageAiUseCase(messageAiIndex, subMessageIndex)
+            chooseMessageAiUseCase(messageAI)
         }
     }
 
