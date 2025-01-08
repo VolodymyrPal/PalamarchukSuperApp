@@ -98,10 +98,10 @@ import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
@@ -112,6 +112,7 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -199,7 +200,9 @@ fun ChatScreen(
                 visible = showFab.value,
                 onScroll = {
                     scope.launch {
-                        listState.animateScrollToItem(state.value.listMessage.lastIndex + 1)
+                        listState.animateScrollToItem(
+                            state.value.chat.messages.size.plus(1)
+                        )
                     }
                 }
             )
@@ -225,7 +228,7 @@ fun ChatScreen(
         ) {
             LazyChatScreen(
                 modifier = Modifier.fillMaxWidth(),
-                messagesList = state.value.listMessage,
+                messagesList = state.value.chat.messages.toPersistentList(),
                 event = event,
                 error = state.value.error,
                 bottomPaddings = paddingValues.calculateBottomPadding(),
@@ -423,14 +426,13 @@ fun LazyChatScreen(
         items(
             items = messagesList,
             key = { it.id }
-        ) { message ->
-            when (message.type) {
+        ) { messageGroup ->
+            when (messageGroup.type) {
                 MessageType.TEXT -> {
                     MessageBox(
-                        subMessageList = message.content,
-                        isUser = message.role == Role.USER,
+                        isUser = messageGroup.role == Role.USER,
                         event = event,
-                        messageAiIndex = message.id
+                        messageGroup = messageGroup
                     )
                 }
 
@@ -454,17 +456,16 @@ fun LazyChatScreen(
 @Suppress("LongParameterList")
 fun MessageBox(
     modifier: Modifier = Modifier,
-    subMessageList: PersistentList<MessageAI>,
+    messageGroup: MessageGroup,
     isUser: Boolean,
     event: (ChatBotViewModel.Event) -> Unit,
-    messageAiIndex: Int,
-    pagerState: PagerState = rememberPagerState(pageCount = { subMessageList.size }),
+    pagerState: PagerState = rememberPagerState(pageCount = { messageGroup.content.size }),
 ) {
     LaunchedEffect(pagerState.currentPage) {
         event(
             ChatBotViewModel.Event.ChooseSubMessage(
-                messageAiIndex,
-                pagerState.currentPage
+                messageGroup.id,
+                messageGroup.content[pagerState.currentPage] // TODO check
             )
         )
     }
@@ -473,8 +474,8 @@ fun MessageBox(
         modifier = modifier.fillMaxWidth(),
         state = pagerState
     ) { page ->
-        val currentMessage = remember(subMessageList[page]) {
-            subMessageList[page]
+        val currentMessage = remember(messageGroup.content[page]) {
+            messageGroup.content[page]
         }
 
         when (currentMessage.otherContent == null) {
@@ -492,11 +493,11 @@ fun MessageBox(
         }
     }
 
-    if (subMessageList.size > 1) {
+    if (messageGroup.content.size > 1) {
         PagerIndicator(
-            totalPages = subMessageList.size,
+            totalPages = messageGroup.content.size,
             currentPage = pagerState.currentPage,
-            loadingStates = subMessageList.map { it.loading }
+            loadingStates = messageGroup.content.map { it.loading }
         )
     }
 }
@@ -515,7 +516,10 @@ private fun TextMessage(
                 .fillMaxWidth(1f)
                 .then(
                     if (loading) {
-                        Modifier.height(100.dp).clip(RoundedCornerShape(10.dp)).shimmerLoading()
+                        Modifier
+                            .height(100.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .shimmerLoading()
                     } else Modifier
                 )
                 .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
@@ -785,8 +789,10 @@ fun ChatScreenPreview() {
         navController = null,
         state = mutableStateOf(
             ChatBotViewModel.StateChat(
-                listMessage = MockChat(),
-                modelList = persistentListOf()
+                listHandler = persistentListOf(),
+                //listMessage = MockChat(),
+                modelList = persistentListOf(),
+                chat = MessageChat()
             )
         )
     )
