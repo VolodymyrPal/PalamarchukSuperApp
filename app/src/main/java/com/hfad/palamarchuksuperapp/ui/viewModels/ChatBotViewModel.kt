@@ -5,17 +5,18 @@ import MainDispatcher
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.MessageType
-import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.LLMName
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageChat
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCase
@@ -30,10 +31,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -120,14 +123,13 @@ class ChatBotViewModel @Inject constructor(
         data class SendText(val text: String) : Event()
         data class ShowToast(val message: String) : Event()
         data class GetModels(val llmName: LLMName) : Event()
-        data class ChooseSubMessage(val messageAiIndex: Int, val subMessageIndex: Int) : Event()
-        data class UpdateHandler(
-            val handler: AiModelHandler,
-            val aiHandlerInfo: AiHandlerInfo,
-        ) : Event()
+        data class ChooseSubMessage(val groupId: Int, val messageAI: MessageAI) : Event()
+        data class UpdateHandler(val handler: AiModelHandler, val aiHandlerInfo: AiHandlerInfo) :
+            Event()
 
         data class AddAiHandler(val aiHandlerInfo: AiHandlerInfo) : Event()
         data class DeleteHandler(val handler: AiModelHandler) : Event()
+        data class SelectChat(val chatId: Int) : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -140,13 +142,11 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
             is Event.GetModels -> getModels(event.llmName)
-            is Event.ChooseSubMessage -> chooseSubMessage(
-                event.messageAiIndex,
-                event.subMessageIndex
-            )
+            is Event.ChooseSubMessage -> chooseSubMessage(event.groupId, event.messageAI)
             is Event.UpdateHandler -> updateOrAddHandler(event.handler, event.aiHandlerInfo)
             is Event.AddAiHandler -> addAiHandler(event.aiHandlerInfo)
             is Event.DeleteHandler -> deleteHandler(event.handler)
+            is Event.SelectChat -> selectChat(event.chatId)
         }
     }
 
