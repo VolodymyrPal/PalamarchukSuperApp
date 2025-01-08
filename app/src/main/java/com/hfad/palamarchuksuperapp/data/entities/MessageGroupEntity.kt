@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 
@@ -30,4 +31,15 @@ data class MessageGroupEntity(
     val role: Role = Role.USER,
     val chatId: Int,
     val type: MessageType = MessageType.TEXT,
-) 
+) {
+    companion object {
+        fun from(chat: MessageGroup): MessageGroupEntity {
+            return MessageGroupEntity(
+                id = chat.id,
+                role = chat.role,
+                chatId = chat.chatId,
+                type = chat.type
+            )
+        }
+    }
+}
