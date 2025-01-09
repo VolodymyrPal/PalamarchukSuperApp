@@ -1,5 +1,8 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
+import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -14,12 +17,25 @@ data class MessageGroup(
     val chatId: Int,
     val type: MessageType = MessageType.TEXT,
 ) {
+
+    fun toEntityWithRelations(): MessageGroupWithMessagesEntity {
+        return MessageGroupWithMessagesEntity(
+            group = MessageGroupEntity(
+                id = id,
+                role = role,
+                type = type,
+                chatId = chatId
+            ),
+            messages = content.map { aI -> MessageAiEntity.from(aI) },
+        )
+    }
+
     constructor(
         id: Int,
         role: Role = Role.USER,
         content: String,
+        chatId: Int,
         type: MessageType = MessageType.TEXT,
-        chatGroupId: Int,
     ) : this(
         id = id,
         role = role,
@@ -30,7 +46,7 @@ data class MessageGroup(
                 messageGroupId = id,
             )
         ),
-        chatId = chatGroupId,
+        chatId = chatId,
         type = type
     )
 

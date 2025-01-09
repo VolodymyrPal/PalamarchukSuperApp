@@ -14,7 +14,7 @@ data class MessageChatWithRelationsEntity(
         entityColumn = "chatId",
         entity = MessageGroupEntity::class
     )
-    val messages: List<MessageGroupWithMessages> // Группы сообщений, связанные с чатом
+    val messages: List<MessageGroupWithMessagesEntity> // Группы сообщений, связанные с чатом
 ) {
     fun toDomainModel(): MessageChat {
         return MessageChat(
@@ -25,7 +25,7 @@ data class MessageChatWithRelationsEntity(
     }
 }
 
-data class MessageGroupWithMessages(
+data class MessageGroupWithMessagesEntity(
     @Embedded
     val group: MessageGroupEntity, // Данные группы сообщений
 
