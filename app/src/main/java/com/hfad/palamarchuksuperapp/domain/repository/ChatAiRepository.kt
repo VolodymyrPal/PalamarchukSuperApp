@@ -13,12 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ChatAiRepository {
     val listChatAiFLow: StateFlow<PersistentList<MessageChat>>
-    val chatAiFlow: MutableStateFlow<PersistentList<MessageGroup>>
     val errorFlow: MutableSharedFlow<AppError?>
 
     // Методы для работы с моделями AI
     suspend fun getModels(handler: AiModelHandler): List<AiModel>
-    suspend fun getModels(handlers: List<AiModelHandler>): List<AiModel>
 
     // Методы для работы с чатами
     suspend fun getAllChats(): List<MessageChat>
