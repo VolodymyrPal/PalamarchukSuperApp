@@ -22,8 +22,8 @@ import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
-import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.AddAiMessageUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.AddMessageGroupUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.AddMessageGroupUseCaseImpl
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
@@ -151,7 +151,7 @@ interface UseCaseModule {
 
     @Singleton
     @Binds
-    fun bindAddAiMessageUseCase(addAiMessageUseCaseImpl: AddAiMessageUseCaseImpl): AddAiMessageUseCase
+    fun bindAddAiMessageUseCase(addAiMessageUseCaseImpl: AddMessageGroupUseCaseImpl): AddMessageGroupUseCase
 
     @Singleton
     @Binds
