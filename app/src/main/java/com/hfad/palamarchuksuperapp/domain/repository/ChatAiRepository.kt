@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
-import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessages
+import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
@@ -8,7 +8,6 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 interface ChatAiRepository {
@@ -26,7 +25,8 @@ interface ChatAiRepository {
     suspend fun clearAllChats()
 
     // Методы для работы с сообщениями
-    suspend fun getMessageGroupById(chatId: Int): MessageGroupWithMessages
+    suspend fun getMessageGroupById(chatId: Int): MessageGroupWithMessagesEntity
+    suspend fun addMessageGroup(messageGroup: MessageGroup)
     suspend fun addMessageGroup(chatId: Int, messageGroup: MessageGroup)
     suspend fun updateMessageGroup(messageGroup: MessageGroup)
     suspend fun updateSubMessage(messageAI: MessageAI)
