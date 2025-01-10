@@ -39,10 +39,25 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
                     result.data
                 }
 
-                is Result.Error -> {
-                    errorFlow.emit(AppError.CustomError(result.error.toString()))
-                    listOf()
-                }
+    override suspend fun getChatById(chatId: Int): MessageChat {
+        if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
+            Log.d("ChatAiRepositoryImpl", "getChatById: $chatId")
+            val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
+            return messageChatDao.getChatWithMessages(id.toInt()).toDomainModel()
+        } else {
+            return messageChatDao.getChatWithMessages(chatId)
+                .toDomainModel() //Could produce potential error
+        }
+    }
+
+    override suspend fun getChatFlowById(chatId: Int): Flow<MessageChat> {
+        return if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
+            val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
+            messageChatDao.getChatWithMessagesFlow(id.toInt())
+                .map { value -> value.toDomainModel() }
+        } else {
+            messageChatDao.getChatWithMessagesFlow(chatId).map { value ->
+                value.toDomainModel()
             }
         }
     }
@@ -61,13 +76,10 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun updateSubMessages(
-        index: Int,
-        subMessageList: PersistentList<MessageAI>,
-    ) {
-        chatAiChatFlow.update {
-            it.set(index, it[index].copy(content = subMessageList))
-        }
+    override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup) {
+        messageChatDao.insertMessageGroupWithMessages(
+            messageGroupWithChatID.toEntityWithRelations()
+        )
     }
 
     override suspend fun updateSubMessage(

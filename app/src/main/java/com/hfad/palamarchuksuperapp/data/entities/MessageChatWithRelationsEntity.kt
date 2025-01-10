@@ -45,4 +45,12 @@ data class MessageGroupWithMessagesEntity(
             chatId = group.chatId
         )
     }
+    companion object {
+        fun from(messageGroup: MessageGroup): MessageGroupWithMessagesEntity {
+            return MessageGroupWithMessagesEntity(
+                group = MessageGroupEntity.from(messageGroup),
+                messages = messageGroup.content.map { aI -> MessageAiEntity.from(aI) },
+            )
+        }
+    }
 }
