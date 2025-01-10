@@ -1,20 +1,19 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
+import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
-import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
-import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.datetime.Clock
 import javax.inject.Inject
 
 interface SendChatRequestUseCase {
@@ -23,26 +22,25 @@ interface SendChatRequestUseCase {
 
 class SendAiRequestUseCaseImpl @Inject constructor(
     private val chatAiRepository: ChatAiRepository,
-    private val addAiMessageUseCase: AddAiMessageUseCase,
-    private val getAiChatUseCase: GetAiChatUseCase,
-    private val updateAiMessageUseCase: UpdateAiMessageUseCase,
 ) : SendChatRequestUseCase {
 
-    override suspend operator fun invoke(message: MessageGroup, handlers: List<AiModelHandler>) {
+    override suspend operator fun invoke(
+        message: MessageGroup,
+        handlers: List<AiModelHandler>,
+    ) {
+        val chatId = message.chatId
 
         if (handlers.isEmpty()) {
             chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided"))
             return
         }
 
-        addAiMessageUseCase(message)
-        /**
-         *
-         *
-         * Need to better handler error message and loading messages.
-         *
-         */
-        val listToSend: PersistentList<MessageGroup> = getAiChatUseCase().first()
+        chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
+
+        return
+        val chat = chatAiRepository.getChatById(chatId)
+        val contextMessages = chat.messages.toPersistentList()
+
 
         supervisorScope {
 
