@@ -12,6 +12,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Data Access Object для работы с сообщениями чата.
@@ -48,15 +49,18 @@ interface MessageChatDao {
      */
     @Transaction
     suspend fun insertMessageGroupWithMessages(
-        groupWithMessages: MessageGroupWithMessagesEntity
+        groupWithMessages: MessageGroupWithMessagesEntity,
     ): Long {
         val groupId = insertMessageGroup(groupWithMessages.group)
-        for (messageAi: MessageAiEntity in groupWithMessages.messages) {
+        groupWithMessages.messages.forEach { messageAi ->
             val insertedMessage = messageAi.copy(messageGroupId = groupId.toInt())
             insertMessage(insertedMessage)
         }
         return groupId
     }
+
+    @Query("SELECT * FROM MessageChat WHERE id = :chatId")
+    fun getChatWithMessagesFlow(chatId: Int): Flow<MessageChatWithRelationsEntity>
 
     /**
      * Обновление группы сообщений и всех её сообщений.
@@ -67,7 +71,7 @@ interface MessageChatDao {
         messageGroupWithMessages: MessageGroupWithMessagesEntity,
     ) {
         updateMessageGroup(messageGroupWithMessages.group)
-        for (messageAi: MessageAiEntity in messageGroupWithMessages.messages) {
+        messageGroupWithMessages.messages.forEach { messageAi ->
             val insertedMessage = messageAi.copy(messageGroupId = messageGroupWithMessages.group.id)
             insertMessage(insertedMessage)
         }
