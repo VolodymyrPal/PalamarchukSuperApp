@@ -30,6 +30,15 @@ data class MessageGroup(
         )
     }
 
+    fun toEntity() : MessageGroupEntity {
+        return MessageGroupEntity(
+            id = id,
+            role = role,
+            type = type,
+            chatId = chatId
+        )
+    }
+
     constructor(
         id: Int,
         role: Role = Role.USER,
