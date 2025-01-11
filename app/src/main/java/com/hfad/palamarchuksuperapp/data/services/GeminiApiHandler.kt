@@ -64,7 +64,6 @@ class GeminiApiHandler @AssistedInject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
-        messageAiInt: Int,
     ): Result<MessageAI, AppError> {
         try {
             val request =
@@ -81,7 +80,7 @@ class GeminiApiHandler @AssistedInject constructor(
                 val responseMessage = MessageAI(
                     message = response.candidates[0].content.parts[0].text,
                     model = initAiHandlerInfo.model,
-                    messageGroupId = messageAiInt
+                    messageGroupId = 0 // Handler don't need to know message group
                 )
                 return Result.Success(responseMessage)
             } else if (request.status.value in 400..599) {
@@ -89,7 +88,7 @@ class GeminiApiHandler @AssistedInject constructor(
                 return Result.Error(
                     data = MessageAI(
                         model = initAiHandlerInfo.model,
-                        messageGroupId = messageAiInt
+                        messageGroupId = 0 // Handler don't need to know message group
                     ),
                     error = AppError.CustomError(geminiError.error.message)
                 )

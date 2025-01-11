@@ -39,7 +39,7 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
                     result.data
                 }
 
-    override suspend fun getChatById(chatId: Int): MessageChat {
+    override suspend fun getChatWithMessagesById(chatId: Int): MessageChat {
         if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
             Log.d("ChatAiRepositoryImpl", "getChatById: $chatId")
             val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
@@ -62,8 +62,8 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun addMessage(messageGroup: MessageGroup) {
-        chatAiChatFlow.update { it.add(messageGroup) }
+    override suspend fun getMessageGroupById(chatId: Int): MessageGroupWithMessagesEntity {
+        return messageChatDao.getMessageGroup(chatId)
     }
 
     override suspend fun updateChat(listOfMessageGroup: PersistentList<MessageGroup>) {
@@ -76,10 +76,11 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup) {
-        messageChatDao.insertMessageGroupWithMessages(
+    override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long {
+        val messageGroupId = messageChatDao.insertMessageGroupWithMessages(
             messageGroupWithChatID.toEntityWithRelations()
         )
+        return messageGroupId
     }
 
     override suspend fun updateSubMessage(

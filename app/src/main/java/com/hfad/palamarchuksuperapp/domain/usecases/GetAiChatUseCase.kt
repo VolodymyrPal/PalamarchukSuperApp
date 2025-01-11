@@ -13,6 +13,6 @@ class GetAiChatUseCaseImpl @Inject constructor(
 ) : GetAiChatUseCase {
 
     override suspend operator fun invoke(chatId: Int): MessageChat? {
-        return chatAiRepository.getChatById(chatId)
+        return chatAiRepository.getChatWithMessagesById(chatId)
     }
 }

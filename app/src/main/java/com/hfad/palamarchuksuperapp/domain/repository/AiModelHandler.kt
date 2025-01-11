@@ -14,8 +14,7 @@ interface AiModelHandler {
 
     suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
-        messageAiID: Int
-    ): Result<MessageAI, AppError>
+    ): Result<MessageAI, AppError> // Return MessageAI without info about messageGroupId
 
     suspend fun getModels(
     ): Result<List<AiModel>, AppError>

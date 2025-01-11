@@ -20,7 +20,7 @@ interface ChatAiRepository {
 
     // Методы для работы с чатами
     suspend fun getAllChats(): List<MessageChat>
-    suspend fun getChatById(chatId: Int): MessageChat
+    suspend fun getChatWithMessagesById(chatId: Int): MessageChat
     suspend fun getChatFlowById(chatId: Int): Flow<MessageChat>
     suspend fun createChat(chat: MessageChat)
     suspend fun deleteChat(chatId: Int)
@@ -28,7 +28,7 @@ interface ChatAiRepository {
 
     // Методы для работы с сообщениями
     suspend fun getMessageGroupById(chatId: Int): MessageGroupWithMessagesEntity
-    suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup)
+    suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long
     suspend fun updateMessageGroup(messageGroup: MessageGroup)
     suspend fun updateSubMessage(messageAI: MessageAI)
 }
