@@ -41,7 +41,6 @@ class OpenAIApiHandler @AssistedInject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
-        messageAiID: Int,
     ): Result<MessageAI, AppError> {
         val gptRequest = messageList.toOpenAIRequest(model = initAiHandlerInfo.model)
 
@@ -57,7 +56,7 @@ class OpenAIApiHandler @AssistedInject constructor(
                 val responseMessage = MessageAI(
                     message = openAIResponse.choices[0].message.content,
                     model = initAiHandlerInfo.model,
-                    messageGroupId = messageAiID
+                    messageGroupId = 0 // Handler don't need to know message group
                 )
                 Result.Success(responseMessage)
             } else if (response.status.value in 401..599) {
@@ -66,7 +65,7 @@ class OpenAIApiHandler @AssistedInject constructor(
                     AppError.CustomError(openAiError.error.message),
                     data = MessageAI(
                         model = initAiHandlerInfo.model,
-                        messageGroupId = messageAiID
+                        messageGroupId = 0 // Handler don't need to know message group
                     )
                 )
             } else {
