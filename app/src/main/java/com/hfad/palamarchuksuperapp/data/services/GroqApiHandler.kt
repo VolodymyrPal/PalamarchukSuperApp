@@ -41,7 +41,6 @@ class GroqApiHandler @AssistedInject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
-        messageAiID: Int
     ): Result<MessageAI, AppError> {
         try {
             val listToPass = if (messageList.last().type == MessageType.IMAGE) {
@@ -64,7 +63,7 @@ class GroqApiHandler @AssistedInject constructor(
                 val responseMessage = MessageAI(
                     message = if (responseText is GroqMessageText) responseText.content else "",
                     model = initAiHandlerInfo.model,
-                    messageGroupId = messageAiID
+                    messageGroupId = 0 // Handler don't need to know message group
                 )
                 return Result.Success(responseMessage)
             } else if (request.status.value in 400..599) {
@@ -73,7 +72,7 @@ class GroqApiHandler @AssistedInject constructor(
                     error = AppError.CustomError(groqError.error.message),
                     MessageAI(
                         model = initAiHandlerInfo.model,
-                        messageGroupId = messageAiID
+                        messageGroupId = 0 // Handler don't need to know message group
                     )
                 )
             } else {
