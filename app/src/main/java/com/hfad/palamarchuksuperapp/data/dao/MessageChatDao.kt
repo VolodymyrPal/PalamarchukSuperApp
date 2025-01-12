@@ -30,7 +30,7 @@ interface MessageChatDao {
     @Transaction
     suspend fun insertChatWithRelations(
         chatWithRelations: MessageChatWithRelationsEntity,
-    ) {
+    ): Long {
         val chatId = insertChat(chatWithRelations.chat)
         val group = chatWithRelations.messages
         group.forEach { messageGroup ->
@@ -40,6 +40,7 @@ interface MessageChatDao {
                 insertMessage(insertedMessage)
             }
         }
+        return chatId
     }
 
     /**

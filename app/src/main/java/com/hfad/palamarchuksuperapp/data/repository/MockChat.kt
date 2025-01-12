@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
@@ -14,7 +15,11 @@ object MockChat {
             id = 0,
             role = Role.USER,
             content = persistentListOf(
-                MessageAI(message = "Hello! Can u help me?", messageGroupId = 0)
+                MessageAI(
+                    message = "Hello! Can u help me?",
+                    messageGroupId = 0,
+                    model = AiModel.OpenAIModel()
+                )
             )
         ),
         // Model response (image)
@@ -45,15 +50,18 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n ",
-                    messageGroupId = 1
+                    messageGroupId = 1,
+                    model = AiModel.GeminiModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 1
+                    messageGroupId = 1,
+                    model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 1
+                    messageGroupId = 1,
+                    model = AiModel.OpenAIModel()
                 )
 
             )
@@ -65,7 +73,8 @@ object MockChat {
             content = persistentListOf(
                 MessageAI(
                     message = "That looks great! Can you tell me more about it?",
-                    messageGroupId = 2
+                    messageGroupId = 2,
+                    model = AiModel.GeminiModel()
                 ),
             )
         ),
@@ -95,15 +104,18 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n?",
-                    messageGroupId = 3
+                    messageGroupId = 3,
+                    model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 3
+                    messageGroupId = 3,
+                    model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 3
+                    messageGroupId = 3,
+                    model = AiModel.GeminiModel()
                 )
             )
         ),
@@ -115,7 +127,8 @@ object MockChat {
                 MessageAI(
                     message = "This one is perfect, thank you!",
                     isChosen = true,
-                    messageGroupId = 4
+                    messageGroupId = 4,
+                    model = AiModel.GroqModel()
                 ),
             )
         ),
@@ -123,7 +136,11 @@ object MockChat {
             id = 5,
             role = Role.MODEL,
             content = persistentListOf(
-                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 5),
+                MessageAI(
+                    message = "Hello! How can I help you today?",
+                    messageGroupId = 5,
+                    model = AiModel.OpenAIModel()
+                ),
                 MessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of socks, " +
                             "inseparable companions. They were always together, whether it was snuggled " +
@@ -138,11 +155,13 @@ object MockChat {
                             "reunited the pair, and the two socks were overjoyed. They learned a valuable " +
                             "lesson that day: even in the darkest of times, hope and kindness can lead to " +
                             "unexpected reunions.\n",
-                    messageGroupId = 5
+                    messageGroupId = 5,
+                    model = AiModel.GeminiModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 5
+                    messageGroupId = 5,
+                    model = AiModel.GroqModel()
                 )
             )
         ),
@@ -150,14 +169,20 @@ object MockChat {
             id = 6,
             role = Role.USER,
             content = persistentListOf(
-                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 6),
+                MessageAI(
+                    message = "Hello! How can I help you today?",
+                    messageGroupId = 6,
+                    model = AiModel.OpenAIModel()
+                ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 6
+                    messageGroupId = 6,
+                    model = AiModel.GeminiModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 6
+                    messageGroupId = 6,
+                    model = AiModel.GroqModel()
                 )
             )
         ),
@@ -165,14 +190,20 @@ object MockChat {
             id = 7,
             role = Role.MODEL,
             content = persistentListOf(
-                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 7),
+                MessageAI(
+                    message = "Hello! How can I help you today?",
+                    messageGroupId = 7,
+                    model = AiModel.GeminiModel()
+                ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 7
+                    messageGroupId = 7,
+                    model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 7
+                    messageGroupId = 7,
+                    model = AiModel.OpenAIModel()
                 )
             )
         ),
@@ -180,10 +211,15 @@ object MockChat {
             id = 8,
             role = Role.USER,
             content = persistentListOf(
-                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 8),
+                MessageAI(
+                    message = "Hello! How can I help you today?",
+                    messageGroupId = 8,
+                    model = AiModel.GroqModel()
+                ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 8
+                    messageGroupId = 8,
+                    model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
                     message = "Hello! Once upon a time, in a quaint little house, lived a pair of " +
@@ -205,7 +241,7 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n" +
-                            "\n", messageGroupId = 8
+                            "\n", messageGroupId = 8, model = AiModel.GeminiModel()
                 )
             )
         ),
@@ -213,14 +249,19 @@ object MockChat {
             id = 9,
             role = Role.MODEL,
             content = persistentListOf(
-                MessageAI(message = "Hello! How can I help you today?", messageGroupId = 9),
+                MessageAI(
+                    message = "Hello! How can I help you today?", messageGroupId = 9,
+                    model = AiModel.OpenAIModel()
+                ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 9
+                    messageGroupId = 9,
+                    model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 9
+                    messageGroupId = 9,
+                    model = AiModel.GeminiModel()
                 )
             )
         ),
@@ -228,8 +269,13 @@ object MockChat {
             id = 10,
             role = Role.MODEL,
             content = persistentListOf(
-                MessageAI(message = "", loading = true, messageGroupId = 10)
-            )
+                MessageAI(
+                    message = "Some message))",
+                    loading = true,
+                    messageGroupId = 10,
+                    model = AiModel.GroqModel()
+                ),
+            ),
         )
     ).toPersistentList()
 }

@@ -31,13 +31,9 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun getModels(handlers: List<AiModelHandler>): List<AiModel> {
-        return handlers.flatMap { handler ->
-            val result = handler.getModels()
-            when (result) {
-                is Result.Success -> {
-                    result.data
-                }
+    override suspend fun getAllChats(): List<MessageChat> {
+        return messageChatDao.getAllChatsWithMessages().map { it.toDomainModel() }
+    }
 
     override suspend fun getChatWithMessagesById(chatId: Int): MessageChat {
         if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
@@ -52,7 +48,12 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
 
     override suspend fun getChatFlowById(chatId: Int): Flow<MessageChat> {
         return if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
-            val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
+            val id = messageChatDao.insertChatWithRelations(
+                MessageChatWithRelationsEntity(
+                    chat = MessageChatEntity(name = "Base chat"),
+                    messages = MockChat().map { it.toEntityWithRelations() } //TODO For testing
+                )
+            )
             messageChatDao.getChatWithMessagesFlow(id.toInt())
                 .map { value -> value.toDomainModel() }
         } else {
@@ -66,14 +67,22 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         return messageChatDao.getMessageGroup(chatId)
     }
 
-    override suspend fun updateChat(listOfMessageGroup: PersistentList<MessageGroup>) {
-        chatAiChatFlow.update { listOfMessageGroup }
+    override suspend fun createChat(chat: MessageChat) {
+        messageChatDao.insertChat(
+            MessageChatEntity(
+                name = chat.name,
+                timestamp = chat.timestamp
+            )
+        )
     }
 
-    override suspend fun updateMessage(index: Int, updatedContent: MessageGroup) {
-        chatAiChatFlow.update {
-            it.set(index, it[index].copy(content = updatedContent.content))
-        }
+    override suspend fun deleteChat(chatId: Int) {
+        val chat = messageChatDao.getAllChatsInfo().find { it.id == chatId }
+        chat?.let { messageChatDao.deleteChat(it) }
+    }
+
+    override suspend fun clearAllChats() {
+        messageChatDao.getAllChatsInfo().forEach { messageChatDao.deleteChat(it) }
     }
 
     override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long {
