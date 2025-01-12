@@ -512,51 +512,56 @@ private fun TextMessage(
     message: MessageAI,
     isUser: Boolean,
     modifier: Modifier = Modifier,
-    loading: Boolean
+    loading: Boolean,
 ) {
-    Box {
-        Box(
-            modifier = modifier
-                .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                .fillMaxWidth(1f)
-                .then(
-                    if (loading) {
-                        Modifier
-                            .height(100.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .shimmerLoading()
-                    } else Modifier
-                )
-                .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                .sizeIn(minWidth = 50.dp)
-                .background(
-                    if (isUser) MaterialTheme.colorScheme.primaryContainer
-                    else Color.Transparent,
-                    shape = RoundedCornerShape(
-                        10.dp,
-                        10.dp,
-                        if (isUser) 0.dp else 10.dp,
-                        10.dp
-                    )
-                )
-                .padding(15.dp, 5.dp, 15.dp, 5.dp)
+    Box(
+        modifier = modifier
+            .fillMaxWidth(1f)
+            .then(
+                if (loading) {
+                    Modifier
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .shimmerLoading()
+                } else Modifier
+            )
+            .padding(15.dp, 5.dp, 15.dp, 5.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = if (isUser) Alignment.End else Alignment.Start,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-                key(message.message) {
-                    MarkdownText(message.message.trimEnd())
-                }
-                if (message.model != null) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = message.model.modelName,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                        fontSize = TextUnit(12f, TextUnitType.Sp),
-                        textAlign = TextAlign.End,
-                        fontStyle = FontStyle.Italic
-                    )
-                }
+            key(message.message) {
+                MarkdownText(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
+                        .sizeIn(minWidth = 30.dp)
+                        .background(
+                            if (isUser) MaterialTheme.colorScheme.primaryContainer
+                            else Color.Transparent,
+                            shape = RoundedCornerShape(
+                                10.dp,
+                                10.dp,
+                                if (isUser) 0.dp else 10.dp,
+                                10.dp
+                            )
+                        )
+                        .padding(10.dp, 0.dp, 10.dp, 0.dp),
+                    markdown = message.message.trimEnd(),
+                    style = TextStyle(textAlign = if (isUser) TextAlign.End else TextAlign.Start),
+                )
+            }
+            if (message.model != null) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = message.model.modelName,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                    fontSize = TextUnit(12f, TextUnitType.Sp),
+                    textAlign = TextAlign.End,
+                    fontStyle = FontStyle.Italic
+                )
             }
         }
     }
@@ -593,8 +598,7 @@ private fun PagerIndicator(
     LazyRow(
         modifier = modifier
             .wrapContentHeight()
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         items(totalPages) { index ->
