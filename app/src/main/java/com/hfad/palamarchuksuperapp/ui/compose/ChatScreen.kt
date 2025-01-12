@@ -498,12 +498,6 @@ fun MessageBox(
             currentPage = pagerState.currentPage,
             loadingStates = messageGroup.content.map { it.loading }
         )
-    } else {
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp)
-        )
     }
 }
 
