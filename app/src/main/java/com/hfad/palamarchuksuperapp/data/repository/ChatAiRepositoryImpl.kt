@@ -52,7 +52,12 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
 
     override suspend fun getChatFlowById(chatId: Int): Flow<MessageChat> {
         return if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
-            val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
+            val id = messageChatDao.insertChatWithRelations(
+                MessageChatWithRelationsEntity(
+                    chat = MessageChatEntity(name = "Base chat"),
+                    messages = MockChat().map { it.toEntityWithRelations() } //TODO For testing
+                )
+            )
             messageChatDao.getChatWithMessagesFlow(id.toInt())
                 .map { value -> value.toDomainModel() }
         } else {
