@@ -8,11 +8,11 @@ import android.provider.Settings
 
 class BackgroundMusicService : Service() {
 
-    private lateinit var player: MediaPlayer
+    private var player: MediaPlayer? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         player = MediaPlayer.create(this, Settings.System.DEFAULT_NOTIFICATION_URI)
-        player.start()
+        player?.start()
         return START_NOT_STICKY
     }
 
@@ -23,6 +23,6 @@ class BackgroundMusicService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        player.stop()
+        player?.stop()
     }
 }
