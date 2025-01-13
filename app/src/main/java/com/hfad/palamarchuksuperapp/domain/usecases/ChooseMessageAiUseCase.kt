@@ -14,11 +14,16 @@ class ChooseMessageAiUseCaseImpl @Inject constructor(
 ) : ChooseMessageAiUseCase {
 
     override suspend operator fun invoke(messageAI: MessageAI) {
-        val group = chatAiRepository.getMessageGroupById(messageAI.messageGroupId).toDomainModel()
+        val group = chatAiRepository.getMessageGroupWithMessagesById(messageAI.messageGroupId)
+            .toDomainModel()
 
         // Обновляем все сообщения в группе, устанавливая isChosen
         group.content.forEach { message ->
-            updateMessageUseCase(message.copy(isChosen = message.id == messageAI.id))
+            updateMessageUseCase(
+                message.copy(
+                    isChosen = message.id == messageAI.id,
+                )
+            )
         }
     }
 }

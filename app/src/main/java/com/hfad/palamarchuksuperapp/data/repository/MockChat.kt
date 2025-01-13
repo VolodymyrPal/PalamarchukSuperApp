@@ -270,7 +270,7 @@ object MockChat {
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
-                    message = "Some message))",
+                    message = "Some message loading))",
                     loading = true,
                     messageGroupId = 10,
                     model = AiModel.GroqModel()

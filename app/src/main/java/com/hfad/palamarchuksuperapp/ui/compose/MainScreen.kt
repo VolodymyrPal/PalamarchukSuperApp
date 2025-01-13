@@ -258,7 +258,7 @@ fun MainScreenRow(
                                     text = stringResource(R.string.chat_button_name),
                                     position = Modifier.offset(15.dp, (-15).dp),
                                     enable = true,
-                                    modifierToTransit = Modifier.sharedBounds(
+                                    modifierToTransit = Modifier.sharedElement(
                                         rememberSharedContentState("chat"),
                                         animatedContentScope
                                     )
@@ -328,6 +328,7 @@ fun ButtonToNavConstraint(
                 RoundedCornerShape(20.dp)
             )
             .then(position)
+            .then(modifierToTransit)
             .alpha(if (enable) 0.95f else 0.75f),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -346,8 +347,7 @@ fun ButtonToNavConstraint(
                 model = ImageRequest.Builder(LocalContext.current).data(imagePath).build(),
                 modifier = Modifier
                     .padding(start = 10.dp, end = 10.dp, top = 5.dp)
-                    .weight(0.9f)
-                    .then(modifierToTransit),
+                    .weight(0.9f),
                 contentScale = ContentScale.FillBounds,
                 //imageVector = imageVector,
                 contentDescription = text

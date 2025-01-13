@@ -35,16 +35,15 @@ class SendAiRequestUseCaseImpl @Inject constructor(
             return
         }
 
-        chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
+        val requestMessageGroupId = chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
 
-        return
-        val chat = chatAiRepository.getChatById(chatId)
-        val contextMessages = chat.messages.toPersistentList()
+        val chat = chatAiRepository.getChatWithMessagesById(chatId)
 
+        val contextMessages = chat.messageGroups.toPersistentList()
 
         supervisorScope {
 
-            val newMessageIndex = listToSend.size
+            val groupId = chat.messageGroups.last().id
 
             val requests: List<Pair<Int, Deferred<Result<MessageAI, AppError>>>> =
                 handlers.filter { it.aiHandlerInfo.value.isSelected }.mapIndexed { index, handler ->

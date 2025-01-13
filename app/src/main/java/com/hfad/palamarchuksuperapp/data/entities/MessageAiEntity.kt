@@ -46,7 +46,8 @@ data class MessageAiEntity(
             message = message,
             otherContent = otherContent?.let { Json.decodeFromString<MessageAiContent>(it) },
             model = model,
-            isChosen = isChosen
+            isChosen = isChosen,
+            loading = loading
         )
     }
     companion object {
@@ -57,7 +58,8 @@ data class MessageAiEntity(
             message = messageAI.message,
             otherContent = messageAI.otherContent?.toString(),
             model = messageAI.model,
-            isChosen = messageAI.isChosen
+            isChosen = messageAI.isChosen,
+            loading = messageAI.loading
         )
     }
 }
