@@ -32,7 +32,7 @@ interface MessageChatDao {
         chatWithRelations: MessageChatWithRelationsEntity,
     ): Long {
         val chatId = insertChat(chatWithRelations.chat)
-        val group = chatWithRelations.messages
+        val group = chatWithRelations.messageGroups
         group.forEach { messageGroup ->
             val groupId = insertMessageGroup(messageGroup.group.copy(chatId = chatId.toInt()))
             for (messageAi: MessageAiEntity in messageGroup.messages) {
