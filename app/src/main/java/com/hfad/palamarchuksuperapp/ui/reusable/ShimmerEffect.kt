@@ -48,13 +48,13 @@ fun Modifier.shimmerLoading(
 
     // Применяем эффект мерцания, рисуя градиент
     return graphicsLayer {
-            alpha = 0.95f  // Небольшая прозрачность для смягчения эффекта
-            clip = true
-        }
+        alpha = 0.95f  // Небольшая прозрачность для смягчения эффекта
+        clip = true
+    }
         .blur(
-            radius = 20.dp,
+            radius = 10.dp,
             edgeTreatment = BlurredEdgeTreatment.Unbounded
-        )  // Легкое размытие по краям
+        )  // Легкое размытие
         .drawBehind {
             val width = size.width  // Ширина элемента
             val height = size.height // Высота элемента
