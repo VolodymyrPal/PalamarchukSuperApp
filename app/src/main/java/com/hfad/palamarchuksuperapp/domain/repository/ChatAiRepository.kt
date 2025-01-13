@@ -6,13 +6,10 @@ import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.StateFlow
 
 interface ChatAiRepository {
-    val listChatAiFLow: StateFlow<PersistentList<MessageChat>>
     val errorFlow: MutableSharedFlow<AppError?>
 
     // Методы для работы с моделями AI
@@ -27,8 +24,8 @@ interface ChatAiRepository {
     suspend fun clearAllChats()
 
     // Методы для работы с сообщениями
-    suspend fun getMessageGroupById(chatId: Int): MessageGroupWithMessagesEntity
+    suspend fun getMessageGroupWithMessagesById(chatId: Int): MessageGroupWithMessagesEntity
     suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long
     suspend fun updateMessageGroup(messageGroup: MessageGroup)
-    suspend fun updateSubMessage(messageAI: MessageAI)
+    suspend fun updateMessageAi(messageAI: MessageAI)
 }
