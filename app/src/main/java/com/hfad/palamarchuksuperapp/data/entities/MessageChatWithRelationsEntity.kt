@@ -14,13 +14,14 @@ data class MessageChatWithRelationsEntity(
         entityColumn = "chatId",
         entity = MessageGroupEntity::class
     )
-    val messages: List<MessageGroupWithMessagesEntity> // Группы сообщений, связанные с чатом
+    val messageGroups: List<MessageGroupWithMessagesEntity> // Группы сообщений, связанные с чатом
 ) {
     fun toDomainModel(): MessageChat {
         return MessageChat(
             id = chat.id,
             name = chat.name,
-            messages = messages.map { messages -> messages.toDomainModel() }
+            messageGroups = messageGroups.map { messageGroup -> messageGroup.toDomainModel() },
+            timestamp = chat.timestamp
         )
     }
 }
@@ -39,8 +40,8 @@ data class MessageGroupWithMessagesEntity(
     fun toDomainModel(): MessageGroup {
         return MessageGroup(
             id = group.id,
-            content = messages.map{ it.toDomainModel() },
             role = group.role,
+            content = messages.map{ message -> message.toDomainModel() },
             type = group.type,
             chatId = group.chatId
         )
