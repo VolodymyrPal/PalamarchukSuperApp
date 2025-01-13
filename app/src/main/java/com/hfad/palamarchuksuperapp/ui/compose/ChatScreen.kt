@@ -128,7 +128,8 @@ fun RootChatScreen(
     navController: NavHostController? = LocalNavController.current,
     context: Context = LocalContext.current,
 ) {
-    context.startService(Intent(context, BackgroundMusicService::class.java))
+    val intent = Intent(context, BackgroundMusicService::class.java)
+    context.startService(intent)
 
     val localTransitionScope = LocalSharedTransitionScope.current
         ?: error(IllegalStateException("No SharedElementScope found"))
@@ -147,9 +148,9 @@ fun RootChatScreen(
     val myState = chatBotViewModel.uiState.collectAsStateWithLifecycle()
     with(localTransitionScope) { //TODO
         ChatScreen(
-            modifier = modifier.sharedBounds(
+            modifier = modifier.sharedElement(
                 this.rememberSharedContentState("chat"),
-                animatedContentScope
+                animatedContentScope,
             ),
             navController = navController,
             event = chatBotViewModel::event,
@@ -201,7 +202,7 @@ fun ChatScreen(
                 onScroll = {
                     scope.launch {
                         listState.animateScrollToItem(
-                            state.value.chat.messages.size.plus(1)
+                            state.value.chat.messageGroups.size.plus(1)
                         )
                     }
                 }
@@ -228,7 +229,7 @@ fun ChatScreen(
         ) {
             LazyChatScreen(
                 modifier = Modifier.fillMaxWidth(),
-                messagesList = state.value.chat.messages.toPersistentList(),
+                messagesList = state.value.chat.messageGroups.toPersistentList(),
                 event = event,
                 error = state.value.error,
                 bottomPaddings = paddingValues.calculateBottomPadding(),
@@ -482,7 +483,6 @@ fun MessageBox(
                 TextMessage(
                     message = currentMessage,
                     isUser = isUser,
-                    loading = currentMessage.loading
                 )
             }
 
@@ -506,20 +506,20 @@ private fun TextMessage(
     message: MessageAI,
     isUser: Boolean,
     modifier: Modifier = Modifier,
-    loading: Boolean,
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth(1f)
+            .padding(15.dp, 5.dp, 15.dp, 5.dp)
             .then(
-                if (loading) {
+                if (message.loading) {
                     Modifier
-                        .height(100.dp)
+                        .height(50.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .shimmerLoading()
+
                 } else Modifier
             )
-            .padding(15.dp, 5.dp, 15.dp, 5.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
