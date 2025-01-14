@@ -63,7 +63,7 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun getMessageGroupById(chatId: Int): MessageGroupWithMessagesEntity {
+    override suspend fun getMessageGroupWithMessagesById(chatId: Int): MessageGroupWithMessagesEntity {
         return messageChatDao.getMessageGroup(chatId)
     }
 
