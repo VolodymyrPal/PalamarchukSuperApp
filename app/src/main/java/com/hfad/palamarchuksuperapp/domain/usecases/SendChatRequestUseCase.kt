@@ -29,8 +29,9 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         handlers: List<AiModelHandler>,
     ) {
         val chatId = message.chatId
+        val activeHandlers = handlers.filter { it.aiHandlerInfo.value.isSelected }
 
-        if (handlers.isEmpty()) {
+        if (activeHandlers.isEmpty()) {
             chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided"))
             return
         }
