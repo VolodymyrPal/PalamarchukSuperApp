@@ -110,6 +110,7 @@ object MockChat {
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
                     messageGroupId = 3,
+                    isChosen = true,
                     model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
@@ -203,6 +204,7 @@ object MockChat {
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
                     messageGroupId = 7,
+                    isChosen = true,
                     model = AiModel.OpenAIModel()
                 )
             )
@@ -261,7 +263,8 @@ object MockChat {
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
                     messageGroupId = 9,
-                    model = AiModel.GeminiModel()
+                    model = AiModel.GeminiModel(),
+                    isChosen = true
                 )
             )
         ),
