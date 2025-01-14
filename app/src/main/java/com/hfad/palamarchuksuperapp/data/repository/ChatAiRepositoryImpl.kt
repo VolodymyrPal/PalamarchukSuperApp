@@ -63,7 +63,7 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         }
     }
 
-    override suspend fun getMessageGroupById(chatId: Int): MessageGroupWithMessagesEntity {
+    override suspend fun getMessageGroupWithMessagesById(chatId: Int): MessageGroupWithMessagesEntity {
         return messageChatDao.getMessageGroup(chatId)
     }
 
@@ -92,17 +92,10 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
         return messageGroupId
     }
 
-    override suspend fun updateSubMessage(
-        index: Int,
-        messageAI: MessageAI,
-        indexSubMessage: Int,
-    ) {
-        chatAiChatFlow.update {
-            it.set(
-                index,
-                it[index].copy(content = it[index].content.set(indexSubMessage, messageAI))
-            )
-        }
+    override suspend fun updateMessageGroup(messageGroup: MessageGroup) {
+        messageChatDao.updateMessageGroupWithContent(
+            messageGroup.toEntityWithRelations()
+        )
     }
 
 }

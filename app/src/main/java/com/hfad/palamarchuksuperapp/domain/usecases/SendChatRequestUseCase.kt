@@ -29,53 +29,58 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         handlers: List<AiModelHandler>,
     ) {
         val chatId = message.chatId
+        val activeHandlers = handlers.filter { it.aiHandlerInfo.value.isSelected }
 
-        if (handlers.isEmpty()) {
+        if (activeHandlers.isEmpty()) {
             chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided"))
             return
         }
 
-        val requestMessageGroupId = chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
+        chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
 
         val chat = chatAiRepository.getChatWithMessagesById(chatId)
 
         val contextMessages = chat.messageGroups.toPersistentList()
 
+        val responseMessageGroup = chatAiRepository.addMessageGroup(
+            MessageGroup(
+                id = 0,
+                role = Role.MODEL,
+                type = MessageType.TEXT,
+                chatId = chatId,
+                content = emptyList()
+            )
+        )
+
         supervisorScope {
 
-            val groupId = chat.messageGroups.last().id
-
             val requests: List<Pair<Int, Deferred<Result<MessageAI, AppError>>>> =
-                handlers.filter { it.aiHandlerInfo.value.isSelected }.mapIndexed { index, handler ->
+                activeHandlers.mapIndexed { index, handler ->
                     index to async {
-                        handler.getResponse(
-                            listToSend,
-                            newMessageIndex
-                        ) //TODO dealing with newMessageIndex not the best
+                        handler.getResponse(contextMessages)
                     }
                 }
 
-            val loadingContent = requests.map { (index, _) ->
+            val loadingMessages = requests.map { (index, deferred) ->
                 MessageAI(
-                    id = index,
+                    id = 0,
                     message = "",
                     model = null,
                     loading = true,
-                    messageGroupId = newMessageIndex
+                    messageGroupId = responseMessageGroup.toInt(),
+                    timestamp = Clock.System.now().toString()
                 )
-            }.toPersistentList()
+            }
 
-
-            val messageToAdd = MessageGroup(
-                id = newMessageIndex,
-                role = Role.MODEL,
-                content = loadingContent,
-                type = MessageType.TEXT
+            chatAiRepository.updateMessageGroup(
+                MessageGroup(
+                    id = responseMessageGroup.toInt(),
+                    role = Role.MODEL,
+                    type = MessageType.TEXT,
+                    chatId = chatId,
+                    content = loadingMessages
+                )
             )
-
-            addAiMessageUseCase(messageToAdd)
-
-            val indexOfRequest = chatAiRepository.chatAiChatFlow.value.lastIndex
 
             requests.forEach { (requestIndex, request) ->
                 launch {

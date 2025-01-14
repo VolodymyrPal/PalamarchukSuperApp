@@ -17,6 +17,12 @@ data class MessageGroup(
     val chatId: Int,
     val type: MessageType = MessageType.TEXT,
 ) {
+    constructor() : this(
+        id = 0,
+        role = Role.USER,
+        content = persistentListOf(),
+        chatId = 0
+    )
 
     fun toEntityWithRelations(): MessageGroupWithMessagesEntity {
         return MessageGroupWithMessagesEntity(

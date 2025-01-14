@@ -462,12 +462,20 @@ fun MessageBox(
     event: (ChatBotViewModel.Event) -> Unit,
     pagerState: PagerState = rememberPagerState(pageCount = { messageGroup.content.size }),
 ) {
-    LaunchedEffect(pagerState.currentPage) {
-        event(
+    val chosenPageIndex = remember(messageGroup.content) {
+        messageGroup.content.indexOfFirst { it.isChosen }
+    }
+    LaunchedEffect(chosenPageIndex) {
+        if (chosenPageIndex != -1 && pagerState.currentPage != chosenPageIndex) {
+            pagerState.requestScrollToPage(chosenPageIndex)
+        }
+    }
+    LaunchedEffect(pagerState.settledPage) {
+        if (pagerState.pageCount > 0) {
             ChatBotViewModel.Event.ChooseSubMessage(
                 messageGroup.content[pagerState.currentPage] // TODO check
             )
-        )
+        }
     }
 
     HorizontalPager(
