@@ -13,6 +13,6 @@ class UpdateAiMessageUseCaseImpl @Inject constructor(
 ) : UpdateAiMessageUseCase {
 
     override suspend operator fun invoke(messageAI: MessageAI) {
-        chatAiRepository.updateSubMessage(messageAI)
+        chatAiRepository.updateMessageAi(messageAI)
     }
 }

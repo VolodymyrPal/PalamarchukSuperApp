@@ -32,7 +32,7 @@ interface MessageChatDao {
         chatWithRelations: MessageChatWithRelationsEntity,
     ): Long {
         val chatId = insertChat(chatWithRelations.chat)
-        val group = chatWithRelations.messageGroups
+        val group = chatWithRelations.messageGroupsWithMessageEntity
         group.forEach { messageGroup ->
             val groupId = insertMessageGroup(messageGroup.group.copy(chatId = chatId.toInt()))
             for (messageAi: MessageAiEntity in messageGroup.messages) {
@@ -162,6 +162,15 @@ interface MessageChatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMessage(message: MessageAiEntity): Long
 
+    @Query("SELECT * FROM messageaientities WHERE id = :messageId")
+    suspend fun getMessageById(messageId: Int): MessageAiEntity
+
+    @Transaction
+    suspend fun insertAndReturnMessage(message: MessageAiEntity): MessageAiEntity {
+        val id = insertMessage(message)
+        return getMessageById(id.toInt())
+    }
+
     /**
      * Обновление AI сообщения.
      * @param message Обновленная сущность сообщения
@@ -173,7 +182,7 @@ interface MessageChatDao {
      * Удаление AI сообщения по ID.
      * @param messageId ID сообщения для удаления
      */
-    @Query("DELETE FROM MessageAI WHERE id = :messageId")
+    @Query("DELETE FROM messageaientities WHERE id = :messageId")
     suspend fun deleteMessage(messageId: Int)
 
     /**
@@ -181,7 +190,7 @@ interface MessageChatDao {
      * @param groupId ID группы
      * @return Список сообщений группы
      */
-    @Query("SELECT * FROM MessageAI WHERE messageGroupId = :groupId")
+    @Query("SELECT * FROM messageaientities WHERE messageGroupId = :groupId")
     suspend fun getMessagesForGroup(groupId: Int): List<MessageAiEntity>
     // endregion
 }

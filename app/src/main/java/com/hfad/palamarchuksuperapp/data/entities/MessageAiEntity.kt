@@ -10,12 +10,13 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import kotlinx.serialization.json.Json
 
 typealias MessageAiContentString = String
+
 /**
  * Сущность, представляющая отдельное AI сообщение.
  * Связана с MessageGroupEntity через внешний ключ messageGroupId.
  */
 @Entity(
-    tableName = "MessageAI",
+    tableName = "MessageAiEntities",
     foreignKeys = [
         ForeignKey(
             entity = MessageGroupEntity::class,
@@ -36,22 +37,27 @@ data class MessageAiEntity(
     val otherContent: MessageAiContentString? = null,
     val model: AiModel? = null,
     val isChosen: Boolean = false,
-    val loading: Boolean = false
+    val loading: Boolean = false,
 ) {
-    fun toDomainModel(): MessageAI {
-        return MessageAI(
-            id = id,
-            messageGroupId = messageGroupId,
-            timestamp = timestamp,
-            message = message,
-            otherContent = otherContent?.let { Json.decodeFromString<MessageAiContent>(it) },
-            model = model,
-            isChosen = isChosen,
-            loading = loading
-        )
-    }
     companion object {
-        fun from (messageAI: MessageAI) = MessageAiEntity(
+        fun toDomainModel(messageAiEntity: MessageAiEntity): MessageAI {
+            return MessageAI(
+                id = messageAiEntity.id,
+                messageGroupId = messageAiEntity.messageGroupId,
+                timestamp = messageAiEntity.timestamp,
+                message = messageAiEntity.message,
+                otherContent = messageAiEntity.otherContent?.let {
+                    Json.decodeFromString<MessageAiContent>(
+                        it
+                    )
+                },
+                model = messageAiEntity.model,
+                isChosen = messageAiEntity.isChosen,
+                loading = messageAiEntity.loading
+            )
+        }
+
+        fun from(messageAI: MessageAI) = MessageAiEntity(
             id = messageAI.id,
             messageGroupId = messageAI.messageGroupId,
             timestamp = messageAI.timestamp,

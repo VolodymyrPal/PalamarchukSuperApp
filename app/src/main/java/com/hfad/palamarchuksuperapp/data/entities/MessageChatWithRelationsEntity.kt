@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.data.entities
 
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 
@@ -14,13 +15,17 @@ data class MessageChatWithRelationsEntity(
         entityColumn = "chatId",
         entity = MessageGroupEntity::class
     )
-    val messageGroups: List<MessageGroupWithMessagesEntity> // Группы сообщений, связанные с чатом
+    val messageGroupsWithMessageEntity: List<MessageGroupWithMessagesEntity>, // Группы сообщений, связанные с чатом
 ) {
     fun toDomainModel(): MessageChat {
         return MessageChat(
             id = chat.id,
             name = chat.name,
-            messageGroups = messageGroups.map { messageGroup -> messageGroup.toDomainModel() },
+            messageGroups = messageGroupsWithMessageEntity.map { messageGroup ->
+                MessageGroupWithMessagesEntity.toDomainModel(
+                    messageGroup
+                )
+            },
             timestamp = chat.timestamp
         )
     }
@@ -35,18 +40,23 @@ data class MessageGroupWithMessagesEntity(
         entityColumn = "messageGroupId",
         entity = MessageAiEntity::class
     )
-    val messages: List<MessageAiEntity> // Сообщения, связанные с группой
+    val messages: List<MessageAiEntity>, // Сообщения, связанные с группой
 ) {
-    fun toDomainModel(): MessageGroup {
-        return MessageGroup(
-            id = group.id,
-            role = group.role,
-            content = messages.map{ message -> message.toDomainModel() },
-            type = group.type,
-            chatId = group.chatId
-        )
-    }
     companion object {
+        fun toDomainModel(messageGroupEntity: MessageGroupWithMessagesEntity): MessageGroup {
+            return MessageGroup(
+                id = messageGroupEntity.group.id,
+                role = messageGroupEntity.group.role,
+                content = messageGroupEntity.messages.map { message ->
+                    MessageAI.toDomainModel(
+                        message
+                    )
+                },
+                type = messageGroupEntity.group.type,
+                chatId = messageGroupEntity.group.chatId
+            )
+        }
+
         fun from(messageGroup: MessageGroup): MessageGroupWithMessagesEntity {
             return MessageGroupWithMessagesEntity(
                 group = MessageGroupEntity.from(messageGroup),

@@ -1,23 +1,27 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import android.util.Log
+import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
+import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
-import kotlinx.collections.immutable.PersistentList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-
-class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
-
-    override val chatAiChatFlow: MutableStateFlow<PersistentList<MessageGroup>> =
-        MutableStateFlow(MockChat())
+class ChatAiRepositoryImpl @Inject constructor(
+    private val messageChatDao: MessageChatDao,
+) : ChatAiRepository {
 
     override val errorFlow: MutableSharedFlow<AppError?> = MutableSharedFlow()
 
@@ -51,7 +55,7 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
             val id = messageChatDao.insertChatWithRelations(
                 MessageChatWithRelationsEntity(
                     chat = MessageChatEntity(name = "Base chat"),
-                    messages = MockChat().map { it.toEntityWithRelations() } //TODO For testing
+                    messageGroupsWithMessageEntity = listOf() // MockChat().map { it.toEntityWithRelations() } //TODO For testing
                 )
             )
             messageChatDao.getChatWithMessagesFlow(id.toInt())
@@ -87,15 +91,36 @@ class ChatAiRepositoryImpl @Inject constructor() : ChatAiRepository {
 
     override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long {
         val messageGroupId = messageChatDao.insertMessageGroupWithMessages(
-            messageGroupWithChatID.toEntityWithRelations()
+            MessageGroupWithMessagesEntity.from(messageGroupWithChatID)
         )
         return messageGroupId
     }
 
     override suspend fun updateMessageGroup(messageGroup: MessageGroup) {
         messageChatDao.updateMessageGroupWithContent(
-            messageGroup.toEntityWithRelations()
+            MessageGroupWithMessagesEntity.from(messageGroup)
         )
     }
 
+    override suspend fun updateMessageAi(messageAI: MessageAI) {
+        messageChatDao.updateMessage(
+            MessageAiEntity(
+                id = messageAI.id,
+                messageGroupId = messageAI.messageGroupId,
+                timestamp = messageAI.timestamp,
+                message = messageAI.message,
+                otherContent = messageAI.otherContent?.toString(),
+                model = messageAI.model,
+                isChosen = messageAI.isChosen,
+                loading = messageAI.loading
+            )
+        )
+    }
+
+    override suspend fun addAndGetMessageAi(messageAI: MessageAI): MessageAI {
+        val messageEntity = messageChatDao.insertAndReturnMessage(
+            MessageAiEntity.from(messageAI)
+        )
+        return MessageAI.toDomainModel(messageEntity)
+    }
 }

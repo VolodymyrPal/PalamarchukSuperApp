@@ -27,5 +27,6 @@ interface ChatAiRepository {
     suspend fun getMessageGroupWithMessagesById(chatId: Int): MessageGroupWithMessagesEntity
     suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long
     suspend fun updateMessageGroup(messageGroup: MessageGroup)
+    suspend fun addAndGetMessageAi(messageAI: MessageAI): MessageAI
     suspend fun updateMessageAi(messageAI: MessageAI)
 }

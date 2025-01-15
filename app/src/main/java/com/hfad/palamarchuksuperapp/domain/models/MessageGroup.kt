@@ -24,27 +24,6 @@ data class MessageGroup(
         chatId = 0
     )
 
-    fun toEntityWithRelations(): MessageGroupWithMessagesEntity {
-        return MessageGroupWithMessagesEntity(
-            group = MessageGroupEntity(
-                id = id,
-                role = role,
-                type = type,
-                chatId = chatId
-            ),
-            messages = content.map { aI -> MessageAiEntity.from(aI) },
-        )
-    }
-
-    fun toEntity() : MessageGroupEntity {
-        return MessageGroupEntity(
-            id = id,
-            role = role,
-            type = type,
-            chatId = chatId
-        )
-    }
-
     constructor(
         id: Int,
         role: Role = Role.USER,
@@ -112,6 +91,30 @@ data class MessageGroup(
         content = content.toPersistentList(),
         chatId = 0
     )
+
+    companion object {
+
+        fun toDomainModel(messageGroup: MessageGroup): MessageGroupWithMessagesEntity {
+            return MessageGroupWithMessagesEntity(
+                group = MessageGroupEntity(
+                    id = messageGroup.id,
+                    role = messageGroup.role,
+                    type = messageGroup.type,
+                    chatId = messageGroup.chatId
+                ),
+                messages = messageGroup.content.map { aI -> MessageAiEntity.from(aI) },
+            )
+        }
+
+        fun toEntity(messageGroup: MessageGroup) : MessageGroupEntity {
+            return MessageGroupEntity(
+                id = messageGroup.id,
+                role = messageGroup.role,
+                type = messageGroup.type,
+                chatId = messageGroup.chatId
+            )
+        }
+    }
 }
 
 enum class MessageType {

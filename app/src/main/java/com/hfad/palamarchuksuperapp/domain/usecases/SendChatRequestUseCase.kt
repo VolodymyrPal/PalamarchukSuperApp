@@ -38,13 +38,13 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
         chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
 
-        val chat = chatAiRepository.getChatWithMessagesById(chatId)
+        val currentChat = chatAiRepository.getChatWithMessagesById(chatId)
 
-        val contextMessages = chat.messageGroups.toPersistentList()
+        val contextMessages = currentChat.messageGroups.toPersistentList()
 
         val responseMessageGroup = chatAiRepository.addMessageGroup(
             MessageGroup(
-                id = 0,
+                id = 0, //Room will provide the id
                 role = Role.MODEL,
                 type = MessageType.TEXT,
                 chatId = chatId,
@@ -54,75 +54,55 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
         supervisorScope {
 
-            val requests: List<Pair<Int, Deferred<Result<MessageAI, AppError>>>> =
-                activeHandlers.mapIndexed { index, handler ->
-                    index to async {
+            val requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>> =
+                activeHandlers.map { handler ->
+                    chatAiRepository.addAndGetMessageAi(
+                        MessageAI(
+                            id = 0, //Room will provide the id
+                            message = "",
+                            model = null,
+                            loading = true,
+                            messageGroupId = responseMessageGroup.toInt(),
+                            timestamp = Clock.System.now().toString()
+                        )
+                    ) to async {
                         handler.getResponse(contextMessages)
                     }
                 }
 
-            val loadingMessages = requests.map { (index, deferred) ->
-                MessageAI(
-                    id = 0,
-                    message = "",
-                    model = null,
-                    loading = true,
-                    messageGroupId = responseMessageGroup.toInt(),
-                    timestamp = Clock.System.now().toString()
-                )
-            }
-
-            chatAiRepository.updateMessageGroup(
-                MessageGroup(
-                    id = responseMessageGroup.toInt(),
-                    role = Role.MODEL,
-                    type = MessageType.TEXT,
-                    chatId = chatId,
-                    content = loadingMessages
-                )
-            )
-
-            requests.forEach { (requestIndex, request) ->
+            requests.forEach { (messageAi, request) ->
                 launch {
-                    val result: Result<MessageAI, AppError> = request.await()
-                    if (result is Result.Success) {
-                        updateAiMessageUseCase.invoke(
-                            messageAI =
-                                MessageAI(
-                                    id = requestIndex,
+
+                    val result = request.await()
+                    when (result) {
+                        is Result.Success -> {
+                            chatAiRepository.updateMessageAi(
+                                messageAI = messageAi.copy(
                                     message = result.data.message,
                                     model = result.data.model,
-                                    messageGroupId = result.data.messageGroupId
-                                ),
-                            messageIndex = indexOfRequest,
-                            subMessageIndex = requestIndex
-                        )
-                    } else {
-                        val errorMessage =
-                            when ((result as Result.Error<MessageAI, AppError>).error) {
-                                is AppError.CustomError -> {
-                                    (result.error as AppError.CustomError).errorText
-                                        ?: "Undefined Error"
-                                }
-//TODO update other errors
-                                is AppError.Network -> {
-                                    "Error with network"
-                                }
+                                    timestamp = Clock.System.now().toString(),
+                                    loading = false
+                                )
+                            )
+                        }
 
+                        is Result.Error -> {
+                            val errorMessage = when (result.error) {
+                                is AppError.CustomError -> result.error.errorText
+                                    ?: "Undefined Error"
+
+                                is AppError.Network -> "Error with network"
                                 else -> "Undefined error"
                             }
-                        updateAiMessageUseCase.invoke(
-                            messageAI =
-                                MessageAI(
-                                    id = requestIndex,
+                            chatAiRepository.updateMessageAi(
+                                messageAI = messageAi.copy(
                                     message = errorMessage,
                                     model = result.data?.model,
-                                    messageGroupId = result.data?.messageGroupId
-                                        ?: requestIndex //TODO it pass info from API, change it
+                                    timestamp = Clock.System.now().toString(),
+                                    loading = false
                                 ),
-                            messageIndex = indexOfRequest,
-                            subMessageIndex = requestIndex
-                        )
+                            )
+                        }
                     }
                 }
             }
