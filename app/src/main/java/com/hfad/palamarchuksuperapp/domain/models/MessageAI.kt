@@ -1,6 +1,8 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
+import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import kotlinx.datetime.Clock
+import kotlinx.serialization.json.Json
 
 data class MessageAI(
     val id: Int = 0,
@@ -11,7 +13,38 @@ data class MessageAI(
     val model: AiModel? = null,
     val isChosen: Boolean = false,
     val loading: Boolean = false,
-)
+) {
+    companion object {
+        fun toDomainModel (messageAiEntity: MessageAiEntity): MessageAI {
+            return MessageAI(
+                id = messageAiEntity.id,
+                messageGroupId = messageAiEntity.messageGroupId,
+                timestamp = messageAiEntity.timestamp,
+                message = messageAiEntity.message,
+                otherContent = messageAiEntity.otherContent?.let {
+                    Json.decodeFromString<MessageAiContent>(
+                        it
+                    )
+                },
+                model = messageAiEntity.model,
+                isChosen = messageAiEntity.isChosen,
+                loading = messageAiEntity.loading
+            )
+        }
+
+        fun toEntity(messageAI: MessageAI) = MessageAiEntity(
+            id = messageAI.id,
+            messageGroupId = messageAI.messageGroupId,
+            timestamp = messageAI.timestamp,
+            message = messageAI.message,
+            otherContent = messageAI.otherContent?.toString(),
+            model = messageAI.model,
+            isChosen = messageAI.isChosen,
+            loading = messageAI.loading
+        )
+
+    }
+}
 
 sealed class MessageAiContent {
     data class Image(val image: Base64) : MessageAiContent()
