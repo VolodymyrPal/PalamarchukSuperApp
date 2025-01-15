@@ -44,7 +44,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
         val responseMessageGroup = chatAiRepository.addMessageGroup(
             MessageGroup(
-                id = 0,
+                id = 0, //Room will provide the id
                 role = Role.MODEL,
                 type = MessageType.TEXT,
                 chatId = chatId,
@@ -54,35 +54,23 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
         supervisorScope {
 
-            val requests: List<Pair<Int, Deferred<Result<MessageAI, AppError>>>> =
-                activeHandlers.mapIndexed { index, handler ->
-                    index to async {
+            val requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>> =
+                activeHandlers.map { handler ->
+                    chatAiRepository.addAndGetMessageAi(
+                        MessageAI(
+                            id = 0, //Room will provide the id
+                            message = "",
+                            model = null,
+                            loading = true,
+                            messageGroupId = responseMessageGroup.toInt(),
+                            timestamp = Clock.System.now().toString()
+                        )
+                    ) to async {
                         handler.getResponse(contextMessages)
                     }
                 }
 
-            val loadingMessages = requests.map { (index, deferred) ->
-                MessageAI(
-                    id = 0,
-                    message = "",
-                    model = null,
-                    loading = true,
-                    messageGroupId = responseMessageGroup.toInt(),
-                    timestamp = Clock.System.now().toString()
-                )
-            }
-
-            chatAiRepository.updateMessageGroup(
-                MessageGroup(
-                    id = responseMessageGroup.toInt(),
-                    role = Role.MODEL,
-                    type = MessageType.TEXT,
-                    chatId = chatId,
-                    content = loadingMessages
-                )
-            )
-
-            requests.forEach { (requestIndex, request) ->
+            requests.forEach { (messageAi, request) ->
                 launch {
                     val result: Result<MessageAI, AppError> = request.await()
                     if (result is Result.Success) {
