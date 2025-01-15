@@ -38,9 +38,9 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
         chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
 
-        val chat = chatAiRepository.getChatWithMessagesById(chatId)
+        val currentChat = chatAiRepository.getChatWithMessagesById(chatId)
 
-        val contextMessages = chat.messageGroups.toPersistentList()
+        val contextMessages = currentChat.messageGroups.toPersistentList()
 
         val responseMessageGroup = chatAiRepository.addMessageGroup(
             MessageGroup(
