@@ -158,9 +158,9 @@ interface UseCaseModule {
     fun bindMapAiModelHandlerUseCase(mapAiModelHandlerUseCaseImpl: MapAiModelHandlerUseCaseImpl)
             : MapAiModelHandlerUseCase
 
-    @Singleton
-    @Binds
-    fun bindChangeAiMessageUseCase(changeAiMessageUseCase: UpdateAiMessageUseCaseImpl): UpdateAiMessageUseCase
+//    @Singleton
+//    @Binds
+//    fun bindChangeAiMessageUseCase(changeAiMessageUseCase: UpdateAiMessageUseCaseImpl): UpdateAiMessageUseCase
 
     @Singleton
     @Binds
