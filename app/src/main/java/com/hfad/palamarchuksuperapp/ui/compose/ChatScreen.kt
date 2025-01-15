@@ -470,10 +470,12 @@ fun MessageBox(
             pagerState.requestScrollToPage(chosenPageIndex)
         }
     }
-    LaunchedEffect(pagerState.settledPage) {
+    LaunchedEffect(Unit) {
         if (pagerState.pageCount > 0) {
-            ChatBotViewModel.Event.ChooseSubMessage(
-                messageGroup.content[pagerState.currentPage] // TODO check
+            event(
+                ChatBotViewModel.Event.ChooseSubMessage(
+                    messageGroup.content[pagerState.currentPage] // TODO check
+                )
             )
         }
     }
