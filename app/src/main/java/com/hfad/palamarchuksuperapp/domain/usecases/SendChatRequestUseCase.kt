@@ -72,45 +72,37 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
             requests.forEach { (messageAi, request) ->
                 launch {
-                    val result: Result<MessageAI, AppError> = request.await()
-                    if (result is Result.Success) {
-                        updateAiMessageUseCase.invoke(
-                            messageAI =
-                                MessageAI(
-                                    id = requestIndex,
+
+                    val result = request.await()
+                    when (result) {
+                        is Result.Success -> {
+                            chatAiRepository.updateMessageAi(
+                                messageAI = messageAi.copy(
                                     message = result.data.message,
                                     model = result.data.model,
-                                    messageGroupId = result.data.messageGroupId
-                                ),
-                            messageIndex = indexOfRequest,
-                            subMessageIndex = requestIndex
-                        )
-                    } else {
-                        val errorMessage =
-                            when ((result as Result.Error<MessageAI, AppError>).error) {
-                                is AppError.CustomError -> {
-                                    (result.error as AppError.CustomError).errorText
-                                        ?: "Undefined Error"
-                                }
-//TODO update other errors
-                                is AppError.Network -> {
-                                    "Error with network"
-                                }
+                                    timestamp = Clock.System.now().toString(),
+                                    loading = false
+                                )
+                            )
+                        }
 
+                        is Result.Error -> {
+                            val errorMessage = when (result.error) {
+                                is AppError.CustomError -> result.error.errorText
+                                    ?: "Undefined Error"
+
+                                is AppError.Network -> "Error with network"
                                 else -> "Undefined error"
                             }
-                        updateAiMessageUseCase.invoke(
-                            messageAI =
-                                MessageAI(
-                                    id = requestIndex,
+                            chatAiRepository.updateMessageAi(
+                                messageAI = messageAi.copy(
                                     message = errorMessage,
                                     model = result.data?.model,
-                                    messageGroupId = result.data?.messageGroupId
-                                        ?: requestIndex //TODO it pass info from API, change it
+                                    timestamp = Clock.System.now().toString(),
+                                    loading = false
                                 ),
-                            messageIndex = indexOfRequest,
-                            subMessageIndex = requestIndex
-                        )
+                            )
+                        }
                     }
                 }
             }
