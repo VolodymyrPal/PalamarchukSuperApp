@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
+import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
@@ -61,7 +62,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             id = 0, //Room will provide the id
                             message = "",
                             model = null,
-                            loading = true,
+                            status = MessageStatus.LOADING,
                             messageGroupId = responseMessageGroup.toInt(),
                             timestamp = Clock.System.now().toString()
                         )
@@ -81,7 +82,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                     message = result.data.message,
                                     model = result.data.model,
                                     timestamp = Clock.System.now().toString(),
-                                    loading = false
+                                    status = MessageStatus.SUCCESS
                                 )
                             )
                         }
@@ -99,7 +100,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                     message = errorMessage,
                                     model = result.data?.model,
                                     timestamp = Clock.System.now().toString(),
-                                    loading = false
+                                    status = MessageStatus.ERROR
                                 ),
                             )
                         }
