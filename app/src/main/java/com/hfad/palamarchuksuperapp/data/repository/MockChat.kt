@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
@@ -274,7 +275,7 @@ object MockChat {
             content = persistentListOf(
                 MessageAI(
                     message = "Some message loading))",
-                    loading = true,
+                    status = MessageStatus.LOADING,
                     messageGroupId = 10,
                     model = AiModel.GroqModel()
                 ),
