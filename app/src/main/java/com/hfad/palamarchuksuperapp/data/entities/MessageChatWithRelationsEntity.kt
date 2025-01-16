@@ -17,17 +17,19 @@ data class MessageChatWithRelationsEntity(
     )
     val messageGroupsWithMessageEntity: List<MessageGroupWithMessagesEntity>, // Группы сообщений, связанные с чатом
 ) {
-    fun toDomainModel(): MessageChat {
-        return MessageChat(
-            id = chat.id,
-            name = chat.name,
-            messageGroups = messageGroupsWithMessageEntity.map { messageGroup ->
-                MessageGroupWithMessagesEntity.toDomainModel(
-                    messageGroup
-                )
-            },
-            timestamp = chat.timestamp
-        )
+    companion object {
+        fun toDomain(messageGroupWithMessagesEntity: MessageChatWithRelationsEntity): MessageChat {
+            return MessageChat(
+                id = messageGroupWithMessagesEntity.chat.id,
+                name = messageGroupWithMessagesEntity.chat.name,
+                messageGroups = messageGroupWithMessagesEntity.messageGroupsWithMessageEntity.map {
+                    MessageGroupWithMessagesEntity.toDomainModel(
+                        it
+                    )
+                },
+                timestamp = messageGroupWithMessagesEntity.chat.timestamp
+            )
+        }
     }
 }
 
