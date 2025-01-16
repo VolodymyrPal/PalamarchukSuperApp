@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 
@@ -12,10 +13,10 @@ data class MessageAI(
     val otherContent: MessageAiContent? = null,
     val model: AiModel? = null,
     val isChosen: Boolean = false,
-    val loading: Boolean = false,
+    val status: MessageStatus = MessageStatus.CREATED,
 ) {
     companion object {
-        fun toDomainModel (messageAiEntity: MessageAiEntity): MessageAI {
+        fun toDomainModel(messageAiEntity: MessageAiEntity): MessageAI {
             return MessageAI(
                 id = messageAiEntity.id,
                 messageGroupId = messageAiEntity.messageGroupId,
@@ -28,7 +29,7 @@ data class MessageAI(
                 },
                 model = messageAiEntity.model,
                 isChosen = messageAiEntity.isChosen,
-                loading = messageAiEntity.loading
+                status = messageAiEntity.status
             )
         }
 
@@ -40,7 +41,7 @@ data class MessageAI(
             otherContent = messageAI.otherContent?.toString(),
             model = messageAI.model,
             isChosen = messageAI.isChosen,
-            loading = messageAI.loading
+            status = messageAI.status
         )
 
     }

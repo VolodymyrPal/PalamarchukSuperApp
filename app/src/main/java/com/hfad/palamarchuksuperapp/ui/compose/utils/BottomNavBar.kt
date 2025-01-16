@@ -122,7 +122,8 @@ fun BottomNavBar(
             }
         })
 
-    val HomeTopLevelRoute = TabBarItem(title = stringResource(R.string.bnav_home_title),
+    val HomeTopLevelRoute = TabBarItem(
+        title = stringResource(R.string.bnav_home_title),
         route = Routes.MainScreenConstraint,
         selectedIcon = R.drawable.bicon_home_black_filled,
         unselectedIcon = R.drawable.bicon_home_black_outlined,
@@ -132,11 +133,12 @@ fun BottomNavBar(
             navController.navigate(Routes.MainScreenConstraint) {
                 popUpTo(navController.graph.findStartDestination().id) //оставляет главный экран, как точку возврата
                 launchSingleTop = true
-                restoreState = true
+//                restoreState = true
             }
         })
 
-    val CameraTopLevelRoute = TabBarItem(title = stringResource(R.string.bnav_camera_title),
+    val CameraTopLevelRoute = TabBarItem(
+        title = stringResource(R.string.bnav_camera_title),
         route = "Camera",
         selectedIcon = R.drawable.bicon_camera_filled,
         unselectedIcon = R.drawable.bicon_camera_outlined,
@@ -147,7 +149,8 @@ fun BottomNavBar(
         })
 
 
-    val SettingTopLevelRoute = TabBarItem(title = stringResource(R.string.bnav_settings_title),
+    val SettingTopLevelRoute = TabBarItem(
+        title = stringResource(R.string.bnav_settings_title),
         route = Routes.Settings,
         selectedIcon = R.drawable.bicon_settings_filled,
         unselectedIcon = R.drawable.bicon_settings_outlined,
@@ -155,12 +158,13 @@ fun BottomNavBar(
         onClick = {
             onClickVibro()
             navController.navigate(Routes.Settings) {
-                popUpTo(navController.graph.findStartDestination().id) { //оставляет главный экран, как точку возврата
-                    saveState = true
-                    inclusive = false
-                }
-                launchSingleTop = true
-                restoreState = true
+//                popUpTo(navController.graph.findStartDestination().id) { //оставляет главный экран, как точку возврата
+//                    saveState = true
+//                    inclusive = false
+//                }
+//                launchSingleTop = true
+//                restoreState = true
+//                }
             }
         })
     val tabBarItems =
