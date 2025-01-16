@@ -98,6 +98,7 @@ import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
@@ -470,7 +471,7 @@ fun MessageBox(
             pagerState.requestScrollToPage(chosenPageIndex)
         }
     }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(pagerState.settledPage) {
         if (pagerState.pageCount > 0) {
             event(
                 ChatBotViewModel.Event.ChooseSubMessage(
@@ -506,7 +507,7 @@ fun MessageBox(
         PagerIndicator(
             totalPages = messageGroup.content.size,
             currentPage = pagerState.currentPage,
-            loadingStates = messageGroup.content.map { it.loading }
+            loadingStates = messageGroup.content.map { it.status == MessageStatus.LOADING }
         )
     }
 }
@@ -522,7 +523,7 @@ private fun TextMessage(
             .fillMaxWidth(1f)
             .padding(15.dp, 5.dp, 15.dp, 5.dp)
             .then(
-                if (message.loading) {
+                if (message.status == MessageStatus.LOADING) {
                     Modifier
                         .height(50.dp)
                         .clip(RoundedCornerShape(10.dp))
