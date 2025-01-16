@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
@@ -36,17 +37,17 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllChats(): List<MessageChat> {
-        return messageChatDao.getAllChatsWithMessages().map { it.toDomainModel() }
+        return messageChatDao.getAllChatsWithMessages()
+            .map { MessageChatWithRelationsEntity.toDomain(it) }
     }
 
     override suspend fun getChatWithMessagesById(chatId: Int): MessageChat {
         if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
             Log.d("ChatAiRepositoryImpl", "getChatById: $chatId")
             val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
-            return messageChatDao.getChatWithMessages(id.toInt()).toDomainModel()
+            return MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(id.toInt()))
         } else {
-            return messageChatDao.getChatWithMessages(chatId)
-                .toDomainModel() //Could produce potential error
+            return MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(chatId))
         }
     }
 
@@ -55,14 +56,20 @@ class ChatAiRepositoryImpl @Inject constructor(
             val id = messageChatDao.insertChatWithRelations(
                 MessageChatWithRelationsEntity(
                     chat = MessageChatEntity(name = "Base chat"),
-                    messageGroupsWithMessageEntity = listOf() // MockChat().map { it.toEntityWithRelations() } //TODO For testing
+                    messageGroupsWithMessageEntity = MockChat().map {
+                        MessageGroupWithMessagesEntity.from(
+                            it
+                        )
+                    } //TODO For testing
                 )
             )
+            Log.d("ChatAiRepositoryImpl", "getChatById: $id")
             messageChatDao.getChatWithMessagesFlow(id.toInt())
-                .map { value -> value.toDomainModel() }
+                .map { value -> MessageChatWithRelationsEntity.toDomain(value) }
         } else {
-            messageChatDao.getChatWithMessagesFlow(chatId).map { value ->
-                value.toDomainModel()
+            checkLoadingMessages(chatId) // TODO NEED TO FIND A WAY TO CHECK LOADING MESSAGES
+            return messageChatDao.getChatWithMessagesFlow(chatId).map { value ->
+                MessageChatWithRelationsEntity.toDomain(value)
             }
         }
     }
@@ -112,7 +119,7 @@ class ChatAiRepositoryImpl @Inject constructor(
                 otherContent = messageAI.otherContent?.toString(),
                 model = messageAI.model,
                 isChosen = messageAI.isChosen,
-                loading = messageAI.loading
+                status = messageAI.status
             )
         )
     }
@@ -122,5 +129,21 @@ class ChatAiRepositoryImpl @Inject constructor(
             MessageAiEntity.from(messageAI)
         )
         return MessageAI.toDomainModel(messageEntity)
+    }
+
+    suspend fun checkLoadingMessages(chatId: Int) {
+        val loadingMessage =
+            MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(chatId))
+        for (messageGroup in loadingMessage.messageGroups) {
+            for (message in messageGroup.content) {
+                if (message.status == MessageStatus.LOADING) {
+                    messageChatDao.updateMessage(
+                        MessageAiEntity.from(message).copy(
+                            status = MessageStatus.ERROR
+                        )
+                    )
+                }
+            }
+        }
     }
 }
