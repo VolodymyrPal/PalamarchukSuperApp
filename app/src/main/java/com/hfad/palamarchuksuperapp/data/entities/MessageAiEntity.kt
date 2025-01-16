@@ -37,7 +37,7 @@ data class MessageAiEntity(
     val otherContent: MessageAiContentString? = null,
     val model: AiModel? = null,
     val isChosen: Boolean = false,
-    val loading: Boolean = false,
+    val status: MessageStatus = MessageStatus.CREATED,
 ) {
     companion object {
         fun toDomainModel(messageAiEntity: MessageAiEntity): MessageAI {
@@ -53,7 +53,7 @@ data class MessageAiEntity(
                 },
                 model = messageAiEntity.model,
                 isChosen = messageAiEntity.isChosen,
-                loading = messageAiEntity.loading
+                status = messageAiEntity.status
             )
         }
 
@@ -65,7 +65,14 @@ data class MessageAiEntity(
             otherContent = messageAI.otherContent?.toString(),
             model = messageAI.model,
             isChosen = messageAI.isChosen,
-            loading = messageAI.loading
+            status = messageAI.status
         )
     }
+}
+
+enum class MessageStatus {
+    CREATED,
+    LOADING,
+    SUCCESS,
+    ERROR
 }
