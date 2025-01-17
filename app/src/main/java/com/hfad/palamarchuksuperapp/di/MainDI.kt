@@ -13,6 +13,8 @@ import com.hfad.palamarchuksuperapp.data.database.DATABASE_PROJECT_NAME
 import com.hfad.palamarchuksuperapp.data.database.MessageChatDatabase
 import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
+import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
@@ -22,30 +24,28 @@ import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
-import com.hfad.palamarchuksuperapp.domain.usecases.AddMessageGroupUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.AddMessageGroupUseCaseImpl
-import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
-import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.AddMessageGroupUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.AddMessageGroupUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCaseImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiMessageUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.GetChatAiUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.GetChatAiUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCaseImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
@@ -53,9 +53,9 @@ import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
 import com.hfad.palamarchuksuperapp.ui.screens.StoreFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
+import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
-import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -181,6 +181,10 @@ interface UseCaseModule {
     @Singleton
     @Binds
     fun bindChooseMessageAiUseCase(chooseMessageAiUseCaseImpl: ChooseMessageAiUseCaseImpl): ChooseMessageAiUseCase
+
+    @Singleton
+    @Binds
+    fun bindGetChatAiUseCase(chatAiUseCaseImpl: GetChatAiUseCaseImpl): GetChatAiUseCase
 }
 
 
