@@ -394,15 +394,15 @@ fun TopRowMainScreen(
 
         val scope = rememberCoroutineScope()
 
-        val a by rememberSaveable(dayNightMode) { mutableStateOf(dayNightMode) }
+        val isNightMode by rememberSaveable(dayNightMode) { mutableStateOf(dayNightMode) }
 
         Switch(
             modifier = Modifier.border(0.dp, Color.Transparent),
-            checked = a,
+            checked = isNightMode,
             enabled = true,
             onCheckedChange = {
                 scope.launch {
-                    prefRepository?.setStoredNightMode(!dayNightMode)
+                    prefRepository?.setStoredNightMode(!dayNightMode) //TODO
                 }
             },
             thumbContent = {

@@ -10,6 +10,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -80,8 +83,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -106,7 +111,6 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.ui.reusable.doublePulseEffect
 import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
@@ -376,7 +380,7 @@ fun FabScrollLastItem(
     ) {
         SmallFloatingActionButton(
             shape = CircleShape,
-            modifier = Modifier.doublePulseEffect(),
+            modifier = Modifier,
             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0f),
             onClick = onScroll,
             interactionSource = object : MutableInteractionSource {
@@ -423,7 +427,7 @@ fun LazyChatScreen(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.Bottom,
         state = state,
-        contentPadding = PaddingValues(10.dp, 10.dp, 10.dp, 0.dp)
+        contentPadding = PaddingValues(5.dp, 10.dp, 5.dp, 0.dp)
     ) {
         items(
             items = messagesList,
@@ -482,8 +486,16 @@ fun MessageBox(
     }
 
     HorizontalPager(
-        modifier = modifier.fillMaxWidth(),
-        state = pagerState
+        modifier = modifier
+            .fillMaxWidth()
+            .animateContentSize(
+                animationSpec = tween(
+                    durationMillis = 250,
+                    easing = LinearEasing
+                )
+            ),
+        state = pagerState,
+        verticalAlignment = Alignment.Top
     ) { page ->
         val currentMessage = remember(messageGroup.content[page]) {
             messageGroup.content[page]
@@ -619,7 +631,8 @@ private fun PagerIndicator(
                         .padding(2.dp)
                         .clip(CircleShape)
                         .background(
-                            if (currentPage == index) Color.DarkGray else Color.LightGray
+                            if (currentPage == index) MaterialTheme.colorScheme.onPrimaryContainer
+                            else MaterialTheme.colorScheme.primaryContainer
                         )
                         .size(6.dp)
                 )
