@@ -5,13 +5,13 @@ import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-interface GetAiHandlersUseCase {
+interface ObserveAiHandlersUseCase {
     operator fun invoke(): Flow<List<AiModelHandler>>
 }
 
-class GetAiHandlersUseCaseImpl @Inject constructor(
+class ObserveAiHandlersUseCaseImpl @Inject constructor(
     private val aiHandlerRepository: AiHandlerRepository,
-) : GetAiHandlersUseCase {
+) : ObserveAiHandlersUseCase {
 
     override operator fun invoke(): Flow<List<AiModelHandler>> =
         aiHandlerRepository.aiHandlerFlow
