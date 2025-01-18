@@ -30,6 +30,15 @@ data class MessageChatWithRelationsEntity(
                 timestamp = messageGroupWithMessagesEntity.chat.timestamp
             )
         }
+
+        fun from(messageChat: MessageChat): MessageChatWithRelationsEntity {
+            return MessageChatWithRelationsEntity(
+                chat = MessageChatEntity.from(messageChat),
+                messageGroupsWithMessageEntity = messageChat.messageGroups.map {
+                    MessageGroupWithMessagesEntity.from(it)
+                }
+            )
+        }
     }
 }
 

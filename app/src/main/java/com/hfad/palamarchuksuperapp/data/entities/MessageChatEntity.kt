@@ -12,7 +12,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 data class MessageChatEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val name: String = "",
+    val name: String = "New chat",
     val timestamp: Long = System.currentTimeMillis(),
 ) {
     companion object {
