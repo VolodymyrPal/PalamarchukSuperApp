@@ -94,24 +94,14 @@ data class MessageGroup(
 
     companion object {
 
-        fun toDomainModel(messageGroup: MessageGroup): MessageGroupWithMessagesEntity {
-            return MessageGroupWithMessagesEntity(
-                group = MessageGroupEntity(
-                    id = messageGroup.id,
-                    role = messageGroup.role,
-                    type = messageGroup.type,
-                    chatId = messageGroup.chatId
-                ),
-                messages = messageGroup.content.map { aI -> MessageAiEntity.from(aI) },
-            )
-        }
-
-        fun toEntity(messageGroup: MessageGroup) : MessageGroupEntity {
-            return MessageGroupEntity(
-                id = messageGroup.id,
-                role = messageGroup.role,
-                type = messageGroup.type,
-                chatId = messageGroup.chatId
+        fun from(messageGroupWithMessagesEntity: MessageGroupWithMessagesEntity): MessageGroup {
+            return MessageGroup(
+                id = messageGroupWithMessagesEntity.group.id,
+                role = messageGroupWithMessagesEntity.group.role,
+                content = messageGroupWithMessagesEntity.messages.map { MessageAI.from(it) }
+                    .toPersistentList(),
+                chatId = messageGroupWithMessagesEntity.group.chatId,
+                type = messageGroupWithMessagesEntity.group.type
             )
         }
     }

@@ -83,10 +83,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -97,6 +95,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -185,7 +184,6 @@ fun ChatScreen(
                 state = state,
                 event = event,
                 navController = navController,
-                chatName = "Need to pass chat name" //TODO pass chat name
             )
         },
         floatingActionButton = {
@@ -249,7 +247,6 @@ fun ChatScreen(
 private fun ChatTopBar(
     state: State<ChatBotViewModel.StateChat>,
     event: (ChatBotViewModel.Event) -> Unit,
-    chatName: String = "Need to pass chat name",
     navController: NavHostController?,
 ) {
     val isExpandedChats = remember { mutableStateOf(false) }
@@ -261,7 +258,6 @@ private fun ChatTopBar(
                 isExpanded = isExpandedChats,
                 state = state,
                 event = event,
-                chatName = chatName
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -286,7 +282,7 @@ private fun ChatTitle(
     isExpanded: MutableState<Boolean>,
     state: State<ChatBotViewModel.StateChat>,
     event: (ChatBotViewModel.Event) -> Unit,
-    chatName: String = "Need to pass chat name",
+    chatName: String = state.value.chat.name,
 ) {
     Row(
         modifier = Modifier.clickable(
@@ -314,12 +310,36 @@ private fun ChatTitle(
         onDismissRequest = { isExpanded.value = false },
         containerColor = Color.Transparent
     ) {
-        AiHandlerScreen(
-            modifier = Modifier.size(200.dp),
-            listAiModelHandler = state.value.listHandler,
-            event = event,
-            aiModelList = state.value.modelList,
-        )
+        Dialog(
+            onDismissRequest = { isExpanded.value = false }
+        ) {
+            Surface(
+                modifier = Modifier.size(200.dp, 200.dp),
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+                tonalElevation = 6.dp
+            ) {
+                // Заголовок диалога
+                LazyColumn {
+                    item {
+                        Text(
+                            text = "Выберите модель", modifier =
+                                Modifier.padding(12.dp)
+                        )
+                    }
+                    items(
+                        listOf<MessageChat>(
+                            MessageChat(id = 1, name = "Some chat"),
+                            MessageChat(id = 2, name = "Some chat 2")
+                        )
+                    ) { chat ->
+                        Text(
+                            text = chat.name,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -34,16 +34,16 @@ import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.DeleteAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetAiChatUseCaseImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.GetAiHandlersUseCaseImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.GetChatAiUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.GetChatAiUseCaseImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.GetErrorUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAiHandlersUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAiHandlersUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveErrorUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveErrorUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
@@ -147,7 +147,7 @@ interface UseCaseModule {
 
     @Singleton
     @Binds
-    fun bindGetAiHandlersUseCase(getAiHandlersUseCaseImpl: GetAiHandlersUseCaseImpl): GetAiHandlersUseCase
+    fun bindGetAiHandlersUseCase(getAiHandlersUseCaseImpl: ObserveAiHandlersUseCaseImpl): ObserveAiHandlersUseCase
 
     @Singleton
     @Binds
@@ -168,7 +168,7 @@ interface UseCaseModule {
 
     @Singleton
     @Binds
-    fun bindGetErrorUseCase(getErrorUseCaseImpl: GetErrorUseCaseImpl): GetErrorUseCase
+    fun bindGetErrorUseCase(getErrorUseCaseImpl: ObserveErrorUseCaseImpl): ObserveErrorUseCase
 
     @Singleton
     @Binds
@@ -184,7 +184,7 @@ interface UseCaseModule {
 
     @Singleton
     @Binds
-    fun bindGetChatAiUseCase(chatAiUseCaseImpl: GetChatAiUseCaseImpl): GetChatAiUseCase
+    fun bindGetChatAiUseCase(chatAiUseCaseImpl: ObserveChatAiUseCaseImpl): ObserveChatAiUseCase
 }
 
 
@@ -241,15 +241,15 @@ object NetworkModule {
             engine {
                 endpoint {
                     socketTimeout =
-                        100_000       // Максимальное время ожидания соединения 100 секунд
-                    connectTimeout = 30000        // Время ожидания соединения 30 секунд
-                    requestTimeout = 100000       // Максимальное время ожидания запроса 100 секунд
+                        10_000       // Максимальное время ожидания соединения 10 секунд
+                    connectTimeout = 10000        // Время ожидания соединения 10 секунд
+                    requestTimeout = 10000       // Максимальное время ожидания запроса 10 секунд
                     keepAliveTime =
                         300000        // Время жизни соединения после использования 300 секунд
                     maxConnectionsPerRoute = 10 // Максимум 10 соединений на маршрут
-                    pipelineMaxSize = 20        // Максимум 20 запросов в пайплайне
+                    pipelineMaxSize = 10        // Максимум 10 запросов в пайплайне
                 }
-                maxConnectionsCount = 20 // Максимум 20 соединений
+                maxConnectionsCount = 10 // Максимум 10 соединений
                 https {
                     trustManager // Настройки проверки сертификата, что бы не перехватывать запросы посредине
                 } // Настройки HTTPS, которые

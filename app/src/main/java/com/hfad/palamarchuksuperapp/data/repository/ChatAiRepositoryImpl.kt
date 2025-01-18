@@ -38,7 +38,13 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override suspend fun getAllChats(): List<MessageChat> {
         return messageChatDao.getAllChatsWithMessages()
-            .map { MessageChatWithRelationsEntity.toDomain(it) }
+            .map { MessageChat.from(it) }
+    }
+
+    override suspend fun getAllChatsInfo(): List<MessageChat> {
+        return messageChatDao.getAllChatsInfo().map {
+            MessageChat.from(it)
+        }
     }
 
     override suspend fun getChatWithMessagesById(chatId: Int): MessageChat {
@@ -78,12 +84,15 @@ class ChatAiRepositoryImpl @Inject constructor(
         return messageChatDao.getMessageGroup(chatId)
     }
 
-    override suspend fun createChat(chat: MessageChat) {
+    override suspend fun createChat(emptyChat: MessageChat) {
         messageChatDao.insertChat(
-            MessageChatEntity(
-                name = chat.name,
-                timestamp = chat.timestamp
-            )
+            MessageChatEntity.from(emptyChat)
+        )
+    }
+
+    override suspend fun addChatWithMessages(chat: MessageChat): Long {
+        return messageChatDao.insertChatWithRelations(
+            MessageChatWithRelationsEntity.from(chat)
         )
     }
 

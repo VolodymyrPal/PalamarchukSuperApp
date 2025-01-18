@@ -16,6 +16,21 @@ data class MessageAI(
     val status: MessageStatus = MessageStatus.CREATED,
 ) {
     companion object {
+
+        fun from(messageAI: MessageAiEntity): MessageAI {
+            return MessageAI(
+                id = messageAI.id,
+                messageGroupId = messageAI.messageGroupId,
+                timestamp = messageAI.timestamp,
+                message = messageAI.message,
+                otherContent = messageAI.otherContent?.let { //TODO other content not supported
+                    Json.decodeFromString<MessageAiContent>(
+                        it
+                    )
+                }
+            )
+        }
+
         fun toDomainModel(messageAiEntity: MessageAiEntity): MessageAI {
             return MessageAI(
                 id = messageAiEntity.id,
@@ -32,18 +47,6 @@ data class MessageAI(
                 status = messageAiEntity.status
             )
         }
-
-        fun toEntity(messageAI: MessageAI) = MessageAiEntity(
-            id = messageAI.id,
-            messageGroupId = messageAI.messageGroupId,
-            timestamp = messageAI.timestamp,
-            message = messageAI.message,
-            otherContent = messageAI.otherContent?.toString(),
-            model = messageAI.model,
-            isChosen = messageAI.isChosen,
-            status = messageAI.status
-        )
-
     }
 }
 

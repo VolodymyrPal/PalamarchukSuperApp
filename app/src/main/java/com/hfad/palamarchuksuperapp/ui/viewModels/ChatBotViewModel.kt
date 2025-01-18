@@ -21,8 +21,8 @@ import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.GetChatAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,17 +45,12 @@ import javax.inject.Inject
 class ChatBotViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
-    private val getAiHandlersUseCase: GetAiHandlersUseCase,
-    private val getAiChatUseCase: GetAiChatUseCase,
+    private val chatAiRepository: ChatAiRepository,
+    private val aiHandlerRepository: AiHandlerRepository,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
-    private val getErrorUseCase: GetErrorUseCase,
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
-    private val updateAiHandlerUseCase: UpdateAiHandlerUseCase,
-    private val addAiHandlerUseCase: AddAiHandlerUseCase,
-    private val deleteAiHandlerUseCase: DeleteAiHandlerUseCase,
     private val getModelsUseCase: GetModelsUseCase,
-    private val messageChatRepository: MessageChatRepository
-) : GenericViewModel<PersistentList<MessageGroup>, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+    private val observeChatAiUseCase: ObserveChatAiUseCase,
 
     init {
         viewModelScope.launch(mainDispatcher) {
@@ -64,22 +60,7 @@ class ChatBotViewModel @Inject constructor(
                         effect(Effect.ShowToast(error.error.toString()))
                     }
 
-                    else -> {
-                        effect(Effect.ShowToast(error.toString()))
-                    }
-                }
-            }
-        }
-    }
-
-    @Stable
-    data class StateChat(
-        val listMessage: PersistentList<MessageGroup> = persistentListOf(),
-        val isLoading: Boolean = false,
-        val error: AppError? = null,
-        val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
-        val modelList: PersistentList<AiModel>,
-    ) : State<PersistentList<MessageGroup>>
+    private val currentChatId = MutableStateFlow(1)
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -91,28 +72,29 @@ class ChatBotViewModel @Inject constructor(
     )
     private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
+    private val _chatList = MutableStateFlow<PersistentList<MessageChat>>(persistentListOf())
+
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
         _loading,
         _handlers,
         _errorFlow,
-        _choosenAiModelList
-    ) { chatHistory, isLoading, handlers, error, modelList ->
+        _choosenAiModelList,
+    ) { chat, isLoading, handlers, error, modelList ->
         StateChat(
-            listMessage = chatHistory,
+            chat = chat,
             isLoading = isLoading,
             error = error,
             listHandler = handlers.toPersistentList(),
-            modelList = modelList
+            modelList = modelList,
         )
+    }.combine(_chatList) { stateChat, chatList ->
+        stateChat.copy(chatList = chatList)
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = StateChat(
-            listMessage = persistentListOf(),
-            isLoading = false,
-            error = null,
-            modelList = persistentListOf()
+            chat = MessageChat()
         )
     )
 
@@ -121,12 +103,13 @@ class ChatBotViewModel @Inject constructor(
         data class SendText(val text: String) : Event()
         data class ShowToast(val message: String) : Event()
         data class GetModels(val llmName: LLMName) : Event()
-        data class ChooseSubMessage(val groupId: Int, val messageAI: MessageAI) : Event()
+        data class ChooseSubMessage(val messageAI: MessageAI) : Event()
         data class UpdateHandler(val handler: AiModelHandler, val aiHandlerInfo: AiHandlerInfo) :
             Event()
 
         data class AddAiHandler(val aiHandlerInfo: AiHandlerInfo) : Event()
         data class DeleteHandler(val handler: AiModelHandler) : Event()
+        data object GetAllChats : Event()
         data class SelectChat(val chatId: Int) : Event()
     }
 
@@ -140,11 +123,22 @@ class ChatBotViewModel @Inject constructor(
             is Event.SendText -> sendText(event.text)
             is Event.ShowToast -> showToast(event.message)
             is Event.GetModels -> getModels(event.llmName)
-            is Event.ChooseSubMessage -> chooseSubMessage(event.groupId, event.messageAI)
+            is Event.ChooseSubMessage -> chooseSubMessage(event.messageAI)
             is Event.UpdateHandler -> updateOrAddHandler(event.handler, event.aiHandlerInfo)
             is Event.AddAiHandler -> addAiHandler(event.aiHandlerInfo)
             is Event.DeleteHandler -> deleteHandler(event.handler)
             is Event.SelectChat -> selectChat(event.chatId)
+            is Event.GetAllChats -> getAllChats()
+        }
+    }
+
+    private fun selectChat(chatId: Int) {
+        viewModelScope.launch {
+            try {
+                currentChatId.emit(chatId)
+            } catch (e: Exception) {
+                _errorFlow.emit(AppError.CustomError(e.message))
+            }
         }
     }
 
@@ -173,12 +167,14 @@ class ChatBotViewModel @Inject constructor(
     private fun sendText(text: String) {
         viewModelScope.launch(ioDispatcher + handler) {
             _loading.update { true }
+            val chatId = currentChatId.value
             sendChatRequestUseCase(
                 MessageGroup(
                     id = getAiChatUseCase().value.size,
+                    id = 0,
                     role = Role.USER,
                     content = text,
-                    chatGroupId = 0, //TODO
+                    chatId = chatId,
                     type = MessageType.TEXT
                 ),
                 handlers = _handlers.value
@@ -202,11 +198,9 @@ class ChatBotViewModel @Inject constructor(
     private fun getModels(llmName: LLMName) {
         viewModelScope.launch {
             _choosenAiModelList.update { persistentListOf() }
-            val resultModels = getModelsUseCase(llmName)
-            if (resultModels is Result.Success) {
-                _choosenAiModelList.update { resultModels.data.toPersistentList() }
-            } else { //TODO better error handling
-                _choosenAiModelList.update { persistentListOf() }
+            when (val resultModels: Result<List<AiModel>, AppError> = getModelsUseCase(llmName)) {
+                is Result.Success -> _choosenAiModelList.update { resultModels.data.toPersistentList() }
+                is Result.Error -> effect(Effect.ShowToast("Не удалось загрузить модели: ${resultModels.error}"))
             }
         }
     }
@@ -228,4 +222,22 @@ class ChatBotViewModel @Inject constructor(
             deleteAiHandlerUseCase(handler)
         }
     }
+
+    private fun getAllChats(): List<MessageChat> {
+        val chatList = mutableListOf<MessageChat>()
+        viewModelScope.launch(ioDispatcher) {
+            chatList.addAll(chatAiRepository.getAllChats())
+        }
+        return chatList
+    }
+
+    @Stable
+    data class StateChat(
+        val chat: MessageChat,
+        val isLoading: Boolean = false,
+        val error: AppError? = null,
+        val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
+        val modelList: PersistentList<AiModel> = persistentListOf(),
+        val chatList: PersistentList<MessageChat> = persistentListOf(),
+    ) : State<MessageChat>
 }

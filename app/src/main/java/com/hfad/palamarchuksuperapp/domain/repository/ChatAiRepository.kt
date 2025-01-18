@@ -17,9 +17,11 @@ interface ChatAiRepository {
 
     // Методы для работы с чатами
     suspend fun getAllChats(): List<MessageChat>
+    suspend fun getAllChatsInfo(): List<MessageChat>
     suspend fun getChatWithMessagesById(chatId: Int): MessageChat
     suspend fun getChatFlowById(chatId: Int): Flow<MessageChat>
-    suspend fun createChat(chat: MessageChat)
+    suspend fun createChat(emptyChat: MessageChat)
+    suspend fun addChatWithMessages(chat: MessageChat): Long
     suspend fun deleteChat(chatId: Int)
     suspend fun clearAllChats()
 
