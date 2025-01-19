@@ -282,7 +282,6 @@ private fun ChatTitle(
     isExpanded: MutableState<Boolean>,
     state: State<ChatBotViewModel.StateChat>,
     event: (ChatBotViewModel.Event) -> Unit,
-    chatName: String = state.value.chat.name,
 ) {
     Row(
         modifier = Modifier.clickable(
@@ -294,7 +293,7 @@ private fun ChatTitle(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            chatName,
+            state.value.chat.name,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
         )
@@ -328,13 +327,13 @@ private fun ChatTitle(
                         )
                     }
                     items(
-                        listOf<MessageChat>(
-                            MessageChat(id = 1, name = "Some chat"),
-                            MessageChat(id = 2, name = "Some chat 2")
-                        )
+                        state.value.chatList
                     ) { chat ->
                         Text(
                             text = chat.name,
+                            modifier = Modifier.clickable(enabled = true) {
+                                event.invoke(ChatBotViewModel.Event.SelectChat(chat.id))
+                            }
                         )
                     }
                 }

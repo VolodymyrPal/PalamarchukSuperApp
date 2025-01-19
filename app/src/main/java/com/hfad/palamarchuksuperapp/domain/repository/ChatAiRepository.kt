@@ -10,14 +10,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface ChatAiRepository {
-    val errorFlow: MutableSharedFlow<AppError?>
-
-    // Методы для работы с моделями AI
-    suspend fun getModels(handler: AiModelHandler): List<AiModel>
 
     // Методы для работы с чатами
     suspend fun getAllChats(): List<MessageChat>
-    suspend fun getAllChatsInfo(): List<MessageChat>
+    suspend fun getAllChatsInfo(): Flow<List<MessageChat>>
     suspend fun getChatWithMessagesById(chatId: Int): MessageChat
     suspend fun getChatFlowById(chatId: Int): Flow<MessageChat>
     suspend fun createChat(emptyChat: MessageChat)
