@@ -6,17 +6,12 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
-import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
-import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -24,26 +19,14 @@ class ChatAiRepositoryImpl @Inject constructor(
     private val messageChatDao: MessageChatDao,
 ) : ChatAiRepository {
 
-    override val errorFlow: MutableSharedFlow<AppError?> = MutableSharedFlow()
-
-    override suspend fun getModels(handler: AiModelHandler): List<AiModel> {
-        val result = handler.getModels()
-        return if (result is Result.Success) {
-            result.data
-        } else {
-            errorFlow.emit(AppError.CustomError((result as Result.Error).error.toString()))
-            listOf()
-        }
-    }
-
     override suspend fun getAllChats(): List<MessageChat> {
         return messageChatDao.getAllChatsWithMessages()
             .map { MessageChat.from(it) }
     }
 
-    override suspend fun getAllChatsInfo(): List<MessageChat> {
+    override suspend fun getAllChatsInfo(): Flow<List<MessageChat>> {
         return messageChatDao.getAllChatsInfo().map {
-            MessageChat.from(it)
+            it.map { MessageChat.from(it) }
         }
     }
 
@@ -58,26 +41,11 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getChatFlowById(chatId: Int): Flow<MessageChat> {
-        return if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
-            val id = messageChatDao.insertChatWithRelations(
-                MessageChatWithRelationsEntity(
-                    chat = MessageChatEntity(name = "Base chat"),
-                    messageGroupsWithMessageEntity = MockChat().map {
-                        MessageGroupWithMessagesEntity.from(
-                            it
-                        )
-                    } //TODO For testing
-                )
-            )
-            Log.d("ChatAiRepositoryImpl", "getChatById: $id")
-            messageChatDao.getChatWithMessagesFlow(id.toInt())
-                .map { value -> MessageChatWithRelationsEntity.toDomain(value) }
-        } else {
-            checkLoadingMessages(chatId) // TODO NEED TO FIND A WAY TO CHECK LOADING MESSAGES
-            return messageChatDao.getChatWithMessagesFlow(chatId).map { value ->
-                MessageChatWithRelationsEntity.toDomain(value)
+        val chatWithMessageFlow = messageChatDao
+            .chatWithMessagesFlow(chatId = chatId).map { chatWithMessagesEntity ->
+                MessageChat.from(chatWithMessagesEntity)
             }
-        }
+        return chatWithMessageFlow
     }
 
     override suspend fun getMessageGroupWithMessagesById(chatId: Int): MessageGroupWithMessagesEntity {
@@ -138,21 +106,5 @@ class ChatAiRepositoryImpl @Inject constructor(
             MessageAiEntity.from(messageAI)
         )
         return MessageAI.toDomainModel(messageEntity)
-    }
-
-    suspend fun checkLoadingMessages(chatId: Int) {
-        val loadingMessage =
-            MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(chatId))
-        for (messageGroup in loadingMessage.messageGroups) {
-            for (message in messageGroup.content) {
-                if (message.status == MessageStatus.LOADING) {
-                    messageChatDao.updateMessage(
-                        MessageAiEntity.from(message).copy(
-                            status = MessageStatus.ERROR
-                        )
-                    )
-                }
-            }
-        }
     }
 }
