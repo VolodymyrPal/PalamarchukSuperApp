@@ -42,8 +42,6 @@ import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAiHandlersUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAiHandlersUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCaseImpl
-import com.hfad.palamarchuksuperapp.domain.usecases.ObserveErrorUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.ObserveErrorUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
@@ -165,10 +163,6 @@ interface UseCaseModule {
     @Singleton
     @Binds
     fun bindGetGetAiChatUseCase(getAiChatUseCaseImpl: GetAiChatUseCaseImpl): GetAiChatUseCase
-
-    @Singleton
-    @Binds
-    fun bindGetErrorUseCase(getErrorUseCaseImpl: ObserveErrorUseCaseImpl): ObserveErrorUseCase
 
     @Singleton
     @Binds
