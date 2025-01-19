@@ -61,7 +61,7 @@ interface MessageChatDao {
     }
 
     @Query("SELECT * FROM MessageChat WHERE id = :chatId")
-    fun getChatWithMessagesFlow(chatId: Int): Flow<MessageChatWithRelationsEntity>
+    fun chatWithMessagesFlow(chatId: Int): Flow<MessageChatWithRelationsEntity>
 
     /**
      * Обновление группы сообщений и всех её сообщений.
@@ -102,7 +102,7 @@ interface MessageChatDao {
      * @return Список базовой информации о чатах
      */
     @Query("SELECT * FROM MessageChat")
-    suspend fun getAllChatsInfo(): List<MessageChatEntity>
+    fun getAllChatsInfo(): Flow<List<MessageChatEntity>>
 
     /**
      * Создание нового чата.
