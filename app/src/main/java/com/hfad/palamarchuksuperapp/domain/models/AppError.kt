@@ -55,3 +55,31 @@ sealed interface AppError : Error {
 
     }
 }
+
+class DatabaseException(val error: AppError.DatabaseError) : Exception(error.message, error.cause)
+
+suspend fun <T> safeDbCall(block: suspend () -> T): Result<T, AppError.DatabaseError> =
+    withContext(Dispatchers.IO) {
+        try {
+            Result.Success(block())
+        } catch (e: android.database.SQLException) {
+            val databaseError = mapSQLException(e)
+            Result.Error(databaseError)
+        } catch (e: Exception) {
+            Result.Error(
+                AppError.DatabaseError.LogicException(
+                    "Unexpected exception occurred: ${e.message}",
+                    e
+                )
+            )
+        }
+    }
+
+private fun mapSQLException(e: android.database.SQLException): AppError.DatabaseError {
+    return when (e) {
+        is SQLiteConstraintException -> AppError.DatabaseError.ConstraintViolation(e.message, e)
+        is SQLiteDiskIOException -> AppError.DatabaseError.DiskIOException(e.message, e)
+        is SQLiteFullException -> AppError.DatabaseError.OutOfMemoryException(e.message, e)
+        else -> AppError.DatabaseError.SQLException(e.message, e)
+    }
+}
