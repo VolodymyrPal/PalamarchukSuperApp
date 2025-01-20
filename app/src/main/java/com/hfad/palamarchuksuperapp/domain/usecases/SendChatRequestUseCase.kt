@@ -33,7 +33,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         val activeHandlers = handlers.filter { it.aiHandlerInfo.value.isSelected }
 
         if (activeHandlers.isEmpty()) {
-            chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided"))
+//            chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided")) TODO how to handle error better
             return
         }
 
