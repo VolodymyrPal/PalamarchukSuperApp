@@ -27,4 +27,31 @@ sealed interface AppError : Error {
 
     data class CustomError (val errorText: String? = null, val error: Throwable? = null): AppError
 
+    sealed class DatabaseError(
+        val message: String? = null, val cause: Throwable? = null,
+    ) : Error {
+
+        /** Custom logic exception. Error in business logic, like not found, validation, etc. */
+        class LogicException(message: String, cause: Throwable) : DatabaseError(message, cause)
+
+        /** Sql Error or other database error */
+        class SQLException(message: String? = null, cause: Throwable? = null) :
+            DatabaseError(message, cause)
+
+        /** Constraint violation (e.g., unique constraint, foreign key constraint) */
+        class ConstraintViolation(
+            message: String? = null,
+            cause: Throwable? = null,
+        ) :
+            DatabaseError(message, cause)
+
+        /** Error IO, problem with disk. */
+        class DiskIOException(message: String? = null, cause: Throwable? = null) :
+            DatabaseError(message, cause)
+
+        /** Not enough memory for storing data. */
+        class OutOfMemoryException(message: String? = null, cause: Throwable? = null) :
+            DatabaseError(message, cause)
+
+    }
 }
