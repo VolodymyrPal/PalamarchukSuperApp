@@ -6,9 +6,12 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
+import com.hfad.palamarchuksuperapp.domain.models.DatabaseException
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.models.safeDbCall
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -20,8 +23,16 @@ class ChatAiRepositoryImpl @Inject constructor(
 ) : ChatAiRepository {
 
     override suspend fun getAllChats(): List<MessageChat> {
-        return messageChatDao.getAllChatsWithMessages()
-            .map { MessageChat.from(it) }
+        val a = safeDbCall { messageChatDao.getAllChatsWithMessages() }
+        val b = if (a is Result.Error) {
+            throw DatabaseException(a.error)
+        } else {
+            (a as Result.Success).data.map {
+                MessageChat.from(it)
+            }
+        }
+        //.map { MessageChat.from(it) }
+        return b
     }
 
     override suspend fun getAllChatsInfo(): Flow<List<MessageChat>> {

@@ -44,6 +44,7 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
         // val id = chatAiRepository.createChat(MessageChat(name = "Base chat")) TODO for product
         val id = chatAiRepository.addChatWithMessages(     //TODO for testing chat
             MessageChat(
+                name = "Base chat",
                 messageGroups = MockChat()
             )
         )
