@@ -1,5 +1,11 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
+import android.database.sqlite.SQLiteConstraintException
+import android.database.sqlite.SQLiteDiskIOException
+import android.database.sqlite.SQLiteFullException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 sealed interface AppError : Error {
     interface Network : AppError {
         enum class RequestError: Network {
