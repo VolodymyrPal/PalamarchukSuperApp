@@ -1,13 +1,10 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
-import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 interface ChatAiRepository {
 
