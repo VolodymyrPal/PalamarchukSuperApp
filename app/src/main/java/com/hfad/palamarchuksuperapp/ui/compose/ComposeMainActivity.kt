@@ -1,6 +1,9 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
+import android.app.Application
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -18,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.serialization.Serializable
 
 class ComposeMainActivity : AppCompatActivity() {
@@ -26,6 +30,21 @@ class ComposeMainActivity : AppCompatActivity() {
         setContent {
             MainContent()
         }
+    }
+}
+
+class UncaughtExceptionHandler(
+    private val application: Application,
+    private val defaultHandler: Thread.UncaughtExceptionHandler?,
+) : Thread.UncaughtExceptionHandler {
+    override fun uncaughtException(thread: Thread, throwable: Throwable) {
+        // Handle uncaught exceptions here
+        val exception = throwable.cause?.cause?.javaClass?.simpleName ?: throwable.cause
+
+        Log.d("Compose", "Uncaught exception: $exception")
+        Toast.makeText(application, exception.toString(), Toast.LENGTH_LONG).show()
+        Thread.sleep(2000)
+        defaultHandler?.uncaughtException(thread, throwable)
     }
 }
 
