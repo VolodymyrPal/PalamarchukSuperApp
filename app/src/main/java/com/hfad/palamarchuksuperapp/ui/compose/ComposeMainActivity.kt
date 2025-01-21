@@ -30,6 +30,16 @@ class ComposeMainActivity : AppCompatActivity() {
         setContent {
             MainContent()
         }
+
+        /** Create a reference to the default handler, to call standard handler function*/
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler(
+            UncaughtExceptionHandler(
+                application = application,
+                defaultHandler = defaultHandler,
+            )
+        )
+
     }
 }
 
