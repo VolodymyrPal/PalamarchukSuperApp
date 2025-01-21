@@ -3,18 +3,21 @@ package com.hfad.palamarchuksuperapp.domain.models
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDiskIOException
 import android.database.sqlite.SQLiteFullException
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 sealed interface AppError : Error {
     interface Network : AppError {
-        enum class RequestError: Network {
+        enum class RequestError : Network {
             BadRequest, //400
             Unauthorized, //401
             Forbidden, //403 лимиты, ограничения по IP
             NotFound, //404
         }
-        enum class ServerError: Network {
+
+        enum class ServerError : Network {
             InternalServerError, //500
             BadGateway, //502
             ServiceUnavailable, //503
@@ -22,6 +25,7 @@ sealed interface AppError : Error {
         }
 
     }
+
     enum class LocalData : AppError {
         DatabaseError, // ошибка базы данных
     }
@@ -31,33 +35,38 @@ sealed interface AppError : Error {
         Unknown, // неизвестная ошибка
     }
 
-    data class CustomError (val errorText: String? = null, val error: Throwable? = null): AppError
+    data class CustomError(val errorText: String? = null, val error: Throwable? = null) : AppError
 
     sealed class DatabaseError(
         val message: String? = null, val cause: Throwable? = null,
     ) : Error {
 
-        /** Custom logic exception. Error in business logic, like not found, validation, etc. */
-        class LogicException(message: String, cause: Throwable) : DatabaseError(message, cause)
+        class UnknownException(
+            message: String? = null,
+            cause: Throwable? = null,
+        ) : DatabaseError(message, cause)
 
         /** Sql Error or other database error */
-        class SQLException(message: String? = null, cause: Throwable? = null) :
-            DatabaseError(message, cause)
+        class SQLException(
+            message: String? = null,
+            cause: Throwable? = null,
+        ) : DatabaseError(message, cause)
 
         /** Constraint violation (e.g., unique constraint, foreign key constraint) */
         class ConstraintViolation(
             message: String? = null,
             cause: Throwable? = null,
-        ) :
-            DatabaseError(message, cause)
+        ) : DatabaseError(message, cause)
 
         /** Error IO, problem with disk. */
         class DiskIOException(message: String? = null, cause: Throwable? = null) :
             DatabaseError(message, cause)
 
         /** Not enough memory for storing data. */
-        class OutOfMemoryException(message: String? = null, cause: Throwable? = null) :
-            DatabaseError(message, cause)
+        class OutOfMemoryException(
+            message: String? = null,
+            cause: Throwable? = null,
+        ) : DatabaseError(message, cause)
 
     }
 }
