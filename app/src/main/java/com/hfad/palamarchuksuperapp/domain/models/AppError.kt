@@ -73,17 +73,42 @@ sealed interface AppError : Error {
 
 class DatabaseException(val error: AppError.DatabaseError) : Exception(error.message, error.cause)
 
-suspend fun <T> safeDbCall(block: suspend () -> T): Result<T, AppError.DatabaseError> =
-    withContext(Dispatchers.IO) {
+
+/** Safe wrapper for database calls with retries.
+
+This function executes a database operation wrapped in a suspend block and handles potential exceptions with retries.
+
+ * [retries] (Int):** [Optional] The maximum number of retries to attempt the database operation in case of `android.database.SQLException`. Defaults to 3.
+ *
+ * [block] (suspend () -> T): The suspend block containing the database operation to be executed. This block should return the result of the operation (type `T`).
+
+ * **Returns:** A `Result<T, AppError.DatabaseError>` representing the outcome of the database operation.
+ * With result error possible error: [mapSQLException]
+ */
+suspend fun <T> safeDbCallWithRetries(
+    retries: Int = 3,
+    block: suspend () -> T,
+): Result<T, AppError.DatabaseError> {
+
+    var retryCount = 0
+
+    return withContext(Dispatchers.IO) {
         try {
-            Result.Success(block())
+            Result.Success<T, AppError.DatabaseError>(block())
         } catch (e: android.database.SQLException) {
-            val databaseError = mapSQLException(e)
-            Result.Error(databaseError)
+            while (retryCount < retries) {
+                Log.w(
+                    "Database",
+                    "Attempt $retryCount to perform database operation failed. Retrying..."
+                )
+                delay(500)
+                retryCount++
+            }
+            Result.Error(mapSQLException(e))
         } catch (e: Exception) {
             Result.Error(
-                AppError.DatabaseError.LogicException(
-                    "Unexpected exception occurred: ${e.message}",
+                AppError.DatabaseError.UnknownException(
+                    "Unexpected exception: ${e.message}",
                     e
                 )
             )
