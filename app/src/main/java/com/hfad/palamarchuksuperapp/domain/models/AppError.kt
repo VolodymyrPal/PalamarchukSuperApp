@@ -114,7 +114,18 @@ suspend fun <T> safeDbCallWithRetries(
             )
         }
     }
+}
 
+/** Maps an [android.database.SQLException] to a specific [AppError.DatabaseError] subtype.
+This function attempts to map a generic `android.database.SQLException` to a more specific subtype of
+`AppError.DatabaseError` based on the exception class.
+
+ * e : [android.database.SQLException]: The SQLException to be mapped.
+ *
+ * Possible [AppError.DatabaseError] outcome: [AppError.DatabaseError.ConstraintViolation],
+ * [AppError.DatabaseError.DiskIOException],
+ * [AppError.DatabaseError.OutOfMemoryException], [AppError.DatabaseError.SQLException]
+ */
 private fun mapSQLException(e: android.database.SQLException): AppError.DatabaseError {
     return when (e) {
         is SQLiteConstraintException -> AppError.DatabaseError.ConstraintViolation(e.message, e)
