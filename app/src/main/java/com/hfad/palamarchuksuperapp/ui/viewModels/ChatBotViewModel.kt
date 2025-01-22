@@ -5,7 +5,6 @@ import MainDispatcher
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo

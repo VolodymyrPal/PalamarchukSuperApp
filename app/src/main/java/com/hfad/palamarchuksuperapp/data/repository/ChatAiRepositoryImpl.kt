@@ -6,12 +6,13 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
-import com.hfad.palamarchuksuperapp.domain.models.DatabaseException
+import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.DatabaseError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.models.safeDbCall
+import com.hfad.palamarchuksuperapp.domain.models.safeDbCallWithRetries
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

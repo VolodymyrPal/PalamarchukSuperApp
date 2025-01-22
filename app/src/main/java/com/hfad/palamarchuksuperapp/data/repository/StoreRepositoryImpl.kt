@@ -5,16 +5,15 @@ import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Error
-import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.domain.models.Product
-import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import java.lang.RuntimeException
+import javax.inject.Inject
 
 class StoreRepositoryImpl @Inject constructor(
     private val storeApi: FakeStoreApi,
@@ -53,8 +52,6 @@ class StoreRepositoryImpl @Inject constructor(
             val storeProducts: PersistentList<Product> = storeApi.getProductsDomainRw().toPersistentList()
 
             Result.Success(storeProducts)
-        } catch (e: RuntimeException) {
-            Result.Error(AppError.LocalData.DatabaseError)
         } catch (e: Exception) {
             Result.Error(AppError.Network.ServerError.InternalServerError)
         }
