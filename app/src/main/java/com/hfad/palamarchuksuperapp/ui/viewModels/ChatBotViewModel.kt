@@ -159,8 +159,11 @@ class ChatBotViewModel @Inject constructor(
         }
     }
     val handler = CoroutineExceptionHandler { context, exception ->
+    private val handler = CoroutineExceptionHandler { _, exception ->
         Log.e("CoroutineExceptionHandler", "Необработанное исключение: $exception", exception)
-        // Дополнительная обработка исключения, например, показ сообщения пользователю
+        viewModelScope.launch(mainDispatcher) {
+            effect(Effect.ShowToast(exception.message ?: "Произошла ошибка"))
+        }
     }
 
     private fun sendText(text: String) {
