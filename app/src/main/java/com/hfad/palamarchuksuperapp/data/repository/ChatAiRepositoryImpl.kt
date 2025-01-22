@@ -38,6 +38,20 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override suspend fun getAllChatsInfo(): Flow<List<MessageChat>> {
         return messageChatDao.getAllChatsInfo().map {
+            val b = safeDbCallWithRetries {
+                val b: AppError = getError()
+                when (b) {
+                    is AppError.OtherErrors -> {}
+                    is AppError.CustomError -> {}
+                    is AppError.Network -> {}
+                    is DatabaseError.ConstraintViolation -> {}
+                    is DatabaseError.DiskIOException -> {}
+                    is DatabaseError.OutOfMemoryException -> {}
+                    is DatabaseError.SQLException -> {}
+                    is DatabaseError.UnknownException -> {}
+                }
+                it.map { MessageChat.from(it) }
+            }
             it.map { MessageChat.from(it) }
         }
     }
