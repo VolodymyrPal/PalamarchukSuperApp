@@ -168,8 +168,7 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { true }
             val chatId = currentChatId.value
             sendChatRequestUseCase(
-                MessageGroup(
-                    id = getAiChatUseCase().value.size,
+                message = MessageGroup(
                     id = 0,
                     role = Role.USER,
                     content = text,
