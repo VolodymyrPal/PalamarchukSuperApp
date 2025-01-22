@@ -5,7 +5,6 @@ import MainDispatcher
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
@@ -160,8 +159,11 @@ class ChatBotViewModel @Inject constructor(
         }
     }
     val handler = CoroutineExceptionHandler { context, exception ->
+    private val handler = CoroutineExceptionHandler { _, exception ->
         Log.e("CoroutineExceptionHandler", "Необработанное исключение: $exception", exception)
-        // Дополнительная обработка исключения, например, показ сообщения пользователю
+        viewModelScope.launch(mainDispatcher) {
+            effect(Effect.ShowToast(exception.message ?: "Произошла ошибка"))
+        }
     }
 
     private fun sendText(text: String) {
@@ -169,8 +171,7 @@ class ChatBotViewModel @Inject constructor(
             _loading.update { true }
             val chatId = currentChatId.value
             sendChatRequestUseCase(
-                MessageGroup(
-                    id = getAiChatUseCase().value.size,
+                message = MessageGroup(
                     id = 0,
                     role = Role.USER,
                     content = text,

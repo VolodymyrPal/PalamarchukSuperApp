@@ -6,12 +6,13 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
-import com.hfad.palamarchuksuperapp.domain.models.DatabaseException
+import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.DatabaseError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.models.safeDbCall
+import com.hfad.palamarchuksuperapp.domain.models.safeDbCallWithRetries
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -37,6 +38,20 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override suspend fun getAllChatsInfo(): Flow<List<MessageChat>> {
         return messageChatDao.getAllChatsInfo().map {
+            val b = safeDbCallWithRetries {
+                val b: AppError = getError()
+                when (b) {
+                    is AppError.OtherErrors -> {}
+                    is AppError.CustomError -> {}
+                    is AppError.Network -> {}
+                    is DatabaseError.ConstraintViolation -> {}
+                    is DatabaseError.DiskIOException -> {}
+                    is DatabaseError.OutOfMemoryException -> {}
+                    is DatabaseError.SQLException -> {}
+                    is DatabaseError.UnknownException -> {}
+                }
+                it.map { MessageChat.from(it) }
+            }
             it.map { MessageChat.from(it) }
         }
     }
