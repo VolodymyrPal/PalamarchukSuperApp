@@ -30,6 +30,61 @@ sealed interface AppError : Error {
     }
 
     data class CustomError(val errorText: String? = null, val error: Throwable? = null) : AppError
+
+    /**
+     * Represents a sealed hierarchy of database-related errors.
+     * Each subclass corresponds to a specific type of database error.
+     *
+     * @property message A detailed error message (optional).
+     * @property cause The root cause of the error, if available (optional).
+     */
+    sealed class DatabaseError(
+        val message: String? = null, val cause: Throwable,
+    ) : AppError {
+
+        /**
+         * Represents a general SQL error or other database-related issue.
+         *
+         * @param message Detailed error message (optional).
+         * @param cause Root cause of the error, if available (optional).
+         */
+        class UnhandledSQLException(
+            message: String? = null,
+            cause: Throwable,
+        ) : DatabaseError(message, cause)
+
+        /**
+         * Represents a constraint violation (e.g., unique constraint, foreign key constraint).
+         *
+         * @param message Detailed error message (optional).
+         * @param cause Root cause of the error, if available (optional).
+         */
+        class ConstraintViolation(
+            message: String? = null,
+            cause: Throwable,
+        ) : DatabaseError(message, cause)
+
+        /**
+         * Represents a disk I/O error, such as a problem with reading/writing to disk.
+         *
+         * @param message Detailed error message (optional).
+         * @param cause Root cause of the error, if available (optional).
+         */
+        class DiskIOException(message: String? = null, cause: Throwable) :
+            DatabaseError(message, cause)
+
+        /**
+         * Represents an error indicating insufficient memory for database operations.
+         *
+         * @param message Detailed error message (optional).
+         * @param cause Root cause of the error, if available (optional).
+         */
+        class OutOfMemoryException(
+            message: String? = null,
+            cause: Throwable,
+        ) : DatabaseError(message, cause)
+
+    }
 }
 
 /** Maps an [SQLException] to a specific [AppError.DatabaseError] subtype.
