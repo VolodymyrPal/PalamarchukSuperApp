@@ -7,12 +7,10 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.DatabaseError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.models.safeDbCallWithRetries
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -23,114 +21,128 @@ class ChatAiRepositoryImpl @Inject constructor(
     private val messageChatDao: MessageChatDao,
 ) : ChatAiRepository {
 
-    override suspend fun getAllChats(): List<MessageChat> {
-        val a = safeDbCall { messageChatDao.getAllChatsWithMessages() }
-        val b = if (a is Result.Error) {
-            throw DatabaseException(a.error)
-        } else {
-            (a as Result.Success).data.map {
-                MessageChat.from(it)
-            }
+    override suspend fun getAllChats(): Result<List<MessageChat>, AppError> {
+
+        return executeWithAppErrorHandling {
+            messageChatDao.getAllChatsWithMessages().map { MessageChat.from(it) }
         }
-        //.map { MessageChat.from(it) }
-        return b
+
     }
 
-    override suspend fun getAllChatsInfo(): Flow<List<MessageChat>> {
-        return messageChatDao.getAllChatsInfo().map {
-            val b = safeDbCallWithRetries {
-                val b: AppError = getError()
-                when (b) {
-                    is AppError.OtherErrors -> {}
-                    is AppError.CustomError -> {}
-                    is AppError.Network -> {}
-                    is DatabaseError.ConstraintViolation -> {}
-                    is DatabaseError.DiskIOException -> {}
-                    is DatabaseError.OutOfMemoryException -> {}
-                    is DatabaseError.SQLException -> {}
-                    is DatabaseError.UnknownException -> {}
-                }
+    override suspend fun getAllChatsInfo(): Result<Flow<List<MessageChat>>, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.getAllChatsInfo().map {
                 it.map { MessageChat.from(it) }
             }
-            it.map { MessageChat.from(it) }
         }
     }
 
-    override suspend fun getChatWithMessagesById(chatId: Int): MessageChat {
-        if (messageChatDao.getAllChatsInfo().find { it.id == chatId } == null) {
-            Log.d("ChatAiRepositoryImpl", "getChatById: $chatId")
-            val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
-            return MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(id.toInt()))
-        } else {
-            return MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(chatId))
-        }
-    }
-
-    override suspend fun getChatFlowById(chatId: Int): Flow<MessageChat> {
-        val chatWithMessageFlow = messageChatDao
-            .chatWithMessagesFlow(chatId = chatId).map { chatWithMessagesEntity ->
-                MessageChat.from(chatWithMessagesEntity)
+    override suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError> {
+        return executeWithAppErrorHandling {
+            if (messageChatDao.getAllChatsInfo().first()
+                    .find { it.id == chatId } == null
+            ) { //TODO first() is blocking
+                Log.d("ChatAiRepositoryImpl", "getChatById: $chatId")
+                val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
+                MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(id.toInt()))
+            } else {
+                MessageChatWithRelationsEntity.toDomain(messageChatDao.getChatWithMessages(chatId))
             }
+
+
+        }
+    }
+
+    override suspend fun getChatFlowById(chatId: Int): Result<Flow<MessageChat>, AppError> {
+        val chatWithMessageFlow = executeWithAppErrorHandling {
+            messageChatDao
+                .chatWithMessagesFlow(chatId = chatId).map { chatWithMessagesEntity ->
+                    MessageChat.from(chatWithMessagesEntity)
+                }
+        }
         return chatWithMessageFlow
     }
 
-    override suspend fun getMessageGroupWithMessagesById(chatId: Int): MessageGroupWithMessagesEntity {
-        return messageChatDao.getMessageGroup(chatId)
+    override suspend fun getMessageGroupWithMessagesById(
+        chatId: Int,
+    ): Result<MessageGroupWithMessagesEntity, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.getMessageGroup(chatId)
+        }
     }
 
-    override suspend fun createChat(emptyChat: MessageChat) {
-        messageChatDao.insertChat(
-            MessageChatEntity.from(emptyChat)
-        )
-    }
-
-    override suspend fun addChatWithMessages(chat: MessageChat): Long {
-        return messageChatDao.insertChatWithRelations(
-            MessageChatWithRelationsEntity.from(chat)
-        )
-    }
-
-    override suspend fun deleteChat(chatId: Int) {
-        val chat = messageChatDao.getAllChatsInfo().find { it.id == chatId }
-        chat?.let { messageChatDao.deleteChat(it) }
-    }
-
-    override suspend fun clearAllChats() {
-        messageChatDao.getAllChatsInfo().forEach { messageChatDao.deleteChat(it) }
-    }
-
-    override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long {
-        val messageGroupId = messageChatDao.insertMessageGroupWithMessages(
-            MessageGroupWithMessagesEntity.from(messageGroupWithChatID)
-        )
-        return messageGroupId
-    }
-
-    override suspend fun updateMessageGroup(messageGroup: MessageGroup) {
-        messageChatDao.updateMessageGroupWithContent(
-            MessageGroupWithMessagesEntity.from(messageGroup)
-        )
-    }
-
-    override suspend fun updateMessageAi(messageAI: MessageAI) {
-        messageChatDao.updateMessage(
-            MessageAiEntity(
-                id = messageAI.id,
-                messageGroupId = messageAI.messageGroupId,
-                timestamp = messageAI.timestamp,
-                message = messageAI.message,
-                otherContent = messageAI.otherContent?.toString(),
-                model = messageAI.model,
-                isChosen = messageAI.isChosen,
-                status = messageAI.status
+    override suspend fun createChat(emptyChat: MessageChat): Result<Unit, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.insertChat(
+                MessageChatEntity.from(emptyChat)
             )
-        )
+        }
     }
 
-    override suspend fun addAndGetMessageAi(messageAI: MessageAI): MessageAI {
-        val messageEntity = messageChatDao.insertAndReturnMessage(
-            MessageAiEntity.from(messageAI)
-        )
-        return MessageAI.toDomainModel(messageEntity)
+    override suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.insertChatWithRelations(
+                MessageChatWithRelationsEntity.from(chat)
+            )
+        }
+    }
+
+    override suspend fun deleteChat(chatId: Int): Result<Unit, AppError> {
+        return executeWithAppErrorHandling {
+            val chat = messageChatDao.getAllChatsInfo().first()
+                .find { it.id == chatId } //TODO first() is blocking fun
+            chat?.let { messageChatDao.deleteChat(it) }
+        }
+    }
+
+    override suspend fun clearAllChats(): Result<Unit, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.getAllChatsInfo().first()
+                .forEach { messageChatDao.deleteChat(it) } //TODO first() is blocking fun
+        }
+    }
+
+    override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Result<Long, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.insertMessageGroupWithMessages(
+                MessageGroupWithMessagesEntity.from(messageGroupWithChatID)
+            )
+        }
+    }
+
+    override suspend fun updateMessageGroup(messageGroup: MessageGroup): Result<Unit, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.updateMessageGroupWithContent(
+                MessageGroupWithMessagesEntity.from(messageGroup)
+            )
+        }
+    }
+
+    override suspend fun updateMessageAi(messageAI: MessageAI): Result<Unit, AppError> {
+        return executeWithAppErrorHandling {
+            messageChatDao.updateMessage(
+                MessageAiEntity(
+                    id = messageAI.id,
+                    messageGroupId = messageAI.messageGroupId,
+                    timestamp = messageAI.timestamp,
+                    message = messageAI.message,
+                    otherContent = messageAI.otherContent?.toString(),
+                    model = messageAI.model,
+                    isChosen = messageAI.isChosen,
+                    status = messageAI.status
+                )
+            )
+        }
+    }
+
+    override suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError> {
+        val messageEntity = executeWithAppErrorHandling {
+            MessageAI.toDomainModel(
+                messageChatDao.insertAndReturnMessage(
+                    MessageAiEntity.from(messageAI)
+                )
+            )
+        }
+        return messageEntity
     }
 }

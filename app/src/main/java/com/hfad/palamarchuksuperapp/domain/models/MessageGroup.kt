@@ -1,7 +1,5 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
-import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
-import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
