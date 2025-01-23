@@ -1,27 +1,29 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
+import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.Result
 import kotlinx.coroutines.flow.Flow
 
 interface ChatAiRepository {
 
     // Методы для работы с чатами
-    suspend fun getAllChats(): List<MessageChat>
-    suspend fun getAllChatsInfo(): Flow<List<MessageChat>>
-    suspend fun getChatWithMessagesById(chatId: Int): MessageChat
-    suspend fun getChatFlowById(chatId: Int): Flow<MessageChat>
-    suspend fun createChat(emptyChat: MessageChat)
-    suspend fun addChatWithMessages(chat: MessageChat): Long
-    suspend fun deleteChat(chatId: Int)
-    suspend fun clearAllChats()
+    suspend fun getAllChats(): Result<List<MessageChat>, AppError>
+    suspend fun getAllChatsInfo(): Result<Flow<List<MessageChat>>, AppError>
+    suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError>
+    suspend fun getChatFlowById(chatId: Int): Result<Flow<MessageChat>, AppError>
+    suspend fun createChat(emptyChat: MessageChat): Result<Unit, AppError>
+    suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError>
+    suspend fun deleteChat(chatId: Int): Result<Unit, AppError>
+    suspend fun clearAllChats(): Result<Unit, AppError>
 
     // Методы для работы с сообщениями
-    suspend fun getMessageGroupWithMessagesById(chatId: Int): MessageGroupWithMessagesEntity
-    suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Long
-    suspend fun updateMessageGroup(messageGroup: MessageGroup)
-    suspend fun addAndGetMessageAi(messageAI: MessageAI): MessageAI
-    suspend fun updateMessageAi(messageAI: MessageAI)
+    suspend fun getMessageGroupWithMessagesById(chatId: Int): Result<MessageGroupWithMessagesEntity, AppError>
+    suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Result<Long, AppError>
+    suspend fun updateMessageGroup(messageGroup: MessageGroup): Result<Unit, AppError>
+    suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError>
+    suspend fun updateMessageAi(messageAI: MessageAI): Result<Unit, AppError>
 }
