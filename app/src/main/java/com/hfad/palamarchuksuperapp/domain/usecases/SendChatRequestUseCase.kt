@@ -18,7 +18,10 @@ import kotlinx.datetime.Clock
 import javax.inject.Inject
 
 interface SendChatRequestUseCase {
-    suspend operator fun invoke(message: MessageGroup, handlers: List<AiModelHandler>)
+    suspend operator fun invoke(
+        message: MessageGroup,
+        handlers: List<AiModelHandler>,
+    ): Result<Unit, AppError>
 }
 
 class SendAiRequestUseCaseImpl @Inject constructor(
@@ -28,22 +31,26 @@ class SendAiRequestUseCaseImpl @Inject constructor(
     override suspend operator fun invoke(
         message: MessageGroup,
         handlers: List<AiModelHandler>,
-    ) {
+    ): Result<Unit, AppError> {
         val chatId = message.chatId
         val activeHandlers = handlers.filter { it.aiHandlerInfo.value.isSelected }
 
         if (activeHandlers.isEmpty()) {
-//            chatAiRepository.errorFlow.emit(AppError.CustomError("No handlers provided")) TODO how to handle error better
-            return
+            return Result.Error(AppError.CustomError("No handlers provided"))
         }
 
-        chatAiRepository.addMessageGroup(messageGroupWithChatID = message)
+        chatAiRepository.addMessageGroup(messageGroupWithChatID = message).onSuccessOrReturnError {
+            return Result.Error(it)
+        }
 
-        val currentChat = chatAiRepository.getChatWithMessagesById(chatId)
+        val currentChat =
+            chatAiRepository.getChatWithMessagesById(chatId).onSuccessOrReturnError {
+                return Result.Error(it)
+            }
 
         val contextMessages = currentChat.messageGroups.toPersistentList()
 
-        val responseMessageGroup = chatAiRepository.addMessageGroup(
+        val responseMessageGroupId = chatAiRepository.addMessageGroup(
             MessageGroup(
                 id = 0, //Room will provide the id
                 role = Role.MODEL,
@@ -51,25 +58,42 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                 chatId = chatId,
                 content = emptyList()
             )
-        )
-
+        ).onSuccessOrReturnError {
+            return Result.Error(it)
+        }
         supervisorScope {
-
             val requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>> =
                 activeHandlers.map { handler ->
-                    chatAiRepository.addAndGetMessageAi(
+                    val pendingMessage = chatAiRepository.addAndGetMessageAi(
                         MessageAI(
                             id = 0, //Room will provide the id
-                            message = "",
-                            model = null,
                             status = MessageStatus.LOADING,
-                            messageGroupId = responseMessageGroup.toInt(),
+                            messageGroupId = responseMessageGroupId.toInt(),
                             timestamp = Clock.System.now().toString()
                         )
-                    ) to async {
+                    ).onSuccessOrReturnError {
+                        return@supervisorScope Result.Error(it)
+                    }
+                    pendingMessage to async {
                         handler.getResponse(contextMessages)
                     }
                 }
+
+            return@supervisorScope proceedRequest(
+                requests,
+            )
+        }
+        return Result.Success(Unit)
+    }
+
+    private suspend fun proceedRequest(
+        requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>>,
+    ): Result<Unit, AppError> {
+
+        val errors = mutableListOf<AppError>()
+
+        supervisorScope {
+
 
             requests.forEach { (messageAi, request) ->
                 launch {
@@ -88,13 +112,11 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                         }
 
                         is Result.Error -> {
-                            val errorMessage = when (result.error) {
-                                is AppError.CustomError -> result.error.errorText
-                                    ?: "Undefined Error"
-
-                                is AppError.Network -> "Error with network"
-                                else -> "Undefined error"
-                            }
+                            val errorMessage =
+                                when (result.error) { //TODO could throw internet error, need to check it
+                                    is AppError.NetworkException -> "Error with network"
+                                    else -> "Undefined error"
+                                }
                             chatAiRepository.updateMessageAi(
                                 messageAI = messageAi.copy(
                                     message = errorMessage,
@@ -105,8 +127,32 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             )
                         }
                     }
+                    synchronized(errors) {
+                        if (result is Result.Error) {
+                            errors.add(result.error)
+                        }
+                    }
                 }
             }
         }
+        return if (errors.isNotEmpty()) {
+            Result.Error(
+                error = AppError.CustomError(
+                    "Some handlers failed: ${errors.joinToString()} "
+                )
+            )
+        } else {
+            Result.Success(Unit)
+        }
+    }
+}
+
+
+inline fun <T> Result<T, AppError>.onSuccessOrReturnError(
+    onError: (AppError) -> Nothing,
+): T {
+    return when (this) {
+        is Result.Success -> this.data
+        is Result.Error -> onError(this.error)
     }
 }

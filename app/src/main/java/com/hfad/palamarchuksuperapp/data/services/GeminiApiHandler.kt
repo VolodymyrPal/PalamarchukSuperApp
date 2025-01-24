@@ -9,6 +9,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.HttpStatusCodeError
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -19,6 +20,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.models.mapNetworkRequestException
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -53,8 +55,8 @@ class GeminiApiHandler @AssistedInject constructor(
             val list = response.body<GeminiModelsResponse>()
             return Result.Success(list.models.map { it.toGeminiModel() })
         } else {
-            Result.Error(AppError.Network.RequestError.BadRequest)
-        }
+            Result.Error(AppError.NetworkException.RequestError.BadRequest())
+        } //TODO wish to upgrade class
     }
 
     override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
@@ -93,28 +95,11 @@ class GeminiApiHandler @AssistedInject constructor(
                     error = AppError.CustomError(geminiError.error.message)
                 )
             } else {
-                throw CodeError(request.status.value)
+                throw HttpStatusCodeError(request.status.value)
             }
         } catch (e: Exception) {
-            return Result.Error(handleException(e))
+            return Result.Error(mapNetworkRequestException(e)) //TODO move it to other handler
         }
-    }
-}
-
-fun handleException(e: Exception): AppError { //TODO улучшить или изменить проблемы с запросом
-    return when (e) {
-        is CodeError -> {
-            when (e.value) {
-                400 -> AppError.Network.RequestError.BadRequest
-                401 -> AppError.Network.RequestError.Unauthorized
-                403 -> AppError.Network.RequestError.Forbidden
-                in 400..500 -> AppError.CustomError("Ошибка запроса")
-                in 500..600 -> AppError.CustomError("Ошибка сервера")
-                else -> AppError.CustomError("Неизвестная ошибка")
-            }
-        }
-
-        else -> AppError.CustomError(error = e)
     }
 }
 

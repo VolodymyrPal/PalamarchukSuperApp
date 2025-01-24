@@ -23,11 +23,11 @@ class StoreRepositoryImpl @Inject constructor(
     override val fetchProductsAsFlowFromDB: Flow<PersistentList<Product>> =
         storeDao.getAllProductsFromDB().map { list -> list.toPersistentList() }
 
-    suspend fun products(): Result<Flow<PersistentList<Product>>, Error> {
+    suspend fun products(): Result<Flow<PersistentList<Product>>, AppError> {
         return try {
             Result.Success(fetchProductsAsFlowFromDB)
         } catch (e: HttpException) {
-            Result.Error(AppError.Network.ServerError.InternalServerError)
+            Result.Error(AppError.NetworkException.ServerError.InternalServerError())
         }
     }
 
@@ -46,14 +46,14 @@ class StoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getProductWithErrors(): Result<PersistentList<Product>, Error> { //}: List<ProductDomainRW> {
+    private suspend fun getProductWithErrors(): Result<PersistentList<Product>, AppError> { //}: List<ProductDomainRW> {
 
         return try {
             val storeProducts: PersistentList<Product> = storeApi.getProductsDomainRw().toPersistentList()
 
             Result.Success(storeProducts)
         } catch (e: Exception) {
-            Result.Error(AppError.Network.ServerError.InternalServerError)
+            Result.Error(AppError.NetworkException.ServerError.InternalServerError())
         }
 
 //        return try {

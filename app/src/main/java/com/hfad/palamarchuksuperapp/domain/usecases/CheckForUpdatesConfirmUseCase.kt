@@ -5,6 +5,10 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.hfad.palamarchuksuperapp.ui.reusable.StrongAlertDialog
 
+/**
+ * Use case for checking for updates if it's available.
+ *
+ */
 class CheckForUpdatesConfirmUseCase(private val context: Context) {
 
     private val appUpdateManager = AppUpdateManagerFactory.create(context)
