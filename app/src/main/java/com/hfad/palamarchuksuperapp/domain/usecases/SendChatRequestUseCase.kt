@@ -110,3 +110,13 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         }
     }
 }
+
+
+inline fun <T> Result<T, AppError>.onSuccessOrReturnError(
+    onError: (AppError) -> Nothing,
+): T {
+    return when (this) {
+        is Result.Success -> this.data
+        is Result.Error -> onError(this.error)
+    }
+}
