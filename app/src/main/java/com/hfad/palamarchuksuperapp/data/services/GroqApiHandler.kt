@@ -9,7 +9,9 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toGroqModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.HttpStatusCodeError
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.models.mapNetworkRequestException
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -76,10 +78,10 @@ class GroqApiHandler @AssistedInject constructor(
                     )
                 )
             } else {
-                throw CodeError(request.status.value)
+                throw HttpStatusCodeError(request.status.value)
             }
         } catch (e: Exception) {
-            return Result.Error(handleException(e))
+            return Result.Error(mapNetworkRequestException(e))
         }
     }
 
@@ -94,7 +96,7 @@ class GroqApiHandler @AssistedInject constructor(
             val list = response.body<GroqModelList>()
             return Result.Success(list.data.map { it.toGroqModel() })
         } else {
-            Result.Error(AppError.Network.RequestError.BadRequest)
+            Result.Error(AppError.NetworkException.RequestError.BadRequest())
         }
     }
 
@@ -208,8 +210,6 @@ fun List<MessageGroup>.toGroqRequest(model: AiModel): GroqRequest {
 
     return groqRequest
 }
-
-class CodeError(val value: Int) : Exception()
 
 @AssistedFactory
 interface GroqAIApiHandlerFactory {
