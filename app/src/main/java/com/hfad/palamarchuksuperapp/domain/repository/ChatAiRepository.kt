@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
-import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
@@ -21,7 +20,7 @@ interface ChatAiRepository {
     suspend fun clearAllChats(): Result<Unit, AppError>
 
     // Методы для работы с сообщениями
-    suspend fun getMessageGroupWithMessagesById(chatId: Int): Result<MessageGroupWithMessagesEntity, AppError>
+    suspend fun getMessageGroup(chatId: Int): Result<MessageGroup, AppError>
     suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Result<Long, AppError>
     suspend fun updateMessageGroup(messageGroup: MessageGroup): Result<Unit, AppError>
     suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError>
