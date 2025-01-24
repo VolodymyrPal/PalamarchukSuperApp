@@ -23,14 +23,14 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override suspend fun getAllChats(): Result<List<MessageChat>, AppError> {
 
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.getAllChatsWithMessages().map { MessageChat.from(it) }
         }
 
     }
 
     override suspend fun getAllChatsInfo(): Result<Flow<List<MessageChat>>, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.getAllChatsInfo().map {
                 it.map { MessageChat.from(it) }
             }
@@ -38,7 +38,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             if (messageChatDao.getAllChatsInfo().first()
                     .find { it.id == chatId } == null
             ) { //TODO first() is blocking
@@ -54,7 +54,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getChatFlowById(chatId: Int): Result<Flow<MessageChat>, AppError> {
-        val chatWithMessageFlow = executeWithAppErrorHandling {
+        val chatWithMessageFlow = executeDBWithAppErrorHandling {
             messageChatDao
                 .chatWithMessagesFlow(chatId = chatId).map { chatWithMessagesEntity ->
                     MessageChat.from(chatWithMessagesEntity)
@@ -63,16 +63,16 @@ class ChatAiRepositoryImpl @Inject constructor(
         return chatWithMessageFlow
     }
 
-    override suspend fun getMessageGroupWithMessagesById(
+    override suspend fun getMessageGroup(
         chatId: Int,
-    ): Result<MessageGroupWithMessagesEntity, AppError> {
-        return executeWithAppErrorHandling {
-            messageChatDao.getMessageGroup(chatId)
+    ): Result<MessageGroup, AppError> {
+        return executeDBWithAppErrorHandling {
+            MessageGroup.from(messageChatDao.getMessageGroup(chatId))
         }
     }
 
     override suspend fun createChat(emptyChat: MessageChat): Result<Unit, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.insertChat(
                 MessageChatEntity.from(emptyChat)
             )
@@ -80,7 +80,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.insertChatWithRelations(
                 MessageChatWithRelationsEntity.from(chat)
             )
@@ -88,7 +88,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteChat(chatId: Int): Result<Unit, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             val chat = messageChatDao.getAllChatsInfo().first()
                 .find { it.id == chatId } //TODO first() is blocking fun
             chat?.let { messageChatDao.deleteChat(it) }
@@ -96,14 +96,14 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearAllChats(): Result<Unit, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.getAllChatsInfo().first()
                 .forEach { messageChatDao.deleteChat(it) } //TODO first() is blocking fun
         }
     }
 
     override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Result<Long, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.insertMessageGroupWithMessages(
                 MessageGroupWithMessagesEntity.from(messageGroupWithChatID)
             )
@@ -111,7 +111,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateMessageGroup(messageGroup: MessageGroup): Result<Unit, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.updateMessageGroupWithContent(
                 MessageGroupWithMessagesEntity.from(messageGroup)
             )
@@ -119,7 +119,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateMessageAi(messageAI: MessageAI): Result<Unit, AppError> {
-        return executeWithAppErrorHandling {
+        return executeDBWithAppErrorHandling {
             messageChatDao.updateMessage(
                 MessageAiEntity(
                     id = messageAI.id,
@@ -136,7 +136,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError> {
-        val messageEntity = executeWithAppErrorHandling {
+        val messageEntity = executeDBWithAppErrorHandling {
             MessageAI.toDomainModel(
                 messageChatDao.insertAndReturnMessage(
                     MessageAiEntity.from(messageAI)
