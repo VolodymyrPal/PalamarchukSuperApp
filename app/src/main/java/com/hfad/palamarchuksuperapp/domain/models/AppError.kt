@@ -106,3 +106,37 @@ fun mapSQLException(e: SQLException): DatabaseError {
         else -> DatabaseError.UnhandledSQLException(e.message, e)
     }
 }
+
+/** Maps an [Exception] to a specific [AppError.NetworkException] subtype.
+ *
+ * @param e the Exception to be mapped.
+ *
+ * @return A specific subtype of [AppError.NetworkException] corresponding to the given Exception.
+ * Possible outcomes include:
+ * - [AppError.NetworkException.RequestError.BadRequest]
+ * - [AppError.NetworkException.RequestError.Unauthorized]
+ * - [AppError.NetworkException.RequestError.Forbidden]
+ * - [AppError.NetworkException.ServerError.InternalServerError]
+ * - [AppError.NetworkException.ServerError.BadGateway]
+ * - [AppError.NetworkException.ServerError.ServiceUnavailable]
+ * - [AppError.NetworkException.ServerError.GatewayTimeout]
+ * - [AppError.CustomError]
+ */
+fun mapNetworkRequestException(e: Exception): AppError {
+    return when (e) {
+        is HttpStatusCodeError -> when (e.value) {
+            400 -> AppError.NetworkException.RequestError.BadRequest(e.message, e)
+            401 -> AppError.NetworkException.RequestError.Unauthorized(e.message, e)
+            403 -> AppError.NetworkException.RequestError.Forbidden(e.message, e)
+            500 -> AppError.NetworkException.ServerError.InternalServerError(e.message, e)
+            502 -> AppError.NetworkException.ServerError.BadGateway(e.message, e)
+            503 -> AppError.NetworkException.ServerError.ServiceUnavailable(e.message, e)
+            504 -> AppError.NetworkException.ServerError.GatewayTimeout(e.message, e)
+            else -> AppError.CustomError("Неизвестная ошибка", e)
+        }
+
+        else -> AppError.CustomError(error = e)
+    }
+}
+
+class HttpStatusCodeError(val value: Int) : Exception()
