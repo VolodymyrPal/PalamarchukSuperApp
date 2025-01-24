@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.mapSQLException
 
-suspend fun <T> executeWithAppErrorHandling(
+suspend fun <T> executeDBWithAppErrorHandling(
     block: suspend () -> T,
 ): Result<T, AppError> {
     return try {
