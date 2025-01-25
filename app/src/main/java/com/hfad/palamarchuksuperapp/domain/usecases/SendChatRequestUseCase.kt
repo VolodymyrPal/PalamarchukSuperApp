@@ -39,12 +39,12 @@ class SendAiRequestUseCaseImpl @Inject constructor(
             return Result.Error(AppError.CustomError("No handlers provided"))
         }
 
-        chatAiRepository.addMessageGroup(messageGroupWithChatID = message).onSuccessOrReturnError {
+        chatAiRepository.addMessageGroup(messageGroupWithChatID = message).onSuccessOrReturnAppError {
             return Result.Error(it)
         }
 
         val currentChat =
-            chatAiRepository.getChatWithMessagesById(chatId).onSuccessOrReturnError {
+            chatAiRepository.getChatWithMessagesById(chatId).onSuccessOrReturnAppError {
                 return Result.Error(it)
             }
 
@@ -58,7 +58,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                 chatId = chatId,
                 content = emptyList()
             )
-        ).onSuccessOrReturnError {
+        ).onSuccessOrReturnAppError {
             return Result.Error(it)
         }
         supervisorScope {
@@ -71,7 +71,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             messageGroupId = responseMessageGroupId.toInt(),
                             timestamp = Clock.System.now().toString()
                         )
-                    ).onSuccessOrReturnError {
+                    ).onSuccessOrReturnAppError {
                         return@supervisorScope Result.Error(it)
                     }
                     pendingMessage to async {
@@ -144,15 +144,5 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         } else {
             Result.Success(Unit)
         }
-    }
-}
-
-
-inline fun <T> Result<T, AppError>.onSuccessOrReturnError(
-    onError: (AppError) -> Nothing,
-): T {
-    return when (this) {
-        is Result.Success -> this.data
-        is Result.Error -> onError(this.error)
     }
 }

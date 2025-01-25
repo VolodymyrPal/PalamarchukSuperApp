@@ -16,7 +16,7 @@ class ChooseMessageAiUseCaseImpl @Inject constructor(
 
     override suspend operator fun invoke(messageAI: MessageAI): Result<Unit, AppError> {
         val groupWithMessages =
-            chatAiRepository.getMessageGroup(messageAI.messageGroupId).onSuccessOrReturnError {
+            chatAiRepository.getMessageGroup(messageAI.messageGroupId).onSuccessOrReturnAppError {
                 return Result.Error(it)
             }
 
@@ -25,7 +25,7 @@ class ChooseMessageAiUseCaseImpl @Inject constructor(
                 message.copy(
                     isChosen = message.id == messageAI.id,
                 )
-            ).onSuccessOrReturnError {
+            ).onSuccessOrReturnAppError {
                 return Result.Error(it)
             }
         }

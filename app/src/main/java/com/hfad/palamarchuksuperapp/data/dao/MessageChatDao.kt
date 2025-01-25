@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.data.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -102,7 +101,7 @@ interface MessageChatDao {
      * @return Список базовой информации о чатах
      */
     @Query("SELECT * FROM MessageChat")
-    fun getAllChatsInfo(): Flow<List<MessageChatEntity>>
+    fun getAllChatsInfo(): List<MessageChatEntity>
 
     /**
      * Создание нового чата.
@@ -115,10 +114,11 @@ interface MessageChatDao {
     /**
      * Удаление чата.
      * Каскадно удаляет все связанные сообщения.
-     * @param chat Сущность чата для удаления
+     * @param chatId Сущность ID чата для удаления
      */
-    @Delete
-    suspend fun deleteChat(chat: MessageChatEntity)
+    @Query("DELETE FROM MessageChat WHERE id = :chatId")
+    suspend fun deleteChat(chatId: Int)
+
     // endregion
 
     // region Операции с группами сообщений
@@ -193,4 +193,8 @@ interface MessageChatDao {
     @Query("SELECT * FROM messageaientities WHERE messageGroupId = :groupId")
     suspend fun getMessagesForGroup(groupId: Int): List<MessageAiEntity>
     // endregion
+
+    @Query("DELETE FROM MessageChat")
+    suspend fun deleteAllChats()
+
 }
