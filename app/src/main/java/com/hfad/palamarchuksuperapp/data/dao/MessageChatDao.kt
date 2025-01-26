@@ -197,4 +197,11 @@ interface MessageChatDao {
     @Query("DELETE FROM MessageChat")
     suspend fun deleteAllChats()
 
+    @Query("SELECT ma.* " +
+            "FROM MessageAiEntities AS ma " +
+            "INNER JOIN MessageGroup AS mg " +
+            "WHERE mg.chatId = :chatId AND ma.status = :status "
+    )
+    suspend fun getMessagesWithStatus(chatId: Int, status: String): List<MessageAiEntity>
+
 }

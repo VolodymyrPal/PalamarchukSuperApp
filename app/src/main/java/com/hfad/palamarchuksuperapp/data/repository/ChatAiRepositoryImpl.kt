@@ -5,6 +5,7 @@ import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
@@ -148,5 +149,16 @@ class ChatAiRepositoryImpl @Inject constructor(
             )
         }
         return messageAiEntity
+    }
+
+    override suspend fun getAllMessagesWithStatus(
+        chatId: Int,
+        status: MessageStatus,
+    ): Result<List<MessageAI>, AppError> {
+        val loadingMessagesResult = withSqlErrorHandling {
+            messageChatDao.getMessagesWithStatus(chatId, status.name)
+                .map { MessageAI.toDomainModel(it) }
+        }
+        return loadingMessagesResult
     }
 }

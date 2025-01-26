@@ -46,6 +46,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCaseImpl
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
@@ -179,6 +181,12 @@ interface UseCaseModule {
     @Singleton
     @Binds
     fun bindGetChatAiUseCase(chatAiUseCaseImpl: ObserveChatAiUseCaseImpl): ObserveChatAiUseCase
+
+    @Singleton
+    @Binds
+    fun bindUpdateMessageStatusUseCase(
+        updateMessageStatusUseCaseImpl: UpdateMessageStatusUseCaseImpl,
+    ): UpdateMessageStatusUseCase
 }
 
 
