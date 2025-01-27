@@ -352,7 +352,7 @@ fun StoreScreenContent(
             if (error != null) {
 
                 val textMessage = when (error) {
-                    is AppError.Network -> {
+                    is AppError.NetworkException -> {
                         "Network error"
                     }
 
