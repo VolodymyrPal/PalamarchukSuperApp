@@ -52,15 +52,42 @@ class ChatBotViewModel @Inject constructor(
 ) : GenericViewModel<MessageChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     private val currentChatId = MutableStateFlow(1)
-
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    override val _dataFlow: StateFlow<PersistentList<MessageGroup>> = getAiChatUseCase()
-    private val _handlers: StateFlow<List<AiModelHandler>> = getAiHandlersUseCase().stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        emptyList()
-    )
+
+    private val handler = CoroutineExceptionHandler { _, exception ->
+        Log.e("CoroutineExceptionHandler", "Необработанное исключение: $exception", exception)
+        viewModelScope.launch(mainDispatcher) {
+            effect(Effect.ShowToast(exception.message ?: "Произошла ошибка"))
+        }
+    }
+
+    private val ioCoroutineDispatcher = ioDispatcher + handler
+
+    override val _dataFlow: StateFlow<MessageChat> = currentChatId
+        .flatMapLatest { chatId ->
+            val observedChat = observeChatAiUseCase(chatId)
+            if (observedChat is Result.Success) {
+                observedChat.data
+            } else {
+                MutableStateFlow(MessageChat())
+            }
+        }
+        .catch { error ->
+            _errorFlow.emit(AppError.CustomError(error.message))
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            MessageChat()
+        )
+
+    private val _handlers: StateFlow<PersistentList<AiModelHandler>> =
+        aiHandlerRepository.aiHandlerFlow.map { it.toPersistentList() }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            persistentListOf()
+        )
     private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
     private val _chatList = MutableStateFlow<PersistentList<MessageChat>>(persistentListOf())
