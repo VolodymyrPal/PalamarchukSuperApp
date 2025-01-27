@@ -186,7 +186,7 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun sendText(text: String) {
-        viewModelScope.launch(ioDispatcher + handler) {
+        viewModelScope.launch(ioCoroutineDispatcher) {
             _loading.update { true }
             val chatId = currentChatId.value
             sendChatRequestUseCase(
@@ -198,7 +198,10 @@ class ChatBotViewModel @Inject constructor(
                     type = MessageType.TEXT
                 ),
                 handlers = _handlers.value
-            )
+            ).onSuccessOrReturnAppError {
+                _errorFlow.emit(it)
+                return@launch
+            }
             _loading.update { false }
         }
     }
@@ -210,8 +213,11 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun chooseSubMessage(messageAI: MessageAI) {
-        viewModelScope.launch(ioDispatcher) {
-            chooseMessageAiUseCase(messageAI)
+        viewModelScope.launch(ioCoroutineDispatcher) {
+            chooseMessageAiUseCase(messageAI).onSuccessOrReturnAppError {
+                _errorFlow.emit(it)
+                return@launch
+            }
         }
     }
 
@@ -226,20 +232,20 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun updateOrAddHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo) {
-        viewModelScope.launch(ioDispatcher) {
-            updateAiHandlerUseCase(handler, aiHandlerInfo)
+        viewModelScope.launch(ioCoroutineDispatcher) {
+            aiHandlerRepository.updateHandler(handler, aiHandlerInfo)
         }
     }
 
     private fun addAiHandler(aiHandlerInfo: AiHandlerInfo) {
-        viewModelScope.launch(ioDispatcher) {
-            addAiHandlerUseCase(aiHandlerInfo)
+        viewModelScope.launch(ioCoroutineDispatcher) {
+            aiHandlerRepository.addHandler(aiHandlerInfo)
         }
     }
 
     private fun deleteHandler(handler: AiModelHandler) {
-        viewModelScope.launch(ioDispatcher) {
-            deleteAiHandlerUseCase(handler)
+        viewModelScope.launch(ioCoroutineDispatcher) {
+            aiHandlerRepository.removeHandler(handler)
         }
     }
 
