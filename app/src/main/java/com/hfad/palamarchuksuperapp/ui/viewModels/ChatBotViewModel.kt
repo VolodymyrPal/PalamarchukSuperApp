@@ -18,11 +18,11 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.onSuccessOrReturnAppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
@@ -44,20 +44,12 @@ import javax.inject.Inject
 class ChatBotViewModel @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
-    private val chatAiRepository: ChatAiRepository,
     private val aiHandlerRepository: AiHandlerRepository,
     private val sendChatRequestUseCase: SendChatRequestUseCase,
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
     private val getModelsUseCase: GetModelsUseCase,
     private val observeChatAiUseCase: ObserveChatAiUseCase,
-
-    init {
-        viewModelScope.launch(mainDispatcher) {
-            getErrorUseCase().collect { error ->
-                when (error) { //TODO Better error handler
-                    is AppError.CustomError -> {
-                        effect(Effect.ShowToast(error.error.toString()))
-                    }
+) : GenericViewModel<MessageChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     private val currentChatId = MutableStateFlow(1)
 
