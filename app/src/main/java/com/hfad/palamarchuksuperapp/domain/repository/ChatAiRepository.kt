@@ -16,14 +16,18 @@ interface ChatAiRepository {
     suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError>
     suspend fun getChatFlowById(chatId: Int): Result<Flow<MessageChat>, AppError>
     suspend fun createChat(emptyChat: MessageChat): Result<Unit, AppError>
+    suspend fun addAndGetChat(chat: MessageChat): Result<Flow<MessageChat>, AppError>
     suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError>
     suspend fun deleteChat(chatId: Int): Result<Unit, AppError>
     suspend fun clearAllChats(): Result<Unit, AppError>
+    suspend fun isChatExist(chatId: Int): Result<Boolean, AppError>
 
-    // Методы для работы с сообщениями
+    // Методы для работы с группами сообщений
     suspend fun getMessageGroup(chatId: Int): Result<MessageGroup, AppError>
     suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Result<Long, AppError>
     suspend fun updateMessageGroup(messageGroup: MessageGroup): Result<Unit, AppError>
+
+    // Методы для работы с сообщениями
     suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError>
     suspend fun updateMessageAi(messageAI: MessageAI): Result<Unit, AppError>
     suspend fun getAllMessagesWithStatus(chatId: Int, status: MessageStatus): Result<List<MessageAI>, AppError>
