@@ -14,7 +14,7 @@ class AddMessageGroupUseCaseImpl @Inject constructor(
     private val chatAiRepository: ChatAiRepository,
 ) : AddMessageGroupUseCase {
     override suspend operator fun invoke(message: MessageGroup): Result<Long, AppError> {
-        val result = chatAiRepository.addMessageGroup(message).onSuccessOrReturnAppError {
+        val result = chatAiRepository.addMessageGroup(message).getOrHandleAppError {
             return Result.Error(it)
         }
         return Result.Success(result)
