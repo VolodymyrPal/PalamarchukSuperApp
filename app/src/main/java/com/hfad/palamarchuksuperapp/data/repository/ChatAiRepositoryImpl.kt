@@ -78,9 +78,15 @@ class ChatAiRepositoryImpl @Inject constructor(
 
     override suspend fun createChat(emptyChat: MessageChat): Result<Unit, AppError> {
         return withSqlErrorHandling {
-            messageChatDao.insertChat(
-                MessageChatEntity.from(emptyChat)
-            )
+            messageChatDao.insertChat(MessageChatEntity.from(emptyChat))
+        }
+    }
+
+    override suspend fun addAndGetChat(chat: MessageChat): Result<Flow<MessageChat>, AppError> {
+        return withSqlErrorHandling {
+            messageChatDao.insertAndReturnChat(MessageChatEntity.from(chat)).map {
+                MessageChat.from(it)
+            }
         }
     }
 
