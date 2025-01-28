@@ -106,6 +106,19 @@ class ChatAiRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun isChatExist(chatId: Int): Result<Boolean, AppError> {
+        return withSqlErrorHandling {
+            messageChatDao.isExist(chatId)
+        }
+    }
+
+    // Методы для работы с группами сообщений
+    override suspend fun getMessageGroup(chatId: Int): Result<MessageGroup, AppError> {
+        return withSqlErrorHandling {
+            MessageGroup.from(messageChatDao.getMessageGroup(chatId))
+        }
+    }
+
     override suspend fun addMessageGroup(messageGroupWithChatID: MessageGroup): Result<Long, AppError> {
         val messageGroupIdResult = withSqlErrorHandling {
             messageChatDao.insertMessageGroupWithMessages(
@@ -119,6 +132,15 @@ class ChatAiRepositoryImpl @Inject constructor(
         return withSqlErrorHandling {
             messageChatDao.updateMessageGroupWithContent(
                 MessageGroupWithMessagesEntity.from(messageGroup)
+            )
+        }
+    }
+
+    // Методы для работы с сообщениями
+    override suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError> {
+        return withSqlErrorHandling {
+            MessageAI.toDomainModel(
+                messageChatDao.insertAndReturnMessage(MessageAiEntity.from(messageAI))
             )
         }
     }
