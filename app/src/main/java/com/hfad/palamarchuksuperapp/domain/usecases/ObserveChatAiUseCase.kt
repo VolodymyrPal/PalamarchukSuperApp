@@ -23,45 +23,42 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
 
     override suspend operator fun invoke(chatId: Int): Result<Flow<MessageChat>, AppError> {
         val chatFlow = if (isChatMissing(chatId)) {
-            val newChatId = createNewChat().onSuccessOrReturnAppError {
-                return Result.Error(it)
-            }
-            val chat = chatAiRepository.getChatFlowById(newChatId).onSuccessOrReturnAppError {
-                return Result.Error(it)
-            }
-            chat
+            val newChat = createNewChat()
+                .getOrHandleAppError { return Result.Error(it) }
+            newChat
         } else {
-            chatAiRepository.getChatFlowById(chatId).onSuccessOrReturnAppError {
-                return Result.Error(it)
-            }
+            chatAiRepository.getChatFlowById(chatId)
+                .getOrHandleAppError { return Result.Error(it) }
         }
+
         coroutineScope {
             launch(Dispatchers.Default) {
-                updateMessageStatusUseCase(chatId, MessageStatus.LOADING)
+                updateMessageStatusUseCase.invoke(chatId, MessageStatus.LOADING)
+                    .getOrHandleAppError { return@launch }
             }
         }
         return Result.Success(chatFlow)
+
     }
 
-
-    /** Проверяет, существует ли чат с данным chatId */
     private suspend fun isChatMissing(chatId: Int): Boolean {
-        val bool = chatAiRepository.getAllChats().onSuccessOrReturnAppError { return false }
-            .find { it.id == chatId } == null
+        val isExist = chatAiRepository.isChatExist(chatId).getOrHandleAppError {
+            return false
+        }
 
-        return bool
+        return isExist
     }
 
     /** Создает новый чат с тестовыми данными и возвращает его ID */
-    private suspend fun createNewChat(): Result<Int, AppError> {
+    private suspend fun createNewChat(): Result<Flow<MessageChat>, AppError> {
         // val id = chatAiRepository.createChat(MessageChat(name = "Base chat")) TODO for product
-        val id = chatAiRepository.addChatWithMessages(     //TODO for testing chat
+        val newChat = chatAiRepository.addAndGetChat(     //TODO for testing chat
             MessageChat(
                 name = "Base chat",
                 messageGroups = MockChat()
             )
-        ).onSuccessOrReturnAppError { return Result.Error(it) }
-        return Result.Success(id.toInt())
+        ).getOrHandleAppError { return Result.Error(it) }
+        return Result.Success(newChat)
     }
 
 }
