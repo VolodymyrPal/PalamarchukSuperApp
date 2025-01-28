@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Result
 
-inline fun <T> Result<T, AppError>.onSuccessOrReturnAppError(
+inline fun <T> Result<T, AppError>.getOrHandleAppError(
     onError: (AppError) -> Nothing,
 ): T {
     return when (this) {

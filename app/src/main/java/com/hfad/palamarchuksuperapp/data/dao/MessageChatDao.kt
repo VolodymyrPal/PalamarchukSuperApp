@@ -111,6 +111,15 @@ interface MessageChatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChat(chat: MessageChatEntity): Long
 
+    @Transaction
+    suspend fun insertAndReturnChat(chat: MessageChatEntity): Flow<MessageChatWithRelationsEntity> {
+        val chatId = insertChat(chat) // Вставляем объект и получаем его ID
+        return chatWithMessagesFlow(chatId.toInt()) // Достаём объект по ID
+    }
+
+    @Query("SELECT EXISTS(SELECT 1 FROM MessageChat WHERE id = :chatId)")
+    suspend fun isExist(chatId: Int): Boolean
+
     /**
      * Удаление чата.
      * Каскадно удаляет все связанные сообщения.
@@ -197,10 +206,11 @@ interface MessageChatDao {
     @Query("DELETE FROM MessageChat")
     suspend fun deleteAllChats()
 
-    @Query("SELECT ma.* " +
-            "FROM MessageAiEntities AS ma " +
-            "INNER JOIN MessageGroup AS mg " +
-            "WHERE mg.chatId = :chatId AND ma.status = :status "
+    @Query(
+        "SELECT ma.* " +
+                "FROM MessageAiEntities AS ma " +
+                "INNER JOIN MessageGroup AS mg " +
+                "WHERE mg.chatId = :chatId AND ma.status = :status "
     )
     suspend fun getMessagesWithStatus(chatId: Int, status: String): List<MessageAiEntity>
 

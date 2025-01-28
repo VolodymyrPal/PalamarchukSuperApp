@@ -16,7 +16,7 @@ class UpdateMessageStatusUseCaseImpl @Inject constructor (
     override suspend fun invoke(chatId: Int, messageStatus: MessageStatus) : Result<Unit, AppError> {
         val loadingMessages =
             chatAiRepository.getAllMessagesWithStatus(chatId, MessageStatus.LOADING)
-                .onSuccessOrReturnAppError {
+                .getOrHandleAppError {
                     return Result.Error(it)
                 }
         loadingMessages.forEach { message ->

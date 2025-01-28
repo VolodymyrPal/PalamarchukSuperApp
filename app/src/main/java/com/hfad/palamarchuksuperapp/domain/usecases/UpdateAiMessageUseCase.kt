@@ -15,7 +15,7 @@ class UpdateAiMessageUseCaseImpl @Inject constructor(
 ) : UpdateAiMessageUseCase {
 
     override suspend operator fun invoke(messageAI: MessageAI): Result<Unit, AppError> {
-        val updatedMessage = chatAiRepository.updateMessageAi(messageAI).onSuccessOrReturnAppError {
+        val updatedMessage = chatAiRepository.updateMessageAi(messageAI).getOrHandleAppError {
             return Result.Error(it)
         }
         return Result.Success(updatedMessage)
