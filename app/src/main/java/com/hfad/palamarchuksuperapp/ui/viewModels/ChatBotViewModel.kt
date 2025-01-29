@@ -18,26 +18,29 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
-import com.hfad.palamarchuksuperapp.domain.usecases.onSuccessOrReturnAppError
+import com.hfad.palamarchuksuperapp.domain.usecases.getOrHandleAppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Suppress("LongParameterList")
@@ -49,9 +52,10 @@ class ChatBotViewModel @Inject constructor(
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
     private val getModelsUseCase: GetModelsUseCase,
     private val observeChatAiUseCase: ObserveChatAiUseCase,
+    private val chatRepository: ChatAiRepository,
 ) : GenericViewModel<MessageChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
-    private val currentChatId = MutableStateFlow(1)
+    private val currentChatId = MutableStateFlow(0)
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -64,17 +68,18 @@ class ChatBotViewModel @Inject constructor(
 
     private val ioCoroutineDispatcher = ioDispatcher + handler
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val _dataFlow: StateFlow<MessageChat> = currentChatId
         .flatMapLatest { chatId ->
-            val observedChat = observeChatAiUseCase(chatId)
+            val observedChat = withContext(ioDispatcher) {
+                observeChatAiUseCase(chatId)
+            }
             if (observedChat is Result.Success) {
                 observedChat.data
             } else {
-                MutableStateFlow(MessageChat())
+                _errorFlow.emit(AppError.CustomError("Chat not found"))
+                emptyFlow()
             }
-        }
-        .catch { error ->
-            _errorFlow.emit(AppError.CustomError(error.message))
         }
         .stateIn(
             viewModelScope,
@@ -90,7 +95,8 @@ class ChatBotViewModel @Inject constructor(
         )
     private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
-    private val _chatList = MutableStateFlow<PersistentList<MessageChat>>(persistentListOf())
+    private val _chatList =
+        MutableStateFlow(persistentListOf<MessageChat>()) //chatAiRepository.getAllChatsInfo()
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
@@ -151,39 +157,30 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun selectChat(chatId: Int) {
-        viewModelScope.launch {
-            try {
-                currentChatId.emit(chatId)
-            } catch (e: Exception) {
-                _errorFlow.emit(AppError.CustomError(e.message))
-            }
+        viewModelScope.launch(ioCoroutineDispatcher) {
+            currentChatId.emit(chatId)
         }
     }
 
     private fun sendImage(text: String, image: Base64) {
-        viewModelScope.launch(ioDispatcher) {
-            _loading.update { true }
-            sendChatRequestUseCase(
-                MessageGroup(
-                    id = getAiChatUseCase().value.size,
-                    role = Role.USER,
-                    content = text,
-                    otherContent = image,
-                    type = MessageType.IMAGE,
-                    chatGroupId = 0 // TODO
-                ),
-                handlers = _handlers.value
-            )
-            _loading.update { false }
-        }
+//        viewModelScope.launch(ioDispatcher) {
+//            _loading.update { true }
+//            val chatId = currentChatId.value
+//            sendChatRequestUseCase(
+//                message = MessageGroup(
+//                    id = 1, //TODO need to check when id updates
+//                    role = Role.USER,
+//                    content = text,
+//                    otherContent = image,
+//                    type = MessageType.IMAGE,
+//                    chatGroupId = chatId
+//                ),
+//                handlers = _handlers.value
+//            )
+//            _loading.update { false }
+//        }
     }
-    val handler = CoroutineExceptionHandler { context, exception ->
-    private val handler = CoroutineExceptionHandler { _, exception ->
-        Log.e("CoroutineExceptionHandler", "Необработанное исключение: $exception", exception)
-        viewModelScope.launch(mainDispatcher) {
-            effect(Effect.ShowToast(exception.message ?: "Произошла ошибка"))
-        }
-    }
+
 
     private fun sendText(text: String) {
         viewModelScope.launch(ioCoroutineDispatcher) {
@@ -198,7 +195,7 @@ class ChatBotViewModel @Inject constructor(
                     type = MessageType.TEXT
                 ),
                 handlers = _handlers.value
-            ).onSuccessOrReturnAppError {
+            ).getOrHandleAppError {
                 _errorFlow.emit(it)
                 return@launch
             }
@@ -214,7 +211,7 @@ class ChatBotViewModel @Inject constructor(
 
     private fun chooseSubMessage(messageAI: MessageAI) {
         viewModelScope.launch(ioCoroutineDispatcher) {
-            chooseMessageAiUseCase(messageAI).onSuccessOrReturnAppError {
+            chooseMessageAiUseCase(messageAI).getOrHandleAppError {
                 _errorFlow.emit(it)
                 return@launch
             }
@@ -251,8 +248,10 @@ class ChatBotViewModel @Inject constructor(
 
     private fun getAllChats(): List<MessageChat> {
         val chatList = mutableListOf<MessageChat>()
-        viewModelScope.launch(ioDispatcher) {
-            chatList.addAll(chatAiRepository.getAllChats())
+        viewModelScope.launch(ioCoroutineDispatcher) {
+            chatRepository.clearAllChats()
+            // TODO use case for getting chats
+            //chatList.addAll(chatAiRepository.getAllChats())
         }
         return chatList
     }
