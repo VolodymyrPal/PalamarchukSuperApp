@@ -16,7 +16,7 @@ interface ChatAiRepository {
     suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError>
     suspend fun getChatFlowById(chatId: Int): Result<Flow<MessageChat>, AppError>
     suspend fun createChat(emptyChat: MessageChat): Result<Unit, AppError>
-    suspend fun addAndGetChat(chat: MessageChat): Result<Flow<MessageChat>, AppError>
+    suspend fun addAndGetChat(chat: MessageChat): Result<MessageChat, AppError>
     suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError>
     suspend fun deleteChat(chatId: Int): Result<Unit, AppError>
     suspend fun clearAllChats(): Result<Unit, AppError>
