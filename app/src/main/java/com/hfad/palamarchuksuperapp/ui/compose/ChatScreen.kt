@@ -287,7 +287,9 @@ private fun ChatTitle(
         modifier = Modifier.clickable(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
-            onClick = { isExpanded.value = true }
+            onClick = { isExpanded.value = true
+                event.invoke(ChatBotViewModel.Event.GetAllChats)
+            }
         ),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically

@@ -1,17 +1,15 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
-import com.hfad.palamarchuksuperapp.domain.models.MessageType
-import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toGroqModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.HttpStatusCodeError
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.models.mapNetworkRequestException
+import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -44,44 +42,46 @@ class GroqApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
     ): Result<MessageAI, AppError> {
-        try {
-            val listToPass = if (messageList.last().type == MessageType.IMAGE) {
-                messageList.last().toGroqRequest(initAiHandlerInfo.model)
-            } else {
-                messageList.toGroqRequest(initAiHandlerInfo.model)
-            }
+        val contextMessages = if (messageList.last().type == MessageType.IMAGE) {
+            messageList.last().toGroqRequest(initAiHandlerInfo.model)
+        } else {
+            messageList.toGroqRequest(initAiHandlerInfo.model)
+        }
 
-            val request = httpClient.post(url) {
-                header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
-                contentType(ContentType.Application.Json)
-                setBody(
-                    listToPass
-                )
-            }
+        val request = httpClient.post(url) {
+            header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
+            contentType(ContentType.Application.Json)
+            setBody(
+                contextMessages
+            )
+        }
 
-            if (request.status == HttpStatusCode.OK) {
-                val response = request.body<GroqChatCompletionResponse>()
-                val responseText = response.groqChoices[0].groqMessage
-                val responseMessage = MessageAI(
-                    message = if (responseText is GroqMessageText) responseText.content else "",
+        return if (request.status == HttpStatusCode.OK) {
+            val response = request.body<GroqChatCompletionResponse>()
+            val responseText = response.groqChoices[0].groqMessage
+            val responseMessage = MessageAI(
+                message = if (responseText is GroqMessageText) responseText.content else "",
+                model = initAiHandlerInfo.model,
+                messageGroupId = 0 // Handler don't need to know message group
+            )
+            Result.Success(responseMessage)
+        } else if (request.status.value in 400..599) {
+            val groqError = request.body<GroqError>()
+            return Result.Error(
+                error = AppError.CustomError(groqError.error.message),
+                MessageAI(
                     model = initAiHandlerInfo.model,
                     messageGroupId = 0 // Handler don't need to know message group
                 )
-                return Result.Success(responseMessage)
-            } else if (request.status.value in 400..599) {
-                val groqError = request.body<GroqError>()
-                return Result.Error(
-                    error = AppError.CustomError(groqError.error.message),
-                    MessageAI(
-                        model = initAiHandlerInfo.model,
-                        messageGroupId = 0 // Handler don't need to know message group
-                    )
+            )
+        } else {
+            Result.Error(
+                error = AppError.NetworkException.RequestError.BadRequest(),
+                MessageAI(
+                    model = initAiHandlerInfo.model,
+                    messageGroupId = 0 // Handler don't need to know message group
                 )
-            } else {
-                throw HttpStatusCodeError(request.status.value)
-            }
-        } catch (e: Exception) {
-            return Result.Error(mapNetworkRequestException(e))
+            )
         }
     }
 

@@ -1,30 +1,28 @@
 package com.hfad.palamarchuksuperapp.data.services
 
 import android.util.Log
-import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
-import com.hfad.palamarchuksuperapp.domain.models.MessageType
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.HttpStatusCodeError
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
+import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
-import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.models.mapNetworkRequestException
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import io.ktor.client.request.get
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,41 +65,38 @@ class GeminiApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
     ): Result<MessageAI, AppError> {
-        try {
-            val request =
-                httpClient.post(getUrl(model = initAiHandlerInfo.model)) {
-                    contentType(ContentType.Application.Json)
-                    setBody(
-                        messageList.toGeminiRequest(
-                        )
+        val request =
+            httpClient.post(getUrl(model = initAiHandlerInfo.model)) {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    messageList.toGeminiRequest(
                     )
-                }
+                )
+            }
 
-            if (request.status == HttpStatusCode.OK) {
-                val response = request.body<GeminiResponse>()
-                val responseMessage = MessageAI(
-                    message = response.candidates[0].content.parts[0].text,
+        return if (request.status == HttpStatusCode.OK) {
+            val response = request.body<GeminiResponse>()
+            val responseMessage = MessageAI(
+                message = response.candidates[0].content.parts[0].text,
+                model = initAiHandlerInfo.model,
+                messageGroupId = 0 // Handler don't need to know message group
+            )
+            Result.Success(responseMessage)
+        } else if (request.status.value in 400..599) {
+            val geminiError = request.body<GeminiError>()
+            Result.Error(
+                data = MessageAI(
                     model = initAiHandlerInfo.model,
                     messageGroupId = 0 // Handler don't need to know message group
-                )
-                return Result.Success(responseMessage)
-            } else if (request.status.value in 400..599) {
-                val geminiError = request.body<GeminiError>()
-                return Result.Error(
-                    data = MessageAI(
-                        model = initAiHandlerInfo.model,
-                        messageGroupId = 0 // Handler don't need to know message group
-                    ),
-                    error = AppError.CustomError(geminiError.error.message)
-                )
-            } else {
-                throw HttpStatusCodeError(request.status.value)
-            }
-        } catch (e: Exception) {
-            return Result.Error(mapNetworkRequestException(e)) //TODO move it to other handler
+                ),
+                error = AppError.CustomError(geminiError.error.message)
+            )
+        } else {
+            Result.Error(AppError.NetworkException.RequestError.BadRequest())
         }
     }
 }
+
 
 fun List<MessageGroup>.toGeminiRequest(): GeminiRequest {
     val geminiRequest = GeminiBuilder.RequestBuilder().also { builder ->

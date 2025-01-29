@@ -112,9 +112,9 @@ interface MessageChatDao {
     suspend fun insertChat(chat: MessageChatEntity): Long
 
     @Transaction
-    suspend fun insertAndReturnChat(chat: MessageChatEntity): Flow<MessageChatWithRelationsEntity> {
+    suspend fun insertAndReturnChat(chat: MessageChatEntity): MessageChatWithRelationsEntity {
         val chatId = insertChat(chat) // Вставляем объект и получаем его ID
-        return chatWithMessagesFlow(chatId.toInt()) // Достаём объект по ID
+        return getChatWithMessages(chatId.toInt()) // Достаём объект по ID
     }
 
     @Query("SELECT EXISTS(SELECT 1 FROM MessageChat WHERE id = :chatId)")
