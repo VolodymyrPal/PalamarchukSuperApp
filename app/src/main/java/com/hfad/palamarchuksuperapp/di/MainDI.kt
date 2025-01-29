@@ -104,7 +104,7 @@ interface AppComponent {
 
 @Module(
     includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class,
-        AiModelHandlerModule::class, ViewModelsModule::class, UseCaseModule::class]
+        AiModelHandlerModule::class, UseCaseModule::class]
 )
 object AppModule {
     @IoDispatcher
