@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,9 +74,16 @@ class ChatBotViewModel @Inject constructor(
     override val _dataFlow: StateFlow<MessageChat> = currentChatId
         .flatMapLatest { chatId ->
             val observedChat = withContext(ioDispatcher) {
-                observeChatAiUseCase(chatId)
+                observeChatAiUseCase.invoke(chatId)
             }
             if (observedChat is Result.Success) {
+                val chat = observedChat.data
+                chat.take(1).collect { chat ->
+                    if (chat.id != currentChatId.value) {
+                        currentChatId.update { chat.id }
+                        _loading.update { false }
+                    }
+                }
                 observedChat.data
             } else {
                 _errorFlow.emit(AppError.CustomError("Chat not found"))
@@ -95,8 +104,14 @@ class ChatBotViewModel @Inject constructor(
         )
     private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
-    private val _chatList =
-        MutableStateFlow(persistentListOf<MessageChat>()) //chatAiRepository.getAllChatsInfo()
+    private val _chatList = MutableStateFlow(persistentListOf<MessageChat>())
+    private fun chatListJob() = viewModelScope.launch(ioDispatcher) {
+        val chatList = chatRepository.getAllChatsInfo().getOrHandleAppError {
+            _errorFlow.emit(it)
+            return@launch
+        }
+        _chatList.update { chatList.toPersistentList() } //TODO change to Flow
+    }
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
@@ -135,6 +150,8 @@ class ChatBotViewModel @Inject constructor(
         data class DeleteHandler(val handler: AiModelHandler) : Event()
         data object GetAllChats : Event()
         data class SelectChat(val chatId: Int) : Event()
+        object CreateNewChat : Event()
+        object ClearAllChats : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -153,6 +170,8 @@ class ChatBotViewModel @Inject constructor(
             is Event.DeleteHandler -> deleteHandler(event.handler)
             is Event.SelectChat -> selectChat(event.chatId)
             is Event.GetAllChats -> getAllChats()
+            is Event.CreateNewChat -> createNewChat()
+            is Event.ClearAllChats -> clearAllChats()
         }
     }
 
@@ -246,14 +265,23 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun getAllChats(): List<MessageChat> {
-        val chatList = mutableListOf<MessageChat>()
-        viewModelScope.launch(ioCoroutineDispatcher) {
-            chatRepository.clearAllChats()
-            // TODO use case for getting chats
-            //chatList.addAll(chatAiRepository.getAllChats())
-        }
-        return chatList
+    private fun getAllChats() {
+        chatListJob()
+    }
+
+    private fun clearAllChats() = viewModelScope.launch(ioDispatcher) {
+        chatRepository.clearAllChats()
+        currentChatId.update { 0 }
+    }
+
+    private fun createNewChat() = viewModelScope.launch(ioDispatcher) {
+        val newChat = chatRepository.addAndGetChat(
+            MessageChat(
+                name = "Base chat",
+                messageGroups = MockChat() //TODO for testing only
+            )
+        ).getOrHandleAppError { return@launch }
+        currentChatId.update { newChat.id }
     }
 
     @Stable

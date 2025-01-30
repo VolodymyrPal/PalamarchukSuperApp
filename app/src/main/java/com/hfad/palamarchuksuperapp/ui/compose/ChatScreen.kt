@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,6 +52,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -121,6 +123,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
@@ -323,20 +327,52 @@ private fun ChatTitle(
                 // Заголовок диалога
                 LazyColumn {
                     item {
-                        Text(
-                            text = "Выберите модель", modifier =
-                                Modifier.padding(12.dp)
-                        )
+                        Row {
+                            IconButton(
+                                onClick = { event.invoke(ChatBotViewModel.Event.CreateNewChat) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            Text(
+                                text = "Choose chat", modifier =
+                                    Modifier.padding(12.dp)
+                            )
+                            IconButton(
+                                onClick = { event.invoke(ChatBotViewModel.Event.ClearAllChats) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Add",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+
                     }
                     items(
-                        state.value.chatList
+                        state.value.chatList,
                     ) { chat ->
-                        Text(
-                            text = chat.name,
-                            modifier = Modifier.clickable(enabled = true) {
-                                event.invoke(ChatBotViewModel.Event.SelectChat(chat.id))
-                            }
-                        )
+                        Row (
+                            modifier = Modifier.wrapContentSize()
+                        ) {
+                            Text(
+                                text = chat.name,
+                                modifier = Modifier.padding(4.dp)
+                                    .clickable(interactionSource = null, indication = null) {
+                                        event.invoke(ChatBotViewModel.Event.SelectChat(chat.id))
+                                    }
+                            )
+                            Text(
+                                text = SimpleDateFormat("dd.MM:HH:mm", Locale.US).format(
+                                    chat.timestamp
+                                ),
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -540,7 +576,7 @@ fun MessageBox(
         PagerIndicator(
             totalPages = messageGroup.content.size,
             currentPage = pagerState.currentPage,
-            loadingStates = messageGroup.content.map { it.status == MessageStatus.LOADING }
+            loadingStates = messageGroup.content.map { it.status }
         )
     }
 }
@@ -630,7 +666,7 @@ private fun ImageMessage(
 private fun PagerIndicator(
     totalPages: Int,
     currentPage: Int,
-    loadingStates: List<Boolean>,
+    loadingStates: List<MessageStatus>,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -640,7 +676,7 @@ private fun PagerIndicator(
         horizontalArrangement = Arrangement.Center
     ) {
         items(totalPages) { index ->
-            if (loadingStates[index]) {
+            if (loadingStates[index] == MessageStatus.LOADING) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .padding(2.dp)

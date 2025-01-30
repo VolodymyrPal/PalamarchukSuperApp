@@ -25,7 +25,7 @@ object MockChat {
         ),
         // Model response (image)
         MessageGroup(
-            id = 1,
+            id = 0,
             role = Role.MODEL,
             type = MessageType.TEXT,
             content = persistentListOf(
@@ -51,17 +51,17 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n ",
-                    messageGroupId = 1,
+                    messageGroupId = 0,
                     model = AiModel.GeminiModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 1,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 1,
+                    messageGroupId = 0,
                     model = AiModel.OpenAIModel()
                 )
 
@@ -69,11 +69,11 @@ object MockChat {
         ),
         // User message with multiple sub-messages (text)
         MessageGroup(
-            id = 2,
+            id = 0,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
-                    message = "That looks great! Can you tell me more about it?",
+                    message = "Hello! That looks great! Can you tell me more about it?",
                     messageGroupId = 2,
                     model = AiModel.GeminiModel()
                 ),
@@ -81,7 +81,7 @@ object MockChat {
         ),
         // Model response with additional information (text)
         MessageGroup(
-            id = 3,
+            id = 0,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
@@ -105,20 +105,20 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n?",
-                    messageGroupId = 3,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 3,
+                    messageGroupId = 0,
                     isChosen = true,
                     model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 3,
+                    messageGroupId = 0,
                     model = AiModel.GeminiModel()
-                )
+                ),
             )
         ),
         // User message with chosen sub-message
@@ -135,7 +135,7 @@ object MockChat {
             )
         ),
         MessageGroup(
-            id = 5,
+            id = 0,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
@@ -168,7 +168,7 @@ object MockChat {
             )
         ),
         MessageGroup(
-            id = 6,
+            id = 0,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
@@ -189,7 +189,7 @@ object MockChat {
             )
         ),
         MessageGroup(
-            id = 7,
+            id = 0,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
@@ -211,7 +211,7 @@ object MockChat {
             )
         ),
         MessageGroup(
-            id = 8,
+            id = 0,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
@@ -249,7 +249,7 @@ object MockChat {
             )
         ),
         MessageGroup(
-            id = 9,
+            id = 0,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
@@ -270,13 +270,13 @@ object MockChat {
             )
         ),
         MessageGroup(
-            id = 10,
+            id = 0,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
                     message = "Some message loading))",
                     status = MessageStatus.LOADING,
-                    messageGroupId = 10,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 ),
             ),

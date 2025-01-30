@@ -1,9 +1,9 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import android.util.Log
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -36,7 +36,6 @@ class ChatAiRepositoryImpl @Inject constructor(
     override suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError> {
         return withSqlErrorHandling {
             if (!messageChatDao.isExist(chatId)) {
-                Log.d("ChatAiRepositoryImpl", "getChatById: $chatId")
                 val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
                 val chatEntity = messageChatDao.getChatWithMessages(id.toInt())
                 MessageChat.from(chatEntity)
@@ -51,8 +50,13 @@ class ChatAiRepositoryImpl @Inject constructor(
         return withSqlErrorHandling {
             messageChatDao
                 .chatWithMessagesFlow(chatId = chatId).map { chatWithMessagesEntity ->
-                    MessageChat.from(chatWithMessagesEntity)
+                    if (chatWithMessagesEntity == null) { //When we clear all chats, flow still emit null.
+                        MessageChat()
+                    } else {
+                        MessageChat.from(chatWithMessagesEntity)
+                    }
                 }
+
         }
     }
 
@@ -62,11 +66,12 @@ class ChatAiRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addAndGetChat(chat: MessageChat): Result<Flow<MessageChat>, AppError> {
+    override suspend fun addAndGetChat(chat: MessageChat): Result<MessageChat, AppError> {
         return withSqlErrorHandling {
-            messageChatDao.insertAndReturnChat(MessageChatEntity.from(chat)).map {
-                MessageChat.from(it)
-            }
+            val messageToInsert = MessageChatWithRelationsEntity.from(chat)
+            val insertedMessage = messageChatDao.insertAndReturnChat(messageToInsert)
+            MessageChat.from(insertedMessage)
+
         }
     }
 
@@ -120,25 +125,16 @@ class ChatAiRepositoryImpl @Inject constructor(
     // Методы для работы с сообщениями
     override suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError> {
         return withSqlErrorHandling {
-            MessageAI.toDomainModel(
+            val messageAiEntity =
                 messageChatDao.insertAndReturnMessage(MessageAiEntity.from(messageAI))
-            )
+            MessageAI.from(messageAiEntity)
         }
     }
 
     override suspend fun updateMessageAi(messageAI: MessageAI): Result<Unit, AppError> {
         return withSqlErrorHandling {
             messageChatDao.updateMessage(
-                MessageAiEntity(
-                    id = messageAI.id,
-                    messageGroupId = messageAI.messageGroupId,
-                    timestamp = messageAI.timestamp,
-                    message = messageAI.message,
-                    otherContent = messageAI.otherContent?.toString(),
-                    model = messageAI.model,
-                    isChosen = messageAI.isChosen,
-                    status = messageAI.status
-                )
+                MessageAiEntity.from(messageAI)
             )
         }
     }
@@ -149,7 +145,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     ): Result<List<MessageAI>, AppError> {
         return withSqlErrorHandling {
             messageChatDao.getMessagesWithStatus(chatId, status.name)
-                .map { MessageAI.toDomainModel(it) }
+                .map { MessageAI.from(it) }
         }
     }
 }

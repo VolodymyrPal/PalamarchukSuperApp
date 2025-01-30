@@ -22,13 +22,27 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
 ) : ObserveChatAiUseCase {
 
     override suspend operator fun invoke(chatId: Int): Result<Flow<MessageChat>, AppError> {
-        val chatFlow = if (isChatMissing(chatId)) {
-            val newChat = createNewChat()
+        val existingChats = chatAiRepository.getAllChatsInfo()
+            .getOrHandleAppError { return Result.Error(it) }
+
+        val chatFlow = when {
+
+            chatExists(chatId) -> chatAiRepository.getChatFlowById(chatId)
                 .getOrHandleAppError { return Result.Error(it) }
-            newChat
-        } else {
-            chatAiRepository.getChatFlowById(chatId)
-                .getOrHandleAppError { return Result.Error(it) }
+
+            chatId == 0 && existingChats.isNotEmpty() -> {
+                val lastChatId = existingChats.lastOrNull()?.id
+                    ?: return Result.Error(AppError.CustomError("No chats"))
+                chatAiRepository.getChatFlowById(lastChatId)
+                    .getOrHandleAppError { return Result.Error(it) }
+            }
+
+            else -> {
+                val newChatId = createNewChat()
+                    .getOrHandleAppError { return Result.Error(it) }.id
+                chatAiRepository.getChatFlowById(newChatId)
+                    .getOrHandleAppError { return Result.Error(it) }
+            }
         }
 
         coroutineScope {
@@ -41,17 +55,16 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
 
     }
 
-    private suspend fun isChatMissing(chatId: Int): Boolean {
-        val isExist = chatAiRepository.isChatExist(chatId).getOrHandleAppError {
-            return false
-        }
+    private suspend fun chatExists(chatId: Int): Boolean {
+        val isExist = chatAiRepository.isChatExist(chatId)
+            .getOrHandleAppError { return false }
 
         return isExist
     }
 
     /** Создает новый чат с тестовыми данными и возвращает его ID */
-    private suspend fun createNewChat(): Result<Flow<MessageChat>, AppError> {
-        // val id = chatAiRepository.createChat(MessageChat(name = "Base chat")) TODO for product
+    private suspend fun createNewChat(): Result<MessageChat, AppError> {
+//        val id = chatAiRepository.createChat(MessageChat(name = "Base chat")) TODO for product
         val newChat = chatAiRepository.addAndGetChat(     //TODO for testing chat
             MessageChat(
                 name = "Base chat",
