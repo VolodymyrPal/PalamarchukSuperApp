@@ -2,7 +2,6 @@ package com.hfad.palamarchuksuperapp.data.entities
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 
@@ -44,7 +43,7 @@ data class MessageGroupWithMessagesEntity(
         fun from(messageGroup: MessageGroup): MessageGroupWithMessagesEntity {
             return MessageGroupWithMessagesEntity(
                 group = MessageGroupEntity.from(messageGroup),
-                messages = messageGroup.content.map { aI -> MessageAiEntity.from(aI) },
+                messages = messageGroup.content.map { messageAi -> MessageAiEntity.from(messageAi) },
             )
         }
     }
