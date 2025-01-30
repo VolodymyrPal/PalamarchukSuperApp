@@ -150,6 +150,8 @@ class ChatBotViewModel @Inject constructor(
         data class DeleteHandler(val handler: AiModelHandler) : Event()
         data object GetAllChats : Event()
         data class SelectChat(val chatId: Int) : Event()
+        object CreateNewChat : Event()
+        object ClearAllChats : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -168,6 +170,8 @@ class ChatBotViewModel @Inject constructor(
             is Event.DeleteHandler -> deleteHandler(event.handler)
             is Event.SelectChat -> selectChat(event.chatId)
             is Event.GetAllChats -> getAllChats()
+            is Event.CreateNewChat -> createNewChat()
+            is Event.ClearAllChats -> clearAllChats()
         }
     }
 
@@ -261,14 +265,23 @@ class ChatBotViewModel @Inject constructor(
         }
     }
 
-    private fun getAllChats(): List<MessageChat> {
-        val chatList = mutableListOf<MessageChat>()
-        viewModelScope.launch(ioCoroutineDispatcher) {
-            chatRepository.clearAllChats()
-            // TODO use case for getting chats
-            //chatList.addAll(chatAiRepository.getAllChats())
-        }
-        return chatList
+    private fun getAllChats() {
+        chatListJob()
+    }
+
+    private fun clearAllChats() = viewModelScope.launch(ioDispatcher) {
+        chatRepository.clearAllChats()
+        currentChatId.update { 0 }
+    }
+
+    private fun createNewChat() = viewModelScope.launch(ioDispatcher) {
+        val newChat = chatRepository.addAndGetChat(
+            MessageChat(
+                name = "Base chat",
+                messageGroups = MockChat() //TODO for testing only
+            )
+        ).getOrHandleAppError { return@launch }
+        currentChatId.update { newChat.id }
     }
 
     @Stable
