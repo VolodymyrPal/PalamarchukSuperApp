@@ -112,8 +112,15 @@ interface MessageChatDao {
     suspend fun insertChat(chat: MessageChatEntity): Long
 
     @Transaction
-    suspend fun insertAndReturnChat(chat: MessageChatEntity): MessageChatWithRelationsEntity {
-        val chatId = insertChat(chat) // Вставляем объект и получаем его ID
+    suspend fun insertAndReturnChat(chat: MessageChatWithRelationsEntity): MessageChatWithRelationsEntity {
+        val chatId = insertChat(chat.chat) // Вставляем объект и получаем его ID
+        chat.messageGroupsWithMessageEntity.forEach { messageGroup ->
+            val groupId = insertMessageGroup(messageGroup.group.copy(chatId = chatId.toInt()))
+            for (messageAi in messageGroup.messages) {
+                val insertedMessage = messageAi.copy(messageGroupId = groupId.toInt())
+                insertMessage(insertedMessage)
+            }
+        }
         return getChatWithMessages(chatId.toInt()) // Достаём объект по ID
     }
 
