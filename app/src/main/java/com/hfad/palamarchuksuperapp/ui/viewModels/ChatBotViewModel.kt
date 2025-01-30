@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
+import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,9 +74,16 @@ class ChatBotViewModel @Inject constructor(
     override val _dataFlow: StateFlow<MessageChat> = currentChatId
         .flatMapLatest { chatId ->
             val observedChat = withContext(ioDispatcher) {
-                observeChatAiUseCase(chatId)
+                observeChatAiUseCase.invoke(chatId)
             }
             if (observedChat is Result.Success) {
+                val chat = observedChat.data
+                chat.take(1).collect { chat ->
+                    if (chat.id != currentChatId.value) {
+                        currentChatId.update { chat.id }
+                        _loading.update { false }
+                    }
+                }
                 observedChat.data
             } else {
                 _errorFlow.emit(AppError.CustomError("Chat not found"))
