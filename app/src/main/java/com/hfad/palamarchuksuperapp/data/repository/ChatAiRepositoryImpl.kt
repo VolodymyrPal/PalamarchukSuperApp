@@ -4,6 +4,7 @@ import android.util.Log
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.domain.models.AppError
@@ -36,7 +37,6 @@ class ChatAiRepositoryImpl @Inject constructor(
     override suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError> {
         return withSqlErrorHandling {
             if (!messageChatDao.isExist(chatId)) {
-                Log.d("ChatAiRepositoryImpl", "getChatById: $chatId")
                 val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
                 val chatEntity = messageChatDao.getChatWithMessages(id.toInt())
                 MessageChat.from(chatEntity)
@@ -51,8 +51,13 @@ class ChatAiRepositoryImpl @Inject constructor(
         return withSqlErrorHandling {
             messageChatDao
                 .chatWithMessagesFlow(chatId = chatId).map { chatWithMessagesEntity ->
-                    MessageChat.from(chatWithMessagesEntity)
+                    if (chatWithMessagesEntity == null) { //When we clear all chats, flow still emit null.
+                        MessageChat()
+                    } else {
+                        MessageChat.from(chatWithMessagesEntity)
+                    }
                 }
+
         }
     }
 
