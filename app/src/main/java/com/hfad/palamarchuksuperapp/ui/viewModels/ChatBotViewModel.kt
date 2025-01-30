@@ -104,8 +104,14 @@ class ChatBotViewModel @Inject constructor(
         )
     private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
-    private val _chatList =
-        MutableStateFlow(persistentListOf<MessageChat>()) //chatAiRepository.getAllChatsInfo()
+    private val _chatList = MutableStateFlow(persistentListOf<MessageChat>())
+    private fun chatListJob() = viewModelScope.launch(ioDispatcher) {
+        val chatList = chatRepository.getAllChatsInfo().getOrHandleAppError {
+            _errorFlow.emit(it)
+            return@launch
+        }
+        _chatList.update { chatList.toPersistentList() } //TODO change to Flow
+    }
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
