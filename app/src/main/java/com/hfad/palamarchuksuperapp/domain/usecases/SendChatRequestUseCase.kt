@@ -79,9 +79,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                     }
                 }
 
-            return@supervisorScope proceedRequest(
-                requests,
-            )
+            return@supervisorScope proceedRequest(requests)
         }
         return Result.Success(Unit)
     }
@@ -101,13 +99,14 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                     val result = request.await()
                     when (result) {
                         is Result.Success -> {
+                            val successMessage = messageAi.copy(
+                                message = result.data.message,
+                                model = result.data.model,
+                                timestamp = Clock.System.now().toString(),
+                                status = MessageStatus.SUCCESS
+                            )
                             chatAiRepository.updateMessageAi(
-                                messageAI = messageAi.copy(
-                                    message = result.data.message,
-                                    model = result.data.model,
-                                    timestamp = Clock.System.now().toString(),
-                                    status = MessageStatus.SUCCESS
-                                )
+                                messageAI = successMessage
                             )
                         }
 
