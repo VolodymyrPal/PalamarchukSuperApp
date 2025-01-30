@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import android.util.Log
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
@@ -126,25 +125,16 @@ class ChatAiRepositoryImpl @Inject constructor(
     // Методы для работы с сообщениями
     override suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError> {
         return withSqlErrorHandling {
-            MessageAI.toDomainModel(
+            val messageAiEntity =
                 messageChatDao.insertAndReturnMessage(MessageAiEntity.from(messageAI))
-            )
+            MessageAI.from(messageAiEntity)
         }
     }
 
     override suspend fun updateMessageAi(messageAI: MessageAI): Result<Unit, AppError> {
         return withSqlErrorHandling {
             messageChatDao.updateMessage(
-                MessageAiEntity(
-                    id = messageAI.id,
-                    messageGroupId = messageAI.messageGroupId,
-                    timestamp = messageAI.timestamp,
-                    message = messageAI.message,
-                    otherContent = messageAI.otherContent?.toString(),
-                    model = messageAI.model,
-                    isChosen = messageAI.isChosen,
-                    status = messageAI.status
-                )
+                MessageAiEntity.from(messageAI)
             )
         }
     }
@@ -155,7 +145,7 @@ class ChatAiRepositoryImpl @Inject constructor(
     ): Result<List<MessageAI>, AppError> {
         return withSqlErrorHandling {
             messageChatDao.getMessagesWithStatus(chatId, status.name)
-                .map { MessageAI.toDomainModel(it) }
+                .map { MessageAI.from(it) }
         }
     }
 }
