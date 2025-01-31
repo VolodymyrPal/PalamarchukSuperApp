@@ -22,6 +22,7 @@ import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAllChatsInfoUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.SendChatRequestUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.getOrHandleAppError
@@ -37,6 +38,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
@@ -54,6 +56,7 @@ class ChatBotViewModel @Inject constructor(
     private val chooseMessageAiUseCase: ChooseMessageAiUseCase,
     private val getModelsUseCase: GetModelsUseCase,
     private val observeChatAiUseCase: ObserveChatAiUseCase,
+    private val observeAllChatsInfoUseCase: ObserveAllChatsInfoUseCase,
     private val chatRepository: ChatAiRepository,
 ) : GenericViewModel<MessageChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
@@ -104,14 +107,19 @@ class ChatBotViewModel @Inject constructor(
         )
     private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
-    private val _chatList = MutableStateFlow(persistentListOf<MessageChat>())
-    private fun chatListJob() = viewModelScope.launch(ioDispatcher) {
-        val chatList = chatRepository.getAllChatsInfo().getOrHandleAppError {
-            _errorFlow.emit(it)
-            return@launch
+    private val allChatInfo : StateFlow<List<MessageChat>> = flow {
+        val chatList = observeAllChatsInfoUseCase.invoke()
+        when (chatList) {
+            is Result.Success -> chatList.data.collect {
+                emit(it)
+            }
+            is Result.Error -> _errorFlow.emit(chatList.error)
         }
-        _chatList.update { chatList.toPersistentList() } //TODO change to Flow
-    }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
 
     override val uiState: StateFlow<StateChat> = combine(
         _dataFlow,
@@ -127,8 +135,8 @@ class ChatBotViewModel @Inject constructor(
             listHandler = handlers.toPersistentList(),
             modelList = modelList,
         )
-    }.combine(_chatList) { stateChat, chatList ->
-        stateChat.copy(chatList = chatList)
+    }.combine(allChatInfo) { stateChat, chatList ->
+        stateChat.copy(chatList = chatList.toPersistentList())
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -148,7 +156,6 @@ class ChatBotViewModel @Inject constructor(
 
         data class AddAiHandler(val aiHandlerInfo: AiHandlerInfo) : Event()
         data class DeleteHandler(val handler: AiModelHandler) : Event()
-        data object GetAllChats : Event()
         data class SelectChat(val chatId: Int) : Event()
         object CreateNewChat : Event()
         object ClearAllChats : Event()
@@ -169,7 +176,6 @@ class ChatBotViewModel @Inject constructor(
             is Event.AddAiHandler -> addAiHandler(event.aiHandlerInfo)
             is Event.DeleteHandler -> deleteHandler(event.handler)
             is Event.SelectChat -> selectChat(event.chatId)
-            is Event.GetAllChats -> getAllChats()
             is Event.CreateNewChat -> createNewChat()
             is Event.ClearAllChats -> clearAllChats()
         }
@@ -263,10 +269,6 @@ class ChatBotViewModel @Inject constructor(
         viewModelScope.launch(ioCoroutineDispatcher) {
             aiHandlerRepository.removeHandler(handler)
         }
-    }
-
-    private fun getAllChats() {
-        chatListJob()
     }
 
     private fun clearAllChats() = viewModelScope.launch(ioDispatcher) {
