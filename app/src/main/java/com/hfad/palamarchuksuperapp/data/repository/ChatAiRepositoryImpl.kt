@@ -27,9 +27,9 @@ class ChatAiRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllChatsInfo(): Result<List<MessageChat>, AppError> {
+    override suspend fun getAllChatsInfo(): Result<Flow<List<MessageChat>>, AppError> {
         return withSqlErrorHandling {
-            messageChatDao.getAllChatsInfo().map { MessageChat.from(it) }
+            messageChatDao.getAllChatsInfo().map { it.map { MessageChat.from(it) } }
         }
     }
 
