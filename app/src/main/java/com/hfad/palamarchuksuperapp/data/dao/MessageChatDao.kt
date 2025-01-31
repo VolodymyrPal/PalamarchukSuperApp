@@ -101,7 +101,7 @@ interface MessageChatDao {
      * @return Список базовой информации о чатах
      */
     @Query("SELECT * FROM MessageChat")
-    fun getAllChatsInfo(): List<MessageChatEntity>
+    fun getAllChatsInfo(): Flow<List<MessageChatEntity>>
 
     /**
      * Создание нового чата.
