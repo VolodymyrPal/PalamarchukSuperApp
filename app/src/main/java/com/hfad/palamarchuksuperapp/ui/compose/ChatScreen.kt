@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -105,6 +104,7 @@ import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
+import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
@@ -292,7 +292,6 @@ private fun ChatTitle(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
             onClick = { isExpanded.value = true
-                event.invoke(ChatBotViewModel.Event.GetAllChats)
             }
         ),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -356,12 +355,13 @@ private fun ChatTitle(
                     items(
                         state.value.chatList,
                     ) { chat ->
-                        Row (
+                        Row(
                             modifier = Modifier.wrapContentSize()
                         ) {
                             Text(
                                 text = chat.name,
-                                modifier = Modifier.padding(4.dp)
+                                modifier = Modifier
+                                    .padding(4.dp)
                                     .clickable(interactionSource = null, indication = null) {
                                         event.invoke(ChatBotViewModel.Event.SelectChat(chat.id))
                                     }
@@ -613,10 +613,15 @@ private fun TextMessage(
                         .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
                         .sizeIn(minWidth = 30.dp)
                         .background(
-                            if (isUser) MaterialTheme.colorScheme.primaryContainer
-                            else Color.Transparent,
+                            brush = if (isUser) Brush.horizontalGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                                )
+                            ) else SolidColor(Color.Transparent),
                             shape = RoundedCornerShape(
-                                10.dp,
+                                if (isUser) 10.dp else 0.dp,
                                 10.dp,
                                 if (isUser) 0.dp else 10.dp,
                                 10.dp
@@ -874,9 +879,10 @@ fun ChatScreenPreview() {
         state = mutableStateOf(
             ChatBotViewModel.StateChat(
                 listHandler = persistentListOf(),
-                //listMessage = MockChat(),
                 modelList = persistentListOf(),
-                chat = MessageChat()
+                chat = MessageChat(
+                    messageGroups = MockChat()
+                )
             )
         )
     )
