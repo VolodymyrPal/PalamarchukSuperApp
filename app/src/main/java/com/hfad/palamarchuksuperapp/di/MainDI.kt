@@ -40,6 +40,8 @@ import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAiHandlersUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAiHandlersUseCaseImpl
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAllChatsInfoUseCase
+import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAllChatsInfoUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveChatAiUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.SendAiRequestUseCaseImpl
@@ -215,6 +217,12 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(StoreViewModel::class)
     abstract fun bindStoreViewModel(viewModel: StoreViewModel): ViewModel
+
+    @Singleton
+    @Binds
+    fun bindObserveAllChatsInfoUseCase (
+        observeAllChatsInfoUseCaseImpl : ObserveAllChatsInfoUseCaseImpl
+    ) : ObserveAllChatsInfoUseCase
 }
 
 @Module
