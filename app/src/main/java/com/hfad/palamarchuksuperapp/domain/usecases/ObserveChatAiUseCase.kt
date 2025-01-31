@@ -9,6 +9,7 @@ import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,15 +23,15 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
 ) : ObserveChatAiUseCase {
 
     override suspend operator fun invoke(chatId: Int): Result<Flow<MessageChat>, AppError> {
-        val existingChats = chatAiRepository.getAllChatsInfo()
-            .getOrHandleAppError { return Result.Error(it) }
+        val existingChats  = chatAiRepository.getAllChatsInfo()
+            .getOrHandleAppError { return Result.Error(it) }.firstOrNull()
 
         val chatFlow = when {
 
             chatExists(chatId) -> chatAiRepository.getChatFlowById(chatId)
                 .getOrHandleAppError { return Result.Error(it) }
 
-            chatId == 0 && existingChats.isNotEmpty() -> {
+            chatId == 0 && existingChats != null && existingChats.isNotEmpty() -> {
                 val lastChatId = existingChats.lastOrNull()?.id
                     ?: return Result.Error(AppError.CustomError("No chats"))
                 chatAiRepository.getChatFlowById(lastChatId)
