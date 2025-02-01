@@ -86,6 +86,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -255,7 +256,6 @@ private fun ChatTopBar(
 ) {
     val isExpandedChats = remember { mutableStateOf(false) }
     val isExpandedHandlers = remember { mutableStateOf(false) }
-
     CenterAlignedTopAppBar(
         title = {
             ChatTitle(
@@ -291,7 +291,8 @@ private fun ChatTitle(
         modifier = Modifier.clickable(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
-            onClick = { isExpanded.value = true
+            onClick = {
+                isExpanded.value = true
             }
         ),
         horizontalArrangement = Arrangement.SpaceAround,
