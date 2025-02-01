@@ -220,7 +220,7 @@ abstract class ViewModelsModule {
 
     @Singleton
     @Binds
-    fun bindObserveAllChatsInfoUseCase (
+    abstract fun bindObserveAllChatsInfoUseCase (
         observeAllChatsInfoUseCaseImpl : ObserveAllChatsInfoUseCaseImpl
     ) : ObserveAllChatsInfoUseCase
 }

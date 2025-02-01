@@ -280,7 +280,7 @@ class ChatBotViewModel @Inject constructor(
         val newChat = chatRepository.addAndGetChat(
             MessageChat(
                 name = "Base chat",
-                messageGroups = MockChat() //TODO for testing only
+//                messageGroups = MockChat() //TODO for testing only
             )
         ).getOrHandleAppError { return@launch }
         currentChatId.update { newChat.id }
