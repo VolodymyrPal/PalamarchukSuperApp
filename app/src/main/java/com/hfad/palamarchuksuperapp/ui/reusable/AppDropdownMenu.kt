@@ -26,6 +26,40 @@ interface AppDialogScope {
     fun ContentPart(modifier: Modifier = Modifier, content: @Composable () -> Unit)
     fun ButtonPart(modifier: Modifier = Modifier, content: @Composable () -> Unit)
 }
+
+// Внутренний State для хранения элементов
+private class AppDialogState : AppDialogScope {
+    var titlePart: (@Composable () -> Unit)? = null
+    var titlePartModifier: Modifier = Modifier
+    var contentPart: (@Composable () -> Unit)? = null
+    var contentPartModifier: Modifier = Modifier
+    var buttonPart: (@Composable () -> Unit)? = null
+    var buttonPartModifier: Modifier = Modifier
+
+    override fun TitlePart(
+        modifier: Modifier,
+        content: @Composable (() -> Unit),
+    ) {
+        titlePart = content
+        titlePartModifier = modifier
+    }
+
+    override fun ContentPart(
+        modifier: Modifier,
+        content: @Composable (() -> Unit),
+    ) {
+        contentPart = content
+        contentPartModifier = modifier
+    }
+
+    override fun ButtonPart(
+        modifier: Modifier,
+        content: @Composable (() -> Unit),
+    ) {
+        buttonPart = content
+        buttonPartModifier = modifier
+    }
+
 }
 
 @Composable
