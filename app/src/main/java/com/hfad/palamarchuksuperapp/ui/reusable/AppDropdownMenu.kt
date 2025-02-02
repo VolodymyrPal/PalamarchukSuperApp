@@ -123,44 +123,6 @@ fun AppDialog(
     }
 }
 
-// Внутренний State для хранения элементов
-private class MyDialogState : AppDialogScope {
-    var title: (@Composable () -> Unit)? = null
-    var text: (@Composable () -> Unit)? = null
-    var agreeButton: (@Composable () -> Unit)? = null
-    var dismissButton: (@Composable () -> Unit)? = null
-    var customContent: (@Composable () -> Unit)? = null
-
-    override fun Title(content: @Composable (() -> Unit)) {
-        title = content
-    }
-
-    override fun Text(content: @Composable (() -> Unit)) {
-        text = content
-    }
-
-    override fun ButtonAgree(text: String, onClick: () -> Unit) {
-        agreeButton = {
-            Button(onClick) {
-                Text(text)
-            }
-        }
-    }
-
-    override fun ButtonDismiss(text: String, onClick: () -> Unit) {
-        dismissButton = {
-            TextButton(onClick = onClick) {
-                Text(text)
-            }
-        }
-    }
-
-    override fun CustomContent(content: @Composable (() -> Unit)) {
-        customContent = content
-    }
-
-}
-
 
 @Composable
 fun SomeScreen() {
@@ -169,9 +131,23 @@ fun SomeScreen() {
     AppDialog(
         onDismissRequest = { isVisible.value = false }
     ) {
-        this.Title { Text("Hi, man") }
-        this.Text { Text("just some testing text") }
-        this.ButtonAgree("Ok") { isVisible.value = false }
+        Column {
+            TitlePart(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.1f)
+            ) { Text("Title part") }
+            ContentPart(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.8f)
+            ) { Text("Content part") }
+            ButtonPart(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.1f)
+            ) { Text("Button part") }
+        }
     }
 
 }
