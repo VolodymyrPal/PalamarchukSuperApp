@@ -69,7 +69,7 @@ fun AppDialog(
     dialogProperties: DialogProperties = DialogProperties(),
     content: @Composable AppDialogScope.() -> Unit,
 ) {
-    val dialogState = remember { MyDialogState() }
+    val dialogState = remember { AppDialogState() }
     dialogState.content() // Собираем контент через Scope
 
     Dialog(
@@ -81,24 +81,42 @@ fun AppDialog(
             shape = MaterialTheme.shapes.extraLarge
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
-                // Заголовок
-                dialogState.title?.invoke()
 
-                // Текст
-                dialogState.text?.invoke()
-
-                // Кастомный контент
-                dialogState.customContent?.invoke()
-
-                // Кнопки
-                Row(
-                    modifier = Modifier
-                        .padding(top = 24.dp)
-                        .align(Alignment.End),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    dialogState.dismissButton?.invoke()
-                    dialogState.agreeButton?.invoke()
+                dialogState.titlePart?.let { content ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.1f)
+                            .then(
+                                dialogState.titlePartModifier
+                            )
+                    ) {
+                        content()
+                    }
+                }
+                dialogState.contentPart?.let { content ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                            .then(
+                                dialogState.contentPartModifier
+                            )
+                    ) {
+                        content()
+                    }
+                }
+                dialogState.buttonPart?.let { content ->
+                    Box(
+                        modifier = dialogState.buttonPartModifier
+                            .fillMaxWidth()
+                            .weight(0.1f)
+                            .then(
+                                dialogState.buttonPartModifier
+                            )
+                    ) {
+                        content()
+                    }
                 }
             }
         }
