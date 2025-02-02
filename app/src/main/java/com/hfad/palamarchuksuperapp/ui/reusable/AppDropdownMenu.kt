@@ -22,11 +22,10 @@ annotation class AppDialogDsl
 
 @AppDialogDsl
 interface AppDialogScope {
-    fun Title(content: @Composable () -> Unit)
-    fun Text(content: @Composable () -> Unit)
-    fun ButtonAgree(text: String, onClick: () -> Unit)
-    fun ButtonDismiss(text: String, onClick: () -> Unit)
-    fun CustomContent(content: @Composable () -> Unit)
+    fun TitlePart(modifier: Modifier = Modifier, content: @Composable () -> Unit)
+    fun ContentPart(modifier: Modifier = Modifier, content: @Composable () -> Unit)
+    fun ButtonPart(modifier: Modifier = Modifier, content: @Composable () -> Unit)
+}
 }
 
 @Composable
