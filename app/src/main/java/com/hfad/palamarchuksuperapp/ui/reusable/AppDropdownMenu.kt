@@ -125,36 +125,337 @@ fun AppDialog(
 }
 
 
+@Preview
 @Composable
-fun SomeScreen() {
+fun DialogStatement() {
     val isVisible = remember { mutableStateOf(true) }
 
     AppDialog(
         onDismissRequest = { isVisible.value = false }
     ) {
-        Column {
-            TitlePart(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.1f)
-            ) { Text("Title part") }
-            ContentPart(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
-            ) { Text("Content part") }
-            ButtonPart(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.1f)
-            ) { Text("Button part") }
-        }
+        Header { Text("Title part") }
+        Content { Text("Content part") }
+        Actions { Text("Button part") }
     }
-
 }
+
 
 @Preview
 @Composable
-fun AppDialogPreview() {
-    SomeScreen()
+fun StoreAppDialog(
+    isOpen: Boolean = true,
+) {
+    val context = LocalContext.current
+    fun showToast() {
+        Toast.makeText(context, "Order confirmed", Toast.LENGTH_SHORT).show()
+    }
+    AlertDialog(
+        title = {
+            Text(text = stringResource(R.string.order_confirmation_title))
+        },
+        text = {
+            var phone by remember { mutableStateOf("") }
+            Column {
+                Text(stringResource(R.string.order_confirmation_message))
+                TextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                        }
+                    )
+                )
+            }
+        },
+        onDismissRequest = {
+
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+
+                }
+            ) {
+                Text(stringResource(R.string.order_proceed_button))
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview
+fun DialogAiHandlerPreview() {
+    Dialog(
+        onDismissRequest = { },
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(0.92f)
+                .padding(16.dp),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.onPrimary,
+            tonalElevation = 6.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Заголовок диалога
+                Text(
+                    text = stringResource(
+                        R.string.edit_handler_title
+//                            R.string.add_handler_title
+                    ),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // Поля ввода
+                val name = remember {
+                    mutableStateOf(
+                        "Handler name"
+                    )
+                }
+                var isLLMMenuExpanded by remember { mutableStateOf(false) }
+                val selectedLLM = remember {
+                    mutableStateOf(
+                        "LLmName"
+                    )
+                }
+                val expandedModelMenu = remember { mutableStateOf(false) }
+                val selectedModelOption = remember {
+                    mutableStateOf(
+                        "Model name"
+                    )
+                }
+                val apiKey = remember {
+                    mutableStateOf(
+                        "Api key name"
+                    )
+                }
+
+                // Название
+                OutlinedTextField(
+                    value = name.value,
+                    onValueChange = { name.value = it },
+                    label = {
+                        Text(
+                            stringResource(R.string.handler_name_hint),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                // Выбор LLM
+                ExposedDropdownMenuBox(
+                    expanded = isLLMMenuExpanded,
+                    onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
+                ) {
+                    OutlinedTextField(
+                        value = selectedLLM.value,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = {
+                            Text(
+                                stringResource(R.string.model_ai_hint),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = isLLMMenuExpanded,
+                        onDismissRequest = { isLLMMenuExpanded = false }
+                    ) {
+                        LLMName.entries.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        option.name,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                onClick = {
+
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Выбор модели
+                if (selectedLLM.value != null) {
+                    ExposedDropdownMenuBox(
+                        expanded = expandedModelMenu.value,
+                        onExpandedChange = {
+                            expandedModelMenu.value = !expandedModelMenu.value
+                        }
+                    ) {
+                        OutlinedTextField(
+                            value = selectedModelOption.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = {
+                                Text(
+                                    stringResource(R.string.model_hint),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(
+                                    expanded = expandedModelMenu.value
+                                )
+                            },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expandedModelMenu.value,
+                            onDismissRequest = { expandedModelMenu.value = false }
+                        ) {
+                            listOf<Int>(0, 1, 2).forEach { option ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            "Option 1",
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    },
+                                    onClick = {
+
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // API ключ
+                OutlinedTextField(
+                    value = apiKey.value,
+                    onValueChange = { apiKey.value = it },
+                    label = { Text(stringResource(R.string.api_key_hint)) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                // Кнопки действий
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = { }
+                    ) {
+                        Text(stringResource(R.string.cancel))
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = {
+
+                        },
+                        enabled = name.value.isNotBlank()
+                    ) {
+                        Text(
+                            stringResource(
+                                R.string.save
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun HandlerDropdownMenu(
+    expanded: Boolean = true,
+    onDismissRequest: () -> Unit = { },
+    containerColor: Color = Color.Transparent,
+) {
+    Dialog(
+        onDismissRequest = { }
+    ) {
+        Surface(
+            modifier = Modifier.size(200.dp, 200.dp),
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.onPrimary,
+            tonalElevation = 6.dp
+        ) {
+            // Заголовок диалога
+            LazyColumn {
+                item {
+                    Row {
+                        IconButton(
+                            onClick = { }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Text(
+                            text = "Choose chat", modifier =
+                                Modifier.padding(12.dp)
+                        )
+                        IconButton(
+                            onClick = { }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Add",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+
+                }
+                items(
+                    listOf<Int>(0, 1, 2),
+                ) { chat ->
+                    Row(
+                        modifier = Modifier.wrapContentSize()
+                    ) {
+                        Text(
+                            text = "chat.name",
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clickable(interactionSource = null, indication = null) {
+                                }
+                        )
+                        Text(
+                            text = SimpleDateFormat("dd.MM:HH:mm", Locale.US).format(
+                                System.currentTimeMillis()
+                            ),
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
