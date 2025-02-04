@@ -14,9 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
@@ -47,8 +45,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.data.services.GroqApiHandler
@@ -56,7 +52,10 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.ConfirmationDialog
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditOutlinedText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
@@ -140,71 +139,55 @@ fun DialogAiHandler(
     dialogAiHandlerState: DialogAiHandlerState,
 ) {
     if (dialogAiHandlerState.isShowing) {
-        Dialog(
+        AppDialog(
             onDismissRequest = { dialogAiHandlerState.dismiss() },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
+            modifier = modifier
         ) {
-            Surface(
-                modifier = modifier
-                    .fillMaxWidth(0.92f)
-                    .padding(16.dp),
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.onPrimary,
-                tonalElevation = 6.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+            val name = remember {
+                mutableStateOf(
+                    dialogAiHandlerState.handler?.aiHandlerInfo?.value?.name ?: ""
+                )
+            }
+            var isLLMMenuExpanded by remember { mutableStateOf(false) }
+            val selectedLLM = remember {
+                mutableStateOf(
+                    dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model?.llmName
+                )
+            }
+            val expandedModelMenu = remember { mutableStateOf(false) }
+            val selectedModelOption = remember {
+                mutableStateOf(dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model)
+            }
+            val apiKey = remember {
+                mutableStateOf(
+                    dialogAiHandlerState.handler?.aiHandlerInfo?.value?.aiApiKey ?: ""
+                )
+            }
+
+            Header {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Заголовок диалога
-                    Text(
-                        text = stringResource(
-                            if (dialogAiHandlerState.handler != null) {
-                                R.string.edit_handler_title
-                            } else {
-                                R.string.add_handler_title
-                            }
-                        ),
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    // Поля ввода
-                    val name = remember {
-                        mutableStateOf(
-                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.name ?: ""
-                        )
-                    }
-                    var isLLMMenuExpanded by remember { mutableStateOf(false) }
-                    val selectedLLM = remember {
-                        mutableStateOf(
-                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model?.llmName
-                        )
-                    }
-                    val expandedModelMenu = remember { mutableStateOf(false) }
-                    val selectedModelOption = remember {
-                        mutableStateOf(dialogAiHandlerState.handler?.aiHandlerInfo?.value?.model)
-                    }
-                    val apiKey = remember {
-                        mutableStateOf(
-                            dialogAiHandlerState.handler?.aiHandlerInfo?.value?.aiApiKey ?: ""
-                        )
-                    }
-
-                    // Название
-                    OutlinedTextField(
-                        value = name.value,
-                        onValueChange = { name.value = it },
-                        label = {
-                            Text(
-                                stringResource(R.string.handler_name_hint),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    AppText(
+                        modifier = Modifier,
+                        stringRes = if (dialogAiHandlerState.handler != null) {
+                            R.string.edit_handler_title
+                        } else {
+                            R.string.add_handler_title
                         },
-                        modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.headlineSmall
                     )
+                }
+            }
+            Content {
+                // Название
+                AppEditOutlinedText(
+                    text = name.value,
+                    onValueChanged = { name.value = it },
+                    labelRes = R.string.handler_name_hint,
+                    placeholderRes = R.string.app_name,
+                    modifier = Modifier
+                )
 
                     // Выбор LLM
                     ExposedDropdownMenuBox(
