@@ -10,6 +10,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
@@ -76,11 +77,11 @@ fun rememberAppTextConfig(
  */
 @Composable
 @Suppress("LongParameterList", "FunctionNaming")
-fun AppHeadlineText(
+fun AppText(
     @StringRes stringRes: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    style: TextStyle = MaterialTheme.typography.headlineSmall,
+    style: TextStyle = LocalTextStyle.current,
     appTextConfig: AppTextConfig = rememberAppTextConfig(),
 ) {
     val mergedStyle = style.merge(appTextConfig.textStyle).copy(color = color)
@@ -98,53 +99,6 @@ fun AppHeadlineText(
 }
 
 /**
- * Универсальный компонент для отображения текста.
- *
- * @param stringRes Идентификатор строкового ресурса.
- * @param modifier Модификатор для настройки внешнего вида.
- * @param color Цвет текста.
- * @param style Стиль текста.
- * @param appTextConfig Конфигурация текста.
- */
-@Composable
-fun AppText(
-    @StringRes stringRes: Int,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    style: TextStyle = LocalTextStyle.current,
-    appTextConfig: AppTextConfig = rememberAppTextConfig(),
-) = AppHeadlineText(
-    stringRes = stringRes,
-    color = color,
-    modifier = modifier,
-    style = style,
-    appTextConfig = appTextConfig
-)
-
-/**
- * Компонент для отображения метки (label) с поддержкой конфигурации.
- *
- * @param labelRes Идентификатор строкового ресурса для метки.
- * @param color Цвет текста.
- * @param style Стиль текста.
- * @param appTextConfig Конфигурация текста.
- */
-@Composable
-fun AppLabel(
-    @StringRes labelRes: Int,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    style: TextStyle = MaterialTheme.typography.headlineSmall,
-    appTextConfig: AppTextConfig = rememberAppTextConfig(),
-) {
-    AppText(
-        stringRes = labelRes,
-        color = color,
-        style = style,
-        appTextConfig = appTextConfig
-    )
-}
-
-/**
  * Компонент для редактирования текста с поддержкой метки и подсказки.
  *
  * @param modifier Модификатор для настройки внешнего вида.
@@ -157,14 +111,16 @@ fun AppLabel(
  */
 @Composable
 @Suppress("LongParameterList")
-fun AppEditText(
+fun AppEditOutlinedText(
     modifier: Modifier = Modifier,
     text: String,
     onValueChanged: (String) -> Unit,
     @StringRes labelRes: Int? = R.string.model_hint,
-    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it) } },
     @StringRes placeholderRes: Int? = R.string.edit,
-    placeholder: @Composable (() -> Unit)? = placeholderRes?.let { { AppText(it) } },
+    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it) } },
+    placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
+        { AppText(it, Modifier.alpha(0.33f)) }
+    },
 ) {
     OutlinedTextField(
         value = text,
@@ -182,7 +138,7 @@ fun AppEditText(
 @Preview
 fun AppEditTextPreview() {
     val text = remember { mutableStateOf("") }
-    AppEditText(
+    AppEditOutlinedText(
         text = text.value,
         labelRes = R.string.model_hint,
         onValueChanged = { text.value = it },

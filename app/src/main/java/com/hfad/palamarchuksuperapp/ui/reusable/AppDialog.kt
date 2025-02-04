@@ -7,12 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -82,9 +81,7 @@ private class AppDialogState : AppDialogScope {
         contentPart = content
     }
 
-    override fun Actions(
-        content: @Composable (() -> Unit),
-    ) {
+    override fun Actions(content: @Composable (() -> Unit)) {
         buttonPart = content
     }
 
@@ -94,7 +91,7 @@ private class AppDialogState : AppDialogScope {
 fun AppDialog(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
-    dialogProperties: DialogProperties = DialogProperties(),
+    dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false),
     content: @Composable AppDialogScope.() -> Unit,
 ) {
     val dialogState = remember { AppDialogState() }.apply { content() }
@@ -105,14 +102,14 @@ fun AppDialog(
     ) {
         Surface(
             modifier = modifier
-                .widthIn(max = 240.dp)
-                .heightIn(max = 240.dp),
-            shape = MaterialTheme.shapes.extraLarge,
+                .fillMaxWidth(0.85f)
+                .wrapContentWidth(unbounded = false),
+            shape = RoundedCornerShape(28.dp),
             color = MaterialTheme.colorScheme.onPrimary,
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
+                    .padding(12.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {

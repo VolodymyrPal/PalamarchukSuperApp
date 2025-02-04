@@ -477,7 +477,7 @@ fun LazyChatScreen(
 
     LaunchedEffect(messagesList.size) {
         if (messagesList.isNotEmpty()) {
-            state.animateScrollToItem(messagesList.lastIndex)
+            state.animateScrollToItem(messagesList.size + 2)
         }
     }
     LazyColumn(

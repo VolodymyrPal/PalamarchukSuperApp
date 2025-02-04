@@ -17,7 +17,7 @@ class UpdateMessageStatusUseCaseImpl @Inject constructor (
         val loadingMessages =
             chatAiRepository.getAllMessagesWithStatus(chatId, MessageStatus.LOADING)
                 .getOrHandleAppError {
-                    return Result.Error(it)
+                    return Result.Error(it) //TODO better error handling
                 }
         loadingMessages.forEach { message ->
             chatAiRepository.updateMessageAi(

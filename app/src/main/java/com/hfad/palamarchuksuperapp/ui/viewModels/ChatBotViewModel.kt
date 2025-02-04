@@ -128,6 +128,7 @@ class ChatBotViewModel @Inject constructor(
         _errorFlow,
         _choosenAiModelList,
     ) { chat, isLoading, handlers, error, modelList ->
+        error.let { _loading.update { false } }
         StateChat(
             chat = chat,
             isLoading = isLoading,
