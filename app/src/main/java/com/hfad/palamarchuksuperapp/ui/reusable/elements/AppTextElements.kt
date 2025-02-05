@@ -111,6 +111,33 @@ fun AppText(
     )
 }
 
+@Composable
+@Suppress("LongParameterList", "FunctionNaming")
+@Deprecated(
+    message = "Use AppText with @StringRes for proper localization. Hardcoded string is discouraged",
+    replaceWith = ReplaceWith("AppText(stringRes = R.string.your_string_resource, appTextConfig = appTextConfig)")
+)
+fun AppText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    style: TextStyle = LocalTextStyle.current,
+    appTextConfig: AppTextConfig = rememberAppTextConfig(),
+) {
+    val mergedStyle = style.merge(appTextConfig.textStyle).copy(color = color)
+
+    Text(
+        text = text,
+        modifier = modifier,
+        style = mergedStyle,
+        overflow = appTextConfig.overflow,
+        softWrap = appTextConfig.softWrap,
+        maxLines = appTextConfig.maxLines,
+        minLines = appTextConfig.minLines,
+        onTextLayout = appTextConfig.onTextLayout
+    )
+}
+
 /**
  * Компонент для редактирования текста с поддержкой метки и подсказки.
  *
