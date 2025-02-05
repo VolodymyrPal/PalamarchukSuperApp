@@ -161,13 +161,77 @@ fun AppEditOutlinedText(
     placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
         { AppText(it, Modifier.alpha(0.33f)) }
     },
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
+
+
+        focusedTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+        unfocusedTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+        disabledTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+        errorTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+
+        focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+        unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+        disabledContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+        errorContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+
+        cursorColor = MaterialTheme.colorScheme.primary,
+        errorCursorColor = MaterialTheme.colorScheme.error,
+
+        selectionColors = TextSelectionColors(
+            handleColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+        ),
+
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+        disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        errorBorderColor = MaterialTheme.colorScheme.error,
+
+        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorLeadingIconColor = MaterialTheme.colorScheme.error,
+
+        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+        unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorTrailingIconColor = MaterialTheme.colorScheme.error,
+
+        focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorLabelColor = MaterialTheme.colorScheme.error,
+
+        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorPlaceholderColor = MaterialTheme.colorScheme.error,
+
+        focusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unfocusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorSupportingTextColor = MaterialTheme.colorScheme.error,
+
+        focusedPrefixColor = MaterialTheme.colorScheme.primary,
+        unfocusedPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorPrefixColor = MaterialTheme.colorScheme.error,
+
+        focusedSuffixColor = MaterialTheme.colorScheme.primary,
+        unfocusedSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorSuffixColor = MaterialTheme.colorScheme.error,
+    ),
 ) {
     OutlinedTextField(
         value = text,
         onValueChange = { onValueChanged(it) },
         label = label,
+        colors = colors,
         placeholder = placeholder,
         modifier = modifier,
+        textStyle = textStyle
     )
 }
 
