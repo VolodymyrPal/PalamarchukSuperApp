@@ -235,6 +235,47 @@ fun AppEditOutlinedText(
     )
 }
 
+@Suppress("LongParameterList", "UNUSED_ANONYMOUS_PARAMETER")
+@Composable
+fun AppEditText(
+    modifier: Modifier = Modifier,
+    text: String,
+    onValueChanged: (String) -> Unit,
+    @StringRes labelRes: Int? = null,
+    @StringRes placeholderRes: Int? = null,
+    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it) } },
+    placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
+        { AppText(it, Modifier.alpha(0.33f)) }
+    },
+    colors: TextFieldColors = TextFieldDefaults.colors(
+
+    ),
+    supportingText: @Composable (() -> Unit)? = null,
+) {
+    TextField(
+        value = text,
+        onValueChange = { onValueChanged(it) },
+        supportingText = null, //It is useless
+    )
+}
+
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+fun AppEditOutlinedTextWhitePreview() {
+
+    val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+    AppTheme {
+        AppEditOutlinedText(
+            modifier = Modifier.padding(4.dp),
+            text = text.value,
+            labelRes = R.string.model_hint,
+            placeholderRes = R.string.edit,
+            onValueChanged = { text.value = it },
+        )
+    }
+}
+
 /**
  * Превью компонента AppEditText.
  */
