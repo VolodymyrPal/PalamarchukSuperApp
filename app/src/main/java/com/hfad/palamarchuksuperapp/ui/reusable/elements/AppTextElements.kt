@@ -280,12 +280,105 @@ fun AppEditOutlinedTextWhitePreview() {
  * Превью компонента AppEditText.
  */
 @Composable
-@Preview
-fun AppEditTextPreview() {
-    val text = remember { mutableStateOf("") }
-    AppEditOutlinedText(
-        text = text.value,
-        labelRes = R.string.model_hint,
-        onValueChanged = { text.value = it },
-    )
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark")
+fun AppEditOutlinedTextDarkPreview() {
+    val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+    AppTheme {
+        AppEditOutlinedText(
+            modifier = Modifier.padding(4.dp),
+            text = text.value,
+            labelRes = R.string.model_hint,
+            placeholderRes = R.string.edit,
+            onValueChanged = { text.value = it },
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = false)
+fun AppEditWhitDarkPreview() {
+    Column {
+        val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+        AppTheme(useDarkTheme = true) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                AppEditOutlinedText(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .align(Alignment.Center),
+                    text = text.value,
+                    labelRes = R.string.model_hint,
+                    placeholderRes = R.string.edit,
+                    onValueChanged = { text.value = it },
+                )
+            }
+        }
+        AppTheme(useDarkTheme = false) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                AppEditOutlinedText(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .align(Alignment.TopCenter),
+                    text = text.value,
+                    labelRes = R.string.model_hint,
+                    placeholderRes = R.string.edit,
+                    onValueChanged = { text.value = it },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "White")
+fun AppTextWhitePreview() {
+    AppTheme {
+        AppText(modifier = Modifier.padding(4.dp), text = "Some text to check preview")
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark")
+fun AppTextDarkPreview() {
+    AppTheme {
+        AppText(modifier = Modifier.padding(4.dp), text = "Some text to check preview")
+    }
+}
+
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark")
+fun AppEditTextDarkPreview(
+) {
+    AppTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+            AppEditText(
+                modifier = Modifier.padding(4.dp),
+                text = text.value,
+                onValueChanged = { text.value = it }) {
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "White")
+fun AppEditTextWhitePreview(
+) {
+    AppTheme {
+        Box(modifier = Modifier.padding(4.dp)) {
+            val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+            AppEditText(
+                modifier = Modifier.padding(4.dp),
+                text = text.value,
+                onValueChanged = { text.value = it }) {
+            }
+        }
+    }
 }
