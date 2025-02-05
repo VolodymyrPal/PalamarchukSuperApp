@@ -103,6 +103,7 @@ fun AppText(
         text = stringResource(stringRes),
         modifier = modifier,
         style = mergedStyle,
+        color = MaterialTheme.colorScheme.onSecondaryContainer, //Цвет текста
         overflow = appTextConfig.overflow,
         softWrap = appTextConfig.softWrap,
         maxLines = appTextConfig.maxLines,
