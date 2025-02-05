@@ -1,14 +1,25 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
+import android.content.res.Configuration
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -17,6 +28,8 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 
 @Suppress("LongParameterList", "FunctionNaming")
@@ -90,6 +103,34 @@ fun AppText(
         text = stringResource(stringRes),
         modifier = modifier,
         style = mergedStyle,
+        color = MaterialTheme.colorScheme.onSecondaryContainer, //Цвет текста
+        overflow = appTextConfig.overflow,
+        softWrap = appTextConfig.softWrap,
+        maxLines = appTextConfig.maxLines,
+        minLines = appTextConfig.minLines,
+        onTextLayout = appTextConfig.onTextLayout
+    )
+}
+
+@Composable
+@Suppress("LongParameterList", "FunctionNaming")
+@Deprecated(
+    message = "Use AppText with @StringRes for proper localization. Hardcoded string is discouraged",
+    replaceWith = ReplaceWith("AppText(stringRes = R.string.your_string_resource, appTextConfig = appTextConfig)")
+)
+fun AppText(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    style: TextStyle = LocalTextStyle.current,
+    appTextConfig: AppTextConfig = rememberAppTextConfig(),
+) {
+    val mergedStyle = style.merge(appTextConfig.textStyle).copy(color = color)
+
+    Text(
+        text = text,
+        modifier = modifier,
+        style = mergedStyle,
         overflow = appTextConfig.overflow,
         softWrap = appTextConfig.softWrap,
         maxLines = appTextConfig.maxLines,
@@ -121,26 +162,224 @@ fun AppEditOutlinedText(
     placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
         { AppText(it, Modifier.alpha(0.33f)) }
     },
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
+
+
+        focusedTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+        unfocusedTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+        disabledTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+        errorTextColor = Color.White, //MaterialTheme.colorScheme.onPrimaryContainer,
+
+        focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+        unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+        disabledContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+        errorContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f),
+
+        cursorColor = MaterialTheme.colorScheme.primary,
+        errorCursorColor = MaterialTheme.colorScheme.error,
+
+        selectionColors = TextSelectionColors(
+            handleColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+        ),
+
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+        disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        errorBorderColor = MaterialTheme.colorScheme.error,
+
+        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+        unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorLeadingIconColor = MaterialTheme.colorScheme.error,
+
+        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+        unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorTrailingIconColor = MaterialTheme.colorScheme.error,
+
+        focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
+        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorLabelColor = MaterialTheme.colorScheme.error,
+
+        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorPlaceholderColor = MaterialTheme.colorScheme.error,
+
+        focusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unfocusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorSupportingTextColor = MaterialTheme.colorScheme.error,
+
+        focusedPrefixColor = MaterialTheme.colorScheme.primary,
+        unfocusedPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorPrefixColor = MaterialTheme.colorScheme.error,
+
+        focusedSuffixColor = MaterialTheme.colorScheme.primary,
+        unfocusedSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        errorSuffixColor = MaterialTheme.colorScheme.error,
+    ),
 ) {
     OutlinedTextField(
         value = text,
         onValueChange = { onValueChanged(it) },
         label = label,
+        colors = colors,
         placeholder = placeholder,
         modifier = modifier,
+        textStyle = textStyle
     )
+}
+
+@Suppress("LongParameterList", "UNUSED_ANONYMOUS_PARAMETER")
+@Composable
+fun AppEditText(
+    modifier: Modifier = Modifier,
+    text: String,
+    onValueChanged: (String) -> Unit,
+    @StringRes labelRes: Int? = null,
+    @StringRes placeholderRes: Int? = null,
+    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it) } },
+    placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
+        { AppText(it, Modifier.alpha(0.33f)) }
+    },
+    colors: TextFieldColors = TextFieldDefaults.colors(
+
+    ),
+    supportingText: @Composable (() -> Unit)? = null,
+) {
+    TextField(
+        value = text,
+        onValueChange = { onValueChanged(it) },
+        supportingText = null, //It is useless
+    )
+}
+
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+fun AppEditOutlinedTextWhitePreview() {
+
+    val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+    AppTheme {
+        AppEditOutlinedText(
+            modifier = Modifier.padding(4.dp),
+            text = text.value,
+            labelRes = R.string.model_hint,
+            placeholderRes = R.string.edit,
+            onValueChanged = { text.value = it },
+        )
+    }
 }
 
 /**
  * Превью компонента AppEditText.
  */
 @Composable
-@Preview
-fun AppEditTextPreview() {
-    val text = remember { mutableStateOf("") }
-    AppEditOutlinedText(
-        text = text.value,
-        labelRes = R.string.model_hint,
-        onValueChanged = { text.value = it },
-    )
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark")
+fun AppEditOutlinedTextDarkPreview() {
+    val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+    AppTheme {
+        AppEditOutlinedText(
+            modifier = Modifier.padding(4.dp),
+            text = text.value,
+            labelRes = R.string.model_hint,
+            placeholderRes = R.string.edit,
+            onValueChanged = { text.value = it },
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = false)
+fun AppEditWhitDarkPreview() {
+    Column {
+        val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+        AppTheme(useDarkTheme = true) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                AppEditOutlinedText(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .align(Alignment.Center),
+                    text = text.value,
+                    labelRes = R.string.model_hint,
+                    placeholderRes = R.string.edit,
+                    onValueChanged = { text.value = it },
+                )
+            }
+        }
+        AppTheme(useDarkTheme = false) {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                AppEditOutlinedText(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .align(Alignment.TopCenter),
+                    text = text.value,
+                    labelRes = R.string.model_hint,
+                    placeholderRes = R.string.edit,
+                    onValueChanged = { text.value = it },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "White")
+fun AppTextWhitePreview() {
+    AppTheme {
+        AppText(modifier = Modifier.padding(4.dp), text = "Some text to check preview")
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark")
+fun AppTextDarkPreview() {
+    AppTheme {
+        AppText(modifier = Modifier.padding(4.dp), text = "Some text to check preview")
+    }
+}
+
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark")
+fun AppEditTextDarkPreview(
+) {
+    AppTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+            AppEditText(
+                modifier = Modifier.padding(4.dp),
+                text = text.value,
+                onValueChanged = { text.value = it }) {
+            }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "White")
+fun AppEditTextWhitePreview(
+) {
+    AppTheme {
+        Box(modifier = Modifier.padding(4.dp)) {
+            val text = remember { mutableStateOf("Text Text Text Text Text Text") }
+            AppEditText(
+                modifier = Modifier.padding(4.dp),
+                text = text.value,
+                onValueChanged = { text.value = it }) {
+            }
+        }
+    }
 }
