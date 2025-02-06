@@ -56,6 +56,7 @@ import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.ConfirmationDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditOutlinedText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberAppTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
@@ -175,7 +176,7 @@ fun DialogAiHandler(
                         } else {
                             R.string.add_handler_title
                         },
-                        style = MaterialTheme.typography.headlineSmall
+                        appTextConfig = rememberAppTextConfig(textStyle = MaterialTheme.typography.displayMedium)
                     )
                 }
             }
