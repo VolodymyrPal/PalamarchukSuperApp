@@ -1,5 +1,8 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -16,6 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -100,6 +104,22 @@ fun rememberAppTextConfig(
         )
     }
 }
+
+@Immutable
+data class AppEditOutlinedTextConfig(
+    //TODO begin to refactor
+    val readOnly: Boolean = false,
+    val textStyle: TextStyle = TextStyle.Default,
+    val isError: Boolean = false,
+    val visualTransformation: VisualTransformation = VisualTransformation.None,
+    val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    val keyboardActions: KeyboardActions = KeyboardActions.Default,
+    val singleLine: Boolean = false,
+    val maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    val minLines: Int = 1,
+    val interactionSource: MutableInteractionSource? = null,
+//    val shape: Shape = MaterialTheme.shapes.small,
+)
 
 /**
  * Возвращает цвета по умолчанию для [OutlinedTextField] на основе текущей темы.
