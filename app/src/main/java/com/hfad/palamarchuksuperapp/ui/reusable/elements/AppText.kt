@@ -64,7 +64,7 @@ fun AppText(
     replaceWith = ReplaceWith("AppText(stringRes = R.string.your_string_resource, appTextConfig = appTextConfig)")
 )
 fun AppText(
-    text: String,
+    value: String,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     appTextConfig: AppTextConfig = rememberAppTextConfig(),
@@ -72,7 +72,7 @@ fun AppText(
     val mergedStyle: TextStyle = appTextConfig.textStyle.copy(color = color)
 
     Text(
-        text = text,
+        text = value,
         modifier = modifier,
         style = mergedStyle,
         overflow = appTextConfig.overflow,
@@ -89,7 +89,7 @@ fun AppText(
  */
 @Composable
 @Preview(showBackground = false)
-fun AppTextPreview() {
+private fun AppTextPreview() {
     Column {
         val text = remember { mutableStateOf("Text Text Text Text Text Text") }
         AppTheme(useDarkTheme = true) {
@@ -99,7 +99,7 @@ fun AppTextPreview() {
                     .padding(10.dp)
             ) {
                 AppText(
-                    modifier = Modifier.padding(4.dp), text = "Some text to check preview",
+                    modifier = Modifier.padding(4.dp), value = "Some text to check preview",
                     appTextConfig = rememberAppTextConfig(
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
@@ -113,7 +113,7 @@ fun AppTextPreview() {
                     .padding(10.dp)
             ) {
                 AppText(
-                    modifier = Modifier.padding(4.dp), text = "Some text to check preview",
+                    modifier = Modifier.padding(4.dp), value = "Some text to check preview",
                     appTextConfig = rememberAppTextConfig(
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
