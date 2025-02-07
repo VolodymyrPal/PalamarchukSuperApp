@@ -26,7 +26,7 @@ import com.hfad.palamarchuksuperapp.R
  * Компонент для редактирования текста с поддержкой метки и подсказки.
  *
  * @param modifier Модификатор для настройки внешнего вида.
- * @param text Текущее значение текста.
+ * @param value Текущее значение текста.
  * @param onValueChanged Обратный вызов при изменении текста.
  * @param labelRes Идентификатор строкового ресурса для метки.
  * @param label Компонент для отображения метки.
@@ -40,11 +40,13 @@ import com.hfad.palamarchuksuperapp.R
 @Suppress("LongParameterList")
 fun AppEditOutlinedText(
     modifier: Modifier = Modifier,
-    text: String,
+    value: String,
     onValueChanged: (String) -> Unit,
-    @StringRes labelRes: Int? = R.string.model_hint,
-    @StringRes placeholderRes: Int? = R.string.edit,
-    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it) } },
+    @StringRes labelRes: Int? = null,
+    @StringRes placeholderRes: Int? = null,
+    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it, appTextConfig = rememberAppTextConfig(
+        textStyle = MaterialTheme.typography.bodySmall
+    )) } },
     placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
         { AppText(it, Modifier.alpha(0.33f)) }
     },
@@ -54,7 +56,7 @@ fun AppEditOutlinedText(
 ) {
     OutlinedTextField(
         enabled = enable,
-        value = text,
+        value = value,
         onValueChange = { onValueChanged(it) },
         label = label,
         colors = colors,
@@ -70,7 +72,7 @@ fun AppEditOutlinedText(
  */
 @Composable
 @Preview(showBackground = false)
-fun AppOutlinedTextPreview() {
+private fun AppOutlinedTextPreview() {
     Column(
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -86,7 +88,7 @@ fun AppOutlinedTextPreview() {
                     modifier = Modifier
                         .padding(4.dp)
                         .align(Alignment.Center),
-                    text = text.value,
+                    value = text.value,
                     labelRes = R.string.model_hint,
                     placeholderRes = R.string.edit,
                     onValueChanged = { text.value = it },
@@ -103,7 +105,7 @@ fun AppOutlinedTextPreview() {
                     modifier = Modifier
                         .padding(4.dp)
                         .align(Alignment.TopCenter),
-                    text = text.value,
+                    value = text.value,
                     labelRes = R.string.model_hint,
                     placeholderRes = R.string.edit,
                     onValueChanged = { text.value = it },
