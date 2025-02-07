@@ -24,7 +24,7 @@ import com.hfad.palamarchuksuperapp.R
  * Компонент для редактирования текста с поддержкой метки и подсказки.
  *
  * @param modifier Модификатор для настройки внешнего вида.
- * @param text Текущее значение текста.
+ * @param value Текущее значение текста.
  * @param onValueChanged Обратный вызов при изменении текста.
  * @param labelRes Идентификатор строкового ресурса для метки.
  * @param label Компонент для отображения метки.
@@ -39,7 +39,7 @@ import com.hfad.palamarchuksuperapp.R
 @Composable
 fun AppEditText(
     modifier: Modifier = Modifier,
-    text: String,
+    value: String,
     onValueChanged: (String) -> Unit,
     @StringRes labelRes: Int? = null,
     @StringRes placeholderRes: Int? = null,
@@ -47,7 +47,7 @@ fun AppEditText(
         {
             AppText(
                 labelRes, appTextConfig = rememberAppTextConfig(
-                    textStyle = MaterialTheme.typography.headlineLarge
+                    textStyle = MaterialTheme.typography.bodySmall
                 )
             )
         }
@@ -63,7 +63,7 @@ fun AppEditText(
     TextField(
         modifier = modifier,
         enabled = enable,
-        value = text,
+        value = value,
         onValueChange = { onValueChanged(it) },
         supportingText = supportingText,
         label = label,
@@ -81,7 +81,7 @@ fun AppEditText(
  */
 @Composable
 @Preview(showBackground = false)
-fun AppTextFieldPreview() {
+private fun AppTextFieldPreview() {
     Column {
         val text = remember { mutableStateOf("Text Text Text Text Text Text") }
         AppTheme(useDarkTheme = true) {
@@ -91,7 +91,7 @@ fun AppTextFieldPreview() {
             ) {
                 AppEditText(
                     modifier = Modifier.padding(16.dp),
-                    text = text.value,
+                    value = text.value,
                     onValueChanged = { text.value = it },
                     label = {
                         AppText(
@@ -108,7 +108,7 @@ fun AppTextFieldPreview() {
             ) {
                 AppEditText(
                     modifier = Modifier.padding(16.dp),
-                    text = text.value,
+                    value = text.value,
                     onValueChanged = { text.value = it },
                     label = {
                         AppText(

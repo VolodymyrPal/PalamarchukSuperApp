@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,7 +73,6 @@ fun AiHandlerScreen(
 ) {
     val dialogState = remember { DialogAiHandlerState() }
     DialogAiHandler(
-        modifier = Modifier,
         event = event,
         modelList = aiModelList,
         dialogAiHandlerState = dialogState
@@ -176,14 +176,15 @@ fun DialogAiHandler(
                         } else {
                             R.string.add_handler_title
                         },
-                        appTextConfig = rememberAppTextConfig(textStyle = MaterialTheme.typography.displayMedium)
+                        appTextConfig = rememberAppTextConfig(textStyle = MaterialTheme.typography.displayMedium,
+                            textAlign = TextAlign.Center)
                     )
                 }
             }
             Content {
                 // Название
                 AppEditOutlinedText(
-                    text = name.value,
+                    value = name.value,
                     onValueChanged = { name.value = it },
                     labelRes = R.string.handler_name_hint,
                     placeholderRes = R.string.app_name,
