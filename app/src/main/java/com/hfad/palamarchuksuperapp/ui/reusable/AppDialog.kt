@@ -4,14 +4,15 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,8 +54,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditOutlinedText
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -71,9 +75,9 @@ interface AppDialogScope {
 private class AppDialogState : AppDialogScope {
     var titlePart: (@Composable () -> Unit)? = null
     var contentPart: (@Composable () -> Unit)? = null
-    var buttonPart: (@Composable () -> Unit)? = null
+    var actionPart: (@Composable () -> Unit)? = null
 
-    override fun Header(content: @Composable (() -> Unit)) {
+    override fun Header(content: @Composable () -> Unit) {
         titlePart = content
     }
 
@@ -82,7 +86,7 @@ private class AppDialogState : AppDialogScope {
     }
 
     override fun Actions(content: @Composable (() -> Unit)) {
-        buttonPart = content
+        actionPart = content
     }
 
 }
@@ -102,20 +106,22 @@ fun AppDialog(
     ) {
         Surface(
             modifier = modifier
-                .fillMaxWidth(0.85f)
-                .wrapContentWidth(unbounded = false),
-            shape = RoundedCornerShape(28.dp),
+                .fillMaxSize(0.85f)
+                .wrapContentSize(),
+            shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.onPrimary,
         ) {
             Column(
                 modifier = Modifier
+                    .width(IntrinsicSize.Min)
                     .padding(12.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 dialogState.titlePart?.invoke()
                 dialogState.contentPart?.invoke()
-                dialogState.buttonPart?.invoke()
+                dialogState.actionPart?.invoke()
             }
         }
     }
@@ -124,22 +130,46 @@ fun AppDialog(
 
 @Preview
 @Composable
-fun DialogStatement() {
+private fun DialogStatement() {
     val isVisible = remember { mutableStateOf(true) }
+    AppTheme {
+        AppDialog(
+            onDismissRequest = { isVisible.value = false }
+        ) {
+            val text = remember { mutableStateOf("Some test text") }
+            Header {
+                AppEditOutlinedText(
+                    value = text.value,
+                    onValueChanged = { text.value = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    labelRes = R.string.model_hint
+                )
+            }
+            Content {
+                AppEditOutlinedText(
+                    value = "text.value",
+                    onValueChanged = { text.value = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    labelRes = R.string.compose
+                )
 
-    AppDialog(
-        onDismissRequest = { isVisible.value = false }
-    ) {
-        Header { Text("Title part") }
-        Content { Text("Content part") }
-        Actions { Text("Button part") }
+            }
+            Actions {
+                AppEditOutlinedText(
+                    value = "text.value",
+                    onValueChanged = { text.value = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    labelRes = R.string.compose,
+                )
+            }
+        }
     }
 }
 
 
 @Preview
 @Composable
-fun StoreAppDialog(
+private fun StoreAppDialog(
     isOpen: Boolean = true,
 ) {
     val context = LocalContext.current
@@ -186,7 +216,7 @@ fun StoreAppDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun DialogAiHandlerPreview() {
+private fun DialogAiHandlerPreview() {
     Dialog(
         onDismissRequest = { },
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -195,7 +225,7 @@ fun DialogAiHandlerPreview() {
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .padding(16.dp),
-            shape = RoundedCornerShape(28.dp),
+            shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.onPrimary,
             tonalElevation = 6.dp
         ) {
@@ -271,7 +301,7 @@ fun DialogAiHandlerPreview() {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
                         },
                         modifier = Modifier
-                            .menuAnchor()
+                            .menuAnchor(MenuAnchorType.PrimaryEditable, true)
                             .fillMaxWidth(),
                         colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                     )
@@ -320,7 +350,7 @@ fun DialogAiHandlerPreview() {
                                 )
                             },
                             modifier = Modifier
-                                .menuAnchor()
+                                .menuAnchor(MenuAnchorType.PrimaryEditable, true)
                                 .fillMaxWidth(),
                             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
                         )
@@ -388,7 +418,7 @@ fun DialogAiHandlerPreview() {
 
 @Composable
 @Preview
-fun HandlerDropdownMenu(
+private fun HandlerDropdownMenu(
     expanded: Boolean = true,
     onDismissRequest: () -> Unit = { },
     containerColor: Color = Color.Transparent,
