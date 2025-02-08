@@ -107,10 +107,9 @@ fun rememberAppTextConfig(
 
 @Immutable
 data class AppEditOutlinedTextConfig(
-    //TODO begin to refactor
-    val readOnly: Boolean = false,
-    val textStyle: TextStyle = TextStyle.Default,
     val isError: Boolean = false,
+    val enabled: Boolean = true,
+    val readOnly : Boolean = false,
     val visualTransformation: VisualTransformation = VisualTransformation.None,
     val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     val keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -118,7 +117,11 @@ data class AppEditOutlinedTextConfig(
     val maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     val minLines: Int = 1,
     val interactionSource: MutableInteractionSource? = null,
-//    val shape: Shape = MaterialTheme.shapes.small,
+    val leadingIcon: @Composable (() -> Unit)? = null,
+    val trailingIcon: @Composable (() -> Unit)? = null,
+    val prefix: @Composable (() -> Unit)? = null,
+    val suffix: @Composable (() -> Unit)? = null,
+    val supportingText: @Composable (() -> Unit)? = null,
 )
 
 /**
