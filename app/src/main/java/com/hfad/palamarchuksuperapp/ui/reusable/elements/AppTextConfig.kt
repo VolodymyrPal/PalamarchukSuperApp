@@ -124,6 +124,47 @@ data class AppEditOutlinedTextConfig(
     val supportingText: @Composable (() -> Unit)? = null,
 )
 
+@Composable
+@Suppress("LongParameterList")
+fun rememberOutlinedTextConfig(
+    isError: Boolean = false,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
+    interactionSource: MutableInteractionSource? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    suffix: @Composable (() -> Unit)? = null,
+    supportingText: @Composable (() -> Unit)? = null,
+): AppEditOutlinedTextConfig {
+    return remember {
+        AppEditOutlinedTextConfig(
+            isError,
+            enabled,
+            readOnly,
+            visualTransformation,
+            keyboardOptions,
+            keyboardActions,
+            singleLine,
+            maxLines,
+            minLines,
+            interactionSource,
+            leadingIcon,
+            trailingIcon,
+            prefix,
+            suffix,
+            supportingText,
+        )
+    }
+}
+
+
 /**
  * Возвращает цвета по умолчанию для [OutlinedTextField] на основе текущей темы.
  *
