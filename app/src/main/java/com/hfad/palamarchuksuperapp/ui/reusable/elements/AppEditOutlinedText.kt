@@ -57,14 +57,29 @@ fun AppEditOutlinedText(
     outlinedTextConfig: AppEditOutlinedTextConfig = rememberOutlinedTextConfig(),
 ) {
     OutlinedTextField(
-        enabled = enable,
+        enabled = outlinedTextConfig.enabled,
         value = value,
         onValueChange = { onValueChanged(it) },
         label = label,
         colors = colors,
         placeholder = placeholder,
         modifier = modifier,
-        textStyle = textStyle
+        textStyle = textStyle,
+        readOnly = outlinedTextConfig.readOnly,
+        leadingIcon = outlinedTextConfig.leadingIcon,
+        trailingIcon = outlinedTextConfig.trailingIcon,
+        prefix = outlinedTextConfig.prefix,
+        suffix = outlinedTextConfig.suffix,
+        supportingText = outlinedTextConfig.supportingText,
+        isError = outlinedTextConfig.isError,
+        visualTransformation = outlinedTextConfig.visualTransformation,
+        keyboardOptions = outlinedTextConfig.keyboardOptions,
+        keyboardActions = outlinedTextConfig.keyboardActions,
+        singleLine = outlinedTextConfig.singleLine,
+        maxLines = outlinedTextConfig.maxLines,
+        minLines = outlinedTextConfig.minLines,
+        interactionSource = outlinedTextConfig.interactionSource,
+        shape = shape,
     )
 }
 
