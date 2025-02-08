@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,14 +35,15 @@ import com.hfad.palamarchuksuperapp.R
  * @param placeholder Компонент для отображения подсказки.
  * @param textStyle Стиль текста.
  * @param colors Цвета для текстового поля.
- * @param enable Включено ли текстовое поле.
+ * @param enabled Включено ли текстовое поле.
  */
 @Composable
 @Suppress("LongParameterList")
 fun AppEditOutlinedText(
-    modifier: Modifier = Modifier,
     value: String,
     onValueChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     @StringRes labelRes: Int? = null,
     @StringRes placeholderRes: Int? = null,
     label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it, appTextConfig = rememberAppTextConfig(
@@ -50,19 +52,34 @@ fun AppEditOutlinedText(
     placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
         { AppText(it, Modifier.alpha(0.33f)) }
     },
-    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    shape: Shape = OutlinedTextFieldDefaults. shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.appColors(),
-    enable: Boolean = true,
+    outlinedTextConfig: AppEditOutlinedTextConfig = rememberOutlinedTextConfig(),
 ) {
     OutlinedTextField(
-        enabled = enable,
+        enabled = outlinedTextConfig.enabled,
         value = value,
         onValueChange = { onValueChanged(it) },
         label = label,
         colors = colors,
         placeholder = placeholder,
         modifier = modifier,
-        textStyle = textStyle
+        textStyle = textStyle,
+        readOnly = outlinedTextConfig.readOnly,
+        leadingIcon = outlinedTextConfig.leadingIcon,
+        trailingIcon = outlinedTextConfig.trailingIcon,
+        prefix = outlinedTextConfig.prefix,
+        suffix = outlinedTextConfig.suffix,
+        supportingText = outlinedTextConfig.supportingText,
+        isError = outlinedTextConfig.isError,
+        visualTransformation = outlinedTextConfig.visualTransformation,
+        keyboardOptions = outlinedTextConfig.keyboardOptions,
+        keyboardActions = outlinedTextConfig.keyboardActions,
+        singleLine = outlinedTextConfig.singleLine,
+        maxLines = outlinedTextConfig.maxLines,
+        minLines = outlinedTextConfig.minLines,
+        interactionSource = outlinedTextConfig.interactionSource,
+        shape = shape,
     )
 }
 
