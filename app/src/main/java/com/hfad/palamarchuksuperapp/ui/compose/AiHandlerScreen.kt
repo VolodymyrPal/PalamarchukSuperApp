@@ -1,6 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +21,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -27,7 +32,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -42,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,9 +61,10 @@ import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.ConfirmationDialog
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditOutlinedText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberAppTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
@@ -166,20 +173,18 @@ fun DialogAiHandler(
             }
 
             Header {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AppText(
-                        modifier = Modifier,
-                        stringRes = if (dialogAiHandlerState.handler != null) {
-                            R.string.edit_handler_title
-                        } else {
-                            R.string.add_handler_title
-                        },
-                        appTextConfig = rememberAppTextConfig(textStyle = MaterialTheme.typography.displayMedium,
-                            textAlign = TextAlign.Center)
+                AppText(
+                    modifier = Modifier,
+                    stringRes = if (dialogAiHandlerState.handler != null) {
+                        R.string.edit_handler_title
+                    } else {
+                        R.string.add_handler_title
+                    },
+                    appTextConfig = rememberAppTextConfig(
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
                     )
-                }
+                )
             }
             Content {
                 // Название
