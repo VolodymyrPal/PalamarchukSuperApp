@@ -259,54 +259,69 @@ fun DialogAiHandler(
                         }
                     }
 
-                    // Выбор модели
-                    if (selectedLLM.value != null) {
-                        ExposedDropdownMenuBox(
-                            expanded = expandedModelMenu.value,
-                            onExpandedChange = {
-                                expandedModelMenu.value = !expandedModelMenu.value
-                            }
-                        ) {
-                            OutlinedTextField(
-                                value = selectedModelOption.value?.modelName ?: "",
-                                onValueChange = {},
+                AnimatedVisibility(
+                    visible = selectedLLM.value != null,
+                    enter = fadeIn(animationSpec = tween(500)),
+                    exit = fadeOut(animationSpec = tween(500))
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = expandedModelMenu.value,
+                        onExpandedChange = {
+                            expandedModelMenu.value = !expandedModelMenu.value
+                        }
+                    ) {
+                        AppOutlinedTextField(
+                            value = selectedModelOption.value?.modelName ?: "",
+                            onValueChange = {},
+                            outlinedTextConfig = rememberOutlinedTextConfig(
                                 readOnly = true,
-                                label = {
-                                    Text(
-                                        stringResource(R.string.model_hint),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                },
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(
                                         expanded = expandedModelMenu.value
                                     )
-                                },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth(),
-                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = expandedModelMenu.value,
-                                onDismissRequest = { expandedModelMenu.value = false }
-                            ) {
-                                modelList.forEach { option ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(
-                                                option.modelName,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        },
-                                        onClick = {
-                                            selectedModelOption.value = option
-                                            expandedModelMenu.value = false
-                                        }
-                                    )
                                 }
+                            ),
+                            labelRes = R.string.model_hint,
+                            modifier = Modifier
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expandedModelMenu.value,
+                            onDismissRequest = { expandedModelMenu.value = false }
+                        ) {
+                            modelList.forEach { option ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            option.modelName,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    },
+                                    onClick = {
+                                        selectedModelOption.value = option
+                                        expandedModelMenu.value = false
+                                    }
+                                )
                             }
+                                .also {
+                                    if (modelList.isEmpty()) {
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    stringResource(
+                                                        R.string.error_with_error,
+                                                        "Not Found"
+                                                    ),
+                                                    color = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            onClick = {
+                                                expandedModelMenu.value = false
+                                            }
+                                        )
+                                    }
+                                }
                         }
                     }
                 }
