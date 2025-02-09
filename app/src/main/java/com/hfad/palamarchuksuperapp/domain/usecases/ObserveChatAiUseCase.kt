@@ -23,7 +23,7 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
 ) : ObserveChatAiUseCase {
 
     override suspend operator fun invoke(chatId: Int): Result<Flow<MessageChat>, AppError> {
-        val existingChats  = chatAiRepository.getAllChatsInfo()
+        val existingChats = chatAiRepository.getAllChatsInfo()
             .getOrHandleAppError { return Result.Error(it) }.firstOrNull()
 
         val chatFlow = when {
@@ -65,14 +65,17 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
 
     /** Создает новый чат с тестовыми данными и возвращает его ID */
     private suspend fun createNewChat(): Result<MessageChat, AppError> {
-//        val id = chatAiRepository.createChat(MessageChat(name = "Base chat")) TODO for product
-        val newChat = chatAiRepository.addAndGetChat(     //TODO for testing chat
+//        val messageChat: MessageChat =
+//            chatAiRepository.addAndGetChat(MessageChat(name = "Base chat")).getOrHandleAppError {
+//                return Result.Error(it)
+//            } //TODO for product
+        val messageChat = chatAiRepository.addAndGetChat(     //TODO for testing chat
             MessageChat(
                 name = "Base chat",
                 messageGroups = MockChat()
             )
         ).getOrHandleAppError { return Result.Error(it) }
-        return Result.Success(newChat)
+        return Result.Success(messageChat)
     }
 
 }
