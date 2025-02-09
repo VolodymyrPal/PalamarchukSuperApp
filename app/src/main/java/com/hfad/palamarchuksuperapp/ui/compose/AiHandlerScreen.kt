@@ -335,66 +335,64 @@ fun DialogAiHandler(
                 )
             }
 
-                    // Кнопки действий
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+            Actions {
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = { dialogAiHandlerState.dismiss() }
                     ) {
-                        TextButton(
-                            onClick = { dialogAiHandlerState.dismiss() }
-                        ) {
-                            Text(stringResource(R.string.cancel))
-                        }
+                        Text(stringResource(R.string.cancel))
+                    }
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                        Button(
-                            onClick = {
-                                if (dialogAiHandlerState.handler != null) {
-                                    event(
-                                        ChatBotViewModel.Event.UpdateHandler(
-                                            handler = dialogAiHandlerState.handler!!,
-                                            aiHandlerInfo = dialogAiHandlerState.handler!!
-                                                .aiHandlerInfo.value.copy(
-                                                    name = name.value,
-                                                    isSelected = true,
-                                                    isActive = true,
-                                                    model = selectedModelOption.value!!,
-                                                    aiApiKey = apiKey.value
-                                                )
-                                        )
+                    Button(
+                        onClick = {
+                            if (dialogAiHandlerState.handler != null) {
+                                event(
+                                    ChatBotViewModel.Event.UpdateHandler(
+                                        handler = dialogAiHandlerState.handler!!,
+                                        aiHandlerInfo = dialogAiHandlerState.handler!!
+                                            .aiHandlerInfo.value.copy(
+                                                name = name.value,
+                                                isSelected = true,
+                                                isActive = true,
+                                                model = selectedModelOption.value!!,
+                                                aiApiKey = apiKey.value
+                                            )
                                     )
-                                } else {
-                                    if (selectedModelOption.value != null) {
-                                        event(
-                                            ChatBotViewModel.Event.AddAiHandler(
-                                                aiHandlerInfo = AiHandlerInfo(
-                                                    name = name.value.ifBlank { "Новая модель" },
-                                                    isSelected = true,
-                                                    isActive = true,
-                                                    model = selectedModelOption.value!!,
-                                                    aiApiKey = apiKey.value
-                                                )
+                                )
+                            } else {
+                                if (selectedModelOption.value != null) {
+                                    event(
+                                        ChatBotViewModel.Event.AddAiHandler(
+                                            aiHandlerInfo = AiHandlerInfo(
+                                                name = name.value.ifBlank { "Новая модель" },
+                                                isSelected = true,
+                                                isActive = true,
+                                                model = selectedModelOption.value!!,
+                                                aiApiKey = apiKey.value
                                             )
                                         )
-                                    }
+                                    )
                                 }
-                                dialogAiHandlerState.dismiss()
-                            },
-                            enabled = selectedModelOption.value != null && name.value.isNotBlank()
-                        ) {
-                            Text(
-                                stringResource(
-                                    if (dialogAiHandlerState.handler != null) {
-                                        R.string.save
-                                    } else {
-                                        R.string.add
-                                    }
-
-                                )
+                            }
+                            dialogAiHandlerState.dismiss()
+                        },
+                        enabled = selectedModelOption.value != null && name.value.isNotBlank()
+                    ) {
+                        Text(
+                            stringResource(
+                                if (dialogAiHandlerState.handler != null) {
+                                    R.string.save
+                                } else {
+                                    R.string.add
+                                }
                             )
-                        }
+                        )
                     }
                 }
             }
