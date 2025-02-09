@@ -28,7 +28,7 @@ import com.hfad.palamarchuksuperapp.R
  *
  * @param modifier Модификатор для настройки внешнего вида.
  * @param value Текущее значение текста.
- * @param onValueChanged Обратный вызов при изменении текста.
+ * @param onValueChange Обратный вызов при изменении текста.
  * @param labelRes Идентификатор строкового ресурса для метки.
  * @param label Компонент для отображения метки.
  * @param placeholderRes Идентификатор строкового ресурса для подсказки.
@@ -39,9 +39,9 @@ import com.hfad.palamarchuksuperapp.R
  */
 @Composable
 @Suppress("LongParameterList")
-fun AppEditOutlinedText(
+fun AppOutlinedTextField(
     value: String,
-    onValueChanged: (String) -> Unit,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     @StringRes labelRes: Int? = null,
@@ -59,7 +59,7 @@ fun AppEditOutlinedText(
     OutlinedTextField(
         enabled = outlinedTextConfig.enabled,
         value = value,
-        onValueChange = { onValueChanged(it) },
+        onValueChange = { onValueChange(it) },
         label = label,
         colors = colors,
         placeholder = placeholder,
@@ -84,7 +84,7 @@ fun AppEditOutlinedText(
 }
 
 /**
- * Preview для компонента [AppEditOutlinedText].
+ * Preview для компонента [AppOutlinedTextField].
  * Отображает компонент в светлой и темной темах.
  */
 @Composable
@@ -101,14 +101,14 @@ private fun AppOutlinedTextPreview() {
                     .background(MaterialTheme.colorScheme.background)
                     .padding(10.dp)
             ) {
-                AppEditOutlinedText(
+                AppOutlinedTextField(
                     modifier = Modifier
                         .padding(4.dp)
                         .align(Alignment.Center),
                     value = text.value,
                     labelRes = R.string.model_hint,
                     placeholderRes = R.string.edit,
-                    onValueChanged = { text.value = it },
+                    onValueChange = { text.value = it },
                 )
             }
         }
@@ -118,14 +118,14 @@ private fun AppOutlinedTextPreview() {
                     .background(MaterialTheme.colorScheme.background)
                     .padding(10.dp)
             ) {
-                AppEditOutlinedText(
+                AppOutlinedTextField(
                     modifier = Modifier
                         .padding(4.dp)
                         .align(Alignment.TopCenter),
                     value = text.value,
                     labelRes = R.string.model_hint,
                     placeholderRes = R.string.edit,
-                    onValueChanged = { text.value = it },
+                    onValueChange = { text.value = it },
                 )
             }
         }

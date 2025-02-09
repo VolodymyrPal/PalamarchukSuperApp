@@ -13,7 +13,7 @@ import kotlinx.collections.immutable.toPersistentList
 object MockChat {
     operator fun invoke(): PersistentList<MessageGroup> = listOf(
         MessageGroup(
-            id = 0,
+            id = 1,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
@@ -25,7 +25,7 @@ object MockChat {
         ),
         // Model response (image)
         MessageGroup(
-            id = 0,
+            id = 2,
             role = Role.MODEL,
             type = MessageType.TEXT,
             content = persistentListOf(
@@ -69,19 +69,19 @@ object MockChat {
         ),
         // User message with multiple sub-messages (text)
         MessageGroup(
-            id = 0,
+            id = 3,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
                     message = "Hello! That looks great! Can you tell me more about it?",
-                    messageGroupId = 2,
+                    messageGroupId = 0,
                     model = AiModel.GeminiModel()
                 ),
             )
         ),
         // Model response with additional information (text)
         MessageGroup(
-            id = 0,
+            id = 4,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
@@ -123,24 +123,24 @@ object MockChat {
         ),
         // User message with chosen sub-message
         MessageGroup(
-            id = 4,
+            id = 5,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
                     message = "This one is perfect, thank you!",
                     isChosen = true,
-                    messageGroupId = 4,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 ),
             )
         ),
         MessageGroup(
-            id = 0,
+            id = 6,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
                     message = "Hello! How can I help you today?",
-                    messageGroupId = 5,
+                    messageGroupId = 0,
                     model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
@@ -157,71 +157,71 @@ object MockChat {
                             "reunited the pair, and the two socks were overjoyed. They learned a valuable " +
                             "lesson that day: even in the darkest of times, hope and kindness can lead to " +
                             "unexpected reunions.\n",
-                    messageGroupId = 5,
+                    messageGroupId = 0,
                     model = AiModel.GeminiModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 5,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 )
             )
         ),
         MessageGroup(
-            id = 0,
+            id = 7,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
                     message = "Hello! How can I help you today?",
-                    messageGroupId = 6,
+                    messageGroupId = 0,
                     model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 6,
+                    messageGroupId = 0,
                     model = AiModel.GeminiModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 6,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 )
             )
         ),
         MessageGroup(
-            id = 0,
+            id = 8,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
                     message = "Hello! How can I help you today?",
-                    messageGroupId = 7,
+                    messageGroupId = 0,
                     model = AiModel.GeminiModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 7,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 7,
+                    messageGroupId = 0,
                     isChosen = true,
                     model = AiModel.OpenAIModel()
                 )
             )
         ),
         MessageGroup(
-            id = 0,
+            id = 9,
             role = Role.USER,
             content = persistentListOf(
                 MessageAI(
                     message = "Hello! How can I help you today?",
-                    messageGroupId = 8,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 8,
+                    messageGroupId = 0,
                     model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
@@ -244,33 +244,36 @@ object MockChat {
                             "\n" +
                             "\n" +
                             "\n" +
-                            "\n", messageGroupId = 8, model = AiModel.GeminiModel()
+                            "\n",
+                    messageGroupId = 0,
+                    model = AiModel.GeminiModel()
                 )
             )
         ),
         MessageGroup(
-            id = 0,
+            id = 10,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(
-                    message = "Hello! How can I help you today?", messageGroupId = 9,
+                    message = "Hello! How can I help you today?",
+                    messageGroupId = 0,
                     model = AiModel.OpenAIModel()
                 ),
                 MessageAI(
                     message = "Hello! /n /n \n \n How can I help you today?",
-                    messageGroupId = 9,
+                    messageGroupId = 0,
                     model = AiModel.GroqModel()
                 ),
                 MessageAI(
                     message = "Hello! \n \n \n \n \n \n How can I help you today?",
-                    messageGroupId = 9,
+                    messageGroupId = 0,
                     model = AiModel.GeminiModel(),
                     isChosen = true
                 )
             )
         ),
         MessageGroup(
-            id = 0,
+            id = 11,
             role = Role.MODEL,
             content = persistentListOf(
                 MessageAI(

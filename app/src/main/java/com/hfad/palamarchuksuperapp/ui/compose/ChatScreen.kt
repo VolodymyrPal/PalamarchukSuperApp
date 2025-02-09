@@ -272,11 +272,11 @@ private fun ChatTopBar(
             BackButton(navController = navController)
         },
         actions = {
-            MenuButton(
-                isExpanded = isExpandedHandlers,
-                state = state,
-                event = event
-            )
+//            MenuButton( // Cause error, need to fix
+//                isExpanded = isExpandedHandlers,
+//                state = state,
+//                event = event
+//            )
         }
     )
 }

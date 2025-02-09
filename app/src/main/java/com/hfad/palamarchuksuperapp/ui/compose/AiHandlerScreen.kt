@@ -1,6 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +21,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -27,7 +32,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -42,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,9 +61,10 @@ import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.ConfirmationDialog
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditOutlinedText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberAppTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
@@ -166,197 +173,226 @@ fun DialogAiHandler(
             }
 
             Header {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AppText(
-                        modifier = Modifier,
-                        stringRes = if (dialogAiHandlerState.handler != null) {
-                            R.string.edit_handler_title
-                        } else {
-                            R.string.add_handler_title
-                        },
-                        appTextConfig = rememberAppTextConfig(textStyle = MaterialTheme.typography.displayMedium,
-                            textAlign = TextAlign.Center)
+                AppText(
+                    modifier = Modifier,
+                    stringRes = if (dialogAiHandlerState.handler != null) {
+                        R.string.edit_handler_title
+                    } else {
+                        R.string.add_handler_title
+                    },
+                    appTextConfig = rememberAppTextConfig(
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
                     )
-                }
+                )
             }
             Content {
                 // Название
-                AppEditOutlinedText(
+                AppOutlinedTextField(
                     value = name.value,
-                    onValueChanged = { name.value = it },
+                    onValueChange = { name.value = it },
                     labelRes = R.string.handler_name_hint,
                     placeholderRes = R.string.app_name,
                     modifier = Modifier
                 )
 
-                    // Выбор LLM
-                    ExposedDropdownMenuBox(
-                        expanded = isLLMMenuExpanded,
-                        onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedLLM.value?.name ?: "",
-                            onValueChange = {},
+                // Выбор LLM
+                ExposedDropdownMenuBox(
+                    expanded = isLLMMenuExpanded,
+                    onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
+                ) {
+                    val focusManager = LocalFocusManager.current
+
+                    AppOutlinedTextField(
+                        value = selectedLLM.value?.name ?: "",
+                        onValueChange = {},
+                        label = {
+                            Text(
+                                stringResource(R.string.model_ai_hint),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryEditable, true),
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        outlinedTextConfig = rememberOutlinedTextConfig(
+                            enabled = true,
                             readOnly = true,
-                            label = {
-                                Text(
-                                    stringResource(R.string.model_ai_hint),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
                             trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
-                            },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = isLLMMenuExpanded,
-                            onDismissRequest = { isLLMMenuExpanded = false }
-                        ) {
-                            LLMName.entries.forEach { option ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            option.name,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedModelOption.value = null
-                                        selectedLLM.value = option
-                                        event(ChatBotViewModel.Event.GetModels(option))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
+                                    IconButton(onClick = {
+                                        selectedLLM.value = null
                                         isLLMMenuExpanded = false
+                                        focusManager.clearFocus()
                                     }
-                                )
+                                    ) {
+                                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                    }
+                                }
                             }
-                        }
-                    }
+                        )
+                    )
 
-                    // Выбор модели
-                    if (selectedLLM.value != null) {
-                        ExposedDropdownMenuBox(
-                            expanded = expandedModelMenu.value,
-                            onExpandedChange = {
-                                expandedModelMenu.value = !expandedModelMenu.value
-                            }
-                        ) {
-                            OutlinedTextField(
-                                value = selectedModelOption.value?.modelName ?: "",
-                                onValueChange = {},
-                                readOnly = true,
-                                label = {
+                    ExposedDropdownMenu(
+                        expanded = isLLMMenuExpanded,
+                        onDismissRequest = { isLLMMenuExpanded = false }
+                    ) {
+                        LLMName.entries.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
                                     Text(
-                                        stringResource(R.string.model_hint),
+                                        option.name,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
+                                onClick = {
+                                    selectedModelOption.value = null
+                                    selectedLLM.value = option
+                                    event(ChatBotViewModel.Event.GetModels(option))
+                                    isLLMMenuExpanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = selectedLLM.value != null,
+                    enter = fadeIn(animationSpec = tween(500)),
+                    exit = fadeOut(animationSpec = tween(500))
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = expandedModelMenu.value,
+                        onExpandedChange = {
+                            expandedModelMenu.value = !expandedModelMenu.value
+                        }
+                    ) {
+                        AppOutlinedTextField(
+                            value = selectedModelOption.value?.modelName ?: "",
+                            onValueChange = {},
+                            outlinedTextConfig = rememberOutlinedTextConfig(
+                                readOnly = true,
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(
                                         expanded = expandedModelMenu.value
                                     )
-                                },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth(),
-                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                            )
+                                }
+                            ),
+                            labelRes = R.string.model_hint,
+                            modifier = Modifier
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
+                        )
 
-                            ExposedDropdownMenu(
-                                expanded = expandedModelMenu.value,
-                                onDismissRequest = { expandedModelMenu.value = false }
-                            ) {
-                                modelList.forEach { option ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(
-                                                option.modelName,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                        ExposedDropdownMenu(
+                            expanded = expandedModelMenu.value,
+                            onDismissRequest = { expandedModelMenu.value = false }
+                        ) {
+                            modelList.forEach { option ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            option.modelName,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    },
+                                    onClick = {
+                                        selectedModelOption.value = option
+                                        expandedModelMenu.value = false
+                                    }
+                                )
+                            }
+                                .also {
+                                    if (modelList.isEmpty()) {
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    stringResource(
+                                                        R.string.error_with_error,
+                                                        "Not Found"
+                                                    ),
+                                                    color = MaterialTheme.colorScheme.error
+                                                )
+                                            },
+                                            onClick = {
+                                                expandedModelMenu.value = false
+                                            }
+                                        )
+                                    }
+                                }
+                        }
+                    }
+                }
+
+                // API ключ
+                AppOutlinedTextField(
+                    value = apiKey.value,
+                    onValueChange = { apiKey.value = it },
+                    labelRes = R.string.api_key_hint,
+                    modifier = Modifier,
+                )
+            }
+
+            Actions {
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = { dialogAiHandlerState.dismiss() }
+                    ) {
+                        Text(stringResource(R.string.cancel))
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Button(
+                        onClick = {
+                            if (dialogAiHandlerState.handler != null) {
+                                event(
+                                    ChatBotViewModel.Event.UpdateHandler(
+                                        handler = dialogAiHandlerState.handler!!,
+                                        aiHandlerInfo = dialogAiHandlerState.handler!!
+                                            .aiHandlerInfo.value.copy(
+                                                name = name.value,
+                                                isSelected = true,
+                                                isActive = true,
+                                                model = selectedModelOption.value!!,
+                                                aiApiKey = apiKey.value
                                             )
-                                        },
-                                        onClick = {
-                                            selectedModelOption.value = option
-                                            expandedModelMenu.value = false
-                                        }
+                                    )
+                                )
+                            } else {
+                                if (selectedModelOption.value != null) {
+                                    event(
+                                        ChatBotViewModel.Event.AddAiHandler(
+                                            aiHandlerInfo = AiHandlerInfo(
+                                                name = name.value.ifBlank { "Новая модель" },
+                                                isSelected = true,
+                                                isActive = true,
+                                                model = selectedModelOption.value!!,
+                                                aiApiKey = apiKey.value
+                                            )
+                                        )
                                     )
                                 }
                             }
-                        }
-                    }
-
-                    // API ключ
-                    OutlinedTextField(
-                        value = apiKey.value,
-                        onValueChange = { apiKey.value = it },
-                        label = { Text(stringResource(R.string.api_key_hint)) },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-
-                    // Кнопки действий
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                            dialogAiHandlerState.dismiss()
+                        },
+                        enabled = selectedModelOption.value != null && name.value.isNotBlank()
                     ) {
-                        TextButton(
-                            onClick = { dialogAiHandlerState.dismiss() }
-                        ) {
-                            Text(stringResource(R.string.cancel))
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Button(
-                            onClick = {
+                        Text(
+                            stringResource(
                                 if (dialogAiHandlerState.handler != null) {
-                                    event(
-                                        ChatBotViewModel.Event.UpdateHandler(
-                                            handler = dialogAiHandlerState.handler!!,
-                                            aiHandlerInfo = dialogAiHandlerState.handler!!
-                                                .aiHandlerInfo.value.copy(
-                                                    name = name.value,
-                                                    isSelected = true,
-                                                    isActive = true,
-                                                    model = selectedModelOption.value!!,
-                                                    aiApiKey = apiKey.value
-                                                )
-                                        )
-                                    )
+                                    R.string.save
                                 } else {
-                                    if (selectedModelOption.value != null) {
-                                        event(
-                                            ChatBotViewModel.Event.AddAiHandler(
-                                                aiHandlerInfo = AiHandlerInfo(
-                                                    name = name.value.ifBlank { "Новая модель" },
-                                                    isSelected = true,
-                                                    isActive = true,
-                                                    model = selectedModelOption.value!!,
-                                                    aiApiKey = apiKey.value
-                                                )
-                                            )
-                                        )
-                                    }
+                                    R.string.add
                                 }
-                                dialogAiHandlerState.dismiss()
-                            },
-                            enabled = selectedModelOption.value != null && name.value.isNotBlank()
-                        ) {
-                            Text(
-                                stringResource(
-                                    if (dialogAiHandlerState.handler != null) {
-                                        R.string.save
-                                    } else {
-                                        R.string.add
-                                    }
-
-                                )
                             )
-                        }
+                        )
                     }
                 }
             }

@@ -1,6 +1,9 @@
 package com.hfad.palamarchuksuperapp.ui.reusable
 
 import android.widget.Toast
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -57,7 +61,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditOutlinedText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -104,11 +108,19 @@ fun AppDialog(
         onDismissRequest = onDismissRequest,
         properties = dialogProperties
     ) {
+        val shape = MaterialTheme.shapes.medium
         Surface(
+            shape = shape,
             modifier = modifier
                 .fillMaxSize(0.85f)
-                .wrapContentSize(),
-            shape = MaterialTheme.shapes.extraLarge,
+                .wrapContentSize()
+                .clip(shape)
+                .animateContentSize(
+                    animationSpec = tween(
+                        durationMillis = 600,
+                        easing = LinearOutSlowInEasing
+                    )
+                ),
             color = MaterialTheme.colorScheme.onPrimary,
         ) {
             Column(
@@ -116,7 +128,7 @@ fun AppDialog(
                     .width(IntrinsicSize.Min)
                     .padding(12.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 dialogState.titlePart?.invoke()
@@ -138,26 +150,26 @@ private fun DialogStatement() {
         ) {
             val text = remember { mutableStateOf("Some test text") }
             Header {
-                AppEditOutlinedText(
+                AppOutlinedTextField(
                     value = text.value,
-                    onValueChanged = { text.value = it },
+                    onValueChange = { text.value = it },
                     modifier = Modifier.fillMaxWidth(),
                     labelRes = R.string.model_hint
                 )
             }
             Content {
-                AppEditOutlinedText(
+                AppOutlinedTextField(
                     value = "text.value",
-                    onValueChanged = { text.value = it },
+                    onValueChange = { text.value = it },
                     modifier = Modifier.fillMaxWidth(),
                     labelRes = R.string.compose
                 )
 
             }
             Actions {
-                AppEditOutlinedText(
+                AppOutlinedTextField(
                     value = "text.value",
-                    onValueChanged = { text.value = it },
+                    onValueChange = { text.value = it },
                     modifier = Modifier.fillMaxWidth(),
                     labelRes = R.string.compose,
                 )
