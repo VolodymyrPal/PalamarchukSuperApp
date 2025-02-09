@@ -236,28 +236,28 @@ fun DialogAiHandler(
                         )
                     )
 
-                        ExposedDropdownMenu(
-                            expanded = isLLMMenuExpanded,
-                            onDismissRequest = { isLLMMenuExpanded = false }
-                        ) {
-                            LLMName.entries.forEach { option ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            option.name,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedModelOption.value = null
-                                        selectedLLM.value = option
-                                        event(ChatBotViewModel.Event.GetModels(option))
-                                        isLLMMenuExpanded = false
-                                    }
-                                )
-                            }
+                    ExposedDropdownMenu(
+                        expanded = isLLMMenuExpanded,
+                        onDismissRequest = { isLLMMenuExpanded = false }
+                    ) {
+                        LLMName.entries.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        option.name,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                onClick = {
+                                    selectedModelOption.value = null
+                                    selectedLLM.value = option
+                                    event(ChatBotViewModel.Event.GetModels(option))
+                                    isLLMMenuExpanded = false
+                                }
+                            )
                         }
                     }
+                }
 
                 AnimatedVisibility(
                     visible = selectedLLM.value != null,
