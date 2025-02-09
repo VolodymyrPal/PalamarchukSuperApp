@@ -196,29 +196,45 @@ fun DialogAiHandler(
                     modifier = Modifier
                 )
 
-                    // Выбор LLM
-                    ExposedDropdownMenuBox(
-                        expanded = isLLMMenuExpanded,
-                        onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
-                    ) {
-                        OutlinedTextField(
-                            value = selectedLLM.value?.name ?: "",
-                            onValueChange = {},
+                // Выбор LLM
+                ExposedDropdownMenuBox(
+                    expanded = isLLMMenuExpanded,
+                    onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
+                ) {
+                    val focusManager = LocalFocusManager.current
+
+                    AppOutlinedTextField(
+                        value = selectedLLM.value?.name ?: "",
+                        onValueChange = {},
+                        label = {
+                            Text(
+                                stringResource(R.string.model_ai_hint),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryEditable, true),
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        outlinedTextConfig = rememberOutlinedTextConfig(
+                            enabled = true,
                             readOnly = true,
-                            label = {
-                                Text(
-                                    stringResource(R.string.model_ai_hint),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
                             trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
-                            },
-                            modifier = Modifier
-                                .menuAnchor()
-                                .fillMaxWidth(),
-                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
+                                    IconButton(onClick = {
+                                        selectedLLM.value = null
+                                        isLLMMenuExpanded = false
+                                        focusManager.clearFocus()
+                                    }
+                                    ) {
+                                        Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                    }
+                                }
+                            }
                         )
+                    )
 
                         ExposedDropdownMenu(
                             expanded = isLLMMenuExpanded,
