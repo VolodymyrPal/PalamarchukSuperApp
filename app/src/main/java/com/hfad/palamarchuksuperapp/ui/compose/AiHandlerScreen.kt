@@ -188,9 +188,9 @@ fun DialogAiHandler(
             }
             Content {
                 // Название
-                AppEditOutlinedText(
+                AppOutlinedTextField(
                     value = name.value,
-                    onValueChanged = { name.value = it },
+                    onValueChange = { name.value = it },
                     labelRes = R.string.handler_name_hint,
                     placeholderRes = R.string.app_name,
                     modifier = Modifier
@@ -293,14 +293,16 @@ fun DialogAiHandler(
                             }
                         }
                     }
+                }
 
-                    // API ключ
-                    OutlinedTextField(
-                        value = apiKey.value,
-                        onValueChange = { apiKey.value = it },
-                        label = { Text(stringResource(R.string.api_key_hint)) },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                // API ключ
+                AppOutlinedTextField(
+                    value = apiKey.value,
+                    onValueChange = { apiKey.value = it },
+                    labelRes = R.string.api_key_hint,
+                    modifier = Modifier,
+                )
+            }
 
                     // Кнопки действий
                     Row(
