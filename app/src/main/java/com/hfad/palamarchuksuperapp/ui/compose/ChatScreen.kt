@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -106,6 +105,7 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
@@ -113,6 +113,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
+import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
@@ -272,11 +273,13 @@ private fun ChatTopBar(
             BackButton(navController = navController)
         },
         actions = {
-//            MenuButton( // Cause error, need to fix
-//                isExpanded = isExpandedHandlers,
-//                state = state,
-//                event = event
-//            )
+            MenuButton(
+                isExpanded = isExpandedHandlers.value,
+                listAiModelHandler = state.value.listHandler,
+                aiModelList = state.value.modelList,
+                onValueChange = { boolean: Boolean -> isExpandedHandlers.value = boolean },
+                event = event
+            )
         }
     )
 }
@@ -320,7 +323,7 @@ private fun ChatTitle(
         ) {
             Surface(
                 modifier = Modifier.size(200.dp, 200.dp),
-                shape = RoundedCornerShape(28.dp),
+                shape = MaterialTheme.shapes.large,
                 color = MaterialTheme.colorScheme.onPrimary,
                 tonalElevation = 6.dp
             ) {
@@ -396,25 +399,28 @@ private fun BackButton(navController: NavHostController?) {
 
 @Composable
 private fun MenuButton(
-    isExpanded: MutableState<Boolean>,
-    state: State<ChatBotViewModel.StateChat>,
+    isExpanded: Boolean,
+    listAiModelHandler: PersistentList<AiModelHandler> = persistentListOf(),
+    aiModelList: PersistentList<AiModel> = persistentListOf(),
+    onValueChange: (Boolean) -> Unit,
     event: (ChatBotViewModel.Event) -> Unit,
 ) {
     DropdownMenu(
-        expanded = isExpanded.value,
-        onDismissRequest = { isExpanded.value = false },
+        expanded = isExpanded,
+        onDismissRequest = { onValueChange.invoke(false)
+        },
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         AiHandlerScreen(
             modifier = Modifier.size(250.dp, 200.dp),
-            listAiModelHandler = state.value.listHandler,
+            listAiModelHandler = listAiModelHandler,
             event = event,
-            aiModelList = state.value.modelList,
+            aiModelList = aiModelList,
         )
     }
 
     IconButton(
-        onClick = { isExpanded.value = !isExpanded.value }
+        onClick = { onValueChange(!isExpanded) }
     ) {
         Icon(
             imageVector = Icons.Filled.Menu,
@@ -608,30 +614,33 @@ private fun TextMessage(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             key(message.message) {
-                MarkdownText(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                        .sizeIn(minWidth = 30.dp)
-                        .background(
-                            brush = if (isUser) Brush.horizontalGradient(
-                                listOf(
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
-                                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                        .fillMaxWidth(),
+                    contentAlignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
+                ) {
+                    MarkdownText(
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .background(
+                                brush = if (isUser) Brush.horizontalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                                    )
+                                ) else SolidColor(Color.Transparent),
+                                shape = RoundedCornerShape(
+                                    if (isUser) 10.dp else (0.5).dp,
+                                    10.dp,
+                                    if (isUser) (0.5).dp else 10.dp,
+                                    10.dp
                                 )
-                            ) else SolidColor(Color.Transparent),
-                            shape = RoundedCornerShape(
-                                if (isUser) 10.dp else 0.dp,
-                                10.dp,
-                                if (isUser) 0.dp else 10.dp,
-                                10.dp
-                            )
-                        )
-                        .padding(10.dp, 0.dp, 10.dp, 0.dp),
-                    markdown = message.message.trimEnd(),
-                    style = TextStyle(textAlign = if (isUser) TextAlign.End else TextAlign.Start),
-                )
+                            ).padding(5.dp),
+                        markdown = message.message.trimEnd(),
+                        style = TextStyle(textAlign = TextAlign.Start),
+                    )
+                }
             }
             if (message.model != null) {
                 Text(
