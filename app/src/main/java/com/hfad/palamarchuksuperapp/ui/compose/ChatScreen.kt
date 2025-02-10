@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -106,6 +105,7 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
@@ -113,6 +113,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
+import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
@@ -272,11 +273,13 @@ private fun ChatTopBar(
             BackButton(navController = navController)
         },
         actions = {
-//            MenuButton( // Cause error, need to fix
-//                isExpanded = isExpandedHandlers,
-//                state = state,
-//                event = event
-//            )
+            MenuButton(
+                isExpanded = isExpandedHandlers.value,
+                listAiModelHandler = state.value.listHandler,
+                aiModelList = state.value.modelList,
+                onValueChange = { boolean: Boolean -> isExpandedHandlers.value = boolean },
+                event = event
+            )
         }
     )
 }
