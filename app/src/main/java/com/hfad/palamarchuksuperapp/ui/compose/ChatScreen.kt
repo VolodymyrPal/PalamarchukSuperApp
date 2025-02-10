@@ -399,25 +399,28 @@ private fun BackButton(navController: NavHostController?) {
 
 @Composable
 private fun MenuButton(
-    isExpanded: MutableState<Boolean>,
-    state: State<ChatBotViewModel.StateChat>,
+    isExpanded: Boolean,
+    listAiModelHandler: PersistentList<AiModelHandler> = persistentListOf(),
+    aiModelList: PersistentList<AiModel> = persistentListOf(),
+    onValueChange: (Boolean) -> Unit,
     event: (ChatBotViewModel.Event) -> Unit,
 ) {
     DropdownMenu(
-        expanded = isExpanded.value,
-        onDismissRequest = { isExpanded.value = false },
+        expanded = isExpanded,
+        onDismissRequest = { onValueChange.invoke(false)
+        },
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         AiHandlerScreen(
             modifier = Modifier.size(250.dp, 200.dp),
-            listAiModelHandler = state.value.listHandler,
+            listAiModelHandler = listAiModelHandler,
             event = event,
-            aiModelList = state.value.modelList,
+            aiModelList = aiModelList,
         )
     }
 
     IconButton(
-        onClick = { isExpanded.value = !isExpanded.value }
+        onClick = { onValueChange(!isExpanded) }
     ) {
         Icon(
             imageVector = Icons.Filled.Menu,
