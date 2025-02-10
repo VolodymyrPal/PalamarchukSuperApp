@@ -614,30 +614,33 @@ private fun TextMessage(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             key(message.message) {
-                MarkdownText(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .wrapContentSize(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                        .sizeIn(minWidth = 30.dp)
-                        .background(
-                            brush = if (isUser) Brush.horizontalGradient(
-                                listOf(
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
-                                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                        .fillMaxWidth(),
+                    contentAlignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
+                ) {
+                    MarkdownText(
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .background(
+                                brush = if (isUser) Brush.horizontalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
+                                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 1f),
+                                    )
+                                ) else SolidColor(Color.Transparent),
+                                shape = RoundedCornerShape(
+                                    if (isUser) 10.dp else (0.5).dp,
+                                    10.dp,
+                                    if (isUser) (0.5).dp else 10.dp,
+                                    10.dp
                                 )
-                            ) else SolidColor(Color.Transparent),
-                            shape = RoundedCornerShape(
-                                if (isUser) 10.dp else 0.dp,
-                                10.dp,
-                                if (isUser) 0.dp else 10.dp,
-                                10.dp
-                            )
-                        )
-                        .padding(10.dp, 0.dp, 10.dp, 0.dp),
-                    markdown = message.message.trimEnd(),
-                    style = TextStyle(textAlign = if (isUser) TextAlign.End else TextAlign.Start),
-                )
+                            ).padding(5.dp),
+                        markdown = message.message.trimEnd(),
+                        style = TextStyle(textAlign = TextAlign.Start),
+                    )
+                }
             }
             if (message.model != null) {
                 Text(
