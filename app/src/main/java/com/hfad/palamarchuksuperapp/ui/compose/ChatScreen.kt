@@ -323,7 +323,7 @@ private fun ChatTitle(
         ) {
             Surface(
                 modifier = Modifier.size(200.dp, 200.dp),
-                shape = RoundedCornerShape(28.dp),
+                shape = MaterialTheme.shapes.large,
                 color = MaterialTheme.colorScheme.onPrimary,
                 tonalElevation = 6.dp
             ) {
