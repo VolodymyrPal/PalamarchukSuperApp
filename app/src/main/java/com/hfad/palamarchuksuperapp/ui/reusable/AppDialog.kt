@@ -61,7 +61,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberEditTextConfig
@@ -208,7 +208,7 @@ private fun StoreAppDialog() {
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(stringResource(R.string.order_confirmation_message))
-                    AppEditText(
+                    AppTextField(
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
@@ -223,7 +223,7 @@ private fun StoreAppDialog() {
                             ),
                         )
                     )
-                    AppEditText(
+                    AppTextField(
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
@@ -239,7 +239,7 @@ private fun StoreAppDialog() {
                             enabled = false
                         )
                     )
-                    AppEditText(
+                    AppTextField(
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
@@ -254,7 +254,7 @@ private fun StoreAppDialog() {
                             )
                         )
                     )
-                    AppEditText(
+                    AppTextField(
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
