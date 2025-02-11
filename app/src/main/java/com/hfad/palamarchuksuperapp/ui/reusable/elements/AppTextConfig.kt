@@ -250,10 +250,10 @@ fun TextFieldDefaults.appColors() = TextFieldDefaults.colors(
     disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
     errorTextColor = MaterialTheme.colorScheme.error,
 
-    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
+    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+    errorContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.4f),
 
     cursorColor = MaterialTheme.colorScheme.primary,
     errorCursorColor = MaterialTheme.colorScheme.error,
