@@ -32,7 +32,7 @@ fun AppText(
     @StringRes stringRes: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    appTextConfig: AppTextConfig = rememberAppTextConfig(),
+    appTextConfig: AppTextConfig = rememberTextConfig(),
 ) {
     val mergedStyle: TextStyle = appTextConfig.textStyle.copy(color = color)
 
@@ -67,7 +67,7 @@ fun AppText(
     value: String,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    appTextConfig: AppTextConfig = rememberAppTextConfig(),
+    appTextConfig: AppTextConfig = rememberTextConfig(),
 ) {
     val mergedStyle: TextStyle = appTextConfig.textStyle.copy(color = color)
 
@@ -100,7 +100,7 @@ private fun AppTextPreview() {
             ) {
                 AppText(
                     modifier = Modifier.padding(4.dp), value = "Some text to check preview",
-                    appTextConfig = rememberAppTextConfig(
+                    appTextConfig = rememberTextConfig(
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
                 )
@@ -114,7 +114,7 @@ private fun AppTextPreview() {
             ) {
                 AppText(
                     modifier = Modifier.padding(4.dp), value = "Some text to check preview",
-                    appTextConfig = rememberAppTextConfig(
+                    appTextConfig = rememberTextConfig(
                         textStyle = MaterialTheme.typography.bodyLarge
                     )
                 )

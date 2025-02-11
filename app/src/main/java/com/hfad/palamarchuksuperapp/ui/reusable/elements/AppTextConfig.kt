@@ -1,6 +1,8 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -13,7 +15,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -23,7 +28,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 
 @Suppress("LongParameterList", "FunctionNaming")
 
@@ -68,7 +75,7 @@ data class AppTextConfig(
  */
 @Composable
 @Suppress("LongParameterList")
-fun rememberAppTextConfig(
+fun rememberTextConfig(
     textStyle: TextStyle = TextStyle.Default,
     overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
@@ -109,7 +116,7 @@ fun rememberAppTextConfig(
 data class AppEditOutlinedTextConfig(
     val isError: Boolean = false,
     val enabled: Boolean = true,
-    val readOnly : Boolean = false,
+    val readOnly: Boolean = false,
     val visualTransformation: VisualTransformation = VisualTransformation.None,
     val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     val keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -243,10 +250,10 @@ fun TextFieldDefaults.appColors() = TextFieldDefaults.colors(
     disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
     errorTextColor = MaterialTheme.colorScheme.error,
 
-    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
+    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
+    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+    errorContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.4f),
 
     cursorColor = MaterialTheme.colorScheme.primary,
     errorCursorColor = MaterialTheme.colorScheme.error,
@@ -296,3 +303,95 @@ fun TextFieldDefaults.appColors() = TextFieldDefaults.colors(
     disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
     errorSuffixColor = MaterialTheme.colorScheme.error,
 )
+
+@Composable
+@Preview(showBackground = false)
+internal fun ColorTextFieldPreview() {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    Column {
+
+
+        AppTextField(
+            modifier = Modifier.padding(6.dp),
+            value = "123",
+            onValueChange = {},
+            editTextConfig = rememberTextFieldConfig(
+//            enabled = false,
+            ),
+            colors = TextFieldDefaults.appColors(
+
+            ),
+        )
+
+        AppTextField(
+            modifier = Modifier.padding(6.dp),
+            value = "123",
+            onValueChange = {},
+            editTextConfig = rememberTextFieldConfig(
+                enabled = false,
+            )
+        )
+    }
+}
+
+@Immutable
+data class AppTextFieldConfig(
+    val enabled: Boolean = true,
+    val readOnly: Boolean = false,
+    val isError: Boolean = false,
+    val visualTransformation: VisualTransformation = VisualTransformation.None,
+    val keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    val keyboardActions: KeyboardActions = KeyboardActions.Default,
+    val singleLine: Boolean = false,
+    val maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    val minLines: Int = 1,
+    val interactionSource: MutableInteractionSource? = null,
+    val leadingIcon: @Composable (() -> Unit)? = null, //It is rarely used
+    val trailingIcon: @Composable (() -> Unit)? = null, //It is rarely used
+    val prefix: @Composable (() -> Unit)? = null, //It is rarely used
+    val suffix: @Composable (() -> Unit)? = null, //It is rarely used
+    val supportingText: @Composable (() -> Unit)? = null, //It is rarely used
+
+)
+
+@Composable
+@Suppress("LongParameterList")
+fun rememberTextFieldConfig(
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    isError: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+    minLines: Int = 1,
+    interactionSource: MutableInteractionSource? = null,
+    leadingIcon: @Composable (() -> Unit)? = null, //It is rarely used
+    trailingIcon: @Composable (() -> Unit)? = null, //It is rarely used
+    prefix: @Composable (() -> Unit)? = null, //It is rarely used
+    suffix: @Composable (() -> Unit)? = null, //It is rarely used
+    supportingText: @Composable (() -> Unit)? = null, //It is rarely used
+): AppTextFieldConfig {
+    return remember {
+        AppTextFieldConfig(
+            enabled,
+            readOnly,
+            isError,
+            visualTransformation,
+            keyboardOptions,
+            keyboardActions,
+            singleLine,
+            maxLines,
+            minLines,
+            interactionSource,
+            leadingIcon,
+            trailingIcon,
+            prefix,
+            suffix,
+            supportingText
+        )
+    }
+}

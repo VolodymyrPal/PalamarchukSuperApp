@@ -1,11 +1,11 @@
 package com.hfad.palamarchuksuperapp.ui.reusable
 
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -50,10 +50,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -61,7 +61,11 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -181,13 +185,121 @@ private fun DialogStatement() {
 
 @Preview
 @Composable
-private fun StoreAppDialog(
+private fun StoreAppDialog() {
+    AppTheme {
+        AppDialog(
+            modifier = Modifier,
+            onDismissRequest = {}
+        ) {
+            Header {
+                AppText(
+                    "Order Confirmation",
+                    modifier = Modifier.fillMaxWidth(),
+                    appTextConfig = rememberTextConfig(
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
+                    )
+                )
+            }
+            Content {
+                var phone by remember { mutableStateOf("") }
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(stringResource(R.string.order_confirmation_message))
+                    AppTextField(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberTextFieldConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            ),
+                        )
+                    )
+                    AppTextField(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberTextFieldConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            ),
+                            enabled = false
+                        )
+                    )
+                    AppTextField(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberTextFieldConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            )
+                        )
+                    )
+                    AppTextField(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberTextFieldConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            ),
+                            isError = true
+                        )
+                    )
+                }
+            }
+            Actions {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    TextButton(
+                        modifier = Modifier,
+                        onClick = {
+
+                        }
+                    ) {
+                        Text(
+                            modifier = Modifier,
+                            textAlign = TextAlign.End,
+                            text = stringResource(R.string.order_proceed_button)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AppStoreDialog(
     isOpen: Boolean = true,
 ) {
-    val context = LocalContext.current
-    fun showToast() {
-        Toast.makeText(context, "Order confirmed", Toast.LENGTH_SHORT).show()
-    }
     AlertDialog(
         title = {
             Text(text = stringResource(R.string.order_confirmation_title))
@@ -229,137 +341,89 @@ private fun StoreAppDialog(
 @Composable
 @Preview
 private fun DialogAiHandlerPreview() {
-    Dialog(
-        onDismissRequest = { },
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.92f)
-                .padding(16.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.onPrimary,
-            tonalElevation = 6.dp
+    AppTheme {
+        Dialog(
+            onDismissRequest = { },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            Column(
+            Surface(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxWidth(0.92f)
+                    .padding(16.dp),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.onPrimary,
+                tonalElevation = 6.dp
             ) {
-                // Заголовок диалога
-                Text(
-                    text = stringResource(
-                        R.string.edit_handler_title
-//                            R.string.add_handler_title
-                    ),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // Поля ввода
-                val name = remember {
-                    mutableStateOf(
-                        "Handler name"
-                    )
-                }
-                var isLLMMenuExpanded by remember { mutableStateOf(false) }
-                val selectedLLM = remember {
-                    mutableStateOf(
-                        "LLmName"
-                    )
-                }
-                val expandedModelMenu = remember { mutableStateOf(false) }
-                val selectedModelOption = remember {
-                    mutableStateOf(
-                        "Model name"
-                    )
-                }
-                val apiKey = remember {
-                    mutableStateOf(
-                        "Api key name"
-                    )
-                }
-
-                // Название
-                OutlinedTextField(
-                    value = name.value,
-                    onValueChange = { name.value = it },
-                    label = {
-                        Text(
-                            stringResource(R.string.handler_name_hint),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                // Выбор LLM
-                ExposedDropdownMenuBox(
-                    expanded = isLLMMenuExpanded,
-                    onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    // Заголовок диалога
+                    Text(
+                        text = stringResource(
+                            R.string.edit_handler_title
+//                            R.string.add_handler_title
+                        ),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    // Поля ввода
+                    val name = remember {
+                        mutableStateOf(
+                            "Handler name"
+                        )
+                    }
+                    var isLLMMenuExpanded by remember { mutableStateOf(false) }
+                    val selectedLLM = remember {
+                        mutableStateOf(
+                            "LLmName"
+                        )
+                    }
+                    val expandedModelMenu = remember { mutableStateOf(false) }
+                    val selectedModelOption = remember {
+                        mutableStateOf(
+                            "Model name"
+                        )
+                    }
+                    val apiKey = remember {
+                        mutableStateOf(
+                            "Api key name"
+                        )
+                    }
+
+                    // Название
                     OutlinedTextField(
-                        value = selectedLLM.value,
-                        onValueChange = {},
-                        readOnly = true,
+                        value = name.value,
+                        onValueChange = { name.value = it },
                         label = {
                             Text(
-                                stringResource(R.string.model_ai_hint),
+                                stringResource(R.string.handler_name_hint),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
-                        },
-                        modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryEditable, true)
-                            .fillMaxWidth(),
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
-                    ExposedDropdownMenu(
-                        expanded = isLLMMenuExpanded,
-                        onDismissRequest = { isLLMMenuExpanded = false }
-                    ) {
-                        LLMName.entries.forEach { option ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        option.name,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                },
-                                onClick = {
-
-                                }
-                            )
-                        }
-                    }
-                }
-
-                // Выбор модели
-                if (selectedLLM.value != null) {
+                    // Выбор LLM
                     ExposedDropdownMenuBox(
-                        expanded = expandedModelMenu.value,
-                        onExpandedChange = {
-                            expandedModelMenu.value = !expandedModelMenu.value
-                        }
+                        expanded = isLLMMenuExpanded,
+                        onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
                     ) {
                         OutlinedTextField(
-                            value = selectedModelOption.value,
+                            value = selectedLLM.value,
                             onValueChange = {},
                             readOnly = true,
                             label = {
                                 Text(
-                                    stringResource(R.string.model_hint),
+                                    stringResource(R.string.model_ai_hint),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = expandedModelMenu.value
-                                )
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
                             },
                             modifier = Modifier
                                 .menuAnchor(MenuAnchorType.PrimaryEditable, true)
@@ -368,14 +432,14 @@ private fun DialogAiHandlerPreview() {
                         )
 
                         ExposedDropdownMenu(
-                            expanded = expandedModelMenu.value,
-                            onDismissRequest = { expandedModelMenu.value = false }
+                            expanded = isLLMMenuExpanded,
+                            onDismissRequest = { isLLMMenuExpanded = false }
                         ) {
-                            listOf<Int>(0, 1, 2).forEach { option ->
+                            LLMName.entries.forEach { option ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "Option 1",
+                                            option.name,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     },
@@ -386,41 +450,91 @@ private fun DialogAiHandlerPreview() {
                             }
                         }
                     }
-                }
 
-                // API ключ
-                OutlinedTextField(
-                    value = apiKey.value,
-                    onValueChange = { apiKey.value = it },
-                    label = { Text(stringResource(R.string.api_key_hint)) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    // Выбор модели
+                    if (selectedLLM.value != null) {
+                        ExposedDropdownMenuBox(
+                            expanded = expandedModelMenu.value,
+                            onExpandedChange = {
+                                expandedModelMenu.value = !expandedModelMenu.value
+                            }
+                        ) {
+                            OutlinedTextField(
+                                value = selectedModelOption.value,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = {
+                                    Text(
+                                        stringResource(R.string.model_hint),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = expandedModelMenu.value
+                                    )
+                                },
+                                modifier = Modifier
+                                    .menuAnchor(MenuAnchorType.PrimaryEditable, true)
+                                    .fillMaxWidth(),
+                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                            )
 
-                // Кнопки действий
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = { }
-                    ) {
-                        Text(stringResource(R.string.cancel))
+                            ExposedDropdownMenu(
+                                expanded = expandedModelMenu.value,
+                                onDismissRequest = { expandedModelMenu.value = false }
+                            ) {
+                                listOf<Int>(0, 1, 2).forEach { option ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                "Option 1",
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        },
+                                        onClick = {
+
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // API ключ
+                    OutlinedTextField(
+                        value = apiKey.value,
+                        onValueChange = { apiKey.value = it },
+                        label = { Text(stringResource(R.string.api_key_hint)) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                    Button(
-                        onClick = {
-
-                        },
-                        enabled = name.value.isNotBlank()
+                    // Кнопки действий
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            stringResource(
-                                R.string.save
+                        TextButton(
+                            onClick = { }
+                        ) {
+                            Text(stringResource(R.string.cancel))
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(
+                            onClick = {
+
+                            },
+                            enabled = name.value.isNotBlank()
+                        ) {
+                            Text(
+                                stringResource(
+                                    R.string.save
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
