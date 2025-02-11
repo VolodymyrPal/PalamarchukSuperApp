@@ -63,8 +63,8 @@ import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.ConfirmationDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberAppTextConfig
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberOutlinedTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
@@ -180,7 +180,7 @@ fun DialogAiHandler(
                     } else {
                         R.string.add_handler_title
                     },
-                    appTextConfig = rememberAppTextConfig(
+                    appTextConfig = rememberTextConfig(
                         textStyle = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center
                     )
