@@ -64,7 +64,7 @@ import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberEditTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -212,7 +212,7 @@ private fun StoreAppDialog() {
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
-                        editTextConfig = rememberEditTextConfig(
+                        editTextConfig = rememberTextFieldConfig(
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Phone,
                                 imeAction = ImeAction.Done
@@ -227,7 +227,7 @@ private fun StoreAppDialog() {
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
-                        editTextConfig = rememberEditTextConfig(
+                        editTextConfig = rememberTextFieldConfig(
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Phone,
                                 imeAction = ImeAction.Done
@@ -243,7 +243,7 @@ private fun StoreAppDialog() {
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
-                        editTextConfig = rememberEditTextConfig(
+                        editTextConfig = rememberTextFieldConfig(
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Phone,
                                 imeAction = ImeAction.Done
@@ -258,7 +258,7 @@ private fun StoreAppDialog() {
                         value = phone,
                         modifier = Modifier.fillMaxWidth(),
                         onValueChange = { phone = it },
-                        editTextConfig = rememberEditTextConfig(
+                        editTextConfig = rememberTextFieldConfig(
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Phone,
                                 imeAction = ImeAction.Done

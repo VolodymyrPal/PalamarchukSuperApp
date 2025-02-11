@@ -46,7 +46,7 @@ fun AppOutlinedTextField(
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     @StringRes labelRes: Int? = null,
     @StringRes placeholderRes: Int? = null,
-    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it, appTextConfig = rememberAppTextConfig(
+    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it, appTextConfig = rememberTextConfig(
         textStyle = MaterialTheme.typography.bodySmall
     )) } },
     placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
