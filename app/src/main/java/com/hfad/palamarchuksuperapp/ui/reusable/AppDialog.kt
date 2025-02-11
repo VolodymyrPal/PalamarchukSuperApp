@@ -341,137 +341,89 @@ private fun AppStoreDialog(
 @Composable
 @Preview
 private fun DialogAiHandlerPreview() {
-    Dialog(
-        onDismissRequest = { },
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.92f)
-                .padding(16.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.onPrimary,
-            tonalElevation = 6.dp
+    AppTheme {
+        Dialog(
+            onDismissRequest = { },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            Column(
+            Surface(
                 modifier = Modifier
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxWidth(0.92f)
+                    .padding(16.dp),
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.onPrimary,
+                tonalElevation = 6.dp
             ) {
-                // Заголовок диалога
-                Text(
-                    text = stringResource(
-                        R.string.edit_handler_title
-//                            R.string.add_handler_title
-                    ),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // Поля ввода
-                val name = remember {
-                    mutableStateOf(
-                        "Handler name"
-                    )
-                }
-                var isLLMMenuExpanded by remember { mutableStateOf(false) }
-                val selectedLLM = remember {
-                    mutableStateOf(
-                        "LLmName"
-                    )
-                }
-                val expandedModelMenu = remember { mutableStateOf(false) }
-                val selectedModelOption = remember {
-                    mutableStateOf(
-                        "Model name"
-                    )
-                }
-                val apiKey = remember {
-                    mutableStateOf(
-                        "Api key name"
-                    )
-                }
-
-                // Название
-                OutlinedTextField(
-                    value = name.value,
-                    onValueChange = { name.value = it },
-                    label = {
-                        Text(
-                            stringResource(R.string.handler_name_hint),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                // Выбор LLM
-                ExposedDropdownMenuBox(
-                    expanded = isLLMMenuExpanded,
-                    onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    // Заголовок диалога
+                    Text(
+                        text = stringResource(
+                            R.string.edit_handler_title
+//                            R.string.add_handler_title
+                        ),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    // Поля ввода
+                    val name = remember {
+                        mutableStateOf(
+                            "Handler name"
+                        )
+                    }
+                    var isLLMMenuExpanded by remember { mutableStateOf(false) }
+                    val selectedLLM = remember {
+                        mutableStateOf(
+                            "LLmName"
+                        )
+                    }
+                    val expandedModelMenu = remember { mutableStateOf(false) }
+                    val selectedModelOption = remember {
+                        mutableStateOf(
+                            "Model name"
+                        )
+                    }
+                    val apiKey = remember {
+                        mutableStateOf(
+                            "Api key name"
+                        )
+                    }
+
+                    // Название
                     OutlinedTextField(
-                        value = selectedLLM.value,
-                        onValueChange = {},
-                        readOnly = true,
+                        value = name.value,
+                        onValueChange = { name.value = it },
                         label = {
                             Text(
-                                stringResource(R.string.model_ai_hint),
+                                stringResource(R.string.handler_name_hint),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
-                        },
-                        modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryEditable, true)
-                            .fillMaxWidth(),
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
-                    ExposedDropdownMenu(
-                        expanded = isLLMMenuExpanded,
-                        onDismissRequest = { isLLMMenuExpanded = false }
-                    ) {
-                        LLMName.entries.forEach { option ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        option.name,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                },
-                                onClick = {
-
-                                }
-                            )
-                        }
-                    }
-                }
-
-                // Выбор модели
-                if (selectedLLM.value != null) {
+                    // Выбор LLM
                     ExposedDropdownMenuBox(
-                        expanded = expandedModelMenu.value,
-                        onExpandedChange = {
-                            expandedModelMenu.value = !expandedModelMenu.value
-                        }
+                        expanded = isLLMMenuExpanded,
+                        onExpandedChange = { isLLMMenuExpanded = !isLLMMenuExpanded }
                     ) {
                         OutlinedTextField(
-                            value = selectedModelOption.value,
+                            value = selectedLLM.value,
                             onValueChange = {},
                             readOnly = true,
                             label = {
                                 Text(
-                                    stringResource(R.string.model_hint),
+                                    stringResource(R.string.model_ai_hint),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = expandedModelMenu.value
-                                )
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isLLMMenuExpanded)
                             },
                             modifier = Modifier
                                 .menuAnchor(MenuAnchorType.PrimaryEditable, true)
@@ -480,14 +432,14 @@ private fun DialogAiHandlerPreview() {
                         )
 
                         ExposedDropdownMenu(
-                            expanded = expandedModelMenu.value,
-                            onDismissRequest = { expandedModelMenu.value = false }
+                            expanded = isLLMMenuExpanded,
+                            onDismissRequest = { isLLMMenuExpanded = false }
                         ) {
-                            listOf<Int>(0, 1, 2).forEach { option ->
+                            LLMName.entries.forEach { option ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            "Option 1",
+                                            option.name,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     },
@@ -498,41 +450,91 @@ private fun DialogAiHandlerPreview() {
                             }
                         }
                     }
-                }
 
-                // API ключ
-                OutlinedTextField(
-                    value = apiKey.value,
-                    onValueChange = { apiKey.value = it },
-                    label = { Text(stringResource(R.string.api_key_hint)) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    // Выбор модели
+                    if (selectedLLM.value != null) {
+                        ExposedDropdownMenuBox(
+                            expanded = expandedModelMenu.value,
+                            onExpandedChange = {
+                                expandedModelMenu.value = !expandedModelMenu.value
+                            }
+                        ) {
+                            OutlinedTextField(
+                                value = selectedModelOption.value,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = {
+                                    Text(
+                                        stringResource(R.string.model_hint),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = expandedModelMenu.value
+                                    )
+                                },
+                                modifier = Modifier
+                                    .menuAnchor(MenuAnchorType.PrimaryEditable, true)
+                                    .fillMaxWidth(),
+                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
+                            )
 
-                // Кнопки действий
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = { }
-                    ) {
-                        Text(stringResource(R.string.cancel))
+                            ExposedDropdownMenu(
+                                expanded = expandedModelMenu.value,
+                                onDismissRequest = { expandedModelMenu.value = false }
+                            ) {
+                                listOf<Int>(0, 1, 2).forEach { option ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                "Option 1",
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        },
+                                        onClick = {
+
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // API ключ
+                    OutlinedTextField(
+                        value = apiKey.value,
+                        onValueChange = { apiKey.value = it },
+                        label = { Text(stringResource(R.string.api_key_hint)) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                    Button(
-                        onClick = {
-
-                        },
-                        enabled = name.value.isNotBlank()
+                    // Кнопки действий
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            stringResource(
-                                R.string.save
+                        TextButton(
+                            onClick = { }
+                        ) {
+                            Text(stringResource(R.string.cancel))
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(
+                            onClick = {
+
+                            },
+                            enabled = name.value.isNotBlank()
+                        ) {
+                            Text(
+                                stringResource(
+                                    R.string.save
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
