@@ -1,11 +1,11 @@
 package com.hfad.palamarchuksuperapp.ui.reusable
 
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -50,10 +50,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -61,7 +61,11 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppEditText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberEditTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -181,13 +185,121 @@ private fun DialogStatement() {
 
 @Preview
 @Composable
-private fun StoreAppDialog(
+private fun StoreAppDialog() {
+    AppTheme {
+        AppDialog(
+            modifier = Modifier,
+            onDismissRequest = {}
+        ) {
+            Header {
+                AppText(
+                    "Order Confirmation",
+                    modifier = Modifier.fillMaxWidth(),
+                    appTextConfig = rememberTextConfig(
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
+                    )
+                )
+            }
+            Content {
+                var phone by remember { mutableStateOf("") }
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(stringResource(R.string.order_confirmation_message))
+                    AppEditText(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberEditTextConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            ),
+                        )
+                    )
+                    AppEditText(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberEditTextConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            ),
+                            enabled = false
+                        )
+                    )
+                    AppEditText(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberEditTextConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            )
+                        )
+                    )
+                    AppEditText(
+                        value = phone,
+                        modifier = Modifier.fillMaxWidth(),
+                        onValueChange = { phone = it },
+                        editTextConfig = rememberEditTextConfig(
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                }
+                            ),
+                            isError = true
+                        )
+                    )
+                }
+            }
+            Actions {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    TextButton(
+                        modifier = Modifier,
+                        onClick = {
+
+                        }
+                    ) {
+                        Text(
+                            modifier = Modifier,
+                            textAlign = TextAlign.End,
+                            text = stringResource(R.string.order_proceed_button)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AppStoreDialog(
     isOpen: Boolean = true,
 ) {
-    val context = LocalContext.current
-    fun showToast() {
-        Toast.makeText(context, "Order confirmed", Toast.LENGTH_SHORT).show()
-    }
     AlertDialog(
         title = {
             Text(text = stringResource(R.string.order_confirmation_title))
