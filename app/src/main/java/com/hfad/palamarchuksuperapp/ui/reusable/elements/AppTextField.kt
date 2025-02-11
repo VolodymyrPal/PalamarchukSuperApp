@@ -59,7 +59,7 @@ fun AppTextField(
     colors: TextFieldColors = TextFieldDefaults.appColors(),
     shape: Shape = TextFieldDefaults.shape,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    editTextConfig: AppEditTextConfig = rememberEditTextConfig(),
+    editTextConfig: AppTextFieldConfig = rememberTextFieldConfig(),
 ) {
     TextField(
         value = value,
