@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.DataStoreHandler
+import com.hfad.palamarchuksuperapp.data.dao.MessageAiDao
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
+import com.hfad.palamarchuksuperapp.data.dao.MessageGroupDao
 import com.hfad.palamarchuksuperapp.data.dao.SkillsDao
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
@@ -15,13 +17,16 @@ import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
-import com.hfad.palamarchuksuperapp.data.repository.ChatAiRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
+import com.hfad.palamarchuksuperapp.data.repository.MessageChatRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
-import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
+import com.hfad.palamarchuksuperapp.domain.repository.MessageAiRepository
+import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
+import com.hfad.palamarchuksuperapp.domain.repository.MessageGroupRepository
+import com.hfad.palamarchuksuperapp.domain.repository.MessageGroupRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
@@ -198,7 +203,18 @@ abstract class ViewModelsModule {
 
     @Singleton
     @Binds
-    abstract fun bindChatAiRepository(chatAiRepositoryImpl: ChatAiRepositoryImpl): ChatAiRepository
+    abstract fun bindChatAiRepository(chatAiRepositoryImpl: MessageChatRepositoryImpl): MessageChatRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindMessageGroupRepository(
+        messageGroupRepositoryImpl: MessageGroupRepositoryImpl,
+    ): MessageGroupRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindMessageAiRepository(chatAiRepositoryImpl: MessageChatRepositoryImpl): MessageAiRepository
+
 
     @Binds
     abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
@@ -297,6 +313,16 @@ object DatabaseModule {
     @Provides
     fun provideMessageChatDao(messageChatDatabase: MessageChatDatabase): MessageChatDao {
         return messageChatDatabase.messageChatDao()
+    }
+
+    @Provides
+    fun provideMessageGroupDao(messageChatDatabase: MessageChatDatabase): MessageGroupDao {
+        return messageChatDatabase.messageGroupDao()
+    }
+
+    @Provides
+    fun provideMessageAiDao(messageChatDatabase: MessageChatDatabase): MessageAiDao {
+        return messageChatDatabase.messageAiDao()
     }
 
     @Singleton

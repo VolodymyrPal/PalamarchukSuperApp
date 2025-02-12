@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
+import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -18,30 +18,30 @@ interface ObserveChatAiUseCase {
 }
 
 class ObserveChatAiUseCaseImpl @Inject constructor(
-    private val chatAiRepository: ChatAiRepository,
+    private val messageChatRepository: MessageChatRepository,
     private val updateMessageStatusUseCase: UpdateMessageStatusUseCase,
 ) : ObserveChatAiUseCase {
 
     override suspend operator fun invoke(chatId: Int): Result<Flow<MessageChat>, AppError> {
-        val existingChats = chatAiRepository.getAllChatsInfo()
+        val existingChats = messageChatRepository.getAllChatsInfo()
             .getOrHandleAppError { return Result.Error(it) }.firstOrNull()
 
         val chatFlow = when {
 
-            chatExists(chatId) -> chatAiRepository.getChatFlowById(chatId)
+            chatExists(chatId) -> messageChatRepository.getChatFlowById(chatId)
                 .getOrHandleAppError { return Result.Error(it) }
 
             chatId == 0 && existingChats != null && existingChats.isNotEmpty() -> {
                 val lastChatId = existingChats.lastOrNull()?.id
                     ?: return Result.Error(AppError.CustomError("No chats"))
-                chatAiRepository.getChatFlowById(lastChatId)
+                messageChatRepository.getChatFlowById(lastChatId)
                     .getOrHandleAppError { return Result.Error(it) }
             }
 
             else -> {
                 val newChatId = createNewChat()
                     .getOrHandleAppError { return Result.Error(it) }.id
-                chatAiRepository.getChatFlowById(newChatId)
+                messageChatRepository.getChatFlowById(newChatId)
                     .getOrHandleAppError { return Result.Error(it) }
             }
         }
@@ -57,7 +57,7 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
     }
 
     private suspend fun chatExists(chatId: Int): Boolean {
-        val isExist = chatAiRepository.isChatExist(chatId)
+        val isExist = messageChatRepository.isChatExist(chatId)
             .getOrHandleAppError { return false }
 
         return isExist
@@ -69,7 +69,7 @@ class ObserveChatAiUseCaseImpl @Inject constructor(
 //            chatAiRepository.addAndGetChat(MessageChat(name = "Base chat")).getOrHandleAppError {
 //                return Result.Error(it)
 //            } //TODO for product
-        val messageChat = chatAiRepository.addAndGetChat(     //TODO for testing chat
+        val messageChat = messageChatRepository.addAndGetChat(     //TODO for testing chat
             MessageChat(
                 name = "Base chat",
                 messageGroups = MockChat()

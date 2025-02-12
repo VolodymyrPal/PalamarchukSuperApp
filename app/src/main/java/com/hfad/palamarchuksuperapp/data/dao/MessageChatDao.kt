@@ -22,64 +22,6 @@ interface MessageChatDao {
 
     // region Операции со связанными сущностями
     /**
-     * Вставка чата со всеми связанными сущностями.
-     * Создает чат, группы сообщений и сами сообщения с правильными связями между ними.
-     * @param chatWithRelations Сущность чата со всеми связанными данными
-     */
-    @Transaction
-    suspend fun insertChatWithRelations(
-        chatWithRelations: MessageChatWithRelationsEntity,
-    ): Long {
-        val chatId = insertChat(chatWithRelations.chat)
-        val group = chatWithRelations.messageGroupsWithMessageEntity
-        group.forEach { messageGroup ->
-            val groupId = insertMessageGroup(messageGroup.group.copy(chatId = chatId.toInt()))
-            for (messageAi: MessageAiEntity in messageGroup.messages) {
-                val insertedMessage = messageAi.copy(messageGroupId = groupId.toInt())
-                insertMessage(insertedMessage)
-            }
-        }
-        return chatId
-    }
-
-    /**
-     * Вставка группы сообщений со всеми её сообщениями.
-     * @param groupWithMessages Группа сообщений со связанными сообщениями
-     * @return ID вставленной группы
-     */
-    @Transaction
-    suspend fun insertMessageGroupWithMessages(
-        groupWithMessages: MessageGroupWithMessagesEntity,
-    ): Long {
-        val groupId = insertMessageGroup(groupWithMessages.group)
-        groupWithMessages.messages.forEach { messageAi ->
-            val insertedMessage = messageAi.copy(messageGroupId = groupId.toInt())
-            insertMessage(insertedMessage)
-        }
-        return groupId
-    }
-
-    @Query("SELECT * FROM MessageChat WHERE id = :chatId")
-    fun chatWithMessagesFlow(chatId: Int): Flow<MessageChatWithRelationsEntity>
-
-    /**
-     * Обновление группы сообщений и всех её сообщений.
-     * @param messageGroupWithMessages Группа с обновленными сообщениями
-     */
-    @Transaction
-    suspend fun updateMessageGroupWithContent(
-        messageGroupWithMessages: MessageGroupWithMessagesEntity,
-    ) {
-        updateMessageGroup(messageGroupWithMessages.group)
-        messageGroupWithMessages.messages.forEach { messageAi ->
-            val insertedMessage = messageAi.copy(messageGroupId = messageGroupWithMessages.group.id)
-            insertMessage(insertedMessage)
-        }
-    }
-    // endregion
-
-    // region Операции с чатами
-    /**
      * Получение всех чатов с их сообщениями.
      * @return Список всех чатов с связанными сообщениями
      */
@@ -111,19 +53,6 @@ interface MessageChatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChat(chat: MessageChatEntity): Long
 
-    @Transaction
-    suspend fun insertAndReturnChat(chat: MessageChatWithRelationsEntity): MessageChatWithRelationsEntity {
-        val chatId = insertChat(chat.chat) // Вставляем объект и получаем его ID
-        chat.messageGroupsWithMessageEntity.forEach { messageGroup ->
-            val groupId = insertMessageGroup(messageGroup.group.copy(chatId = chatId.toInt()))
-            for (messageAi in messageGroup.messages) {
-                val insertedMessage = messageAi.copy(messageGroupId = groupId.toInt())
-                insertMessage(insertedMessage)
-            }
-        }
-        return getChatWithMessages(chatId.toInt()) // Достаём объект по ID
-    }
-
     @Query("SELECT EXISTS(SELECT 1 FROM MessageChat WHERE id = :chatId)")
     suspend fun isExist(chatId: Int): Boolean
 
@@ -135,90 +64,10 @@ interface MessageChatDao {
     @Query("DELETE FROM MessageChat WHERE id = :chatId")
     suspend fun deleteChat(chatId: Int)
 
-    // endregion
-
-    // region Операции с группами сообщений
-    /**
-     * Создание новой группы сообщений.
-     * @param messageGroup Сущность группы
-     * @return ID созданной группы
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMessageGroup(messageGroup: MessageGroupEntity): Long
-
-    /**
-     * Обновление группы сообщений.
-     * @param messageGroup Обновленная сущность группы
-     */
-    @Update
-    suspend fun updateMessageGroup(messageGroup: MessageGroupEntity)
-
-    /**
-     * Удаление группы сообщений по ID.
-     * @param groupId ID группы для удаления
-     */
-    @Query("DELETE FROM MessageGroup WHERE id = :groupId")
-    suspend fun deleteMessageGroup(groupId: Int)
-
-    /**
-     * Получение группы сообщений по ID со всеми сообщениями.
-     * @param groupId ID группы
-     * @return Группа с связанными сообщениями
-     */
-    @Query("SELECT * FROM MessageGroup WHERE id = :groupId")
-    suspend fun getMessageGroup(groupId: Int): MessageGroupWithMessagesEntity
-    // endregion
-
-    // region Операции с AI сообщениями
-    /**
-     * Создание нового AI сообщения.
-     * @param message Сущность сообщения
-     * @return ID созданного сообщения
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMessage(message: MessageAiEntity): Long
-
-    @Query("SELECT * FROM messageaientities WHERE id = :messageId")
-    suspend fun getMessageById(messageId: Int): MessageAiEntity
-
-    @Transaction
-    suspend fun insertAndReturnMessage(message: MessageAiEntity): MessageAiEntity {
-        val id = insertMessage(message)
-        return getMessageById(id.toInt())
-    }
-
-    /**
-     * Обновление AI сообщения.
-     * @param message Обновленная сущность сообщения
-     */
-    @Update
-    suspend fun updateMessage(message: MessageAiEntity)
-
-    /**
-     * Удаление AI сообщения по ID.
-     * @param messageId ID сообщения для удаления
-     */
-    @Query("DELETE FROM messageaientities WHERE id = :messageId")
-    suspend fun deleteMessage(messageId: Int)
-
-    /**
-     * Получение всех сообщений для конкретной группы.
-     * @param groupId ID группы
-     * @return Список сообщений группы
-     */
-    @Query("SELECT * FROM messageaientities WHERE messageGroupId = :groupId")
-    suspend fun getMessagesForGroup(groupId: Int): List<MessageAiEntity>
-    // endregion
-
     @Query("DELETE FROM MessageChat")
     suspend fun deleteAllChats()
 
-    @Query(
-        "SELECT ma.* " +
-                "FROM MessageAiEntities AS ma " +
-                "INNER JOIN MessageGroup AS mg " +
-                "WHERE mg.chatId = :chatId AND ma.status = :status "
-    )
-    suspend fun getMessagesWithStatus(chatId: Int, status: String): List<MessageAiEntity>
+    @Query("SELECT * FROM MessageChat WHERE id = :chatId")
+    fun observeChatWithMessagesFlow(chatId: Int): Flow<MessageChatWithRelationsEntity>
 
 }
