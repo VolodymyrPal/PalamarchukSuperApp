@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
+import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -12,11 +12,11 @@ interface ObserveAllChatsInfoUseCase {
 }
 
 class ObserveAllChatsInfoUseCaseImpl @Inject constructor(
-    private val chatAiRepository: ChatAiRepository,
+    private val messageChatRepository: MessageChatRepository,
 ) : ObserveAllChatsInfoUseCase {
 
     override suspend fun invoke(): Result<Flow<List<MessageChat>>, AppError> {
-        val allChatFlow = chatAiRepository.getAllChatsInfo().getOrHandleAppError {
+        val allChatFlow = messageChatRepository.getAllChatsInfo().getOrHandleAppError {
             return Result.Error(it)
         }
         return Result.Success(allChatFlow)
