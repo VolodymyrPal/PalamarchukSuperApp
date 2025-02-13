@@ -18,7 +18,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
+import com.hfad.palamarchuksuperapp.domain.repository.ChatController
 import com.hfad.palamarchuksuperapp.domain.usecases.ChooseMessageAiUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.GetModelsUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.ObserveAllChatsInfoUseCase
@@ -56,7 +56,7 @@ class ChatBotViewModel @Inject constructor(
     private val getModelsUseCase: GetModelsUseCase,
     private val observeChatAiUseCase: ObserveChatAiUseCase,
     private val observeAllChatsInfoUseCase: ObserveAllChatsInfoUseCase,
-    private val chatRepository: MessageChatRepository,
+    private val chatController: ChatController,
 ) : GenericViewModel<MessageChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     private val currentChatId = MutableStateFlow(0)
@@ -272,18 +272,18 @@ class ChatBotViewModel @Inject constructor(
     }
 
     private fun clearAllChats() = viewModelScope.launch(ioDispatcher) {
-        chatRepository.clearAllChats()
+        chatController.clearAllChats()
         currentChatId.update { 0 }
     }
 
     private fun createNewChat() = viewModelScope.launch(ioDispatcher) {
-        val newChat = chatRepository.addAndGetChat(
+        val newChatId = chatController.addChatWithMessages(
             MessageChat(
                 name = "Base chat",
 //                messageGroups = MockChat() //TODO for testing only
             )
-        ).getOrHandleAppError { return@launch }
-        currentChatId.update { newChat.id }
+        ).getOrHandleAppError { return@launch }.toInt()
+        currentChatId.update { newChatId }
     }
 
     @Stable
