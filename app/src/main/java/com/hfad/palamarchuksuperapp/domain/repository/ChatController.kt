@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.domain.repository
 
 import androidx.room.Transaction
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
+import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
@@ -22,12 +23,10 @@ interface ChatController {
         chatId: Int, status: MessageStatus,
     ): Result<List<MessageAI>, AppError>
 
-    suspend fun getAllChats(): Result<List<MessageChat>, AppError>
     suspend fun getAllChatsInfo(): Result<Flow<List<MessageChat>>, AppError>
     suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError>
     suspend fun getChatFlowById(chatId: Int): Result<Flow<MessageChat>, AppError>
-    suspend fun createChat(emptyChat: MessageChat): Result<Unit, AppError>
-    suspend fun addAndGetChat(chat: MessageChat): Result<MessageChat, AppError>
+    suspend fun createChat(emptyChat: MessageChatEntity): Result<Long, AppError>
     suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError>
     suspend fun deleteChat(chatId: Int): Result<Unit, AppError>
     suspend fun clearAllChats(): Result<Unit, AppError>
@@ -37,11 +36,12 @@ interface ChatController {
     suspend fun updateMessageGroup(messageGroup: MessageGroup): Result<Unit, AppError>
 }
 
-class MessageChatControllerImpl @Inject constructor(
+class ChatControllerImpl @Inject constructor(
     private val messageAiRepository: MessageAiRepository,
     private val messageGroupRepository: MessageGroupRepository,
     private val messageChatRepository: MessageChatRepository,
-) : ChatController, MessageChatRepository by messageChatRepository,
+) : ChatController,
+    MessageChatRepository by messageChatRepository,
     MessageAiRepository by messageAiRepository,
     MessageGroupRepository by messageGroupRepository {
 
@@ -83,19 +83,30 @@ class MessageChatControllerImpl @Inject constructor(
         }
     }
 
+    @Transaction
+    override suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError> {
+        val messageToInsert = MessageChatWithRelationsEntity.from(chat)
+        val insertedChatId = insertMessages(messageToInsert).getOrHandleAppError {
+            return Result.Error(it)
+        }
+        return Result.Success(insertedChatId)
+    }
 
-//    @Transaction
-//    suspend fun insertAndReturnChat(chat: MessageChatWithRelationsEntity): MessageChatWithRelationsEntity {
-//        val chatId = insertChat(chat.chat) // Вставляем объект и получаем его ID
-//        chat.messageGroupsWithMessageEntity.forEach { messageGroup ->
-//            val groupId =
-//                messageGroupDao.insertMessageGroup(messageGroup.group.copy(chatId = chatId.toInt()))
-//            for (messageAi in messageGroup.messages) {
-//                val insertedMessage = messageAi.copy(messageGroupId = groupId.toInt())
-//                messageAiDao.insertMessage(insertedMessage)
-//            }
-//        }
-//        return messageChatDao.getChatWithMessages(chatId.toInt()) // Достаём объект по ID
-//    }
-
+    @Transaction
+    private suspend fun insertMessages(
+        chat: MessageChatWithRelationsEntity,
+    ): Result<Long, AppError> {
+        val chatId = createChat(chat.chat).getOrHandleAppError {
+            return Result.Error(it)
+        }
+        chat.messageGroupsWithMessageEntity.forEach { messageGroup ->
+            val groupId = addMessageGroupEntity(messageGroup.group.copy(chatId = chatId.toInt()))
+                .getOrHandleAppError { return Result.Error(it) }
+            for (messageAi in messageGroup.messages) {
+                val insertedMessage = messageAi.copy(messageGroupId = groupId.toInt())
+                addMessageAiEntity(insertedMessage)
+            }
+        }
+        return Result.Success(chatId)
+    }
 }
