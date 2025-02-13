@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.Result
-import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
+import com.hfad.palamarchuksuperapp.domain.repository.ChatController
 import javax.inject.Inject
 
 interface ChooseMessageAiUseCase {
@@ -11,17 +11,17 @@ interface ChooseMessageAiUseCase {
 }
 
 class ChooseMessageAiUseCaseImpl @Inject constructor(
-    private val chatAiRepository: ChatAiRepository,
+    private val chatController: ChatController
 ) : ChooseMessageAiUseCase {
 
     override suspend operator fun invoke(messageAI: MessageAI): Result<Unit, AppError> {
         val groupWithMessages =
-            chatAiRepository.getMessageGroup(messageAI.messageGroupId).getOrHandleAppError {
+            chatController.getMessageGroup(messageAI.messageGroupId).getOrHandleAppError {
                 return Result.Error(it)
             }
 
         groupWithMessages.content.forEach { message ->
-            chatAiRepository.updateMessageAi(
+            chatController.updateMessageAi(
                 message.copy(
                     isChosen = message.id == messageAI.id,
                 )
