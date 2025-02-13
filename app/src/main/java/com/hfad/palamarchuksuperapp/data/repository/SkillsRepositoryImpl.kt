@@ -27,7 +27,7 @@ class SkillsRepositoryImpl @Inject constructor(
         skillsDao.deleteSkill(skillEntity = skill.toSkillEntity())
 
 
-    override suspend fun addSkill(skill: Skill) = skillsDao.addSkill(skill.toSkillEntity())
+    override suspend fun addSkill(skill: Skill) = skillsDao.insertSkill(skill.toSkillEntity())
 
     override suspend fun updateSkill(skill: Skill) = skillsDao.updateSkill(skill.toSkillEntity())
 }

@@ -15,7 +15,7 @@ interface SkillsDao {
     fun getAllSkillsFromDB(): Flow<List<SkillEntity>>
 
     @Insert
-    suspend fun addSkill(skillEntity: SkillEntity)
+    suspend fun insertSkill(skillEntity: SkillEntity)
 
     @Update
     suspend fun updateSkill(skillEntity: SkillEntity)
