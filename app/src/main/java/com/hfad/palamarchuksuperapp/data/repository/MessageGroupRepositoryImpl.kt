@@ -6,8 +6,9 @@ import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.MessageGroupRepository
+import javax.inject.Inject
 
-class MessageGroupRepositoryImpl(
+class MessageGroupRepositoryImpl @Inject constructor(
     private val messageGroupDao: MessageGroupDao,
 ) : MessageGroupRepository {
 

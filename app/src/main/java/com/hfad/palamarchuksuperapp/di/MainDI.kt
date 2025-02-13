@@ -17,16 +17,19 @@ import com.hfad.palamarchuksuperapp.data.database.SkillsDatabase
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepositoryImpl
+import com.hfad.palamarchuksuperapp.data.repository.ChatControllerImpl
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
+import com.hfad.palamarchuksuperapp.data.repository.MessageAiRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.MessageChatRepositoryImpl
+import com.hfad.palamarchuksuperapp.data.repository.MessageGroupRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.SkillsRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
+import com.hfad.palamarchuksuperapp.domain.repository.ChatController
 import com.hfad.palamarchuksuperapp.domain.repository.MessageAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import com.hfad.palamarchuksuperapp.domain.repository.MessageGroupRepository
-import com.hfad.palamarchuksuperapp.domain.repository.MessageGroupRepositoryImpl
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import com.hfad.palamarchuksuperapp.domain.usecases.AddAiHandlerUseCase
@@ -111,7 +114,7 @@ interface AppComponent {
 
 @Module(
     includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class,
-        AiModelHandlerModule::class, UseCaseModule::class]
+        AiModelHandlerModule::class, UseCaseModule::class, RepositoryModule::class]
 )
 object AppModule {
     @IoDispatcher
@@ -140,27 +143,21 @@ abstract class AiModelHandlerModule {
 @Module
 interface UseCaseModule {
 
-    @Singleton
     @Binds
     fun bindDeleteAiHandlerUseCase(deleteAiHandlerUseCaseImpl: DeleteAiHandlerUseCaseImpl): DeleteAiHandlerUseCase
 
-    @Singleton
     @Binds
     fun bindAddAiHandlerUseCase(addAiHandlerUseCaseImpl: AddAiHandlerUseCaseImpl): AddAiHandlerUseCase
 
-    @Singleton
     @Binds
     fun bindUpdateAiHandlerUseCase(updateAiHandlerUseCaseImpl: UpdateAiHandlerUseCaseImpl): UpdateAiHandlerUseCase
 
-    @Singleton
     @Binds
     fun bindGetAiHandlersUseCase(getAiHandlersUseCaseImpl: ObserveAiHandlersUseCaseImpl): ObserveAiHandlersUseCase
 
-    @Singleton
     @Binds
     fun bindAddAiMessageUseCase(addAiMessageUseCaseImpl: AddMessageGroupUseCaseImpl): AddMessageGroupUseCase
 
-    @Singleton
     @Binds
     fun bindMapAiModelHandlerUseCase(mapAiModelHandlerUseCaseImpl: MapAiModelHandlerUseCaseImpl)
             : MapAiModelHandlerUseCase
@@ -169,27 +166,21 @@ interface UseCaseModule {
 //    @Binds
 //    fun bindChangeAiMessageUseCase(changeAiMessageUseCase: UpdateAiMessageUseCaseImpl): UpdateAiMessageUseCase
 
-    @Singleton
     @Binds
     fun bindGetGetAiChatUseCase(getAiChatUseCaseImpl: GetAiChatUseCaseImpl): GetAiChatUseCase
 
-    @Singleton
     @Binds
     fun bindGetModelsUseCase(getModelsUseCaseImpl: GetModelsUseCaseImpl): GetModelsUseCase
 
-    @Singleton
     @Binds
     fun bindSendChatRequestUseCase(sendAiRequestUseCaseImpl: SendAiRequestUseCaseImpl): SendChatRequestUseCase
 
-    @Singleton
     @Binds
     fun bindChooseMessageAiUseCase(chooseMessageAiUseCaseImpl: ChooseMessageAiUseCaseImpl): ChooseMessageAiUseCase
 
-    @Singleton
     @Binds
     fun bindGetChatAiUseCase(chatAiUseCaseImpl: ObserveChatAiUseCaseImpl): ObserveChatAiUseCase
 
-    @Singleton
     @Binds
     fun bindUpdateMessageStatusUseCase(
         updateMessageStatusUseCaseImpl: UpdateMessageStatusUseCaseImpl,
@@ -199,21 +190,6 @@ interface UseCaseModule {
 
 @Module
 abstract class ViewModelsModule {
-
-
-    @Singleton
-    @Binds
-    abstract fun bindChatAiRepository(chatAiRepositoryImpl: MessageChatRepositoryImpl): MessageChatRepository
-
-    @Singleton
-    @Binds
-    abstract fun bindMessageGroupRepository(
-        messageGroupRepositoryImpl: MessageGroupRepositoryImpl,
-    ): MessageGroupRepository
-
-    @Singleton
-    @Binds
-    abstract fun bindMessageAiRepository(chatAiRepositoryImpl: MessageChatRepositoryImpl): MessageAiRepository
 
 
     @Binds
@@ -236,9 +212,9 @@ abstract class ViewModelsModule {
 
     @Singleton
     @Binds
-    abstract fun bindObserveAllChatsInfoUseCase (
-        observeAllChatsInfoUseCaseImpl : ObserveAllChatsInfoUseCaseImpl
-    ) : ObserveAllChatsInfoUseCase
+    abstract fun bindObserveAllChatsInfoUseCase(
+        observeAllChatsInfoUseCaseImpl: ObserveAllChatsInfoUseCaseImpl,
+    ): ObserveAllChatsInfoUseCase
 }
 
 @Module
@@ -360,11 +336,31 @@ object DatabaseModule {
         return skillsDatabase.skillsDao()
     }
 
-    @Provides
-    fun provideSkillRepository(skillsDao: SkillsDao): SkillRepository {
-        return SkillsRepositoryImpl(skillsDao = skillsDao)
-    }
+}
 
+@Module
+abstract class RepositoryModule {
+
+    @Singleton
+    @Binds
+    abstract fun bindChatAiRepository(chatAiRepositoryImpl: MessageChatRepositoryImpl): MessageChatRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindMessageGroupRepository(
+        messageGroupRepositoryImpl: MessageGroupRepositoryImpl,
+    ): MessageGroupRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindMessageAiRepository(messageAiRepositoryImpl: MessageAiRepositoryImpl ): MessageAiRepository
+
+    @Singleton
+    @Binds
+    abstract fun provideSkillRepository(skillsRepositoryImpl: SkillsRepositoryImpl): SkillRepository
+
+    @Binds
+    abstract fun provideChatController(chatControllerImpl: ChatControllerImpl): ChatController
 }
 
 @Qualifier

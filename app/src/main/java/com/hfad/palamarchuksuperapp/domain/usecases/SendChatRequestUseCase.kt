@@ -8,7 +8,7 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.domain.repository.ChatAiRepository
+import com.hfad.palamarchuksuperapp.domain.repository.ChatController
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -25,7 +25,7 @@ interface SendChatRequestUseCase {
 }
 
 class SendAiRequestUseCaseImpl @Inject constructor(
-    private val chatAiRepository: ChatAiRepository,
+    private val chatController: ChatController
 ) : SendChatRequestUseCase {
 
     override suspend operator fun invoke(
@@ -39,18 +39,18 @@ class SendAiRequestUseCaseImpl @Inject constructor(
             return Result.Error(AppError.CustomError("No handlers provided"))
         }
 
-        chatAiRepository.addMessageGroup(messageGroupWithChatID = message).getOrHandleAppError {
+        chatController.addMessageGroup(messageGroupWithChatID = message).getOrHandleAppError {
             return Result.Error(it)
         }
 
         val currentChat =
-            chatAiRepository.getChatWithMessagesById(chatId).getOrHandleAppError {
+            chatController.getChatWithMessagesById(chatId).getOrHandleAppError {
                 return Result.Error(it)
             }
 
         val contextMessages = currentChat.messageGroups.toPersistentList()
 
-        val responseMessageGroupId = chatAiRepository.addMessageGroup(
+        val responseMessageGroupId = chatController.addMessageGroup(
             MessageGroup(
                 id = 0, //Room will provide the id
                 role = Role.MODEL,
@@ -64,7 +64,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         supervisorScope {
             val requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>> =
                 activeHandlers.map { handler ->
-                    val pendingMessage = chatAiRepository.addAndGetMessageAi(
+                    val pendingMessage = chatController.addAndGetMessageAi(
                         MessageAI(
                             id = 0, //Room will provide the id
                             status = MessageStatus.LOADING,
@@ -105,7 +105,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                 timestamp = Clock.System.now().toString(),
                                 status = MessageStatus.SUCCESS
                             )
-                            chatAiRepository.updateMessageAi(
+                            chatController.updateMessageAi(
                                 messageAI = successMessage
                             )
                         }
@@ -116,7 +116,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                     is AppError.NetworkException -> "Error with network"
                                     else -> "Undefined error"
                                 }
-                            chatAiRepository.updateMessageAi(
+                            chatController.updateMessageAi(
                                 messageAI = messageAi.copy(
                                     message = errorMessage,
                                     model = result.data?.model,
