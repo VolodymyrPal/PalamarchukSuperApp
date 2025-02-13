@@ -5,12 +5,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
-import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
-import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
-import com.hfad.palamarchuksuperapp.data.entities.MessageGroupWithMessagesEntity
 import kotlinx.coroutines.flow.Flow
 
 /**

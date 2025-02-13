@@ -29,7 +29,7 @@ class MessageChatRepositoryImpl @Inject constructor(
     override suspend fun getChatWithMessagesById(chatId: Int): Result<MessageChat, AppError> {
         return withSqlErrorHandling {
             if (!messageChatDao.isExist(chatId)) {
-                val id = messageChatDao.addChat(MessageChatEntity(name = "Base chat"))
+                val id = messageChatDao.insertChat(MessageChatEntity(name = "Base chat"))
                 val chatEntity = messageChatDao.getChatWithMessages(id.toInt())
                 MessageChat.from(chatEntity)
             } else {
@@ -55,7 +55,7 @@ class MessageChatRepositoryImpl @Inject constructor(
 
     override suspend fun createChat(emptyChat: MessageChatEntity): Result<Long, AppError> {
         return withSqlErrorHandling {
-            messageChatDao.addChat(emptyChat)
+            messageChatDao.insertChat(emptyChat)
         }
     }
 
