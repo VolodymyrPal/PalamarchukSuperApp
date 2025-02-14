@@ -1,10 +1,13 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
 import android.app.Application
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -21,15 +24,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.AppTheme
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.serialization.Serializable
 
 class ComposeMainActivity : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MainContent()
         }
+
 
         /** Create a reference to the default handler, to call standard handler function*/
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -122,6 +126,10 @@ fun MainContent() {
                             RootChatScreen()
                         }
                     }
+
+                    composable<Routes.ValentinesScreen> {
+                        ValentineScreenRoot()
+                    }
                 }
             }
         }
@@ -161,4 +169,7 @@ sealed interface Routes {
 
     @Serializable
     object ChatBotScreen : Routes
+
+    @Serializable
+    object ValentinesScreen : Routes
 }

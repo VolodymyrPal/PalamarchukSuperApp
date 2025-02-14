@@ -69,7 +69,11 @@ fun AppText(
     color: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     appTextConfig: AppTextConfig = rememberTextConfig(),
 ) {
-    val mergedStyle: TextStyle = appTextConfig.textStyle.copy(color = color)
+    val mergedStyle = if (appTextConfig.textStyle.brush != null) {
+        appTextConfig.textStyle
+    } else {
+        appTextConfig.textStyle.copy(color = color)
+    }
 
     Text(
         text = value,
@@ -79,7 +83,15 @@ fun AppText(
         softWrap = appTextConfig.softWrap,
         maxLines = appTextConfig.maxLines,
         minLines = appTextConfig.minLines,
-        onTextLayout = appTextConfig.onTextLayout
+        onTextLayout = appTextConfig.onTextLayout,
+        fontSize = appTextConfig.fontSize,
+        fontStyle = appTextConfig.fontStyle,
+        fontWeight = appTextConfig.fontWeight,
+        fontFamily = appTextConfig.fontFamily,
+        letterSpacing = appTextConfig.letterSpacing,
+        textDecoration = appTextConfig.textDecoration,
+        textAlign = appTextConfig.textAlign,
+        lineHeight = appTextConfig.lineHeight,
     )
 }
 

@@ -9,9 +9,13 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -56,6 +60,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontFamily
@@ -75,6 +80,7 @@ import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -94,6 +100,15 @@ fun MainScreenRow(
         if (LocalInspectionMode.current)
             NavHostController(context) // If preview - create Mock object for NavHostController
         else LocalNavController.current
+
+    val currentDay = Calendar.getInstance()
+    val day = currentDay.get(Calendar.DAY_OF_MONTH)
+    val month = currentDay.get(Calendar.MONTH) + 1
+    val isValentine = day == 14 && month == 2
+
+    if (isValentine) {
+        FailingHearts()
+    }
 
     Scaffold(
         modifier = modifier,
@@ -277,7 +292,36 @@ fun MainScreenRow(
                             }
                         }
                     }
+
+                    val currentDay = Calendar.getInstance()
+                    val day = currentDay.get(Calendar.DAY_OF_MONTH)
+                    val month = currentDay.get(Calendar.MONTH) + 1
+                    val isValentine = day == 14 && month == 2
+
                     item {
+                        if (isValentine) {
+                            val painterRes = painterResource(R.drawable.loveletter)
+                            Box(
+                                modifier = Modifier.clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    navController.navigate(Routes.ValentinesScreen)
+                                },
+                            ) {
+                                Image(
+                                    painter = painterRes,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .size(150.dp)
+                                        .padding(10.dp)
+                                        .clip(RoundedCornerShape(80.dp))
+
+                                )
+                            }
+                        }
+
                         Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding() + 10.dp))
                     }
                 }
