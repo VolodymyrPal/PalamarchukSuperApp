@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -52,14 +53,17 @@ fun ValentineScreenRoot() {
 private fun ValentineScreen() {
 
     val context = LocalContext.current
-    val mediaPlayer = remember { MediaPlayer.create(context, R.raw.song) }
+    val isPreview = LocalInspectionMode.current
+
+    val mediaPlayer: MediaPlayer? =
+        if (!isPreview) remember { MediaPlayer.create(context, R.raw.song) } else null
 
 
 
     DisposableEffect(Unit) {
-        mediaPlayer.start()
+        mediaPlayer?.start()
         onDispose {
-            mediaPlayer.release()
+            mediaPlayer?.release()
         }
     }
 
@@ -158,7 +162,7 @@ fun FailingHearts() {
 
                 if (heart.y > heightScreen + heart.size) {
                     heart.copy(
-                        y = 0 - Random.nextFloat() * 100f,
+                        y = (-heart.size) - Random.nextFloat() * 100f,
                         x = Random.nextFloat() * widhtScreen, // Перемещаем сердечко в случайное место по горизонтали
                         //size = Random.nextFloat() * 40f + 20f, // Меняем размер сердечка
                         speed = Random.nextFloat() * 2f + 1f, // Меняем скорость падения
@@ -226,10 +230,12 @@ fun generateHearts(count: Int, widthScreen: Float): List<ValentitesHear> {
     val spaceBetween = widthScreen / count
 
     return List(count) {
+        val size = random.nextFloat() * (160f - 20f) + 20f
+
         ValentitesHear(
             x = it * spaceBetween + random.nextFloat() * (spaceBetween / 2),
-            y = 0 - random.nextFloat() * 600f,
-            size = random.nextFloat() * (160f - 20f) + 20f,
+            y = (-size) - random.nextFloat() * 600f,
+            size = size,
             rotation = random.nextFloat() * 360,
             speed = random.nextFloat() * 2f + 1f,
             color = listOf<Color>(
