@@ -28,6 +28,9 @@ sealed interface AppError : Error {
 
             class NotFound(message: String? = null, cause: Throwable? = null) :
                 RequestError(message, cause) //404
+
+            class UndefinedError(message: String? = null, cause: Throwable? = null) :
+                RequestError(message, cause) // undefined error
         }
 
         /**
@@ -52,6 +55,9 @@ sealed interface AppError : Error {
 
             class GatewayTimeout(message: String? = null, cause: Throwable? = null) :
                 ServerError(message, cause)//504
+
+            class CustomServerError(message: String? = null, cause: Throwable? = null) :
+                ServerError(message, cause)// undefined error
         }
 
     }
