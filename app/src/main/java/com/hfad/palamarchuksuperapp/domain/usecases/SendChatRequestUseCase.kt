@@ -25,7 +25,7 @@ interface SendChatRequestUseCase {
 }
 
 class SendAiRequestUseCaseImpl @Inject constructor(
-    private val chatController: ChatController
+    private val chatController: ChatController,
 ) : SendChatRequestUseCase {
 
     override suspend operator fun invoke(
@@ -68,6 +68,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                         MessageAI(
                             id = 0, //Room will provide the id
                             status = MessageStatus.LOADING,
+                            model = handler.aiHandlerInfo.value.model,
                             messageGroupId = responseMessageGroupId.toInt(),
                             timestamp = Clock.System.now().toString()
                         )
@@ -75,7 +76,16 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                         return@supervisorScope Result.Error(it)
                     }
                     pendingMessage to async {
-                        handler.getResponse(contextMessages)
+                        try { //TODO need to find what error to handle
+                            handler.getResponse(contextMessages)
+                        } catch (e: Exception) {
+                            Result.Error(
+                                error = AppError.NetworkException.RequestError.UndefinedError(
+                                    message = "Unknown error, please connect developer.",
+                                    cause = e
+                                )
+                            )
+                        }
                     }
                 }
 
@@ -92,11 +102,11 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
         supervisorScope {
 
-
             requests.forEach { (messageAi, request) ->
                 launch {
 
                     val result = request.await()
+
                     when (result) {
                         is Result.Success -> {
                             val successMessage = messageAi.copy(
@@ -105,29 +115,25 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                 timestamp = Clock.System.now().toString(),
                                 status = MessageStatus.SUCCESS
                             )
-                            chatController.updateMessageAi(
-                                messageAI = successMessage
-                            )
+                            chatController.updateMessageAi(successMessage)
                         }
 
-                        is Result.Error -> {
-                            val errorMessage =
+                        is Result.Error<*, *> -> { //TODO place to handle error
+                            val errorMessageText =
                                 when (result.error) { //TODO could throw internet error, need to check it
                                     is AppError.NetworkException -> "Error with network"
-                                    else -> "Undefined error"
+                                    else -> (result.error as AppError.CustomError).errorText
                                 }
-                            chatController.updateMessageAi(
-                                messageAI = messageAi.copy(
-                                    message = errorMessage,
-                                    model = result.data?.model,
-                                    timestamp = Clock.System.now().toString(),
-                                    status = MessageStatus.ERROR
-                                ),
+                            val errorMessage = messageAi.copy(
+                                message = errorMessageText ?: "Undefined error",
+                                timestamp = Clock.System.now().toString(),
+                                status = MessageStatus.ERROR
                             )
+                            chatController.updateMessageAi(errorMessage)
                         }
                     }
                     synchronized(errors) {
-                        if (result is Result.Error) {
+                        if (result is Result.Error<*, *>) {
                             errors.add(result.error)
                         }
                     }

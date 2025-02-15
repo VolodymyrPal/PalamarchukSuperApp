@@ -58,14 +58,17 @@ class OpenAIApiHandler @AssistedInject constructor(
                 messageGroupId = 0 // Handler don't need to know message group
             )
             Result.Success(responseMessage)
+        } else if (response.status.value in 401..599) {
+            val openAiError = response.body<OpenAIError>()
+            return Result.Error(
+                AppError.NetworkException.ServerError.CustomServerError(openAiError.error.message),
+            )
         } else {
-            if (response.status.value in 401..599) {
-                val openAiError = response.body<OpenAIError>()
-                return Result.Error(
-                    AppError.CustomError(openAiError.error.message),
+            Result.Error(
+                error = AppError.NetworkException.RequestError.UndefinedError(
+                    message = "Unknown error, please connect developer."
                 )
-            }
-            Result.Error(AppError.NetworkException.RequestError.BadRequest())
+            )
         }
     }
 

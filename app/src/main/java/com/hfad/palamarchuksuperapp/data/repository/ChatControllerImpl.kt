@@ -32,23 +32,23 @@ class ChatControllerImpl @Inject constructor(
     @Transaction
     override suspend fun addMessageGroup(
         messageGroupWithChatID: MessageGroup,
-    ): com.hfad.palamarchuksuperapp.domain.models.Result<Long, AppError> {    //TODO NEARLY DONE
+    ): Result<Long, AppError> {    //TODO NEARLY DONE
 
         val groupId = addMessageGroupEntity(
             MessageGroupEntity.from(messageGroupWithChatID)
         ).getOrHandleAppError {
-            return com.hfad.palamarchuksuperapp.domain.models.Result.Error(it)
+            return Result.Error(it)
         }
 
         messageGroupWithChatID.content.forEach { messageAi ->
             messageAiRepository.addMessageAiEntity(
                 MessageAiEntity.from(messageAi.copy(messageGroupId = groupId.toInt()))
             ).getOrHandleAppError {
-                return com.hfad.palamarchuksuperapp.domain.models.Result.Error(it)
+                return Result.Error(it)
             }
         }
 
-        return com.hfad.palamarchuksuperapp.domain.models.Result.Success(groupId)
+        return Result.Success(groupId)
     }
 
     @Transaction
@@ -66,22 +66,22 @@ class ChatControllerImpl @Inject constructor(
     override suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError> {
         val messageToInsert = MessageChatWithRelationsEntity.from(chat)
         val insertedChatId = insertMessages(messageToInsert).getOrHandleAppError {
-            return com.hfad.palamarchuksuperapp.domain.models.Result.Error(it)
+            return Result.Error(it)
         }
-        return com.hfad.palamarchuksuperapp.domain.models.Result.Success(insertedChatId)
+        return Result.Success(insertedChatId)
     }
 
     @Transaction
     private suspend fun insertMessages(
         chat: MessageChatWithRelationsEntity,
-    ): com.hfad.palamarchuksuperapp.domain.models.Result<Long, AppError> {
+    ): Result<Long, AppError> {
         val chatId = createChat(chat.chat).getOrHandleAppError {
-            return com.hfad.palamarchuksuperapp.domain.models.Result.Error(it)
+            return Result.Error(it)
         }
         chat.messageGroupsWithMessageEntity.forEach { messageGroup ->
             val groupId = addMessageGroupEntity(messageGroup.group.copy(chatId = chatId.toInt()))
                 .getOrHandleAppError {
-                    return com.hfad.palamarchuksuperapp.domain.models.Result.Error(
+                    return Result.Error(
                         it
                     )
                 }

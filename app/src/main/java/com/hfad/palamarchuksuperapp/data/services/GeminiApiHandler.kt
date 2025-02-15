@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import android.util.Log
 import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
@@ -58,7 +57,6 @@ class GeminiApiHandler @AssistedInject constructor(
     }
 
     override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
-        Log.d("GeminiApiHandler", "setAiHandlerInfo: $aiHandlerInfo")
         _aiHandlerInfo.update { aiHandlerInfo }
     }
 
@@ -84,15 +82,13 @@ class GeminiApiHandler @AssistedInject constructor(
             Result.Success(responseMessage)
         } else if (request.status.value in 400..599) {
             val geminiError = request.body<GeminiError>()
-            Result.Error(
-                data = MessageAI(
-                    model = initAiHandlerInfo.model,
-                    messageGroupId = 0 // Handler don't need to know message group
-                ),
-                error = AppError.CustomError(geminiError.error.message)
-            )
+            Result.Error(error = AppError.NetworkException.ServerError.CustomServerError(geminiError.error.message))
         } else {
-            Result.Error(AppError.NetworkException.RequestError.BadRequest())
+            Result.Error(
+                error = AppError.NetworkException.RequestError.UndefinedError(
+                    message = "Unknown error, please connect developer."
+                )
+            )
         }
     }
 }
