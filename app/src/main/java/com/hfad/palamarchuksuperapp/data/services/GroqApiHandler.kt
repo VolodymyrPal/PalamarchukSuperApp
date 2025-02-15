@@ -95,8 +95,15 @@ class GroqApiHandler @AssistedInject constructor(
         return if (response.status == HttpStatusCode.OK) {
             val list = response.body<GroqModelList>()
             return Result.Success(list.data.map { it.toGroqModel() })
+        } else if (response.status.value in 400..599) {
+            val groqError = response.body<GroqError>()
+            Result.Error(AppError.NetworkException.ServerError.CustomServerError(groqError.error.message))
         } else {
-            Result.Error(AppError.NetworkException.RequestError.BadRequest())
+            Result.Error(
+                error = AppError.NetworkException.RequestError.UndefinedError(
+                    message = "Unknown error, please connect developer."
+                )
+            )
         }
     }
 
