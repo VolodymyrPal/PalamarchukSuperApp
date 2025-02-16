@@ -9,6 +9,8 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatController
+import io.ktor.serialization.JsonConvertException
+import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -78,10 +80,17 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                     pendingMessage to async {
                         try { //TODO need to find what error to handle
                             handler.getResponse(contextMessages)
-                        } catch (e: Exception) {
+                        } catch (e: UnresolvedAddressException) {
                             Result.Error(
                                 error = AppError.NetworkException.RequestError.UndefinedError(
-                                    message = "Unknown error, please connect developer.",
+                                    message = "Problem with internet connection.",
+                                    cause = e
+                                )
+                            )
+                        } catch (e: JsonConvertException) {
+                            Result.Error(
+                                error = AppError.NetworkException.RequestError.UndefinedError(
+                                    message = "Problem with parsing response. Please contact developer.",
                                     cause = e
                                 )
                             )
@@ -118,10 +127,14 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             chatController.updateMessageAi(successMessage)
                         }
 
-                        is Result.Error<*, *> -> { //TODO place to handle error
+                        is Result.Error -> { //TODO place to handle error]
+                            val error = result.error
                             val errorMessageText =
-                                when (result.error) { //TODO could throw internet error, need to check it
-                                    is AppError.NetworkException -> "Error with network"
+                                when (error) {
+                                    is AppError.NetworkException ->
+                                        error.message + if (error.cause != null) "\nPlease contact developer, " +
+                                                "error caused by: \n\n${error.cause}" else ""
+
                                     else -> (result.error as AppError.CustomError).errorText
                                 }
                             val errorMessage = messageAi.copy(
@@ -133,7 +146,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                         }
                     }
                     synchronized(errors) {
-                        if (result is Result.Error<*, *>) {
+                        if (result is Result.Error) {
                             errors.add(result.error)
                         }
                     }
