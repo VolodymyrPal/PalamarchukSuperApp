@@ -6,6 +6,9 @@ sealed interface AppError : Error {
 
     sealed interface NetworkException : AppError {
 
+        val message: String?
+        val cause: Throwable?
+
         /**
          * Represents a sealed hierarchy of request-related errors.
          * Each subclass corresponds to a specific type of request error.
@@ -14,8 +17,8 @@ sealed interface AppError : Error {
          * @property cause The root cause of the error, if available (optional).
          */
         sealed class RequestError(
-            val message: String? = null,
-            val cause: Throwable? = null,
+            override val message: String? = null,
+            override val cause: Throwable? = null,
         ) : NetworkException {
             class BadRequest(message: String? = null, cause: Throwable? = null) :
                 RequestError(message, cause) //400
