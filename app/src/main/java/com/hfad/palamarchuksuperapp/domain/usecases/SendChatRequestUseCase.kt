@@ -127,10 +127,14 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             chatController.updateMessageAi(successMessage)
                         }
 
-                        is Result.Error<*, *> -> { //TODO place to handle error
+                        is Result.Error -> { //TODO place to handle error]
+                            val error = result.error
                             val errorMessageText =
-                                when (result.error) { //TODO could throw internet error, need to check it
-                                    is AppError.NetworkException -> "Error with network"
+                                when (error) {
+                                    is AppError.NetworkException ->
+                                        error.message + if (error.cause != null) "\nPlease contact developer, " +
+                                                "error caused by: \n\n${error.cause}" else ""
+
                                     else -> (result.error as AppError.CustomError).errorText
                                 }
                             val errorMessage = messageAi.copy(
@@ -142,7 +146,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                         }
                     }
                     synchronized(errors) {
-                        if (result is Result.Error<*, *>) {
+                        if (result is Result.Error) {
                             errors.add(result.error)
                         }
                     }
