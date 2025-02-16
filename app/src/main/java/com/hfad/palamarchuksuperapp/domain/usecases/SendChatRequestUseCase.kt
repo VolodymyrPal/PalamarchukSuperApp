@@ -9,6 +9,8 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatController
+import io.ktor.serialization.JsonConvertException
+import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -78,10 +80,10 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                     pendingMessage to async {
                         try { //TODO need to find what error to handle
                             handler.getResponse(contextMessages)
-                        } catch (e: Exception) {
+                        } catch (e: UnresolvedAddressException) {
                             Result.Error(
                                 error = AppError.NetworkException.RequestError.UndefinedError(
-                                    message = "Unknown error, please connect developer.",
+                                    message = "Problem with internet connection.",
                                     cause = e
                                 )
                             )
