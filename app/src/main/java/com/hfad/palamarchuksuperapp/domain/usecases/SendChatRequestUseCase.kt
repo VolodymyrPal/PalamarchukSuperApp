@@ -87,6 +87,13 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                     cause = e
                                 )
                             )
+                        } catch (e: JsonConvertException) {
+                            Result.Error(
+                                error = AppError.NetworkException.RequestError.UndefinedError(
+                                    message = "Problem with parsing response. Please contact developer.",
+                                    cause = e
+                                )
+                            )
                         }
                     }
                 }
