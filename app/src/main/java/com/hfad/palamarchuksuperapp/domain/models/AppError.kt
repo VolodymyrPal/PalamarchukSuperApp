@@ -44,8 +44,8 @@ sealed interface AppError : Error {
          * @property cause The root cause of the error, if available (optional).
          */
         sealed class ServerError(
-            val message: String? = null,
-            val cause: Throwable? = null,
+            override val message: String? = null,
+            override val cause: Throwable? = null,
         ) : NetworkException {
             class InternalServerError(message: String? = null, cause: Throwable? = null) :
                 ServerError(message, cause)//500
