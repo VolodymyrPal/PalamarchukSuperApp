@@ -1,10 +1,9 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
-import coil.network.HttpException
 import com.hfad.palamarchuksuperapp.data.dao.StoreDao
 import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
+import com.hfad.palamarchuksuperapp.data.services.safeApiCall
 import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.Error
 import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
@@ -24,11 +23,7 @@ class StoreRepositoryImpl @Inject constructor(
         storeDao.getAllProductsFromDB().map { list -> list.toPersistentList() }
 
     suspend fun products(): Result<Flow<PersistentList<Product>>, AppError> {
-        return try {
-            Result.Success(fetchProductsAsFlowFromDB)
-        } catch (e: HttpException) {
-            Result.Error(AppError.NetworkException.ServerError.InternalServerError())
-        }
+        return withSqlErrorHandling { fetchProductsAsFlowFromDB }
     }
 
     override suspend fun softRefreshProducts() {
@@ -48,23 +43,11 @@ class StoreRepositoryImpl @Inject constructor(
 
     private suspend fun getProductWithErrors(): Result<PersistentList<Product>, AppError> { //}: List<ProductDomainRW> {
 
-        return try {
-            val storeProducts: PersistentList<Product> = storeApi.getProductsDomainRw().toPersistentList()
-
+        return safeApiCall {
+            val storeProducts: PersistentList<Product> =
+                storeApi.getProductsDomainRw().toPersistentList()
             Result.Success(storeProducts)
-        } catch (e: Exception) {
-            Result.Error(AppError.NetworkException.ServerError.InternalServerError())
         }
-
-//        return try {
-//            val storeProducts: List<ProductDomainRW> = storeApi.getProductsDomainRw()
-//            delay(1000)
-//            if (Random.nextInt(0, 100) < 33) throw Exception("Error")
-//            storeProducts
-//        } catch (e: Exception) {
-//            errorFlow.update { e }
-//            fetchProductsAsFlowFromDB.first()
-//        }
     }
 
     override suspend fun upsertAll(products: PersistentList<Product>) {
