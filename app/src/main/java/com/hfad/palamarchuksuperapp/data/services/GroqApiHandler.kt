@@ -42,68 +42,72 @@ class GroqApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
     ): Result<MessageAI, AppError> {
-        val contextMessages = if (messageList.last().type == MessageType.IMAGE) {
-            messageList.last().toGroqRequest(initAiHandlerInfo.model)
-        } else {
-            messageList.toGroqRequest(initAiHandlerInfo.model)
-        }
+        return safeApiCall {
+            val contextMessages = if (messageList.last().type == MessageType.IMAGE) {
+                messageList.last().toGroqRequest(initAiHandlerInfo.model)
+            } else {
+                messageList.toGroqRequest(initAiHandlerInfo.model)
+            }
 
-        val request = httpClient.post(url) {
-            header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
-            contentType(ContentType.Application.Json)
-            setBody(
-                contextMessages
-            )
-        }
+            val request = httpClient.post(url) {
+                header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
+                contentType(ContentType.Application.Json)
+                setBody(
+                    contextMessages
+                )
+            }
 
-        return if (request.status == HttpStatusCode.OK) {
-            val response = request.body<GroqChatCompletionResponse>()
-            val responseText = response.groqChoices[0].groqMessage
-            val responseMessage = MessageAI(
-                message = if (responseText is GroqMessageText) responseText.content else "",
-                model = initAiHandlerInfo.model,
-                messageGroupId = 0 // Handler don't need to know message group
-            )
-            Result.Success(responseMessage)
-        } else if (request.status.value in 400..599) {
-            val groqError = request.body<GroqError>()
-            return Result.Error(
-                error = AppError.CustomError(groqError.error.message),
-                MessageAI(
+            if (request.status == HttpStatusCode.OK) {
+                val response = request.body<GroqChatCompletionResponse>()
+                val responseText = response.groqChoices[0].groqMessage
+                val responseMessage = MessageAI(
+                    message = if (responseText is GroqMessageText) responseText.content else "",
                     model = initAiHandlerInfo.model,
                     messageGroupId = 0 // Handler don't need to know message group
                 )
-            )
-        } else {
-            Result.Error(
-                error = AppError.NetworkException.RequestError.BadRequest(),
-                MessageAI(
-                    model = initAiHandlerInfo.model,
-                    messageGroupId = 0 // Handler don't need to know message group
+                Result.Success(responseMessage)
+            } else if (request.status.value in 400..599) {
+                val groqError = request.body<GroqError>()
+                Result.Error(
+                    error = AppError.CustomError(groqError.error.message),
+                    MessageAI(
+                        model = initAiHandlerInfo.model,
+                        messageGroupId = 0 // Handler don't need to know message group
+                    )
                 )
-            )
+            } else {
+                Result.Error(
+                    error = AppError.NetworkException.RequestError.BadRequest(),
+                    MessageAI(
+                        model = initAiHandlerInfo.model,
+                        messageGroupId = 0 // Handler don't need to know message group
+                    )
+                )
+            }
         }
     }
 
     override suspend fun getModels(): Result<List<AiModel.GroqModel>, AppError> {
-        val response = httpClient.get(
-            "https://api.groq.com/openai/v1/models"
-        ) {
-            header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
-            contentType(ContentType.Application.Json)
-        }
-        return if (response.status == HttpStatusCode.OK) {
-            val list = response.body<GroqModelList>()
-            return Result.Success(list.data.map { it.toGroqModel() })
-        } else if (response.status.value in 400..599) {
-            val groqError = response.body<GroqError>()
-            Result.Error(AppError.NetworkException.ServerError.CustomServerError(groqError.error.message))
-        } else {
-            Result.Error(
-                error = AppError.NetworkException.RequestError.UndefinedError(
-                    message = "Unknown error, please connect developer."
+        return safeApiCall {
+            val response = httpClient.get(
+                "https://api.groq.com/openai/v1/models"
+            ) {
+                header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
+                contentType(ContentType.Application.Json)
+            }
+            if (response.status == HttpStatusCode.OK) {
+                val list = response.body<GroqModelList>()
+                Result.Success(list.data.map { it.toGroqModel() })
+            } else if (response.status.value in 400..599) {
+                val groqError = response.body<GroqError>()
+                Result.Error(AppError.NetworkException.ServerError.CustomServerError(groqError.error.message))
+            } else {
+                Result.Error(
+                    error = AppError.NetworkException.RequestError.UndefinedError(
+                        message = "Unknown error, please connect developer."
+                    )
                 )
-            )
+            }
         }
     }
 
