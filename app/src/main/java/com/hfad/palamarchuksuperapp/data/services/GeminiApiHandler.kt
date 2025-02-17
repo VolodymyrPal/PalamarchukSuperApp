@@ -44,16 +44,17 @@ class GeminiApiHandler @AssistedInject constructor(
 
 
     override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
-
-        val response = httpClient.get(
-            "https://generativelanguage.googleapis.com/v1beta/models?key=${aiHandlerInfo.value.aiApiKey}"
-        )
-        return if (response.status == HttpStatusCode.OK) {
-            val list = response.body<GeminiModelsResponse>()
-            return Result.Success(list.models.map { it.toGeminiModel() })
-        } else {
-            Result.Error(AppError.NetworkException.RequestError.BadRequest())
-        } //TODO wish to upgrade class
+        return safeApiCall {
+            val response = httpClient.get(
+                "https://generativelanguage.googleapis.com/v1beta/models?key=${aiHandlerInfo.value.aiApiKey}"
+            )
+            if (response.status == HttpStatusCode.OK) {
+                val list = response.body<GeminiModelsResponse>()
+                Result.Success(list.models.map { it.toGeminiModel() })
+            } else {
+                Result.Error(AppError.NetworkException.RequestError.NotFound())
+            }
+        }
     }
 
     override fun setAiHandlerInfo(aiHandlerInfo: AiHandlerInfo) {
@@ -63,32 +64,38 @@ class GeminiApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
     ): Result<MessageAI, AppError> {
-        val request =
-            httpClient.post(getUrl(model = initAiHandlerInfo.model)) {
-                contentType(ContentType.Application.Json)
-                setBody(
-                    messageList.toGeminiRequest(
+        return safeApiCall {
+            val request =
+                httpClient.post(getUrl(model = initAiHandlerInfo.model)) {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        messageList.toGeminiRequest(
+                        )
+                    )
+                }
+
+            if (request.status == HttpStatusCode.OK) {
+                val response = request.body<GeminiResponse>()
+                val responseMessage = MessageAI(
+                    message = response.candidates[0].content.parts[0].text,
+                    model = initAiHandlerInfo.model,
+                    messageGroupId = 0 // Handler don't need to know message group
+                )
+                Result.Success(responseMessage)
+            } else if (request.status.value in 400..599) {
+                val geminiError = request.body<GeminiError>()
+                Result.Error(
+                    error = AppError.NetworkException.ServerError.CustomServerError(
+                        geminiError.error.message
+                    )
+                )
+            } else {
+                Result.Error(
+                    error = AppError.NetworkException.RequestError.UndefinedError(
+                        message = "Unknown error, please connect developer."
                     )
                 )
             }
-
-        return if (request.status == HttpStatusCode.OK) {
-            val response = request.body<GeminiResponse>()
-            val responseMessage = MessageAI(
-                message = response.candidates[0].content.parts[0].text,
-                model = initAiHandlerInfo.model,
-                messageGroupId = 0 // Handler don't need to know message group
-            )
-            Result.Success(responseMessage)
-        } else if (request.status.value in 400..599) {
-            val geminiError = request.body<GeminiError>()
-            Result.Error(error = AppError.NetworkException.ServerError.CustomServerError(geminiError.error.message))
-        } else {
-            Result.Error(
-                error = AppError.NetworkException.RequestError.UndefinedError(
-                    message = "Unknown error, please connect developer."
-                )
-            )
         }
     }
 }
