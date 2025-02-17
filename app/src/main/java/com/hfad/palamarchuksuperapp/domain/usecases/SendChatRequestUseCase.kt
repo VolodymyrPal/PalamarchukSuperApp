@@ -78,23 +78,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                         return@supervisorScope Result.Error(it)
                     }
                     pendingMessage to async {
-                        try { //TODO need to find what error to handle
-                            handler.getResponse(contextMessages)
-                        } catch (e: UnresolvedAddressException) {
-                            Result.Error(
-                                error = AppError.NetworkException.RequestError.UndefinedError(
-                                    message = "Problem with internet connection.",
-                                    cause = e
-                                )
-                            )
-                        } catch (e: JsonConvertException) {
-                            Result.Error(
-                                error = AppError.NetworkException.RequestError.UndefinedError(
-                                    message = "Problem with parsing response. Please contact developer.",
-                                    cause = e
-                                )
-                            )
-                        }
+                        handler.getResponse(contextMessages)
                     }
                 }
 
