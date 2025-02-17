@@ -1,17 +1,17 @@
 package com.hfad.palamarchuksuperapp.data.services
 
-import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
-import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.data.dtos.OpenAIModelDTO
-import com.hfad.palamarchuksuperapp.domain.models.Role
-import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.data.dtos.toOpenAIModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.LLMName
+import com.hfad.palamarchuksuperapp.domain.models.MessageAI
+import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
+import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
+import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -42,33 +42,35 @@ class OpenAIApiHandler @AssistedInject constructor(
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
     ): Result<MessageAI, AppError> {
-        val gptRequest = messageList.toOpenAIRequest(model = initAiHandlerInfo.model)
+        return safeApiCall {
+            val gptRequest = messageList.toOpenAIRequest(model = initAiHandlerInfo.model)
 
-        val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
-            contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
-            setBody(gptRequest)
-        }
+            val response = httpClient.post("https://api.openai.com/v1/chat/completions") {
+                contentType(ContentType.Application.Json)
+                header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
+                setBody(gptRequest)
+            }
 
-        return if (response.status == HttpStatusCode.OK) {
-            val openAIResponse = response.body<ChatCompletionResponse>()
-            val responseMessage = MessageAI(
-                message = openAIResponse.choices[0].message.content,
-                model = initAiHandlerInfo.model,
-                messageGroupId = 0 // Handler don't need to know message group
-            )
-            Result.Success(responseMessage)
-        } else if (response.status.value in 401..599) {
-            val openAiError = response.body<OpenAIError>()
-            return Result.Error(
-                AppError.NetworkException.ServerError.CustomServerError(openAiError.error.message),
-            )
-        } else {
-            Result.Error(
-                error = AppError.NetworkException.RequestError.UndefinedError(
-                    message = "Unknown error, please connect developer."
+            if (response.status == HttpStatusCode.OK) {
+                val openAIResponse = response.body<ChatCompletionResponse>()
+                val responseMessage = MessageAI(
+                    message = openAIResponse.choices[0].message.content,
+                    model = initAiHandlerInfo.model,
+                    messageGroupId = 0 // Handler don't need to know message group
                 )
-            )
+                Result.Success(responseMessage)
+            } else if (response.status.value in 401..599) {
+                val openAiError = response.body<OpenAIError>()
+                Result.Error(
+                    AppError.NetworkException.ServerError.CustomServerError(openAiError.error.message),
+                )
+            } else {
+                Result.Error(
+                    error = AppError.NetworkException.RequestError.UndefinedError(
+                        message = "Unknown error, please connect developer."
+                    )
+                )
+            }
         }
     }
 
