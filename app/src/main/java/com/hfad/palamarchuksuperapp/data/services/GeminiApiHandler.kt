@@ -48,11 +48,11 @@ class GeminiApiHandler @AssistedInject constructor(
             val response = httpClient.get(
                 "https://generativelanguage.googleapis.com/v1beta/models?key=${aiHandlerInfo.value.aiApiKey}"
             )
-            if (response.status == HttpStatusCode.OK) {
+            if (response.status.value in 200..299) {
                 val list = response.body<GeminiModelsResponse>()
                 Result.Success(list.models.map { it.toGeminiModel() })
             } else {
-                Result.Error(AppError.NetworkException.RequestError.NotFound())
+                Result.Error(AppError.NetworkException.ApiError.NotFound())
             }
         }
     }
