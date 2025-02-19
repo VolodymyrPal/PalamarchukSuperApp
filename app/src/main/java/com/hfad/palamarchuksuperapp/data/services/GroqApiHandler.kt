@@ -57,7 +57,7 @@ class GroqApiHandler @AssistedInject constructor(
                 )
             }
 
-            if (request.status == HttpStatusCode.OK) {
+            if (request.status.value in 200..299) {
                 val response = request.body<GroqChatCompletionResponse>()
                 val responseText = response.groqChoices[0].groqMessage
                 val responseMessage = MessageAI(
@@ -77,7 +77,7 @@ class GroqApiHandler @AssistedInject constructor(
                 )
             } else {
                 Result.Error(
-                    error = AppError.NetworkException.RequestError.BadRequest(),
+                    error = AppError.NetworkException.ApiError.BadApi(),
                     MessageAI(
                         model = initAiHandlerInfo.model,
                         messageGroupId = 0 // Handler don't need to know message group
@@ -100,10 +100,10 @@ class GroqApiHandler @AssistedInject constructor(
                 Result.Success(list.data.map { it.toGroqModel() })
             } else if (response.status.value in 400..599) {
                 val groqError = response.body<GroqError>()
-                Result.Error(AppError.NetworkException.ServerError.CustomServerError(groqError.error.message))
+                Result.Error(AppError.NetworkException.ApiError.CustomApiError(groqError.error.message))
             } else {
                 Result.Error(
-                    error = AppError.NetworkException.RequestError.UndefinedError(
+                    error = AppError.NetworkException.ApiError.UndefinedError(
                         message = "Unknown error, please connect developer."
                     )
                 )

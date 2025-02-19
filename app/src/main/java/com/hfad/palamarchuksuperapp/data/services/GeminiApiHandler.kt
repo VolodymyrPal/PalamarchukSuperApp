@@ -48,11 +48,11 @@ class GeminiApiHandler @AssistedInject constructor(
             val response = httpClient.get(
                 "https://generativelanguage.googleapis.com/v1beta/models?key=${aiHandlerInfo.value.aiApiKey}"
             )
-            if (response.status == HttpStatusCode.OK) {
+            if (response.status.value in 200..299) {
                 val list = response.body<GeminiModelsResponse>()
                 Result.Success(list.models.map { it.toGeminiModel() })
             } else {
-                Result.Error(AppError.NetworkException.RequestError.NotFound())
+                Result.Error(AppError.NetworkException.ApiError.NotFound())
             }
         }
     }
@@ -85,13 +85,13 @@ class GeminiApiHandler @AssistedInject constructor(
             } else if (request.status.value in 400..599) {
                 val geminiError = request.body<GeminiError>()
                 Result.Error(
-                    error = AppError.NetworkException.ServerError.CustomServerError(
+                    error = AppError.NetworkException.ApiError.CustomApiError(
                         geminiError.error.message
                     )
                 )
             } else {
                 Result.Error(
-                    error = AppError.NetworkException.RequestError.UndefinedError(
+                    error = AppError.NetworkException.ApiError.UndefinedError(
                         message = "Unknown error, please connect developer."
                     )
                 )
