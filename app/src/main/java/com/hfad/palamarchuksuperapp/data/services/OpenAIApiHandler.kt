@@ -51,7 +51,7 @@ class OpenAIApiHandler @AssistedInject constructor(
                 setBody(gptRequest)
             }
 
-            if (response.status == HttpStatusCode.OK) {
+            if (response.status.value in 200..299) {
                 val openAIResponse = response.body<ChatCompletionResponse>()
                 val responseMessage = MessageAI(
                     message = openAIResponse.choices[0].message.content,
@@ -62,11 +62,11 @@ class OpenAIApiHandler @AssistedInject constructor(
             } else if (response.status.value in 401..599) {
                 val openAiError = response.body<OpenAIError>()
                 Result.Error(
-                    AppError.NetworkException.ServerError.CustomServerError(openAiError.error.message),
+                    AppError.NetworkException.ApiError.CustomApiError(openAiError.error.message),
                 )
             } else {
                 Result.Error(
-                    error = AppError.NetworkException.RequestError.UndefinedError(
+                    error = AppError.NetworkException.ApiError.UndefinedError(
                         message = "Unknown error, please connect developer."
                     )
                 )
