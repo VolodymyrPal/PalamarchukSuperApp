@@ -16,51 +16,39 @@ sealed interface AppError : Error {
          * @property message A detailed error message (optional).
          * @property cause The root cause of the error, if available (optional).
          */
-        sealed class RequestError(
+        sealed class ApiError(
             override val message: String? = null,
             override val cause: Throwable? = null,
         ) : NetworkException {
-            class BadRequest(message: String? = null, cause: Throwable? = null) :
-                RequestError(message, cause) //400
+            class BadApi(message: String? = null, cause: Throwable? = null) :
+                ApiError(message, cause) //400
 
             class Unauthorized(message: String? = null, cause: Throwable? = null) :
-                RequestError(message, cause) //401
+                ApiError(message, cause) //401
 
             class Forbidden(message: String? = null, cause: Throwable? = null) :
-                RequestError(message, cause) //403 лимиты, ограничения по IP
+                ApiError(message, cause) //403 лимиты, ограничения по IP
 
             class NotFound(message: String? = null, cause: Throwable? = null) :
-                RequestError(message, cause) //404
+                ApiError(message, cause) //404
 
             class UndefinedError(message: String? = null, cause: Throwable? = null) :
-                RequestError(message, cause) // undefined error
-        }
+                ApiError(message, cause) // undefined error
 
-        /**
-         * Represents a sealed hierarchy of server-related errors.
-         * Each subclass corresponds to a specific type of server error.
-         *
-         * @property message A detailed error message (optional).
-         * @property cause The root cause of the error, if available (optional).
-         */
-        sealed class ServerError(
-            override val message: String? = null,
-            override val cause: Throwable? = null,
-        ) : NetworkException {
-            class InternalServerError(message: String? = null, cause: Throwable? = null) :
-                ServerError(message, cause)//500
+            class InternalApiError(message: String? = null, cause: Throwable? = null) :
+                ApiError(message, cause)//500
 
             class BadGateway(message: String? = null, cause: Throwable? = null) :
-                ServerError(message, cause)//502
+                ApiError(message, cause)//502
 
             class ServiceUnavailable(message: String? = null, cause: Throwable? = null) :
-                ServerError(message, cause)//503
+                ApiError(message, cause)//503
 
             class GatewayTimeout(message: String? = null, cause: Throwable? = null) :
-                ServerError(message, cause)//504
+                ApiError(message, cause)//504
 
-            class CustomServerError(message: String? = null, cause: Throwable? = null) :
-                ServerError(message, cause)// undefined error
+            class CustomApiError(message: String? = null, cause: Throwable? = null) :
+                ApiError(message, cause)// undefined error
         }
 
     }
