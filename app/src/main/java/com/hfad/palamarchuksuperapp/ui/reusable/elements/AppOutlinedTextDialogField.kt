@@ -271,7 +271,9 @@ fun LargeDropdownMenuItem(
 @Preview
 fun LargeDropdownMenuItemPreview() {
 
-    var selectedIndex by remember { mutableStateOf(-1) }
+    var selectedIndex by remember { mutableIntStateOf(-1) }
+    var selected2Index by remember { mutableIntStateOf(-1) }
+
 
     Column(
         verticalArrangement = Arrangement.SpaceAround,
@@ -308,37 +310,36 @@ fun LargeDropdownMenuItemPreview() {
                     .padding(10.dp)
             ) {
                 Column {
-                    AppOutlinedTextDialogField(
+                    AppOutlinedTextPopUpField(
                         modifier = Modifier.padding(4.dp),
                         items = listOf(
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451"
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
                         ),
                         selectedIndex = selectedIndex,
                         onItemSelected = { index, _ ->
@@ -352,6 +353,14 @@ fun LargeDropdownMenuItemPreview() {
                             selected = if (it % 2 == 0) false else true,
                             enabled = if (it % 2 == 0) false else true
                         ) { }
+                        AppOutlinedTextField(
+                            value = "",
+                            labelRes = R.string.app_name,
+                            onValueChange = {},
+                            outlinedTextConfig = rememberOutlinedTextConfig(
+                                readOnly = true
+                            )
+                        )
                     }
                 }
             }
