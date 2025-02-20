@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -196,6 +197,7 @@ fun <T> DropdownDialog(
     ) {
         Surface(
             shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(vertical = 24.dp),
         ) {
             val listState = rememberLazyListState()
             if (selectedIndex > -1) {
@@ -204,7 +206,11 @@ fun <T> DropdownDialog(
                 }
             }
 
-            LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                state = listState
+            ) {
                 if (notSetLabel != null) {
                     item() {
                         AppText(
@@ -253,7 +259,8 @@ fun LargeDropdownMenuItem(
         AppText(
             value = text,
             appTextConfig = rememberTextConfig(
-                textStyle = MaterialTheme.typography.titleSmall
+                textStyle = MaterialTheme.typography.titleSmall,
+                fontWeight = if (selected) FontWeight.Bold else null
             ),
         )
     }
