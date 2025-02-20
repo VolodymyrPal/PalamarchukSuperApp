@@ -18,13 +18,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,10 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 
@@ -101,6 +108,80 @@ fun <T> AppOutlinedTextDialogField(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongParameterList")
+@Composable
+fun <T> AppOutlinedTextPopUpField(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    @StringRes label: Int = R.string.app_name,
+    notSetLabel: String? = null,
+    items: List<T>,
+    selectedIndex: Int = -1,
+    onItemSelected: (index: Int, item: T) -> Unit,
+    selectedItemToString: (T) -> String = { it.toString() },
+    drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
+        LargeDropdownMenuItem(
+            text = item.toString(),
+            selected = selected,
+            enabled = itemEnabled,
+            onClick = onClick,
+        )
+    },
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = Modifier.clickable(enabled = enabled) {
+            expanded = !expanded
+        }
+    ) {
+        Box(
+            modifier = Modifier.clickable(enabled = enabled) {
+                expanded = !expanded
+            }
+        ) {
+            AppOutlinedTextField(
+                labelRes = label,
+                value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
+                modifier = Modifier,
+                onValueChange = { },
+                outlinedTextConfig = rememberOutlinedTextConfig(
+                    enabled = enabled,
+                    trailingIcon = {
+                        val icon =
+                            if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown
+                        Icon(icon, "")
+                    },
+                    readOnly = true
+                ),
+            )
+        }
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            listOf<Int>(0, 1, 2).forEach { option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            "Option 1",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    onClick = { expanded = false }
+                )
+            }
+        }
+    }
+}
+
+
 @Suppress("LongParameterList")
 @Composable
 fun <T> DropdownDialog(
@@ -116,6 +197,7 @@ fun <T> DropdownDialog(
     ) {
         Surface(
             shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(vertical = 24.dp),
         ) {
             val listState = rememberLazyListState()
             if (selectedIndex > -1) {
@@ -124,7 +206,11 @@ fun <T> DropdownDialog(
                 }
             }
 
-            LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                state = listState
+            ) {
                 if (notSetLabel != null) {
                     item() {
                         AppText(
@@ -173,7 +259,8 @@ fun LargeDropdownMenuItem(
         AppText(
             value = text,
             appTextConfig = rememberTextConfig(
-                textStyle = MaterialTheme.typography.titleSmall
+                textStyle = MaterialTheme.typography.titleSmall,
+                fontWeight = if (selected) FontWeight.Bold else null
             ),
         )
     }
@@ -184,7 +271,9 @@ fun LargeDropdownMenuItem(
 @Preview
 fun LargeDropdownMenuItemPreview() {
 
-    var selectedIndex by remember { mutableStateOf(-1) }
+    var selectedIndex by remember { mutableIntStateOf(-1) }
+    var selected2Index by remember { mutableIntStateOf(-1) }
+
 
     Column(
         verticalArrangement = Arrangement.SpaceAround,
@@ -221,37 +310,36 @@ fun LargeDropdownMenuItemPreview() {
                     .padding(10.dp)
             ) {
                 Column {
-                    AppOutlinedTextDialogField(
+                    AppOutlinedTextPopUpField(
                         modifier = Modifier.padding(4.dp),
                         items = listOf(
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451",
-                            "123",
-                            "321",
-                            "232",
-                            "11451"
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
+                            "AGgldfsg",
+                            "adsf sald",
+                            "FDSKSDFLKD",
                         ),
                         selectedIndex = selectedIndex,
                         onItemSelected = { index, _ ->
@@ -265,6 +353,14 @@ fun LargeDropdownMenuItemPreview() {
                             selected = if (it % 2 == 0) false else true,
                             enabled = if (it % 2 == 0) false else true
                         ) { }
+                        AppOutlinedTextField(
+                            value = "",
+                            labelRes = R.string.app_name,
+                            onValueChange = {},
+                            outlinedTextConfig = rememberOutlinedTextConfig(
+                                readOnly = true
+                            )
+                        )
                     }
                 }
             }
