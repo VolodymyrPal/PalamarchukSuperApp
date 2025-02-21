@@ -70,7 +70,11 @@ fun <T> AppOutlinedTextDialogField(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier.height(IntrinsicSize.Min)) {
+    Box(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .width(IntrinsicSize.Min)
+    ) {
         AppOutlinedTextField(
             labelRes = label,
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
@@ -261,8 +265,8 @@ fun LargeDropdownMenuItem(
         AppText(
             value = text,
             appTextConfig = rememberTextConfig(
-                textStyle = MaterialTheme.typography.titleSmall,
-                fontWeight = if (selected) FontWeight.Bold else null
+                textStyle = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall,
+                fontWeight = if (selected) FontWeight.Bold else null,
             ),
         )
     }
