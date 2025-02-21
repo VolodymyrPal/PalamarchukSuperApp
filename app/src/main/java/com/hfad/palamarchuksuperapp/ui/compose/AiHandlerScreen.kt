@@ -205,67 +205,24 @@ fun DialogAiHandler(
                     enter = fadeIn(animationSpec = tween(500)),
                     exit = fadeOut(animationSpec = tween(500))
                 ) {
-                    ExposedDropdownMenuBox(
-                        expanded = expandedModelMenu.value,
-                        onExpandedChange = {
-                            expandedModelMenu.value = !expandedModelMenu.value
-                        }
-                    ) {
-                        AppOutlinedTextField(
-                            value = selectedModelOption.value?.modelName ?: "",
-                            onValueChange = {},
-                            outlinedTextConfig = rememberOutlinedTextConfig(
-                                readOnly = true,
-                                trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(
-                                        expanded = expandedModelMenu.value
-                                    )
-                                }
-                            ),
-                            labelRes = R.string.model_hint,
-                            modifier = Modifier
-                                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
-                        )
 
-                        ExposedDropdownMenu(
-                            expanded = expandedModelMenu.value,
-                            onDismissRequest = { expandedModelMenu.value = false }
-                        ) {
-                            modelList.forEach { option ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            option.modelName,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedModelOption.value = option
-                                        expandedModelMenu.value = false
-                                    }
+                    AppOutlinedTextPopUpField(
+                        modifier = Modifier,
+                        items = modelList
+                            .ifEmpty {
+                                listOf<AiModel?>(
+                                    null,
                                 )
-                            }
-                                .also {
-                                    if (modelList.isEmpty()) {
-                                        DropdownMenuItem(
-                                            text = {
-                                                Text(
-                                                    stringResource(
-                                                        R.string.error_with_error,
-                                                        "Not Found"
-                                                    ),
-                                                    color = MaterialTheme.colorScheme.error
-                                                )
-                                            },
-                                            onClick = {
-                                                expandedModelMenu.value = false
-                                            }
-                                        )
-                                    }
-                                }
+                            },
+                        label = R.string.model_hint,
+                        selectedItem = selectedModelOption.value,
+                        selectedItemToString = { modelName -> modelName?.modelName.toString() },
+                        onItemSelected = { index, model ->
+                            selectedModelOption.value = model
                         }
-                    }
+                    )
                 }
+
 
                 // API ключ
                 AppOutlinedTextField(
