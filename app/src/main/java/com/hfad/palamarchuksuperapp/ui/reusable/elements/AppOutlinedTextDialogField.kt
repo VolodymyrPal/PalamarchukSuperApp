@@ -136,6 +136,7 @@ fun <T> AppOutlinedTextPopUpField(
     },
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -164,17 +165,20 @@ fun <T> AppOutlinedTextPopUpField(
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = {
+                expanded = false
+            }
         ) {
-            listOf<Int>(0, 1, 2).forEach { option ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            "Option 1",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    onClick = { expanded = false }
+            if (notSetLabel != null) {
+                AppText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    value = notSetLabel,
+                    appTextConfig = rememberTextConfig(
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center
+                    )
                 )
             }
             items.fastForEachIndexed { index, item ->
@@ -191,6 +195,12 @@ fun <T> AppOutlinedTextPopUpField(
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 }
             }
+        }
+    }
+    LaunchedEffect(expanded) {
+        if (!expanded) {
+            delay(60)
+            focusManager.clearFocus(force = true)
         }
     }
 }
@@ -242,7 +252,7 @@ fun <T> DropdownDialog(
                     }
                 }
                 itemsIndexed(items) { index, item ->
-                    val selectedItem = index == selectedIndex
+                    val selectedItem = index == selectedItemIndex
                     drawItem(
                         item,
                         selectedItem,
@@ -287,8 +297,8 @@ fun LargeDropdownMenuItem(
 @Preview
 fun LargeDropdownMenuItemPreview() {
 
-    var selectedIndex by remember { mutableIntStateOf(-1) }
-    var selected2Index by remember { mutableIntStateOf(-1) }
+    var selectedIndex by remember { mutableStateOf("") }
+    var selected2Index by remember { mutableStateOf("") }
 
 
     Column(
@@ -304,18 +314,20 @@ fun LargeDropdownMenuItemPreview() {
                 Column {
                     AppOutlinedTextDialogField(
                         modifier = Modifier.padding(4.dp),
-                        selectedIndex = selectedIndex,
-                        items = listOf("123", "321", "232", "111"),
-                        onItemSelected = { index, _ -> selectedIndex = index },
+                        selectedItem = selectedIndex,
+                        items = testList,
+                        onItemSelected = { _, item -> selectedIndex = item },
                         // notSetLabel = "Wow, what is it"
                     )
-                    repeat(3) {
-                        LargeDropdownMenuItem(
-                            text = "$it",
-                            selected = if (it % 2 == 0) false else true,
-                            enabled = if (it % 2 == 0) false else true
-                        ) { }
-                    }
+                    AppOutlinedTextPopUpField(
+                        modifier = Modifier.padding(4.dp),
+                        selectedItem = selected2Index,
+                        items = testList,
+                        onItemSelected = { _, item ->
+                            selected2Index = item
+                        },
+                        notSetLabel = "Wow, what is it"
+                    )
                 }
             }
         }
@@ -326,60 +338,54 @@ fun LargeDropdownMenuItemPreview() {
                     .padding(10.dp)
             ) {
                 Column {
+                    AppOutlinedTextDialogField(
+                        modifier = Modifier.padding(4.dp),
+                        selectedItem = selectedIndex,
+                        items = testList,
+                        onItemSelected = { _, item -> selectedIndex = item },
+                        // notSetLabel = "Wow, what is it"
+                    )
                     AppOutlinedTextPopUpField(
                         modifier = Modifier.padding(4.dp),
-                        items = listOf(
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                            "AGgldfsg",
-                            "adsf sald",
-                            "FDSKSDFLKD",
-                        ),
-                        selectedIndex = selectedIndex,
-                        onItemSelected = { index, _ ->
-                            selectedIndex = index
+                        items = testList,
+                        selectedItem = selected2Index,
+                        onItemSelected = { _, item ->
+                            selected2Index = item
                         },
                         notSetLabel = "Wow, what is it"
                     )
-                    repeat(3) {
-                        LargeDropdownMenuItem(
-                            text = "$it",
-                            selected = if (it % 2 == 0) false else true,
-                            enabled = if (it % 2 == 0) false else true
-                        ) { }
-                        AppOutlinedTextField(
-                            value = "",
-                            labelRes = R.string.app_name,
-                            onValueChange = {},
-                            outlinedTextConfig = rememberOutlinedTextConfig(
-                                readOnly = true
-                            )
-                        )
-                    }
                 }
             }
         }
     }
 }
+
+val testList = listOf(
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+    "AGgldfsg",
+    "adsf sald",
+    "FDSKSDFLKD",
+)
