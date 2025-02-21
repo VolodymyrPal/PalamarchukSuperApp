@@ -105,7 +105,7 @@ fun <T> AppOutlinedTextDialogField(
     if (expanded) {
         DropdownDialog(
             onDismissRequest = { expanded = false },
-            selectedIndex = selectedIndex,
+            selectedItem = selectedItem,
             notSetLabel = notSetLabel,
             items = items,
             onItemSelected = onItemSelected,
@@ -123,7 +123,7 @@ fun <T> AppOutlinedTextPopUpField(
     @StringRes label: Int = R.string.app_name,
     notSetLabel: String? = null,
     items: List<T>,
-    selectedIndex: Int = -1,
+    selectedItem: T? = null,
     onItemSelected: (index: Int, item: T) -> Unit,
     selectedItemToString: (T) -> String = { it.toString() },
     drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
@@ -142,31 +142,25 @@ fun <T> AppOutlinedTextPopUpField(
         onExpandedChange = {
             expanded = !expanded
         },
-        modifier = Modifier.clickable(enabled = enabled) {
-            expanded = !expanded
-        }
     ) {
-        Box(
-            modifier = Modifier.clickable(enabled = enabled) {
-                expanded = !expanded
-            }
-        ) {
-            AppOutlinedTextField(
-                labelRes = label,
-                value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
-                modifier = Modifier,
-                onValueChange = { },
-                outlinedTextConfig = rememberOutlinedTextConfig(
-                    enabled = enabled,
-                    trailingIcon = {
-                        val icon =
-                            if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown
-                        Icon(icon, "")
-                    },
-                    readOnly = true
-                ),
-            )
-        }
+
+        AppOutlinedTextField(
+            labelRes = label,
+            value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
+            modifier = modifier
+                .menuAnchor(MenuAnchorType.PrimaryEditable, true),
+            onValueChange = { },
+            outlinedTextConfig = rememberOutlinedTextConfig(
+                enabled = enabled,
+                trailingIcon = {
+                    val icon =
+                        if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown
+                    Icon(icon, "")
+                },
+                readOnly = true,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
+        )
 
         ExposedDropdownMenu(
             expanded = expanded,
@@ -183,6 +177,20 @@ fun <T> AppOutlinedTextPopUpField(
                     onClick = { expanded = false }
                 )
             }
+            items.fastForEachIndexed { index, item ->
+                val selectedItem = item == selectedItem
+                drawItem(
+                    item,
+                    selectedItem,
+                    true
+                ) {
+                    onItemSelected(index, item)
+                    expanded = false
+                }
+                if (index < items.lastIndex) {
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+            }
         }
     }
 }
@@ -192,7 +200,7 @@ fun <T> AppOutlinedTextPopUpField(
 @Composable
 fun <T> DropdownDialog(
     onDismissRequest: () -> Unit,
-    selectedIndex: Int,
+    selectedItem: T?,
     notSetLabel: String? = null,
     items: List<T>,
     onItemSelected: (index: Int, item: T) -> Unit,
@@ -206,9 +214,11 @@ fun <T> DropdownDialog(
             modifier = Modifier.padding(vertical = 24.dp),
         ) {
             val listState = rememberLazyListState()
-            if (selectedIndex > -1) {
-                LaunchedEffect(selectedIndex) {
-                    listState.scrollToItem(index = selectedIndex)
+            val selectedItemIndex = remember(selectedItem) { items.indexOf(selectedItem) }
+
+            if (selectedItemIndex > -1) {
+                LaunchedEffect(selectedItem) {
+                    selectedItemIndex
                 }
             }
 
