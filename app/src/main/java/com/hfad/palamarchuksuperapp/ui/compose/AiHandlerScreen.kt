@@ -55,6 +55,7 @@ import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.ConfirmationDialog
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextDialogField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextPopUpField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
@@ -206,7 +207,7 @@ fun DialogAiHandler(
                     exit = fadeOut(animationSpec = tween(500))
                 ) {
 
-                    AppOutlinedTextPopUpField(
+                    AppOutlinedTextDialogField(
                         modifier = Modifier,
                         items = modelList
                             .ifEmpty {
