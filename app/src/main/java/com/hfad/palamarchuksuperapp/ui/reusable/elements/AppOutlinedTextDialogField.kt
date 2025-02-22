@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -20,8 +21,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuBoxScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -67,14 +70,7 @@ fun <T> AppOutlinedTextDialogField(
             onClick = onClick,
         )
     },
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = modifier
-            .height(IntrinsicSize.Min)
-            .width(IntrinsicSize.Min)
-    ) {
+    appOutlinedTextField: @Composable (expanded: Boolean) -> Unit = {
         AppOutlinedTextField(
             labelRes = label,
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
@@ -84,12 +80,22 @@ fun <T> AppOutlinedTextDialogField(
                 enabled = enabled,
                 trailingIcon = {
                     val icon =
-                        if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown
+                        if (it) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown
                     Icon(icon, "")
                 },
                 readOnly = true
             ),
         )
+    },
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .width(IntrinsicSize.Min)
+    ) {
+        appOutlinedTextField(expanded)
 
         // Transparent clickable surface on top of OutlinedTextField
         Surface(
