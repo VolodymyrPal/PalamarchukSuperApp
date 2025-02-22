@@ -5,6 +5,7 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import io.ktor.serialization.JsonConvertException
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import java.net.SocketException
 
 suspend fun <T> safeApiCall(call: suspend () -> Result<T, AppError>): Result<T, AppError> {
     return try {
@@ -24,6 +25,13 @@ suspend fun <T> safeApiCall(call: suspend () -> Result<T, AppError>): Result<T, 
             )
         )
     } catch (e: ClosedReceiveChannelException) {
+        Result.Error(
+            error = AppError.NetworkException.ApiError.UndefinedError(
+                message = "Waiting for response timeout. Please contact developer.",
+                cause = e
+            )
+        )
+    } catch (e: SocketException) { //Sometimes when bad connection occur
         Result.Error(
             error = AppError.NetworkException.ApiError.UndefinedError(
                 message = "Waiting for response timeout. Please contact developer.",
