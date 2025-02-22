@@ -134,28 +134,17 @@ fun <T> AppOutlinedTextPopUpField(
     selectedItemToString: (T) -> String = { it.toString() },
     drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
         LargeDropdownMenuItem(
-            text = item.toString(),
+            text = selectedItemToString(item),
             selected = selected,
             enabled = itemEnabled,
             onClick = onClick,
         )
     },
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {
-            expanded = !expanded
-        },
-    ) {
-
+    appOutlinedTextField: @Composable ExposedDropdownMenuBoxScope.(expanded: Boolean) -> Unit = { expanded ->
         AppOutlinedTextField(
             labelRes = label,
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
-            modifier = modifier
-                .menuAnchor(MenuAnchorType.PrimaryEditable, true),
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true),
             onValueChange = { },
             outlinedTextConfig = rememberOutlinedTextConfig(
                 enabled = enabled,
@@ -168,6 +157,20 @@ fun <T> AppOutlinedTextPopUpField(
                 interactionSource = remember { MutableInteractionSource() }
             ),
         )
+    },
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = modifier
+    ) {
+
+        appOutlinedTextField(expanded)
 
         ExposedDropdownMenu(
             expanded = expanded,
@@ -186,6 +189,9 @@ fun <T> AppOutlinedTextPopUpField(
                         textAlign = TextAlign.Center
                     )
                 )
+            }
+            if (items.isEmpty()) {
+                CircularProgressIndicator(modifier = Modifier.size(32.dp))
             }
             items.fastForEachIndexed { index, item ->
                 val selectedItem = item == selectedItem
@@ -257,6 +263,11 @@ fun <T> DropdownDialog(
                         )
                     }
                 }
+                if (items.isEmpty()) {
+                    item() {
+                        CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                    }
+                }
                 itemsIndexed(items) { index, item ->
                     val selectedItem = index == selectedItemIndex
                     drawItem(
@@ -299,6 +310,7 @@ fun LargeDropdownMenuItem(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun LargeDropdownMenuItemPreview() {
