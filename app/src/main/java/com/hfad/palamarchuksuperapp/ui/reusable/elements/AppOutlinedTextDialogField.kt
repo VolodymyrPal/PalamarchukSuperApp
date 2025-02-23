@@ -140,7 +140,16 @@ fun <T> AppOutlinedTextPopUpField(
             onClick = onClick,
         )
     },
-    appOutlinedTextField: @Composable ExposedDropdownMenuBoxScope.(expanded: Boolean) -> Unit = { expanded ->
+    appOutlinedTextField: @Composable ExposedDropdownMenuBoxScope.(
+        expanded: Boolean,
+        label: Int,
+        selectedItem: T?,
+        selectedItemToString: (T) -> String,
+        enabled: Boolean,
+        onDismissRequest: () -> Unit,
+    ) -> Unit = {
+            expanded, label, selectedItem, selectedItemToString, enabled, onDismissRequest,
+        ->
         AppOutlinedTextField(
             labelRes = label,
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
@@ -170,7 +179,13 @@ fun <T> AppOutlinedTextPopUpField(
         modifier = modifier
     ) {
 
-        appOutlinedTextField(expanded)
+        appOutlinedTextField(
+            expanded,
+            label,
+            selectedItem,
+            selectedItemToString,
+            enabled,
+            { expanded = !expanded })
 
         ExposedDropdownMenu(
             expanded = expanded,

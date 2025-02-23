@@ -1,16 +1,17 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import com.hfad.palamarchuksuperapp.DataStoreHandler
-import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
+import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.domain.models.LLMName
 import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -66,8 +67,18 @@ class AiHandlerRepositoryImpl @Inject constructor(
         handler.setAiHandlerInfo(
             aiHandlerInfo
         )
-        val jsonToSave = Json.encodeToString(aiHandlerFlow.first().map { it.aiHandlerInfo.value })
-        dataStoreHandler.saveAiHandlerList(jsonToSave)
+
+        aiHandlerFlow.take(1).collect {
+            val updatedHandlers = it.map {
+                if (it.aiHandlerInfo.value.id == handler.aiHandlerInfo.value.id) {
+                    handler.aiHandlerInfo.value
+                } else {
+                    it.aiHandlerInfo.value
+                }
+            }
+            val jsonToSave = Json.encodeToString(updatedHandlers)
+            dataStoreHandler.saveAiHandlerList(jsonToSave)
+        }
     }
 
     private val mutableBaseHandlerMap: MutableMap<LLMName, AiModelHandler> by lazy { mutableMapOf() }
