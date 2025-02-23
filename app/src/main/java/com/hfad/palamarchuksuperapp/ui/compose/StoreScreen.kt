@@ -132,6 +132,11 @@ import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
+import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import io.ktor.client.HttpClient
@@ -976,62 +981,78 @@ fun SubDrawerContent(
             fun showToast() {
                 Toast.makeText(context, "Order confirmed", Toast.LENGTH_SHORT).show()
             }
-            AlertDialog(
-                title = {
-                    Text(text = stringResource(R.string.order_confirmation_title))
-                },
-                text = {
-                    var phone by remember { mutableStateOf("") }
+
+            AppDialog(
+                onDismissRequest = { openAlertDialog.value = false },
+            ) {
+                Header {
+                    AppText(
+                        stringRes = R.string.order_confirmation_title,
+                        appTextConfig = rememberTextConfig(
+                            textStyle = MaterialTheme.typography.titleMedium
+                        )
+                    )
+                }
+                Content {
                     Column {
-                        Text(stringResource(R.string.order_confirmation_message))
-                        TextField(
+                        var phone by remember { mutableStateOf("") }
+
+                        AppText(
+                            R.string.order_confirmation_message
+                        )
+                        AppTextField(
                             value = phone,
                             onValueChange = { phone = it },
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Phone,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    for (item in items) {
-                                        onEvent.invoke(
-                                            StoreViewModel.Event.SetItemToBasket(
-                                                item,
-                                                0
+                            editTextConfig = rememberTextFieldConfig(
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Phone,
+                                    imeAction = ImeAction.Done
+                                ),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        for (item in items) {
+                                            onEvent.invoke(
+                                                StoreViewModel.Event.SetItemToBasket(
+                                                    item,
+                                                    0
+                                                )
                                             )
-                                        )
+                                        }
+                                        closeDrawerEvent()
+                                        showToast()
+                                        openAlertDialog.value = false
                                     }
-                                    closeDrawerEvent()
-                                    showToast()
-                                    openAlertDialog.value = false
-                                }
+                                )
                             )
                         )
                     }
-                },
-                onDismissRequest = {
-                    openAlertDialog.value = false
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            for (item in items) {
-                                onEvent.invoke(
-                                    StoreViewModel.Event.SetItemToBasket(
-                                        item,
-                                        0
-                                    )
-                                )
-                            }
-                            closeDrawerEvent()
-                            showToast()
-                            openAlertDialog.value = false
-                        }
+                }
+                Actions {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.End
                     ) {
-                        Text(stringResource(R.string.order_proceed_button))
+                        TextButton(
+                            modifier = Modifier,
+                            onClick = {
+                                for (item in items) {
+                                    onEvent.invoke(
+                                        StoreViewModel.Event.SetItemToBasket(
+                                            item,
+                                            0
+                                        )
+                                    )
+                                }
+                                closeDrawerEvent()
+                                showToast()
+                                openAlertDialog.value = false
+                            }
+                        ) {
+                            AppText(stringResource(R.string.order_proceed_button))
+                        }
                     }
-                },
-            )
+                }
+            }
         }
     }
 }
