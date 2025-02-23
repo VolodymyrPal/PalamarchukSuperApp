@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,19 +22,23 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,6 +65,7 @@ import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextDialogFi
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextPopUpField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
@@ -196,10 +203,48 @@ fun DialogAiHandler(
                     selectedItemToString = { llmName -> llmName.name.toString() },
                     onItemSelected = { index, llm ->
                         selectedLLM.value = llm
-                        event(ChatBotViewModel.Event.GetModels(llm))
                         selectedModelOption.value = null
+                    },
+                    appOutlinedTextField = {
+                            expanded, label, selectedItem,
+                            selectedItemToString, enabled, onDismissRequest,
+                        ->
+                        AppOutlinedTextField(
+                            labelRes = label,
+                            value = if (selectedItem == null) "" else selectedItemToString(
+                                selectedItem
+                            ),
+                            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true),
+                            onValueChange = { },
+                            outlinedTextConfig = rememberOutlinedTextConfig(
+                                enabled = enabled,
+                                trailingIcon = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                                        IconButton(onClick = {
+                                            selectedLLM.value = null
+                                            onDismissRequest()
+                                        }
+                                        ) {
+                                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                        }
+                                    }
+                                },
+                                readOnly = true,
+                                interactionSource = remember { MutableInteractionSource() },
+                            ),
+                        )
                     }
                 )
+                LaunchedEffect(
+                    selectedLLM.value
+                ) {
+                    if (selectedLLM.value != null) {
+                        event(ChatBotViewModel.Event.GetModels(selectedLLM.value!!))
+                    }
+                }
 
                 AnimatedVisibility(
                     visible = selectedLLM.value != null,
@@ -269,7 +314,7 @@ fun DialogAiHandler(
                                     event(
                                         ChatBotViewModel.Event.AddAiHandler(
                                             aiHandlerInfo = AiHandlerInfo(
-                                                name = name.value.ifBlank { "Новая модель" },
+                                                name = name.value.ifBlank { "New Model" },
                                                 isSelected = true,
                                                 isActive = true,
                                                 model = selectedModelOption.value!!,
