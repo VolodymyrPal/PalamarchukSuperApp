@@ -11,6 +11,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
@@ -173,8 +174,9 @@ fun BottomNavBar(
     NavigationBar(
         modifier = modifier
             .padding(bottom = 5.dp, start = 5.dp, end = 5.dp)
-            .clip(RoundedCornerShape(25)),
-        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+            .clip(RoundedCornerShape(25))
+            .border(2.dp, MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(25)),
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.95f)
     ) {
 
         tabBarItems.forEachIndexed { index, tabBarItem ->

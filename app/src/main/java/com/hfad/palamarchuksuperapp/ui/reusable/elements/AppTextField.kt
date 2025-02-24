@@ -47,7 +47,7 @@ fun AppTextField(
     label: @Composable (() -> Unit)? = labelRes?.let { labelRes ->
         {
             AppText(
-                labelRes, appTextConfig = rememberTextConfig(
+                labelRes, appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.bodySmall
                 )
             )

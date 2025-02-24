@@ -105,6 +105,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -133,7 +134,7 @@ import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
 import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
@@ -305,7 +306,6 @@ fun StoreScreen(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(
-                            bottom = paddingValues.calculateBottomPadding(),
                             top = paddingValues.calculateTopPadding(),
                         )
                 ) {
@@ -314,6 +314,7 @@ fun StoreScreen(
                         onEvent = viewModel::event,
                         error = myState.error,
                         snackBarHost = snackbarHostState,
+                        bottomSpace = paddingValues.calculateBottomPadding()
                     )
                 }
             }
@@ -330,6 +331,7 @@ fun StoreScreenContent(
     error: AppError?,
     onEvent: (StoreViewModel.Event) -> Unit,
     snackBarHost: SnackbarHostState,
+    bottomSpace: Dp = 0.dp,
 ) {
     val itemSpan = LocalConfiguration.current.screenWidthDp / WIDTH_ITEM
     val pullRefreshState =
@@ -434,6 +436,9 @@ fun StoreScreenContent(
                         )
                     }
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.size(bottomSpace))
             }
         }
         PullRefreshIndicator(
@@ -986,7 +991,7 @@ fun SubDrawerContent(
                 Header {
                     AppText(
                         stringRes = R.string.order_confirmation_title,
-                        appTextConfig = rememberTextConfig(
+                        appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.titleMedium
                         )
                     )

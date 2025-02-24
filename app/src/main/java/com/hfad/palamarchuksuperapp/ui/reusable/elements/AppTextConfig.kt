@@ -75,7 +75,7 @@ data class AppTextConfig(
  */
 @Composable
 @Suppress("LongParameterList")
-fun rememberTextConfig(
+fun appTextConfig(
     textStyle: TextStyle = TextStyle.Default,
     overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
@@ -92,24 +92,22 @@ fun rememberTextConfig(
     lineHeight: TextUnit = TextUnit.Unspecified,
 ): AppTextConfig {
 
-    return remember {
-        AppTextConfig(
-            textStyle,
-            overflow,
-            softWrap,
-            maxLines,
-            minLines,
-            onTextLayout,
-            fontSize,
-            fontStyle,
-            fontWeight,
-            fontFamily,
-            letterSpacing,
-            textDecoration,
-            textAlign,
-            lineHeight,
-        )
-    }
+    return AppTextConfig(
+        textStyle,
+        overflow,
+        softWrap,
+        maxLines,
+        minLines,
+        onTextLayout,
+        fontSize,
+        fontStyle,
+        fontWeight,
+        fontFamily,
+        letterSpacing,
+        textDecoration,
+        textAlign,
+        lineHeight,
+    )
 }
 
 @Immutable
@@ -133,7 +131,7 @@ data class AppEditOutlinedTextConfig(
 
 @Composable
 @Suppress("LongParameterList")
-fun rememberOutlinedTextConfig(
+fun appEditOutlinedTextConfig(
     isError: Boolean = false,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -150,25 +148,23 @@ fun rememberOutlinedTextConfig(
     suffix: @Composable (() -> Unit)? = null,
     supportingText: @Composable (() -> Unit)? = null,
 ): AppEditOutlinedTextConfig {
-    return remember {
-        AppEditOutlinedTextConfig(
-            isError,
-            enabled,
-            readOnly,
-            visualTransformation,
-            keyboardOptions,
-            keyboardActions,
-            singleLine,
-            maxLines,
-            minLines,
-            interactionSource,
-            leadingIcon,
-            trailingIcon,
-            prefix,
-            suffix,
-            supportingText,
-        )
-    }
+    return AppEditOutlinedTextConfig(
+        isError,
+        enabled,
+        readOnly,
+        visualTransformation,
+        keyboardOptions,
+        keyboardActions,
+        singleLine,
+        maxLines,
+        minLines,
+        interactionSource,
+        leadingIcon,
+        trailingIcon,
+        prefix,
+        suffix,
+        supportingText,
+    )
 }
 
 
@@ -307,11 +303,8 @@ fun TextFieldDefaults.appColors() = TextFieldDefaults.colors(
 @Composable
 @Preview(showBackground = false)
 internal fun ColorTextFieldPreview() {
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
 
     Column {
-
 
         AppTextField(
             modifier = Modifier.padding(6.dp),
