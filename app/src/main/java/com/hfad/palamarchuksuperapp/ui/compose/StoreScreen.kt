@@ -986,7 +986,7 @@ fun SubDrawerContent(
                 Header {
                     AppText(
                         stringRes = R.string.order_confirmation_title,
-                        appTextConfig = rememberTextConfig(
+                        appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.titleMedium
                         )
                     )

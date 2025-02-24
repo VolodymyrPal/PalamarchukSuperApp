@@ -65,7 +65,7 @@ import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -195,7 +195,7 @@ private fun StoreAppDialog() {
                 AppText(
                     "Order Confirmation",
                     modifier = Modifier.fillMaxWidth(),
-                    appTextConfig = rememberTextConfig(
+                    appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center
                     )

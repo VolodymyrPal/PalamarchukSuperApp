@@ -40,7 +40,7 @@ import coil.compose.AsyncImage
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -108,7 +108,7 @@ private fun ValentineScreen() {
                 AppText(
                     modifier = Modifier,
                     value = text,
-                    appTextConfig = rememberTextConfig(
+                    appTextConfig = appTextConfig(
                         textStyle = TextStyle.Default.copy(
                             fontSize = 24.sp,
                             textAlign = TextAlign.Center,

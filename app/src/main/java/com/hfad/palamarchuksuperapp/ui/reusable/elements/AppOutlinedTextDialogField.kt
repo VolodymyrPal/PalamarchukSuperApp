@@ -76,7 +76,7 @@ fun <T> AppOutlinedTextDialogField(
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
             modifier = Modifier,
             onValueChange = { },
-            outlinedTextConfig = rememberOutlinedTextConfig(
+            outlinedTextConfig = appEditOutlinedTextConfig(
                 enabled = enabled,
                 trailingIcon = {
                     val icon =
@@ -155,7 +155,7 @@ fun <T> AppOutlinedTextPopUpField(
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true),
             onValueChange = { },
-            outlinedTextConfig = rememberOutlinedTextConfig(
+            outlinedTextConfig = appEditOutlinedTextConfig(
                 enabled = enabled,
                 trailingIcon = {
                     val icon =
@@ -199,7 +199,7 @@ fun <T> AppOutlinedTextPopUpField(
                         .fillMaxWidth()
                         .padding(4.dp),
                     value = notSetLabel,
-                    appTextConfig = rememberTextConfig(
+                    appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center
                     )
@@ -271,7 +271,7 @@ fun <T> DropdownDialog(
                                 .fillMaxWidth()
                                 .padding(4.dp),
                             value = notSetLabel,
-                            appTextConfig = rememberTextConfig(
+                            appTextConfig = appTextConfig(
                                 textStyle = MaterialTheme.typography.titleLarge,
                                 textAlign = TextAlign.Center
                             )
@@ -316,7 +316,7 @@ fun LargeDropdownMenuItem(
             .padding(start = 24.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)) {
         AppText(
             value = text,
-            appTextConfig = rememberTextConfig(
+            appTextConfig = appTextConfig(
                 textStyle = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall,
                 fontWeight = if (selected) FontWeight.Bold else null,
             ),
