@@ -14,17 +14,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.material.IconButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -59,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
@@ -66,6 +69,9 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
@@ -86,50 +92,44 @@ fun SkillScreen(
 
     val localTransitionScope = LocalSharedTransitionScope.current
         ?: error(IllegalStateException("No SharedElementScope found"))
-    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
-        ?: error(IllegalStateException("No AnimatedVisibility found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current ?: error(
+        IllegalStateException("No AnimatedVisibility found")
+    )
 
     with(localTransitionScope) {//TODO
-        Scaffold(
-            modifier = modifier
-                .fillMaxSize(),
-            bottomBar = {
-                BottomNavBar()
-            },
-            floatingActionButton = {
-                val context = LocalContext.current
-                FloatingActionButton(
-                    shape = RoundedCornerShape(33),
-                    modifier = Modifier,
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    onClick = remember {
-                        {
-                            val bottomSheetFragment = BottomSheetFragment(
-                                viewModelEvent = viewModel::event
-                            )
-                            bottomSheetFragment.show(
-                                (context as FragmentActivity).supportFragmentManager,
-                                "BSDialogFragment"
-                            )
-                        }
-                    },
-                    content = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.add_fab_button),
-                            "Floating action button."
+        Scaffold(modifier = modifier.fillMaxSize(), bottomBar = {
+            BottomNavBar()
+        }, floatingActionButton = {
+            val context = LocalContext.current
+            FloatingActionButton(
+                shape = RoundedCornerShape(33),
+                modifier = Modifier,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                onClick = remember {
+                    {
+                        val bottomSheetFragment = BottomSheetFragment(
+                            viewModelEvent = viewModel::event
+                        )
+                        bottomSheetFragment.show(
+                            (context as FragmentActivity).supportFragmentManager,
+                            "BSDialogFragment"
                         )
                     }
-                )
-            }
-        ) { paddingValues ->
+                },
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.add_fab_button),
+                        "Floating action button."
+                    )
+                })
+        }) { paddingValues ->
             Surface(
                 color = Color.Transparent, modifier = modifier
                     .fillMaxSize()
                     .sharedBounds(
-                        this.rememberSharedContentState("skill"),
-                        animatedContentScope
+                        this.rememberSharedContentState("skill"), animatedContentScope
                     )
-                    .padding(bottom = paddingValues.calculateBottomPadding())
+                    .padding()
             ) {
                 val state by viewModel.uiState.collectAsState()
                 //viewModel.fetchSkills()
@@ -149,10 +149,8 @@ fun SkillScreen(
                 if (state.error != null) {
                     Text(
                         text = stringResource(
-                            R.string.error_with_error,
-                            state.error ?: "Unknown error"
-                        ),
-                        color = Color.Red
+                            R.string.error_with_error, state.error ?: "Unknown error"
+                        ), color = Color.Red
                     )
                 }
 
@@ -160,7 +158,8 @@ fun SkillScreen(
                     LazyList(
                         modifier = Modifier.fillMaxSize(),
                         skillList = state.items,
-                        viewModelEvent = viewModel::event
+                        viewModelEvent = viewModel::event,
+                        bottomSpace = paddingValues.calculateBottomPadding()
                     )
                 }
 
@@ -174,19 +173,15 @@ fun LazyList(
     modifier: Modifier = Modifier,
     skillList: List<Skill>,
     viewModelEvent: (SkillsViewModel.Event) -> Unit,
+    bottomSpace: Dp = 0.dp,
 ) {
     LazyColumn {
         items(
-            items = skillList,
-            key = { item: Skill -> item.uuid.toString() }
-        ) { skill ->
+            items = skillList, key = { item: Skill -> item.uuid.toString() }) { skill ->
             AnimatedVisibility(
-                modifier = Modifier.animateItem(),
-                visible = skill.isVisible,
-                exit = fadeOut(
+                modifier = Modifier.animateItem(), visible = skill.isVisible, exit = fadeOut(
                     animationSpec = TweenSpec(100, 100, LinearEasing)
-                ),
-                enter = fadeIn(
+                ), enter = fadeIn(
                     animationSpec = TweenSpec(100, 100, LinearEasing)
                 )
             ) {
@@ -196,9 +191,12 @@ fun LazyList(
                 )
             }
         }
-
         item {
-            Spacer(modifier = Modifier.size(72.dp))
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(bottomSpace)
+            )
         }
     }
 }
@@ -220,41 +218,28 @@ fun ItemListSkill(
     var isExpanded by remember { mutableStateOf(false) }
 
     Card(
-        modifier = if (!isExpanded) {
+        onClick = {
+            onEvent.invoke(
+                SkillsViewModel.Event.EditItem(
+                    item, SkillsChangeConst.ChooseOrNotSkill
+                )
+            )
+        }, shape = MaterialTheme.shapes.medium, modifier = if (!isExpanded) {
             modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .then(remember(item) {
-                    Modifier.clickable {
-                        onEvent.invoke(
-                            SkillsViewModel.Event.EditItem(
-                                item,
-                                SkillsChangeConst.ChooseOrNotSkill
-                            )
-                        )
-                    }
-                })
+                //  .wrapContentHeight()
+                .height(IntrinsicSize.Min)
+
         } else {
             modifier
                 .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .then(remember(item) {
-                    Modifier.clickable {
-                        onEvent.invoke(
-                            SkillsViewModel.Event.EditItem(
-                                item,
-                                SkillsChangeConst.ChooseOrNotSkill
-                            )
-                        )
-                    }
-                })
-        },
-        colors = CardDefaults.cardColors(
+                //.wrapContentHeight()
+                .height(IntrinsicSize.Min)
+        }, colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        border = BorderStroke(width = 0.5.dp, color = Color.Gray)
+        ), border = BorderStroke(width = 0.5.dp, color = Color.Gray)
 
     ) {
         var isVisible by remember { mutableStateOf(false) }
@@ -264,66 +249,65 @@ fun ItemListSkill(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
 
             ) {
                 Column(
                     Modifier.weight(0.9f)
                 ) {
 
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        text = item.name,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Serif,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    AppText(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp, 4.dp, 0.dp, 4.dp),
+                        value = item.name,
+                        appTextConfig = appTextConfig(
+                            fontWeight = FontWeight.Bold,
+                            textStyle = MaterialTheme.typography.titleMedium,
+                            fontFamily = FontFamily.Serif,
+                            textAlign = TextAlign.Center,
+                        )
                     )
                     Box(
-                        modifier = Modifier
-                            .padding(start = 6.dp, end = 6.dp),
+                        modifier = Modifier.padding(start = 6.dp, end = 6.dp),
                         contentAlignment = Alignment.TopStart
                     ) {
-                        Text(
+                        AppText(
                             modifier = Modifier,
-                            text = item.description,
-                            maxLines = if (!isExpanded) 2 else Int.MAX_VALUE,
-                            overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            onTextLayout = remember(isExpanded) {
-                                { textLayoutResult ->
-                                    isVisible =
-                                        textLayoutResult.hasVisualOverflow || isExpanded
-                                }
-                            }
-                        )
+                            value = item.description,
+                            appTextConfig = AppTextConfig(
+                                maxLines = if (!isExpanded) 2 else Int.MAX_VALUE,
+                                overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
+                                onTextLayout = { textLayoutResult ->
+                                    isVisible = textLayoutResult.hasVisualOverflow || isExpanded
+                                }))
                     }
                 }
 
                 Column(
                     modifier = Modifier.wrapContentHeight(),
-                    verticalArrangement = Arrangement.Bottom,
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     var expanded by remember { mutableStateOf(false) }
                     val context = LocalContext.current
 
-                    Icon(
-                        modifier = Modifier.clickable {
-                            expanded = true
-                        },
-                        imageVector = ImageVector.vectorResource(id = R.drawable.more_button),
-                        contentDescription = "More menu"
-                    )
+                    IconButton(
+                        onClick = { expanded = true },
+                        enabled = true,
+                    ) {
+                        Icon(
+                            ImageVector.vectorResource(id = R.drawable.more_button),
+                            contentDescription = "More menu"
+                        )
+                    }
                     MyDropDownMenus(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                         onEdit = remember(item) {
                             {
                                 val bottomSheetFragment = BottomSheetFragment(
-                                    viewModelEvent = onEvent,
-                                    skill = item
+                                    viewModelEvent = onEvent, skill = item
                                 )
                                 bottomSheetFragment.show(
                                     (context as FragmentActivity).supportFragmentManager,
@@ -336,33 +320,26 @@ fun ItemListSkill(
                     )
 
                     Checkbox(
-                        modifier = modifier,
-                        onCheckedChange = {
+                        modifier = modifier, onCheckedChange = {
                             onEvent.invoke(
                                 SkillsViewModel.Event.EditItem(
-                                    item,
-                                    SkillsChangeConst.ChooseOrNotSkill
+                                    item, SkillsChangeConst.ChooseOrNotSkill
                                 )
                             )
-                        },
-                        checked = item.chosen
+                        }, checked = item.chosen
                     )
                 }
             }
         }
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom
+            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
         ) {
             BasicText(
                 modifier = Modifier
                     .padding(start = 8.dp)
-                    .weight(0.4f),
-                text = SimpleDateFormat(
-                    "dd MMMM yyyy: HH:mm",
-                    Locale.US
-                ).format(item.date),
-                style = TextStyle(
+                    .weight(0.4f), text = SimpleDateFormat(
+                    "dd MMMM yyyy: HH:mm", Locale.US
+                ).format(item.date), style = TextStyle(
                     fontStyle = FontStyle.Italic,
                     fontSize = 11.sp,
                     textAlign = TextAlign.Left,
@@ -370,31 +347,32 @@ fun ItemListSkill(
                 )
             )
 
-            BasicText(
-                modifier = Modifier
-                    .weight(0.5f)
-                    .animateContentSize()
-                    .then(remember(isVisible) {
-                        Modifier.clickable { isExpanded = !isExpanded }
-                    }),
-                style = TextStyle(
-                    fontSize = 10.sp,
-                    fontStyle = FontStyle.Italic,
-                    color = if (!isVisible) MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                        alpha = 0f
+            if (isVisible) {
+                BasicText(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .animateContentSize()
+                        .then(remember(isVisible) {
+                            Modifier.clickable { isExpanded = !isExpanded }
+                        }), style = TextStyle(
+                        fontSize = 10.sp,
+                        fontStyle = FontStyle.Italic,
+                        color = if (!isVisible) MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = 0f
 
-                    ) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                        alpha = 0.5f
+                        ) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = 0.5f
+                        ),
+                        textAlign = TextAlign.Left
                     ),
-                    textAlign = TextAlign.Left
-                ),
 
-                text = if (!isExpanded) {
-                    stringResource(R.string.details) + " >>"
-                } else {
-                    stringResource(R.string.hide) + " <<"
-                }
-            )
+                    text = if (!isExpanded) {
+                        stringResource(R.string.details) + " >>"
+                    } else {
+                        stringResource(R.string.hide) + " <<"
+                    }
+                )
+            }
         }
     }
 }
@@ -433,8 +411,7 @@ fun MyDropDownMenus(
                             onEdit()
                             onDismissRequest()
                         }
-                    }
-                )
+                    })
 
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.delete)) },
@@ -443,16 +420,14 @@ fun MyDropDownMenus(
                             onEvent.invoke(SkillsViewModel.Event.DeleteItem(item))
                             onDismissRequest()
                         }
-                    }
-                )
+                    })
 
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.delete_all_chosen)) },
                     onClick = {
                         onEvent.invoke(SkillsViewModel.Event.DeleteAllChosen)
                         onDismissRequest()
-                    }
-                )
+                    })
 
                 HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
 
@@ -467,8 +442,7 @@ fun MyDropDownMenus(
                             )
                             onDismissRequest()
                         }
-                    }
-                )
+                    })
             }
         }
     }
@@ -480,13 +454,9 @@ fun MyDropDownMenus(
 fun ListItemSkillPreview() {
     ItemListSkill(
         item = Skill(
-            id = 1,
-            name = "name",
-            date = Date(),
-            chosen = false
+            id = 1, name = "name", date = Date(), chosen = false
         ),
-        onEvent = {
-        },
+        onEvent = {},
     )
     println("true".toBooleanStrictOrNull())
 }
