@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,8 +64,8 @@ import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextDialogFi
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextPopUpField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberOutlinedTextConfig
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.appEditOutlinedTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import io.ktor.client.HttpClient
 import kotlinx.collections.immutable.PersistentList
@@ -178,7 +177,7 @@ fun DialogAiHandler(
                     } else {
                         R.string.add_handler_title
                     },
-                    appTextConfig = rememberTextConfig(
+                    appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center
                     )
@@ -216,7 +215,7 @@ fun DialogAiHandler(
                             ),
                             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true),
                             onValueChange = { },
-                            outlinedTextConfig = rememberOutlinedTextConfig(
+                            outlinedTextConfig = appEditOutlinedTextConfig(
                                 enabled = enabled,
                                 trailingIcon = {
                                     Row(
@@ -328,7 +327,7 @@ fun DialogAiHandler(
                         },
                         enabled = selectedModelOption.value != null && name.value.isNotBlank()
                     ) {
-                        Text(
+                        AppText(
                             stringResource(
                                 if (dialogAiHandlerState.handler != null) {
                                     R.string.save
