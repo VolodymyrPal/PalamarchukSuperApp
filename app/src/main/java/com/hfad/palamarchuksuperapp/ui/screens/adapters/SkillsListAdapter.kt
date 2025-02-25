@@ -59,9 +59,9 @@ class SkillsListAdapter(
         fun bind(skill: Skill) {
             binding.materialCheckBox.isChecked = skill.chosen
             binding.skillTitle.text =
-                skill.name.uppercase(Locale.getDefault())
+                skill.skillEntity.name.uppercase(Locale.getDefault())
             binding.skillDate.text =
-                SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(skill.date)
+                SimpleDateFormat("dd MMMM yyyy: HH:mm", Locale.US).format(skill.skillEntity.date)
             binding.moreButton.setOnClickListener {
                 val popupMenu = PopupMenu(binding.root.context, binding.moreButton)
                 popupMenu.inflate(R.menu.skill_recycler_menu)
@@ -153,7 +153,7 @@ class SkillsListAdapter(
                 expandOrHide(skill)
             }
 
-            binding.skillDescription.text = skill.description
+            binding.skillDescription.text = skill.skillEntity.description
             binding.materialCheckBox.isChecked = skill.chosen
 
 
@@ -174,7 +174,7 @@ class SkillsListAdapter(
 
             if (!skill.isExpanded) {
                 binding.skillDescription.maxLines = Int.MAX_VALUE
-                binding.skillDescription.text = skill.description
+                binding.skillDescription.text = skill.skillEntity.description
 
                 val layoutParamsDescription = binding.skillDescription.layoutParams
                 layoutParamsDescription.height = LayoutParams.MATCH_PARENT
@@ -217,6 +217,6 @@ class SkillsListAdapter(
             oldItem: Skill,
             newItem: Skill,
         ): Boolean =
-            oldItem.description == newItem.description
+            oldItem.skillEntity.description == newItem.skillEntity.description
     }
 }

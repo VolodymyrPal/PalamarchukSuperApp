@@ -91,8 +91,6 @@ class SendAiRequestUseCaseImpl @Inject constructor(
         requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>>,
     ): Result<Unit, AppError> {
 
-        val errors = mutableListOf<AppError>()
-
         supervisorScope {
 
             requests.forEach { (messageAi, request) ->
@@ -129,22 +127,9 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             chatController.updateMessageAi(errorMessage)
                         }
                     }
-                    synchronized(errors) {
-                        if (result is Result.Error) {
-                            errors.add(result.error)
-                        }
-                    }
                 }
             }
         }
-        return if (errors.isNotEmpty()) {
-            Result.Error(
-                error = AppError.CustomError(
-                    "Some handlers failed: ${errors.joinToString()} "
-                )
-            )
-        } else {
-            Result.Success(Unit)
-        }
+        return Result.Success(Unit)
     }
 }

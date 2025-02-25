@@ -1,16 +1,10 @@
 package com.hfad.palamarchuksuperapp.domain.models
 
-import java.util.Date
-import java.util.UUID
+import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 
 data class Skill(
-    val id: Int = 0,
-    val uuid: UUID = UUID.randomUUID(),
-    val name: String = "",
-    val description: String = "",
-    val date: Date = Date(),
-    val position: Int = id,
+    val skillEntity: SkillEntity,
     var chosen: Boolean = false,
     var isExpanded: Boolean = false,
-    var isVisible: Boolean = true
+    var isVisible: Boolean = true,
 )

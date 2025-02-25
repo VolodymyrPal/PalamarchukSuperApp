@@ -4,8 +4,12 @@ import IoDispatcher
 import MainDispatcher
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
+import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Skill
+import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,10 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.hfad.palamarchuksuperapp.domain.models.Result
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.CoroutineDispatcher
 
 class SkillsViewModel @Inject constructor(
     private val repository: SkillRepository,
@@ -168,11 +168,15 @@ class SkillsViewModel @Inject constructor(
         viewModelScope.launch(mainDispatcher) {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
-//                            val newSkills = uiState.first().items!!.toMutableList()
-//                            newSkills.indexOf(skillDomainRW).let {
-//                                newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
-//                            }
-
+                    repository.updateSkill(
+                        skill
+                    )
+//                    val newSkills = uiState.take(1).collect {
+//                        it.items.toMutableList()
+//                    }
+//                    newSkills.indexOf(skillDomainRW).let {
+//                        newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
+//                    }
                 }
 
                 SkillsChangeConst.FullSkill -> {

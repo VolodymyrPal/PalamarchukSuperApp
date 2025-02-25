@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 import com.hfad.palamarchuksuperapp.databinding.ListItemBottomSheetBinding
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
@@ -16,7 +17,7 @@ import java.util.Date
 import java.util.Locale
 
 class BottomSheetFragment(
-    private var skill: Skill = Skill(),
+    private var skill: Skill = Skill(skillEntity = SkillEntity()),
     private var viewModelEvent: (SkillsViewModel.Event) -> Unit,
 ) : BottomSheetDialogFragment() {
 
@@ -34,11 +35,11 @@ class BottomSheetFragment(
 
         _binding = ListItemBottomSheetBinding.inflate(inflater, container, false)
         binding.apply {
-            skillNameField.setText(skill.name)
-            skillDescriptionField.setText(skill.description)
+            skillNameField.setText(skill.skillEntity.name)
+            skillDescriptionField.setText(skill.skillEntity.description)
             skillDateField.setText(
                 SimpleDateFormat("dd MMMM: HH:mm", Locale.US).format(
-                    skill.date
+                    skill.skillEntity.date
                 )
             )
             skillDateField.inputType = EditorInfo.TYPE_NULL
@@ -48,8 +49,10 @@ class BottomSheetFragment(
                     showDatePicker { selectedDate ->
                         skill =
                             skill.copy(
-                                date = Date(
-                                    selectedDate
+                                skill.skillEntity.copy(
+                                    date = Date(
+                                        selectedDate
+                                    )
                                 )
                             )
 
@@ -67,8 +70,10 @@ class BottomSheetFragment(
                 showDatePicker { selectedDate ->
                     skill =
                         skill.copy(
-                            date = Date(
-                                selectedDate
+                            skill.skillEntity.copy(
+                                date = Date(
+                                    selectedDate
+                                )
                             )
                         )
                     binding.skillDateField.setText(
@@ -81,9 +86,11 @@ class BottomSheetFragment(
             }
             saveSkillButton.setOnClickListener {
                 skill = skill.copy(
-                    uuid = skill.uuid,
-                    name = binding.skillNameField.text.toString(),
-                    description = binding.skillDescriptionField.text.toString()
+                    skill.skillEntity.copy(
+                        uuid = skill.skillEntity.uuid,
+                        name = binding.skillNameField.text.toString(),
+                        description = binding.skillDescriptionField.text.toString()
+                    )
                 )
 
                 viewModelEvent.invoke(
