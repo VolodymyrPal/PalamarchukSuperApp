@@ -17,11 +17,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -67,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
@@ -177,7 +179,7 @@ fun LazyList(
 ) {
     LazyColumn {
         items(
-            items = skillList, key = { item: Skill -> item.uuid.toString() }) { skill ->
+            items = skillList, key = { item: Skill -> item.skillEntity.uuid.toString() }) { skill ->
             AnimatedVisibility(
                 modifier = Modifier.animateItem(), visible = skill.isVisible, exit = fadeOut(
                     animationSpec = TweenSpec(100, 100, LinearEasing)
@@ -185,7 +187,7 @@ fun LazyList(
                     animationSpec = TweenSpec(100, 100, LinearEasing)
                 )
             ) {
-                ItemListSkill(
+                NewItemListSkill(
                     item = skill,
                     onEvent = viewModelEvent,
                 )
@@ -249,7 +251,10 @@ fun ItemListSkill(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.SpaceEvenly
 
             ) {
                 Column(
@@ -260,7 +265,7 @@ fun ItemListSkill(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(0.dp, 4.dp, 0.dp, 4.dp),
-                        value = item.name,
+                        value = item.skillEntity.name,
                         appTextConfig = appTextConfig(
                             fontWeight = FontWeight.Bold,
                             textStyle = MaterialTheme.typography.titleMedium,
@@ -274,18 +279,19 @@ fun ItemListSkill(
                     ) {
                         AppText(
                             modifier = Modifier,
-                            value = item.description,
+                            value = item.skillEntity.description,
                             appTextConfig = AppTextConfig(
                                 maxLines = if (!isExpanded) 2 else Int.MAX_VALUE,
                                 overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
                                 onTextLayout = { textLayoutResult ->
                                     isVisible = textLayoutResult.hasVisualOverflow || isExpanded
-                                }))
+                                })
+                        )
                     }
                 }
 
                 Column(
-                    modifier = Modifier.wrapContentHeight(),
+                    modifier = Modifier.height(IntrinsicSize.Min),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -339,7 +345,7 @@ fun ItemListSkill(
                     .padding(start = 8.dp)
                     .weight(0.4f), text = SimpleDateFormat(
                     "dd MMMM yyyy: HH:mm", Locale.US
-                ).format(item.date), style = TextStyle(
+                ).format(item.skillEntity.date), style = TextStyle(
                     fontStyle = FontStyle.Italic,
                     fontSize = 11.sp,
                     textAlign = TextAlign.Left,
@@ -454,12 +460,261 @@ fun MyDropDownMenus(
 fun ListItemSkillPreview() {
     ItemListSkill(
         item = Skill(
-            id = 1, name = "name", date = Date(), chosen = false
+            skillEntity = SkillEntity(),
+            chosen = false
         ),
         onEvent = {},
     )
     println("true".toBooleanStrictOrNull())
 }
+
+@Composable
+@Suppress(
+    "detekt.FunctionNaming",
+    "detekt.MaxLineLength",
+    "detekt.LongMethod",
+    "detekt.LongParameterList",
+    "detekt.DestructuringDeclarationWithTooManyEntries"
+)
+fun NewItemListSkill(
+    modifier: Modifier = Modifier,
+    item: Skill,
+    onEvent: (SkillsViewModel.Event) -> Unit,
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    Card(
+        onClick = {
+            onEvent.invoke(
+                SkillsViewModel.Event.EditItem(
+                    item.copy(chosen = !item.chosen),
+                    SkillsChangeConst.ChooseOrNotSkill
+                )
+            )
+        },
+        shape = MaterialTheme.shapes.medium,
+        modifier = if (!isExpanded) {
+            modifier
+                .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+        } else {
+            modifier
+                .padding(start = 6.dp, top = 6.dp, end = 6.dp, bottom = 6.dp)
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+        },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        border = BorderStroke(width = 0.5.dp, color = Color.Gray)
+
+    ) {
+        var isVisible by remember { mutableStateOf(true) }
+
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Max),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                AppText(
+                    modifier = Modifier
+                        .padding(0.dp, 4.dp, 0.dp, 4.dp)
+                        .height(IntrinsicSize.Min)
+                        .fillMaxWidth(),
+                    value = item.skillEntity.name,
+                    appTextConfig = appTextConfig(
+                        fontWeight = FontWeight.Bold,
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        fontFamily = FontFamily.Serif,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f),
+                    contentAlignment = Alignment.TopStart
+                ) {
+                    AppText(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(start = 6.dp, top = 2.dp, bottom = 6.dp),
+                        value = item.skillEntity.description,
+                        appTextConfig = AppTextConfig(
+                            maxLines = if (!isExpanded) 3 else Int.MAX_VALUE,
+                            overflow = if (!isExpanded) TextOverflow.Ellipsis else TextOverflow.Visible,
+                            onTextLayout = { textLayoutResult ->
+                                isVisible = textLayoutResult.hasVisualOverflow || isExpanded
+                            },
+                            textAlign = TextAlign.Justify
+                        )
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    AppText(
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .height(IntrinsicSize.Min)
+                            .width(IntrinsicSize.Max),
+                        value = SimpleDateFormat(
+                            "dd MMMM yyyy: HH:mm", Locale.US
+                        ).format(item.skillEntity.date),
+                        appTextConfig = appTextConfig(
+                            TextStyle(
+                                fontStyle = FontStyle.Italic,
+                                fontSize = 11.sp,
+                                textAlign = TextAlign.Left,
+                            )
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (isVisible) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            AppText(
+                                value = if (!isExpanded) {
+                                    stringResource(R.string.details) + " >>"
+                                } else {
+                                    stringResource(R.string.hide) + " <<"
+                                },
+                                modifier = Modifier
+                                    .animateContentSize()
+                                    .align(Alignment.CenterEnd)
+                                    .then(remember(isVisible) {
+                                        Modifier.clickable(
+                                            interactionSource = null,
+                                            indication = null,
+                                            onClick = { isExpanded = !isExpanded })
+                                    }),
+                                color = if (!isVisible) MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                    alpha = 0f
+                                ) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                    alpha = 0.5f
+                                ),
+                                appTextConfig = appTextConfig(
+                                    textStyle = TextStyle(
+                                        fontSize = 10.sp,
+                                        fontStyle = FontStyle.Italic,
+                                        textAlign = TextAlign.Right
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier
+            ) {
+                var expanded by remember { mutableStateOf(false) }
+                val context = LocalContext.current
+
+                IconButton(
+                    onClick = { expanded = true },
+                    enabled = true,
+                ) {
+                    Icon(
+                        ImageVector.vectorResource(id = R.drawable.more_button),
+                        contentDescription = "More menu"
+                    )
+                }
+                MyDropDownMenus(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    onEdit = remember(item) {
+                        {
+                            val bottomSheetFragment = BottomSheetFragment(
+                                viewModelEvent = onEvent, skill = item
+                            )
+                            bottomSheetFragment.show(
+                                (context as FragmentActivity).supportFragmentManager,
+                                "BSDialogFragment"
+                            )
+                        }
+                    },
+                    item = item,
+                    onEvent = onEvent,
+                )
+
+                Checkbox(
+                    modifier = modifier, onCheckedChange = {
+                        onEvent.invoke(
+                            SkillsViewModel.Event.EditItem(
+                                item, SkillsChangeConst.ChooseOrNotSkill
+                            )
+                        )
+                    }, checked = item.chosen
+                )
+            }
+        }
+//        }
+
+//        Column(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(IntrinsicSize.Min),
+//                horizontalArrangement = Arrangement.SpaceEvenly
+//
+//            ) {
+//                Column(
+//                    Modifier.weight(0.9f)
+//                ) {
+//
+//
+//                }
+//
+//                Column(
+//                    modifier = Modifier.height(IntrinsicSize.Min),
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//
+//                }
+//            }
+//        }
+//        Row(
+//            modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
+//        ) {
+//
+//
+//
+    }
+}
+
+@Composable
+@Preview
+fun NewListItemSkillPreview() {
+    NewItemListSkill(
+        item = Skill(
+            skillEntity = SkillEntity(
+                id = 1,
+                name = "Skill name",
+                description = "LONG SKILL DESCRIPTION LONG SKILL DESCRIPTION LONG SKILL DESCRIPTION LONG " +
+                        "SKILL DESCRIPTION LONG SKILL DESCRIPTION LONG SKILL DESCRIPTION LONG SKILL " +
+                        "DESCRIPTION LONG SKILL DESCRIPTION LONG SKILL DESCRIPTION LONG SKILL DESCRIPTION " +
+                        "LONG SKILL DESCRIPTION LONG SKILL DESCRIPTION LONG SKILL DESCRIPTION ",
+                date = Date(),
+            ),
+            chosen = true,
+        ),
+        onEvent = {}
+    )
+}
+
 
 //@Suppress("detekt.FunctionNaming", "detekt.LongMethod", "detekt.LongParameterList")
 //@Composable
