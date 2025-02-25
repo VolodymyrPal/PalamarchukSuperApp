@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 
 
@@ -60,7 +61,7 @@ fun BottomSheetSkill(
     onEvent: (skill: Skill) -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismiss: () -> Unit,
-    skill: Skill = Skill(),
+    skill: Skill = Skill(skillEntity = SkillEntity()),
 ) {
 
 
@@ -89,7 +90,7 @@ fun BottomSheetSkill(
             ) {
                 var textName by remember {
                     mutableStateOf(
-                        skill.name
+                        skill.skillEntity.name
                     )
                 }
 
@@ -118,7 +119,7 @@ fun BottomSheetSkill(
 
                 var textDescription by remember {
                     mutableStateOf(
-                        skill.description
+                        skill.skillEntity.description
                     )
                 }
                 OutlinedHintText(
@@ -142,7 +143,7 @@ fun BottomSheetSkill(
 
                 val textDate by remember {
                     mutableStateOf(
-                        skill.date
+                        skill.skillEntity.date
                     )
                 }
                 OutlinedHintText(
@@ -159,10 +160,12 @@ fun BottomSheetSkill(
                     onClick = {
                         onEvent(
                             skill.copy(
-                                uuid = skill.uuid,
-                                name = textName,
-                                description = textDescription,
-                                date = textDate
+                                skillEntity = skill.skillEntity.copy(
+                                    uuid = skill.skillEntity.uuid,
+                                    description = textDescription,
+                                    name = textName,
+                                    date = textDate
+                                ),
                             )
                         )
                         onDismiss()
