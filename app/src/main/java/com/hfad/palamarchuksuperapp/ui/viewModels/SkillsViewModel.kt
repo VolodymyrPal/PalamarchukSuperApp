@@ -168,11 +168,15 @@ class SkillsViewModel @Inject constructor(
         viewModelScope.launch(mainDispatcher) {
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
-//                            val newSkills = uiState.first().items!!.toMutableList()
-//                            newSkills.indexOf(skillDomainRW).let {
-//                                newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
-//                            }
-
+                    repository.updateSkill(
+                        skill
+                    )
+//                    val newSkills = uiState.take(1).collect {
+//                        it.items.toMutableList()
+//                    }
+//                    newSkills.indexOf(skillDomainRW).let {
+//                        newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
+//                    }
                 }
 
                 SkillsChangeConst.FullSkill -> {
