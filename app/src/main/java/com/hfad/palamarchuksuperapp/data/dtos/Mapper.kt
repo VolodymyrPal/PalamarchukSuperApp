@@ -33,24 +33,19 @@ fun OpenAIModelDTO.toOpenAIModel(): AiModel.OpenAIModel {
 }
 
 fun SkillEntity.toSkill() = Skill(
-    id = id,
-    uuid =uuid,
-    name = name,
-    description = description,
-    date = date,
-    position = position,
+    skillEntity = this,
     chosen = false,
     isExpanded = false,
     isVisible = true
 )
 
 fun Skill.toSkillEntity() = SkillEntity(
-    id = id,
-    uuid = uuid,
-    name = name,
-    description = description,
-    date = date,
-    position = position
+    id = skillEntity.id,
+    uuid = skillEntity.uuid,
+    name = skillEntity.name,
+    description = skillEntity.description,
+    date = skillEntity.date,
+    position = skillEntity.position
 )
 
 fun ProductDTO.toProduct() = Product(
