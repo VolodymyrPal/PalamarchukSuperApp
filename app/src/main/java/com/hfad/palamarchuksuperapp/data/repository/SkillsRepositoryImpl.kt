@@ -36,11 +36,29 @@ class SkillsRepositoryImpl @Inject constructor(
             }.toPersistentList()
         }
 
-    override suspend fun deleteSkill(skill: Skill) =
+//    override fun getSkillsFromDB(): Flow<PersistentList<Skill>> =
+//        skillsDao.getAllSkillsFromDB().map { list ->
+//            list.map {
+//                if (updatedSkillLIst.keys.contains(it.uuid)) {
+//                    it.toSkill()
+//                }
+//                it.toSkill()
+//            }.toPersistentList()
+//        }
+
+    override suspend fun deleteSkill(skill: Skill) {
         skillsDao.deleteSkill(skillEntity = skill.toSkillEntity())
+    }
 
 
-    override suspend fun addSkill(skill: Skill) = skillsDao.insertSkill(skill.toSkillEntity())
+    override suspend fun addSkill(skill: Skill) {
+        skillsDao.insertSkill(skill.toSkillEntity())
+    }
 
-    override suspend fun updateSkill(skill: Skill) = skillsDao.updateSkill(skill.toSkillEntity())
+    override suspend fun updateSkill(skill: Skill) {
+        updatedSkillList.update { currentMap ->
+            currentMap.toMutableMap().apply { put(skill.skillEntity.uuid, skill) }
+        }
+        skillsDao.updateSkill(skill.toSkillEntity())
+    }
 }
