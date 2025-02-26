@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -121,7 +122,7 @@ class SkillsViewModel @Inject constructor(
             }
 
             is Event.EditItem -> {
-                updateSkillOrAdd(event.item, SkillsChangeConst.FullSkill)
+                updateSkillOrAdd(event.item, event.skillsChangeConst)
             }
 
             Event.DeleteAllChosen -> {
@@ -150,11 +151,18 @@ class SkillsViewModel @Inject constructor(
     }
 
     fun deleteAllChosenSkill() {
-//        viewModelScope.launch (ioDispatcher) {
-//            _dataFlow.first().filter { it.chosen }.forEach {
-//                repository.deleteSkill(it)
-//            }
-//        }
+        viewModelScope.launch(ioDispatcher) {
+            _dataFlow.take(1).collect {
+                when (it) {
+                    is Result.Success -> {
+                        (it as Result.Success).data.filter { it.chosen }
+                            .forEach { repository.deleteSkill(it) }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
     }
 
 
@@ -169,41 +177,26 @@ class SkillsViewModel @Inject constructor(
             when (changeConst) {
                 SkillsChangeConst.ChooseOrNotSkill -> {
                     repository.updateSkill(
-                        skill
+                        skill.copy(chosen = !skill.chosen)
                     )
-//                    val newSkills = uiState.take(1).collect {
-//                        it.items.toMutableList()
-//                    }
-//                    newSkills.indexOf(skillDomainRW).let {
-//                        newSkills[it] = newSkills[it].copy(chosen = !newSkills[it].chosen)
-//                    }
                 }
 
                 SkillsChangeConst.FullSkill -> {
-//                    funWithState(
-//                        onSuccess = {
-//                            val newList =
-//                                uiState.value.items.toMutableList()
-//                            val skillToChange =
-//                                newList.find { it.skill.uuid == skillDomainRW.skill.uuid }
-//                            if (skillToChange == null) {
-//                                newList.add(skillDomainRW)
-//                                repository.addSkill(skill = skillDomainRW)
-//                            } else {
-//                                newList.indexOf(skillToChange).let {
-//                                    repository.updateSkill(skill = skillDomainRW)
-//                                    newList[it] =
-//                                        newList[it].copy(skill = skillDomainRW.skill)
-//                                }
-//                            }
-//                        },
-//                        onEmpty = {
-//                            repository.addSkill(skill = skillDomainRW)
-//                        },
-//                        onFailure = {
-//                            repository.addSkill(skill = skillDomainRW)
-//                        }
-//                    )
+                    val id = skill.skillEntity.uuid
+                    if (uiState.value.items.find { it.skillEntity.uuid == id } == null) {
+                        repository.addSkill(
+                            skill.copy(
+                                skillEntity = skill.skillEntity.copy(
+                                    name = skill.skillEntity.name,
+                                    description = skill.skillEntity.description,
+                                    date = skill.skillEntity.date,
+                                    position = skill.skillEntity.position
+                                )
+                            )
+                        )
+                    } else {
+                        repository.updateSkill(skill)
+                    }
                 }
             }
         }
