@@ -8,7 +8,9 @@ import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import java.util.UUID
 import javax.inject.Inject
 
@@ -16,7 +18,7 @@ class SkillsRepositoryImpl @Inject constructor(
     private val skillsDao: SkillsDao,
 ) : SkillRepository {
 
-    private val updatedSkillLIst = mutableMapOf<UUID, Skill>()
+    private val updatedSkillList = MutableStateFlow(mutableMapOf<UUID, Skill>())
 
     override fun getSkillsFromDB(): Flow<PersistentList<Skill>> =
         skillsDao.getAllSkillsFromDB().map { list ->
