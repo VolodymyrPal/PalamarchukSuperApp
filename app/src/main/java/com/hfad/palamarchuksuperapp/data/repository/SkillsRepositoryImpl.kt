@@ -21,12 +21,18 @@ class SkillsRepositoryImpl @Inject constructor(
     private val updatedSkillList = MutableStateFlow(mutableMapOf<UUID, Skill>())
 
     override fun getSkillsFromDB(): Flow<PersistentList<Skill>> =
-        skillsDao.getAllSkillsFromDB().map { list ->
-            list.map {
-                if (updatedSkillLIst.keys.contains(it.uuid)) {
-                    it.toSkill()
-                }
-                it.toSkill()
+        skillsDao.getAllSkillsFromDB().combine(
+            updatedSkillList
+        ) { dbSkill, updatedSkill ->
+            dbSkill.map { skillEntity ->
+                updatedSkill[skillEntity.uuid]?.let {
+                    Skill(
+                        skillEntity = skillEntity,
+                        chosen = it.chosen,
+                        isExpanded = it.isExpanded,
+                        isVisible = it.isVisible
+                    )
+                } ?: skillEntity.toSkill()
             }.toPersistentList()
         }
 
