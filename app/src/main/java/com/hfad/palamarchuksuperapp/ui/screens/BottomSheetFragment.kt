@@ -85,17 +85,15 @@ class BottomSheetFragment(
                 }
             }
             saveSkillButton.setOnClickListener {
-                skill = skill.copy(
-                    skill.skillEntity.copy(
-                        uuid = skill.skillEntity.uuid,
-                        name = binding.skillNameField.text.toString(),
-                        description = binding.skillDescriptionField.text.toString()
+                val skillToSave = skill.copy(
+                    skillEntity = skill.skillEntity.copy(
+                        name = skillNameField.text.toString(),
+                        description = skillDescriptionField.text.toString(),
                     )
                 )
-
                 viewModelEvent.invoke(
                     SkillsViewModel.Event.EditItem(
-                        skill,
+                        skillToSave,
                         SkillsChangeConst.FullSkill
                     )
                 )
