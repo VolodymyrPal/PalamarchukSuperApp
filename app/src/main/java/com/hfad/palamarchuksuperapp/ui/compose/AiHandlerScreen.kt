@@ -172,7 +172,7 @@ fun DialogAiHandler(
             Header {
                 AppText(
                     modifier = Modifier,
-                    stringRes = if (dialogAiHandlerState.handler != null) {
+                    value = if (dialogAiHandlerState.handler != null) {
                         R.string.edit_handler_title
                     } else {
                         R.string.add_handler_title

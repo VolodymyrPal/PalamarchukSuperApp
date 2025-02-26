@@ -21,7 +21,7 @@ import com.example.compose.AppTheme
 /**
  * Базовый компонент для отображения текста с поддержкой конфигурации.
  *
- * @param stringRes Идентификатор строкового ресурса.
+ * @param value Идентификатор строкового ресурса.
  * @param modifier Модификатор для настройки внешнего вида.
  * @param color Цвет текста.
  * @param appTextConfig Конфигурация текста.
@@ -29,15 +29,15 @@ import com.example.compose.AppTheme
 @Composable
 @Suppress("LongParameterList", "FunctionNaming")
 fun AppText(
-    @StringRes stringRes: Int,
+    @StringRes value: Int,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    color: Color = defaultAppTextColor(),
     appTextConfig: AppTextConfig = appTextConfig(),
 ) {
     val mergedStyle: TextStyle = appTextConfig.textStyle.copy(color = color)
 
     Text(
-        text = stringResource(stringRes),
+        text = stringResource(value),
         modifier = modifier,
         color = Color.Unspecified,
         fontSize = appTextConfig.fontSize,
@@ -56,17 +56,15 @@ fun AppText(
         style = mergedStyle,
     )
 }
+@Composable
+fun defaultAppTextColor() = MaterialTheme.colorScheme.onPrimaryContainer
 
 @Composable
 @Suppress("LongParameterList", "FunctionNaming")
-@Deprecated(
-    message = "Use AppText with @StringRes for proper localization. Hardcoded string is discouraged",
-    replaceWith = ReplaceWith("AppText(stringRes = R.string.your_string_resource, appTextConfig = appTextConfig)")
-)
 fun AppText(
     value: String,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    color: Color = defaultAppTextColor(),
     appTextConfig: AppTextConfig = appTextConfig(),
 ) {
     val mergedStyle = if (appTextConfig.textStyle.brush != null) {
