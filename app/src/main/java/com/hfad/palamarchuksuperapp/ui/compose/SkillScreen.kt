@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.IconButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -74,6 +73,7 @@ import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextConfig
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.defaultAppTextColor
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
@@ -99,32 +99,37 @@ fun SkillScreen(
     )
 
     with(localTransitionScope) {//TODO
-        Scaffold(modifier = modifier.fillMaxSize(), bottomBar = {
-            BottomNavBar()
-        }, floatingActionButton = {
-            val context = LocalContext.current
-            FloatingActionButton(
-                shape = RoundedCornerShape(33),
-                modifier = Modifier,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                onClick = remember {
-                    {
-                        val bottomSheetFragment = BottomSheetFragment(
-                            viewModelEvent = viewModel::event
-                        )
-                        bottomSheetFragment.show(
-                            (context as FragmentActivity).supportFragmentManager,
-                            "BSDialogFragment"
+        Scaffold(
+            modifier = modifier.fillMaxSize(),
+            bottomBar = {
+                BottomNavBar()
+            },
+            floatingActionButton = {
+                val context = LocalContext.current
+                FloatingActionButton(
+                    shape = RoundedCornerShape(33),
+                    modifier = Modifier,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    onClick = remember {
+                        {
+                            val bottomSheetFragment = BottomSheetFragment(
+                                viewModelEvent = viewModel::event
+                            )
+                            bottomSheetFragment.show(
+                                (context as FragmentActivity).supportFragmentManager,
+                                "BSDialogFragment"
+                            )
+                        }
+                    },
+                    content = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.add_fab_button),
+                            "Floating action button."
                         )
                     }
-                },
-                content = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.add_fab_button),
-                        "Floating action button."
-                    )
-                })
-        }) { paddingValues ->
+                )
+            }
+        ) { paddingValues ->
             Surface(
                 color = Color.Transparent, modifier = modifier
                     .fillMaxSize()
@@ -134,7 +139,7 @@ fun SkillScreen(
                     .padding()
             ) {
                 val state by viewModel.uiState.collectAsState()
-                //viewModel.fetchSkills()
+
                 if (state.loading) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
@@ -144,15 +149,17 @@ fun SkillScreen(
                 }
 
                 if (state.items.isEmpty()) {
-                    Text(text = stringResource(R.string.error_refresh_or_add_skill_screen))
+                    AppText(value = R.string.error_refresh_or_add_skill_screen)
                 }
 
 
                 if (state.error != null) {
-                    Text(
-                        text = stringResource(
-                            R.string.error_with_error, state.error ?: "Unknown error"
-                        ), color = Color.Red
+                    AppText(
+                        value = stringResource(
+                            R.string.error_with_error,
+                            state.error ?: "Unknown error"
+                        ),
+                        color = Color.Red
                     )
                 }
 
@@ -164,7 +171,6 @@ fun SkillScreen(
                         bottomSpace = paddingValues.calculateBottomPadding()
                     )
                 }
-
             }
         }
     }
