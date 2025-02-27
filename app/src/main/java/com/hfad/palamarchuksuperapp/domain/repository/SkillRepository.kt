@@ -9,4 +9,5 @@ interface SkillRepository {
     suspend fun deleteSkill(skill: Skill)
     suspend fun addSkill(skill: Skill)
     suspend fun updateSkill(skill: Skill)
+    suspend fun moveToFirstPosition(skill: Skill)
 }
