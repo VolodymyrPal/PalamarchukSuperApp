@@ -133,14 +133,7 @@ class SkillsViewModel @Inject constructor(
 
     fun moveToFirstPosition(skill: Skill) {
         viewModelScope.launch(mainDispatcher) {
-//            val minPosition = _dataFlow.first().minOfOrNull { it.skill.position } ?: 0
-//            repository.updateSkill(
-//                skillDomainRW.copy(
-//                    skillDomainRW.skill.copy(
-//                        position = minPosition - 1
-//                    )
-//                )
-//            )
+            repository.moveToFirstPosition(skill)
         }
     }
 
@@ -190,7 +183,7 @@ class SkillsViewModel @Inject constructor(
                                     name = skill.skillEntity.name,
                                     description = skill.skillEntity.description,
                                     date = skill.skillEntity.date,
-                                    position = skill.skillEntity.position
+                                    position = uiState.value.items.last().skillEntity.position + 1
                                 )
                             )
                         )
