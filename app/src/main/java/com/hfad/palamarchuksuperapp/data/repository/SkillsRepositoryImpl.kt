@@ -50,9 +50,8 @@ class SkillsRepositoryImpl @Inject constructor(
         skillsDao.deleteSkill(skillEntity = skill.toSkillEntity())
     }
 
-
     override suspend fun addSkill(skill: Skill) {
-        skillsDao.insertSkill(skill.toSkillEntity())
+        skillsDao.insertSkillAutoPosition(skill.toSkillEntity())
     }
 
     override suspend fun updateSkill(skill: Skill) {
@@ -60,5 +59,9 @@ class SkillsRepositoryImpl @Inject constructor(
             currentMap.toMutableMap().apply { put(skill.skillEntity.uuid, skill) }
         }
         skillsDao.updateSkill(skill.toSkillEntity())
+    }
+
+    override suspend fun moveToFirstPosition(skill: Skill) {
+        skillsDao.moveSkill(skill.skillEntity, 0)
     }
 }
