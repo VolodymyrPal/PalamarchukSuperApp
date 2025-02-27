@@ -187,7 +187,11 @@ fun LazyList(
         modifier = modifier
     ) {
         items(
-            items = skillList, key = { item: Skill -> item.skillEntity.uuid.toString() }) { skill ->
+            items = skillList, key = { item: Skill ->
+                "${item.skillEntity.uuid}-${item.skillEntity.position}"
+//                item.skillEntity.uuid.toString()
+            }
+        ) { skill ->
             AnimatedVisibility(
                 modifier = Modifier.animateItem(), visible = skill.isVisible, exit = fadeOut(
                     animationSpec = TweenSpec(100, 100, LinearEasing)

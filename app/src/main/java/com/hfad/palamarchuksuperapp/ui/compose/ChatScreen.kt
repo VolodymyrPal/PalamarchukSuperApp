@@ -41,6 +41,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -559,12 +561,15 @@ fun MessageBox(
                 )
             ),
         state = pagerState,
-        verticalAlignment = Alignment.Top
+        flingBehavior = PagerDefaults.flingBehavior(
+            state = pagerState, pagerSnapDistance =
+                PagerSnapDistance.atMost(3)
+        ),
+        verticalAlignment = Alignment.CenterVertically
     ) { page ->
         val currentMessage = remember(messageGroup.content[page]) {
             messageGroup.content[page]
         }
-
         when (currentMessage.otherContent == null) {
             true -> {
                 TextMessage(
@@ -636,7 +641,8 @@ private fun TextMessage(
                                     if (isUser) (0.5).dp else 10.dp,
                                     10.dp
                                 )
-                            ).padding(5.dp),
+                            )
+                            .padding(5.dp),
                         markdown = message.message.trimEnd(),
                         style = TextStyle(textAlign = TextAlign.Start),
                     )
