@@ -27,21 +27,6 @@ interface SkillsDao {
     @Delete
     suspend fun deleteSkill(skillEntity: SkillEntity)
 
-    @Query("UPDATE $DATABASE_SKILLS_NAME SET Position = :newPosition WHERE SkillUUID = :skillId")
-    suspend fun updateSkillPosition(skillId: Int, newPosition: Int)
-
-    @Query(
-        "UPDATE $DATABASE_SKILLS_NAME SET Position = Position + 1 " +
-                "WHERE Position >= :newPosition AND Position < :oldPosition"
-    )
-    suspend fun shiftPositionsUp(newPosition: Int, oldPosition: Int)
-
-    @Query(
-        "UPDATE $DATABASE_SKILLS_NAME SET Position = Position - 1 " +
-                "WHERE Position > :oldPosition AND Position <= :newPosition"
-    )
-    suspend fun shiftPositionsDown(oldPosition: Int, newPosition: Int)
-
     @Query("SELECT MAX(Position) FROM $DATABASE_SKILLS_NAME")
     suspend fun getMaxPosition(): Int?
 
@@ -51,10 +36,28 @@ interface SkillsDao {
         insertSkill(skill.copy(position = newPosition))
     }
 
+
+    @Query("UPDATE $DATABASE_SKILLS_NAME SET Position = :newPosition WHERE SkillID = :skillId")
+    suspend fun updateSkillPosition(skillId: Int, newPosition: Int)
+
+    @Query(
+        "UPDATE $DATABASE_SKILLS_NAME " +
+                "SET Position = Position + 1 " +
+                "WHERE Position >= :newPosition AND Position <= :oldPosition"
+    )
+    suspend fun shiftPositionsUp(newPosition: Int, oldPosition: Int)
+
+    @Query(
+        "UPDATE $DATABASE_SKILLS_NAME SET Position = Position - 1 " +
+                "WHERE Position >= :oldPosition AND Position <= :newPosition"
+    )
+    suspend fun shiftPositionsDown(oldPosition: Int, newPosition: Int)
+
     @Transaction
     suspend fun moveSkill(skill: SkillEntity, newPosition: Int) {
         val oldPosition = skill.position
         if (oldPosition == newPosition) return
+        updateSkillPosition(skill.id, -1)
         if (newPosition < oldPosition) {
             shiftPositionsUp(newPosition, oldPosition)
         } else {
