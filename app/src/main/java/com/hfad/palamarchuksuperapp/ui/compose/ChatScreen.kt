@@ -409,7 +409,8 @@ private fun MenuButton(
 ) {
     DropdownMenu(
         expanded = isExpanded,
-        onDismissRequest = { onValueChange.invoke(false)
+        onDismissRequest = {
+            onValueChange.invoke(false)
         },
         containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
