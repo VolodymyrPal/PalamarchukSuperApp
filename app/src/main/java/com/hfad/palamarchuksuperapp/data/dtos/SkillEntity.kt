@@ -11,16 +11,16 @@ import java.util.Date
 import java.util.UUID
 
 @Entity(tableName = DATABASE_SKILLS_NAME)
-@TypeConverters (Converters::class)
+@TypeConverters(Converters::class)
 @Stable
 data class SkillEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo (name = "SkillID") val id: Int = 0,
-    @ColumnInfo (name = "SkillUUID") val uuid: UUID = UUID.randomUUID(),
-    @ColumnInfo (name = "SkillName") val name: String = "",
-    @ColumnInfo (name = "Description") val description: String = "",
-    @ColumnInfo (name = "StudiedDate") val date: Date = Date(),
-    @ColumnInfo (name = "Position") val position: Int = id
+    @ColumnInfo(name = "SkillID") val id: Int = 0,
+    @ColumnInfo(name = "SkillUUID") val uuid: UUID = UUID.randomUUID(),
+    @ColumnInfo(name = "SkillName") val name: String = "",
+    @ColumnInfo(name = "Description") val description: String = "",
+    @ColumnInfo(name = "StudiedDate") val date: Date = Date(),
+    @ColumnInfo(name = "Position") val position: Int = id,
 )
 
 class Converters {
