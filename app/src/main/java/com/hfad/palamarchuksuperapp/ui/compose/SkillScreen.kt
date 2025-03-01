@@ -1,15 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.compose
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -195,24 +190,23 @@ fun LazyList(
         items(
             items = skillList,
             key = { item: Skill ->
-                "${item.skillEntity.uuid}-${item.skillEntity.position}"
+                item.skillEntity.id
             }
         ) { skill ->
-            AnimatedVisibility(
-                modifier = Modifier.animateItem(),
-                visible = skill.isVisible,
-                exit = fadeOut(
-                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                ),
-                enter = fadeIn(
-                    animationSpec = TweenSpec(100, 100, LinearEasing)
-                ),
-            ) {
-                NewItemListSkill(
-                    item = skill,
-                    onEvent = viewModelEvent,
+            NewItemListSkill(
+                item = skill,
+                onEvent = viewModelEvent,
+                modifier = Modifier.animateItem(
+                    fadeInSpec = spring(stiffness = Spring.StiffnessMedium),
+                    placementSpec = spring(
+                        stiffness = 100f,
+                        dampingRatio = 0.6f,
+                        visibilityThreshold = IntOffset.VisibilityThreshold
+                    ),
+                    fadeOutSpec =
+                        spring(stiffness = 1500f),
                 )
-            }
+            )
         }
         item {
             Spacer(
