@@ -698,7 +698,7 @@ fun ListItemProduct(
                     .data(item.productDTO.image)
                     .placeholder(R.drawable.bicon_camera_selector)
                     .error(R.drawable.bicon_home_black_filled)
-                    .size(33)
+                    .size(66)
                     .crossfade(true)
                     .build(),
                 loading = { CircularProgressIndicator() },
