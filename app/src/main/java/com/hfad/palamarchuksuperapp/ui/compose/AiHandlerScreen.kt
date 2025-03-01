@@ -9,6 +9,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -191,11 +192,15 @@ fun DialogAiHandler(
                     labelRes = R.string.handler_name_hint,
                     placeholderRes = R.string.app_name,
                     modifier = Modifier
+                        .fillMaxWidth()
+                        .width(IntrinsicSize.Max)
                 )
 
                 //Choose LLM
                 AppOutlinedTextPopUpField(
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .width(IntrinsicSize.Max),
                     items = LLMName.entries,
                     label = R.string.model_ai_hint,
                     selectedItem = selectedLLM.value,
@@ -213,7 +218,9 @@ fun DialogAiHandler(
                             value = if (selectedItem == null) "" else selectedItemToString(
                                 selectedItem
                             ),
-                            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(MenuAnchorType.PrimaryEditable, true),
                             onValueChange = { },
                             outlinedTextConfig = appEditOutlinedTextConfig(
                                 enabled = enabled,
@@ -248,11 +255,10 @@ fun DialogAiHandler(
                 AnimatedVisibility(
                     visible = selectedLLM.value != null,
                     enter = fadeIn(animationSpec = tween(500)),
-                    exit = fadeOut(animationSpec = tween(500))
+                    exit = fadeOut(animationSpec = tween(500)),
                 ) {
-
                     AppOutlinedTextDialogField(
-                        modifier = Modifier,
+                        modifier = Modifier.fillMaxWidth(),
                         items = modelList
                             .ifEmpty {
                                 listOf<AiModel?>(
@@ -274,7 +280,9 @@ fun DialogAiHandler(
                     value = apiKey.value,
                     onValueChange = { apiKey.value = it },
                     labelRes = R.string.api_key_hint,
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .width(IntrinsicSize.Max),
                 )
             }
 
