@@ -7,13 +7,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -74,7 +71,7 @@ fun <T> AppOutlinedTextDialogField(
         AppOutlinedTextField(
             labelRes = label,
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
-            modifier = Modifier,
+            modifier = Modifier.fillMaxWidth(),
             onValueChange = { },
             outlinedTextConfig = appEditOutlinedTextConfig(
                 enabled = enabled,
@@ -92,8 +89,6 @@ fun <T> AppOutlinedTextDialogField(
 
     Box(
         modifier = modifier
-            .height(IntrinsicSize.Min)
-            .width(IntrinsicSize.Min)
     ) {
         appOutlinedTextField(expanded)
 
@@ -153,7 +148,9 @@ fun <T> AppOutlinedTextPopUpField(
         AppOutlinedTextField(
             labelRes = label,
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable, true),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(MenuAnchorType.PrimaryEditable, true),
             onValueChange = { },
             outlinedTextConfig = appEditOutlinedTextConfig(
                 enabled = enabled,
