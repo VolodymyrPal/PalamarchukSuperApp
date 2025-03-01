@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.ui.reusable
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,11 +63,11 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -113,31 +115,38 @@ fun AppDialog(
         properties = dialogProperties
     ) {
         val shape = MaterialTheme.shapes.medium
-        Surface(
-            shape = shape,
-            modifier = modifier
-                .fillMaxSize(0.85f)
-                .wrapContentSize()
-                .clip(shape)
-                .animateContentSize(
-                    animationSpec = tween(
-                        durationMillis = 600,
-                        easing = LinearOutSlowInEasing
-                    )
-                ),
-            color = MaterialTheme.colorScheme.onPrimary,
+
+        Box(
+            modifier = Modifier.background(Color.Red)
         ) {
-            Column(
-                modifier = Modifier
+
+            Surface(
+                shape = shape,
+                modifier = modifier
+                    .fillMaxSize(0.85f)
                     .width(IntrinsicSize.Min)
-                    .padding(12.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .height(IntrinsicSize.Min)
+                    .clip(shape)
+                    .animateContentSize(
+                        animationSpec = tween(
+                            durationMillis = 600,
+                            easing = LinearOutSlowInEasing
+                        )
+                    ),
+                color = MaterialTheme.colorScheme.onPrimary,
             ) {
-                dialogState.titlePart?.invoke()
-                dialogState.contentPart?.invoke()
-                dialogState.actionPart?.invoke()
+                Column(
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .padding(12.dp)
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    dialogState.titlePart?.invoke()
+                    dialogState.contentPart?.invoke()
+                    dialogState.actionPart?.invoke()
+                }
             }
         }
     }
