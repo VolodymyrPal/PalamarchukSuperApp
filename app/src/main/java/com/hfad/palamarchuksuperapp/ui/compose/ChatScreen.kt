@@ -98,7 +98,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -116,6 +115,8 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
+import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
@@ -297,7 +298,7 @@ private fun ChatTitle(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
             onClick = {
-                isExpanded.value = true
+                isExpanded.value = !isExpanded.value
             }
         ),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -315,72 +316,62 @@ private fun ChatTitle(
         )
     }
 
-    DropdownMenu(
-        expanded = isExpanded.value,
-        onDismissRequest = { isExpanded.value = false },
-        containerColor = Color.Transparent
-    ) {
-        Dialog(
-            onDismissRequest = { isExpanded.value = false }
+    if (isExpanded.value) {
+        AppDialog(
+            onDismissRequest = { isExpanded.value = !isExpanded.value },
         ) {
-            Surface(
-                modifier = Modifier.size(200.dp, 200.dp),
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.onPrimary,
-                tonalElevation = 6.dp
-            ) {
-                // Заголовок диалога
-                LazyColumn {
-                    item {
-                        Row {
-                            IconButton(
-                                onClick = { event.invoke(ChatBotViewModel.Event.CreateNewChat) }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Add",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                            Text(
-                                text = "Choose chat", modifier =
-                                    Modifier.padding(12.dp)
-                            )
-                            IconButton(
-                                onClick = { event.invoke(ChatBotViewModel.Event.ClearAllChats) }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Add",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-
+            Header {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    IconButton(
+                        onClick = { event.invoke(ChatBotViewModel.Event.CreateNewChat) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
-                    items(
-                        state.value.chatList,
-                    ) { chat ->
-                        Row(
-                            modifier = Modifier.wrapContentSize()
-                        ) {
-                            Text(
-                                text = chat.name,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .clickable(interactionSource = null, indication = null) {
-                                        event.invoke(ChatBotViewModel.Event.SelectChat(chat.id))
-                                    }
-                            )
-                            Text(
-                                text = SimpleDateFormat("dd.MM:HH:mm", Locale.US).format(
-                                    chat.timestamp
-                                ),
-                                modifier = Modifier.padding(4.dp)
-                            )
-                        }
+                    AppText(
+                        value = "Choose chat",
+                    )
+                    IconButton(
+                        onClick = { event.invoke(ChatBotViewModel.Event.ClearAllChats) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Add",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
+            }
+            Content {
+                state.value.chatList.forEach { chat ->
+                    Row(
+                        modifier = Modifier.wrapContentSize()
+                    ) {
+                        Text(
+                            text = chat.name,
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .clickable(interactionSource = null, indication = null) {
+                                    event.invoke(ChatBotViewModel.Event.SelectChat(chat.id))
+                                }
+                        )
+                        Text(
+                            text = SimpleDateFormat("dd.MM:HH:mm", Locale.US).format(
+                                chat.timestamp
+                            ),
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                }
+            }
+            Actions {
+
             }
         }
     }
