@@ -2,12 +2,12 @@ package com.hfad.palamarchuksuperapp.domain.models
 
 sealed interface AppError : Error {
 
-    data class CustomError(val errorText: String? = null, val error: Throwable? = null) : AppError
+    val message: String?
+    val cause: Throwable?
+
+    data class CustomError(override val message: String? = null, override val cause: Throwable? = null) : AppError
 
     sealed interface NetworkException : AppError {
-
-        val message: String?
-        val cause: Throwable?
 
         /**
          * Represents a sealed hierarchy of request-related errors.
@@ -62,7 +62,7 @@ sealed interface AppError : Error {
      */
 
     sealed class DatabaseError(
-        val message: String? = null, val cause: Throwable? = null,
+        override val message: String? = null, override val cause: Throwable? = null,
     ) : AppError {
 
         /**
