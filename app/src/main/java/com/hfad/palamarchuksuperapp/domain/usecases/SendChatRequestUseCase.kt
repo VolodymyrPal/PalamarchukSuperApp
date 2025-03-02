@@ -9,8 +9,6 @@ import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatController
-import io.ktor.serialization.JsonConvertException
-import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -117,7 +115,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                                         error.message + if (error.cause != null) "\nPlease contact developer, " +
                                                 "error caused by: \n\n${error.cause}" else ""
 
-                                    else -> (result.error as AppError.CustomError).errorText
+                                    else -> (result.error as AppError.CustomError).message
                                 }
                             val errorMessage = messageAi.copy(
                                 message = errorMessageText ?: "Undefined error",

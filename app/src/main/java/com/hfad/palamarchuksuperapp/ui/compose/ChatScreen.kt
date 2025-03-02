@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -351,11 +350,12 @@ private fun ChatTitle(
             Content {
                 state.value.chatList.forEach { chat ->
                     Row(
-                        modifier = Modifier.wrapContentSize()
+                        modifier = Modifier
                     ) {
                         Text(
                             text = chat.name,
                             modifier = Modifier
+                                .weight(1f)
                                 .padding(4.dp)
                                 .clickable(interactionSource = null, indication = null) {
                                     event.invoke(ChatBotViewModel.Event.SelectChat(chat.id))
@@ -365,7 +365,9 @@ private fun ChatTitle(
                             text = SimpleDateFormat("dd.MM:HH:mm", Locale.US).format(
                                 chat.timestamp
                             ),
-                            modifier = Modifier.padding(4.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(4.dp)
                         )
                     }
                 }

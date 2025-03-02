@@ -221,7 +221,8 @@ class ChatBotViewModel @Inject constructor(
                 ),
                 handlers = _handlers.value
             ).getOrHandleAppError {
-                _errorFlow.emit(it)
+                effect(Effect.ShowToast(it.message?:"Undefined error."))
+                _loading.update { false }
                 return@launch
             }
             _loading.update { false }
