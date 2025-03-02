@@ -38,7 +38,7 @@ fun mapNetworkCodeToException(e: Exception): AppError {
             else -> CustomError("Неизвестная ошибка", e)
         }
 
-        else -> CustomError(error = e)
+        else -> CustomError(cause = e)
     }
 }
 
