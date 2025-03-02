@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -67,7 +66,7 @@ fun <T> AppOutlinedTextDialogField(
             onClick = onClick,
         )
     },
-    appOutlinedTextField: @Composable (expanded: Boolean) -> Unit = {
+    appOutlinedTextField: @Composable (expanded: Boolean) -> Unit = { expanded ->
         AppOutlinedTextField(
             labelRes = label,
             value = if (selectedItem == null) "" else selectedItemToString(selectedItem),
@@ -77,7 +76,7 @@ fun <T> AppOutlinedTextDialogField(
                 enabled = enabled,
                 trailingIcon = {
                     val icon =
-                        if (it) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown
+                        if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown
                     Icon(icon, "")
                 },
                 readOnly = true
@@ -95,10 +94,10 @@ fun <T> AppOutlinedTextDialogField(
         // Transparent clickable surface on top of OutlinedTextField
         Surface(
             modifier = Modifier
-                .fillMaxSize()
+                .matchParentSize()
                 .padding(top = 8.dp)
                 .clip(MaterialTheme.shapes.extraSmall)
-                .clickable(enabled = enabled) { expanded = true },
+                .clickable(enabled = enabled) { expanded = !expanded },
             color = Color.Transparent,
         ) {}
     }
