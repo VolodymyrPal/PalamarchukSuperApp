@@ -247,7 +247,6 @@
             android:id="@+id/skill_button_3"
             android:layout_width="125dp"
             android:layout_height="110dp"
-            android:alpha="0.3"
             android:background="@android:color/transparent"
             android:checkable="true"
             android:clickable="true"
@@ -274,12 +273,14 @@
                 android:layout_width="110dp"
                 android:layout_height="95dp"
                 android:layout_gravity="center"
-                android:elevation="0dp"
+                android:background="@android:color/transparent"
+                android:focusable="true"
                 android:paddingBottom="20dp"
                 app:cardBackgroundColor="#E0BBFF"
                 app:cardCornerRadius="18dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:rippleColor="@color/md_theme_onSecondary"
                 app:strokeWidth="0dp">
 
                 <LinearLayout
@@ -293,13 +294,13 @@
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="85dp"
                         android:layout_height="70dp"
-                        android:src="@drawable/lock_outlined"
+                        android:src="@drawable/chatbot"
                         android:tint="@color/md_theme_onSecondaryContainer" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/locked_button_name"
+                        android:text="@string/chat_button_name"
                         android:textColor="@color/md_theme_onPrimaryContainer"
                         android:textSize="16sp"
                         android:textStyle="bold" />

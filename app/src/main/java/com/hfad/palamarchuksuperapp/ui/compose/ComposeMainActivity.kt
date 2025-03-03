@@ -30,8 +30,20 @@ class ComposeMainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val startDestination = intent.getStringExtra("startDestination")?.let {
+            when (it) {
+                Routes.MainScreenConstraint::class.qualifiedName -> Routes.MainScreenConstraint
+                Routes.SkillScreen::class.qualifiedName -> Routes.SkillScreen
+                Routes.Settings::class.qualifiedName -> Routes.Settings
+                Routes.StoreScreen::class.qualifiedName -> Routes.StoreScreen
+                Routes.ChatBotScreen::class.qualifiedName -> Routes.ChatBotScreen
+                Routes.ValentinesScreen::class.qualifiedName -> Routes.ValentinesScreen
+                else -> Routes.MainScreenConstraint
+            }
+        } ?: Routes.MainScreenConstraint
         setContent {
-            MainContent()
+            MainContent(startDestination)
         }
 
 
@@ -74,7 +86,7 @@ val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?
 @OptIn(ExperimentalSharedTransitionApi::class) //TODO
 @Suppress("detekt.FunctionNaming")
 @Composable
-fun MainContent() {
+fun MainContent(startDestination: Routes = Routes.MainScreenConstraint) {
     val navController = rememberNavController()
 
 //    fun scaleIntoContainer(
@@ -99,7 +111,7 @@ fun MainContent() {
             AppTheme {
                 NavHost(
                     navController = LocalNavController.current,
-                    startDestination = Routes.MainScreenConstraint
+                    startDestination = startDestination
                 ) {
                     composable<Routes.MainScreenConstraint> {
                         CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {

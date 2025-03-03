@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.ui.screens
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,8 @@ import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
+import com.hfad.palamarchuksuperapp.ui.compose.ComposeMainActivity
+import com.hfad.palamarchuksuperapp.ui.compose.Routes
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -110,6 +113,13 @@ class MainScreenFragment : Fragment() {
                 scale.setDuration(200)
                 scale.start()
                 vibe.standardClickVibration()
+                scale.doOnEnd {
+                    val intent = Intent(context, ComposeMainActivity::class.java).apply {
+                        putExtra("startDestination", Routes.ChatBotScreen::class.qualifiedName)
+                    }
+                    startActivity(intent)
+                }
+
             }
             skillButton4.setOnClickListener {
                 val scale = ObjectAnimator.ofPropertyValuesHolder(

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.widget.Toast
+import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -381,8 +382,17 @@ private fun ChatTitle(
 
 @Composable
 private fun BackButton(navController: NavHostController?) {
+    val context = LocalContext.current
+    val activity = remember(context) {
+        context as? OnBackPressedDispatcherOwner
+    }
     IconButton(
-        onClick = { navController?.popBackStack() }
+
+        onClick = {
+            if (navController?.popBackStack() != true) {
+                activity?.onBackPressedDispatcher?.onBackPressed()
+            }
+        }
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
