@@ -269,7 +269,7 @@ fun MainScreenRow(
                                 ButtonToNavConstraint(
                                     modifier = Modifier,
                                     action = { navController.navigate(Routes.ChatBotScreen) },
-                                    imagePath = R.drawable.lock_outlined,
+                                    imagePath = R.drawable.chatbot,
                                     text = stringResource(R.string.chat_button_name),
                                     position = Modifier.offset(15.dp, (-15).dp),
                                     enable = true,
@@ -390,7 +390,7 @@ fun ButtonToNavConstraint(
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(imagePath).build(),
                 modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp, top = 5.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 5.dp)
                     .weight(0.9f),
                 contentScale = ContentScale.FillBounds,
                 //imageVector = imageVector,
