@@ -17,6 +17,7 @@
     <string name="store_button_name">S T O R E</string>
     <string name="chat_button_name">C H A T</string>
     <string name="locked_button_name">L O C K E D</string>
+    <string name="bone_button_name">B O N E .</string>
     <string name="error_refresh_or_add_skill_screen">Error. Please refresh or add new Skill.</string>
     <string name="error_with_error">Error: %1$s</string>
     <string name="bucket_store_screen">Bucket</string>
