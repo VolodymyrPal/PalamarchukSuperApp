@@ -284,10 +284,13 @@ fun MainScreenRow(
                                         animatedContentScope
                                     ),
                                     action = { navController.navigate(Routes.Settings) },
-                                    imagePath = R.drawable.lock_outlined,
-                                    text = stringResource(R.string.locked_button_name),
-                                    position = Modifier.offset((-15).dp, (-15).dp),
-                                    enable = false
+                                    imagePath = R.drawable.d_letter,
+                                    text = stringResource(R.string.bone_button_name),
+                                    position = Modifier.offset((-15).dp, (-15).dp).sharedElement(
+                                        rememberSharedContentState("bone"), //TODO rename in prod
+                                        animatedContentScope
+                                    ),
+                                    enable = true
                                 )
                             }
                         }

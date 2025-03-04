@@ -326,7 +326,7 @@ object DatabaseModule {
             klass = SkillsDatabase::class.java,
             name = DATABASE_PROJECT_NAME
         )
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration() //TODO Don't forget to remove this in production
             .createFromAsset("newDatabase.db")
             .build()
     }

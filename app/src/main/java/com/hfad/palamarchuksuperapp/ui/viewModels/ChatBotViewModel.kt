@@ -5,6 +5,7 @@ import MainDispatcher
 import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
@@ -57,9 +58,15 @@ class ChatBotViewModel @Inject constructor(
     private val observeChatAiUseCase: ObserveChatAiUseCase,
     private val observeAllChatsInfoUseCase: ObserveAllChatsInfoUseCase,
     private val chatController: ChatController,
+    private val dataStoreHandler: DataStoreHandler,
 ) : GenericViewModel<MessageChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
-    private val currentChatId = MutableStateFlow(0)
+    private val currentChatId: StateFlow<Int> = dataStoreHandler.getCurrentChatId.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = 0
+    )
+
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -82,7 +89,7 @@ class ChatBotViewModel @Inject constructor(
                 val chat = observedChat.data
                 chat.take(1).collect { chat ->
                     if (chat.id != currentChatId.value) {
-                        currentChatId.update { chat.id }
+                        dataStoreHandler.setCurrentChatId(chat.id)
                         _loading.update { false }
                     }
                 }
@@ -106,12 +113,13 @@ class ChatBotViewModel @Inject constructor(
         )
     private val _choosenAiModelList = MutableStateFlow<PersistentList<AiModel>>(persistentListOf())
 
-    private val allChatInfo : StateFlow<List<MessageChat>> = flow {
+    private val allChatInfo: StateFlow<List<MessageChat>> = flow {
         val chatList = observeAllChatsInfoUseCase.invoke()
         when (chatList) {
             is Result.Success -> chatList.data.collect {
                 emit(it)
             }
+
             is Result.Error -> _errorFlow.emit(chatList.error)
         }
     }.stateIn(
@@ -183,7 +191,7 @@ class ChatBotViewModel @Inject constructor(
 
     private fun selectChat(chatId: Int) {
         viewModelScope.launch(ioCoroutineDispatcher) {
-            currentChatId.emit(chatId)
+            dataStoreHandler.setCurrentChatId(chatId)
         }
     }
 
@@ -221,7 +229,7 @@ class ChatBotViewModel @Inject constructor(
                 ),
                 handlers = _handlers.value
             ).getOrHandleAppError {
-                effect(Effect.ShowToast(it.message?:"Undefined error."))
+                effect(Effect.ShowToast(it.message ?: "Undefined error."))
                 _loading.update { false }
                 return@launch
             }
@@ -274,7 +282,7 @@ class ChatBotViewModel @Inject constructor(
 
     private fun clearAllChats() = viewModelScope.launch(ioDispatcher) {
         chatController.clearAllChats()
-        currentChatId.update { 0 }
+        dataStoreHandler.setCurrentChatId(0)
     }
 
     private fun createNewChat() = viewModelScope.launch(ioDispatcher) {
@@ -284,7 +292,7 @@ class ChatBotViewModel @Inject constructor(
 //                messageGroups = MockChat() //TODO for testing only
             )
         ).getOrHandleAppError { return@launch }.toInt()
-        currentChatId.update { newChatId }
+        dataStoreHandler.setCurrentChatId(newChatId)
     }
 
     @Stable
