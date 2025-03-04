@@ -134,7 +134,7 @@ import java.util.Locale
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("detekt.FunctionNaming", "detekt.LongMethod")
 @Composable
-fun RootChatScreen(
+fun ChatScreenRoot(
     modifier: Modifier = Modifier,
     chatBotViewModel: ChatBotViewModel = daggerViewModel<ChatBotViewModel>
         (factory = LocalContext.current.appComponent.viewModelFactory()),
@@ -387,7 +387,6 @@ private fun BackButton(navController: NavHostController?) {
         context as? OnBackPressedDispatcherOwner
     }
     IconButton(
-
         onClick = {
             if (navController?.popBackStack() != true) {
                 activity?.onBackPressedDispatcher?.onBackPressed()
