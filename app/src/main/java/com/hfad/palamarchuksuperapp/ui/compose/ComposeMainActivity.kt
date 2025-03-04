@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -135,7 +134,13 @@ fun MainContent(startDestination: Routes = Routes.MainScreenConstraint) {
                     }
                     composable<Routes.ChatBotScreen> {
                         CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-                            RootChatScreen()
+                            ChatScreenRoot()
+                        }
+                    }
+
+                    composable<Routes.BoneScreen> {
+                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                            BoneScreen()
                         }
                     }
 
@@ -181,6 +186,10 @@ sealed interface Routes {
 
     @Serializable
     object ChatBotScreen : Routes
+
+    @Serializable
+    object BoneScreen : Routes //TODO Rename when prod
+
 
     @Serializable
     object ValentinesScreen : Routes
