@@ -43,10 +43,10 @@ class BoneViewModel @Inject constructor(
 
     @Stable
     data class StateBone(
-        val clientInfo: ClientInfo = ClientInfo(0, HolderInfo()),
+        val holderCard: HolderCard = HolderCard(0, HolderInfo()),
         val ordedList: PersistentList<Order> = persistentListOf(),
         val paymentList: PersistentList<Payment> = persistentListOf(),
-    ) : State<ClientInfo>
+    ) : State<HolderCard>
 }
 
 data class HolderCard(
@@ -56,6 +56,10 @@ data class HolderCard(
     val cartType: CardType = CardType.OTHER,
     val manager: String = "",
 )
+
+enum class CardType {
+    HOLDER, RESIDENT, NONRESIDENT, FACTORY, OTHER
+}
 
 data class HolderInfo(
     val name: String = "",
