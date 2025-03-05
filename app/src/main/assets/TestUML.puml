@@ -1,0 +1,57 @@
+@startuml Exam Title
+'https://plantuml.com/sequence-diagram
+
+'Size configuration
+scale 0.75
+
+/'Add page header in the top left corner '/
+header TestUML
+
+/' Add page title top center'/
+title Base usecase
+
+/' Add page footer bottom cetner '/
+footer Page %page% of %lastpage%
+
+/'Add auto number for each action'/
+autonumber
+
+/'Set the maximum message size to 100 characters, preventing long diagram'/
+skinparam MaxMessageSize 150
+
+/'Set specific parameters for diagram's participant'/
+skinparam sequence {
+    MessageAlign center
+    ParticipantPadding 50
+
+    SpaceBetweenActors 30
+}
+
+
+/' Actor "Name" - add image of user with name
+as user - same as typealias, helps to decrease long names
+order - keep position on diagram for different element (from 0 to 100, as example with each step 10) '/
+Actor "User Dear" as user order 10
+
+/' participant "Name" - add box with name '/
+participant "Client\nBob" as client order 20
+
+/' queue "Name" - add buffer icon with name'/
+queue "App Buffer" as buffer order 37
+
+/' database "Name" - add database icon with name '/
+database "App Database" as database order 38
+
+participant "Server \nUnbelievable" as server order 40
+
+user -> client : Fill bin and confrim order
+client -> client : Show - order been processed
+client -> server : Pass data to proces
+server -> server : Process data
+!$st = "status/price of order"
+server -> server : Refresh $st
+server -> client : Pass - confirmed $st
+client -> client : Show - $st
+client --> user : Thank you
+
+@enduml
