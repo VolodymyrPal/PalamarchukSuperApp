@@ -283,7 +283,7 @@ fun MainScreenRow(
                                         rememberSharedContentState("key"),
                                         animatedContentScope
                                     ),
-                                    action = { navController.navigate(Routes.Settings) },
+                                    action = { navController.navigate(Routes.BoneScreen) },
                                     imagePath = R.drawable.d_letter,
                                     text = stringResource(R.string.bone_button_name),
                                     position = Modifier.offset((-15).dp, (-15).dp).sharedElement(
