@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class BoneViewModel @Inject constructor(
 
 
-) : GenericViewModel<ClientInfo, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+) : GenericViewModel<HolderCard, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
@@ -48,9 +49,12 @@ class BoneViewModel @Inject constructor(
     ) : State<ClientInfo>
 }
 
-data class ClientInfo(
-    val holderNumber: Int,
-    val holderInfo: HolderInfo,
+data class HolderCard(
+    @PrimaryKey
+    val code: Int = 1,
+    val name: String = " Base card ",
+    val cartType: CardType = CardType.OTHER,
+    val manager: String = "",
 )
 
 data class HolderInfo(
