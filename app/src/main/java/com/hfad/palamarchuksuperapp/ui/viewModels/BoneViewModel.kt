@@ -17,7 +17,7 @@ import javax.inject.Inject
 class BoneViewModel @Inject constructor(
 
 
-) : GenericViewModel<HolderCard, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+) : GenericViewModel<BusinessEntity, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
@@ -43,17 +43,17 @@ class BoneViewModel @Inject constructor(
 
     @Stable
     data class StateBone(
-        val holderCard: HolderCard = HolderCard(0, HolderInfo()),
+        val businessEntity: BusinessEntity = BusinessEntity(0, EntityDetails().toString()),
         val ordedList: PersistentList<Order> = persistentListOf(),
         val paymentList: PersistentList<Payment> = persistentListOf(),
-    ) : State<HolderCard>
+    ) : State<BusinessEntity>
 }
 
-data class HolderCard(
+data class BusinessEntity(
     @PrimaryKey
     val code: Int = 1,
     val name: String = " Base card ",
-    val cartType: CardType = CardType.OTHER,
+    val entityType: EntityType = EntityType.OTHER,
     val manager: String = "",
 )
 
@@ -61,7 +61,7 @@ enum class CardType {
     HOLDER, RESIDENT, NONRESIDENT, FACTORY, OTHER
 }
 
-data class HolderInfo(
+data class EntityDetails(
     val name: String = "",
 )
 
