@@ -57,8 +57,8 @@ data class BusinessEntity(
     val manager: String = "",
 )
 
-enum class CardType {
-    HOLDER, RESIDENT, NONRESIDENT, FACTORY, OTHER
+enum class EntityType {
+    HOLDING, RESIDENT, NONRESIDENT, FACTORY, OTHER
 }
 
 data class EntityDetails(
@@ -66,14 +66,21 @@ data class EntityDetails(
 )
 
 data class Order(
-    val odredNum: Int,
-    val ordedClientName: String,
-    val orderServices: OrderService,
+    @PrimaryKey
+    val id: Int,
+    val businessEntityNum: Int,
+    val num: Int,
+    val serviceList: OrderService,
+    val status: OrderStatus = OrderStatus.CREATED,
 )
 
 data class OrderService(
-    val serviceName: String,
-    val servicePrice: Float,
+    @PrimaryKey
+    val id: Int,
+    val orderId: Int?,
+    val name: ServiceType,
+    val price: Float,
+    val duration: Int,
 )
 
 data class Payment(
