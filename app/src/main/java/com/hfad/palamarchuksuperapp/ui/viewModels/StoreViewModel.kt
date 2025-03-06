@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ import javax.inject.Inject
 class StoreViewModel @Inject constructor(
     private val repository: StoreRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
 ) : GenericViewModel<PersistentList<Product>, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     data class StoreState(
@@ -44,6 +45,11 @@ class StoreViewModel @Inject constructor(
             }
             .catch {
                 effect(Effect.ShowToast(it.message ?: "Error. Please provide info to developer"))
+            }
+            .onStart {
+                viewModelScope.launch(ioDispatcher) {
+                    event(Event.OnSoftRefresh)
+                }
             }
 
     override val _errorFlow: MutableStateFlow<AppError?> = repository.errorFlow
@@ -71,11 +77,6 @@ class StoreViewModel @Inject constructor(
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = StoreState(loading = true)
             )
-            .also {
-                viewModelScope.launch(ioDispatcher) {
-                    event(Event.OnSoftRefresh)
-                }
-            }
 
 
     val baskList = uiState.map { state ->
@@ -112,14 +113,14 @@ class StoreViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.FetchSkills -> {
-                viewModelScope.launch (ioDispatcher) {
+                viewModelScope.launch(ioDispatcher) {
                     repository.softRefreshProducts()
                 }
             }
 
             is Event.OnSoftRefresh -> {
                 _loading.update { true }
-                viewModelScope.launch (ioDispatcher) {
+                viewModelScope.launch(ioDispatcher) {
                     delay(750)
                     repository.softRefreshProducts()
                     _loading.update { false }
@@ -128,7 +129,7 @@ class StoreViewModel @Inject constructor(
 
             is Event.OnHardRefresh -> {
                 _loading.update { true }
-                viewModelScope.launch (ioDispatcher) {
+                viewModelScope.launch(ioDispatcher) {
                     delay(1500)
                     repository.hardRefreshProducts()
                     _loading.update { false }
@@ -136,7 +137,7 @@ class StoreViewModel @Inject constructor(
             }
 
             is Event.ShowToast -> {
-                viewModelScope.launch (mainDispatcher) { effect(Effect.ShowToastAndVibration(event.message)) }
+                viewModelScope.launch(mainDispatcher) { effect(Effect.ShowToastAndVibration(event.message)) }
             }
 
             is Event.AddProduct -> {
@@ -150,13 +151,13 @@ class StoreViewModel @Inject constructor(
     }
 
     private fun setItemToBasket(product: Product, quantity: Int = 1) {
-        viewModelScope.launch (mainDispatcher) {
+        viewModelScope.launch(mainDispatcher) {
             repository.updateProduct(product.copy(quantity = quantity))
         }
     }
 
     private fun addProduct(product: Product, quantity: Int = 1) {
-        viewModelScope.launch (mainDispatcher) {
+        viewModelScope.launch(mainDispatcher) {
             val newQuantity = product.quantity + quantity
             repository.updateProduct(product.copy(quantity = if (newQuantity < 0) 0 else newQuantity))
         }
