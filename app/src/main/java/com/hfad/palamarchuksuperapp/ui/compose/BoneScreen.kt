@@ -125,4 +125,46 @@ fun BoneScreen(
     }
 }
 
+
+@Composable
+fun OrderCard(
+    modifier: Modifier = Modifier,
+    entity: BusinessEntity,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(0.9f),
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, Color.Blue),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(red = 0.8f),
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+        ) {
+            AppText(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.TopCenter),
+                value = "Order: ${entity.name}",
+            )
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                onClick = {},
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Expand",
+                )
+            }
+            StepProgressionBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
+                    .align(Alignment.BottomCenter)
+            )
+        }
+    }
 }
