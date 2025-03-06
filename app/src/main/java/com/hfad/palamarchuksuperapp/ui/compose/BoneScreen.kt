@@ -168,3 +168,128 @@ fun OrderCard(
         }
     }
 }
+
+@Composable
+fun StepProgressionBar(
+    modifier: Modifier = Modifier,
+    numberOfSteps: Int = 3,
+    currentStep: Int = 1,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        for (step in 0..numberOfSteps) {
+            Step(
+                modifier = Modifier.weight(1F),
+                isCompete = step < currentStep,
+                isCurrent = step == currentStep
+            )
+        }
+    }
+}
+
+@Composable
+fun Step(
+    modifier: Modifier = Modifier,
+    isCurrent: Boolean = false,
+    isCompete: Boolean = false,
+) {
+    val color = if (isCompete || isCurrent) Color.Red else Color.LightGray
+    val innerCircleColor = if (isCompete) Color.Red else Color.LightGray
+
+    Box(modifier = modifier) {
+        //Line
+        Divider(
+            modifier = Modifier.align(Alignment.CenterStart),
+            color = color,
+            thickness = 2.dp
+        )
+        //Circle
+        Canvas(
+            modifier = Modifier
+                .size(15.dp)
+                .align(Alignment.CenterEnd)
+                .border(
+                    shape = CircleShape,
+                    width = 2.dp,
+                    color = color
+                ),
+            onDraw = {
+                drawCircle(color = innerCircleColor)
+            }
+        )
+    }
+}
+
+
+@Composable
+fun HolderEntityCard(
+    modifier: Modifier = Modifier,
+    entity: BusinessEntity,
+) {
+    Surface(
+        modifier = modifier.size(150.dp, 150.dp),
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+        ) {
+            AppText(
+                modifier = Modifier.align(Alignment.TopStart),
+                value = "Entity name: ${entity.name}",
+            )
+            AppText(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                value = "Entity type: ${entity.entityType}",
+            )
+            AppText(
+                modifier = Modifier.align(Alignment.Center),
+                value = "Entity manager: ${entity.manager}",
+            )
+        }
+    }
+}
+
+
+@Preview
+@Composable
+fun BoneScreenPreview() {
+    AppTheme {
+        BoneScreen()
+    }
+}
+
+
+@Preview
+@Composable
+fun OrderCardPreview() {
+    AppTheme {
+        OrderCard(
+            modifier = Modifier,
+            entity = BusinessEntity(
+                name = "Client #1",
+                manager = "VP +3806338875"
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun HolderEntityCardPreview(
+    modifier: Modifier = Modifier,
+    entity: BusinessEntity = BusinessEntity(
+        name = "Client #1",
+        manager = "VP +3806338875"
+    ),
+) {
+    AppTheme {
+        HolderEntityCard(
+            modifier = modifier,
+            entity = entity
+        )
+    }
+}
