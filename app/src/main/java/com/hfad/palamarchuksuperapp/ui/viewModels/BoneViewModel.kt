@@ -74,6 +74,10 @@ data class Order(
     val status: OrderStatus = OrderStatus.CREATED,
 )
 
+enum class OrderStatus {
+    CREATED, CALCULATED, IN_PROGRESS, DONE
+}
+
 data class OrderService(
     @PrimaryKey
     val id: Int,
@@ -82,6 +86,60 @@ data class OrderService(
     val price: Float,
     val duration: Int,
 )
+
+enum class ServiceType {
+    FREIGHT,
+    FORWARDING,
+    STORAGE,
+    PRR,
+    CUSTOMS,
+    TRANSPORT,
+    EUROPE_TRANSPORT,
+    UKRAINE_TRANSPORT,
+}
+
+sealed interface ServiceScenario {
+    val scenario: List<ServiceType>
+
+    sealed interface NonEuropeContainer : ServiceScenario {
+        object WithFreight : NonEuropeContainer {
+            override val scenario = listOf<ServiceType>(
+                ServiceType.FREIGHT,
+                ServiceType.FORWARDING,
+                ServiceType.TRANSPORT,
+                ServiceType.CUSTOMS,
+            )
+        }
+    }
+
+    object ChinaEuropeContainer : ServiceScenario {
+        override val scenario = listOf<ServiceType>(
+            ServiceType.FREIGHT,
+            ServiceType.FORWARDING,
+            ServiceType.EUROPE_TRANSPORT,
+        )
+    }
+
+    object ChinaUkraineContainer : ServiceScenario {
+        override val scenario = listOf<ServiceType>(
+            ServiceType.FREIGHT,
+            ServiceType.FORWARDING,
+            ServiceType.UKRAINE_TRANSPORT,
+        )
+    }
+
+    object SimpleEurope : ServiceScenario {
+        override val scenario = listOf<ServiceType>(
+            ServiceType.TRANSPORT,
+            ServiceType.CUSTOMS,
+        )
+    }
+
+    data class DynamicScenario(
+        override val scenario: List<ServiceType>,
+    ) : ServiceScenario
+}
+
 
 data class Payment(
     val paymentNum: Int,
