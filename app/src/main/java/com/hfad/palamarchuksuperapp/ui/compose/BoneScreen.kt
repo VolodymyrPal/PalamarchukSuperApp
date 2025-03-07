@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -29,8 +31,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -111,10 +115,7 @@ fun BoneScreen(
                         items(items = items) {
                             OrderCard(
                                 modifier = Modifier
-                                    .padding(top = 8.dp)
-                                    .shadow(
-                                        elevation = 8.dp,
-                                    ),
+                                    .padding(top = 8.dp),
                                 entity = it
                             )
                         }
@@ -136,8 +137,11 @@ fun OrderCard(
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, Color.Blue),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(red = 0.8f),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
         )
     ) {
         Box(
@@ -195,8 +199,16 @@ fun Step(
     isCurrent: Boolean = false,
     isCompete: Boolean = false,
 ) {
-    val color = if (isCompete || isCurrent) Color.Red else Color.LightGray
-    val innerCircleColor = if (isCompete) Color.Red else Color.LightGray
+    val color = if (isCompete || isCurrent) Color(0xFF2E7D32) else Color(0xFFBDBDBD)
+    val innerCircleColor =
+        if (isCompete) Color(0xFF2E7D32)
+        else if (isCurrent) {
+            Color(0xFFFFD54F)
+        } else Color(0xFFF5F5F5)
+    val painter = rememberVectorPainter(Icons.Default.Check)
+    val painterArrow = rememberVectorPainter(Icons.Default.PlayArrow)
+
+
 
     Box(modifier = modifier) {
         //Line
@@ -217,6 +229,17 @@ fun Step(
                 ),
             onDraw = {
                 drawCircle(color = innerCircleColor)
+                drawIntoCanvas { canvas ->
+                    if (isCurrent) {
+                        with(painterArrow) {
+                            draw(Size(40f, 40f))
+                        }
+                    } else if (isCompete) {
+                        with(painter) {
+                            draw(Size(40f, 40f))
+                        }
+                    }
+                }
             }
         )
     }
@@ -239,15 +262,15 @@ fun HolderEntityCard(
         ) {
             AppText(
                 modifier = Modifier.align(Alignment.TopStart),
-                value = "Entity name: ${entity.name}",
+                value = "Name: ${entity.name}",
             )
             AppText(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                value = "Entity type: ${entity.entityType}",
+                value = "Type: ${entity.entityType}",
             )
             AppText(
                 modifier = Modifier.align(Alignment.Center),
-                value = "Entity manager: ${entity.manager}",
+                value = "Manager: ${entity.manager}",
             )
         }
     }
