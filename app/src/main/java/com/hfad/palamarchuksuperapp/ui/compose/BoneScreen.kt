@@ -229,6 +229,17 @@ fun Step(
                 ),
             onDraw = {
                 drawCircle(color = innerCircleColor)
+                drawIntoCanvas { canvas ->
+                    if (isCurrent) {
+                        with(painterArrow) {
+                            draw(Size(40f, 40f))
+                        }
+                    } else if (isCompete) {
+                        with(painter) {
+                            draw(Size(40f, 40f))
+                        }
+                    }
+                }
             }
         )
     }
