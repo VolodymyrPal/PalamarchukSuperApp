@@ -137,8 +137,11 @@ fun OrderCard(
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, Color.Blue),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(red = 0.8f),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
         )
     ) {
         Box(
