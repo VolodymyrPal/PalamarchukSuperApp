@@ -199,8 +199,16 @@ fun Step(
     isCurrent: Boolean = false,
     isCompete: Boolean = false,
 ) {
-    val color = if (isCompete || isCurrent) Color.Red else Color.LightGray
-    val innerCircleColor = if (isCompete) Color.Red else Color.LightGray
+    val color = if (isCompete || isCurrent) Color(0xFF2E7D32) else Color(0xFFBDBDBD)
+    val innerCircleColor =
+        if (isCompete) Color(0xFF2E7D32)
+        else if (isCurrent) {
+            Color(0xFFFFD54F)
+        } else Color(0xFFF5F5F5)
+    val painter = rememberVectorPainter(Icons.Default.Check)
+    val painterArrow = rememberVectorPainter(Icons.Default.PlayArrow)
+
+
 
     Box(modifier = modifier) {
         //Line
