@@ -262,15 +262,15 @@ fun HolderEntityCard(
         ) {
             AppText(
                 modifier = Modifier.align(Alignment.TopStart),
-                value = "Entity name: ${entity.name}",
+                value = "Name: ${entity.name}",
             )
             AppText(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                value = "Entity type: ${entity.entityType}",
+                value = "Type: ${entity.entityType}",
             )
             AppText(
                 modifier = Modifier.align(Alignment.Center),
-                value = "Entity manager: ${entity.manager}",
+                value = "Manager: ${entity.manager}",
             )
         }
     }
