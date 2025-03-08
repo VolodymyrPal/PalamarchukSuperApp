@@ -212,21 +212,13 @@ fun Step(
     val innerCircleColor =
         if (isCompete) Color(0xFF2E7D32)
         else if (isCurrent) {
-            Color(0xFFFFD54F)
+            Color(0xFFFFD54F).copy(red = 0.7f, blue = 0.85f)
         } else Color(0xFFF5F5F5)
     val painter = rememberVectorPainter(Icons.Default.Check)
-    val painterArrow = rememberVectorPainter(Icons.Default.PlayArrow)
 
 
 
     Box(modifier = modifier) {
-        //Line
-        Divider(
-            modifier = Modifier.align(Alignment.CenterStart),
-            color = color,
-            thickness = 2.dp
-        )
-        //Circle
         Canvas(
             modifier = Modifier
                 .size(15.dp)
@@ -239,13 +231,12 @@ fun Step(
             onDraw = {
                 drawCircle(color = innerCircleColor)
                 drawIntoCanvas { canvas ->
-                    if (isCurrent) {
-                        with(painterArrow) {
-                            draw(Size(40f, 40f))
-                        }
-                    } else if (isCompete) {
+                    if (isCompete) {
                         with(painter) {
-                            draw(Size(40f, 40f))
+                            draw(
+                                Size(40f, 40f),
+                                colorFilter = ColorFilter.tint(Color.White)
+                            )
                         }
                     }
                 }
