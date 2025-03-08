@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
@@ -146,7 +147,6 @@ fun OrderCard(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize(),
         ) {
             AppText(
                 modifier = Modifier
@@ -179,16 +179,25 @@ fun StepProgressionBar(
     numberOfSteps: Int = 3,
     currentStep: Int = 1,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        for (step in 0..numberOfSteps) {
-            Step(
-                modifier = Modifier.weight(1F),
-                isCompete = step < currentStep,
-                isCurrent = step == currentStep
-            )
+
+    Box(modifier = modifier.background(Color.Transparent)) {
+        Divider(
+            modifier = Modifier.align(Alignment.CenterStart),
+            color = Color.Black.copy(1f),
+            thickness = (1.5).dp
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            for (step in 0..numberOfSteps - 1) {
+                Step(
+                    modifier = Modifier,
+                    isCompete = step < currentStep,
+                    isCurrent = step == currentStep,
+                )
+            }
         }
     }
 }
@@ -203,21 +212,13 @@ fun Step(
     val innerCircleColor =
         if (isCompete) Color(0xFF2E7D32)
         else if (isCurrent) {
-            Color(0xFFFFD54F)
+            Color(0xFFFFD54F).copy(red = 0.7f, blue = 0.85f)
         } else Color(0xFFF5F5F5)
     val painter = rememberVectorPainter(Icons.Default.Check)
-    val painterArrow = rememberVectorPainter(Icons.Default.PlayArrow)
 
 
 
     Box(modifier = modifier) {
-        //Line
-        Divider(
-            modifier = Modifier.align(Alignment.CenterStart),
-            color = color,
-            thickness = 2.dp
-        )
-        //Circle
         Canvas(
             modifier = Modifier
                 .size(15.dp)
@@ -230,13 +231,12 @@ fun Step(
             onDraw = {
                 drawCircle(color = innerCircleColor)
                 drawIntoCanvas { canvas ->
-                    if (isCurrent) {
-                        with(painterArrow) {
-                            draw(Size(40f, 40f))
-                        }
-                    } else if (isCompete) {
+                    if (isCompete) {
                         with(painter) {
-                            draw(Size(40f, 40f))
+                            draw(
+                                Size(40f, 40f),
+                                colorFilter = ColorFilter.tint(Color.White)
+                            )
                         }
                     }
                 }

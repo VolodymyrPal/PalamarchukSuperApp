@@ -140,7 +140,7 @@ fun MainContent(startDestination: Routes = Routes.MainScreenConstraint) {
 
                     composable<Routes.BoneScreen> {
                         CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-                            BoneScreen()
+                            BoneScreenRoot()
                         }
                     }
 
