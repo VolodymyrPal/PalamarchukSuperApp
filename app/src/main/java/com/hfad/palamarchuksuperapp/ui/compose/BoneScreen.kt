@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
@@ -146,7 +147,6 @@ fun OrderCard(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize(),
         ) {
             AppText(
                 modifier = Modifier
@@ -179,16 +179,25 @@ fun StepProgressionBar(
     numberOfSteps: Int = 3,
     currentStep: Int = 1,
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        for (step in 0..numberOfSteps) {
-            Step(
-                modifier = Modifier.weight(1F),
-                isCompete = step < currentStep,
-                isCurrent = step == currentStep
-            )
+
+    Box(modifier = modifier.background(Color.Transparent)) {
+        Divider(
+            modifier = Modifier.align(Alignment.CenterStart),
+            color = Color.Black.copy(1f),
+            thickness = (1.5).dp
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            for (step in 0..numberOfSteps - 1) {
+                Step(
+                    modifier = Modifier,
+                    isCompete = step < currentStep,
+                    isCurrent = step == currentStep,
+                )
+            }
         }
     }
 }
