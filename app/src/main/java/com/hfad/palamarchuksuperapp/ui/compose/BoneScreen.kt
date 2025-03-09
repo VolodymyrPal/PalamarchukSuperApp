@@ -167,15 +167,13 @@ fun OrderCard(
                     .align(Alignment.TopCenter),
                 value = "Order: ${entity.name}",
             )
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                onClick = {},
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Expand",
-                )
-            }
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Expand",
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(16.dp),
+            )
             StepProgressionBar(
                 modifier = Modifier
                     .fillMaxWidth()
