@@ -1,8 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import androidx.room.PrimaryKey
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -74,18 +76,29 @@ data class Order(
     val status: OrderStatus = OrderStatus.CREATED,
 )
 
+interface Stepper {
+    val isComplete: Boolean
+    val serviceType: ServiceType
+    @get:DrawableRes
+    val icon: Int
+}
+
 enum class OrderStatus {
     CREATED, CALCULATED, IN_PROGRESS, DONE
 }
 
-data class OrderService(
-    @PrimaryKey
+@Suppress("LongParameterList")
+class OrderService(
+    /* PrimaryKey - ID */
     val id: Int,
     val orderId: Int?,
     val name: ServiceType,
     val price: Float,
     val duration: Int,
-)
+    override val isComplete: Boolean = false,
+    override val serviceType: ServiceType = ServiceType.OTHER,
+    @DrawableRes override val icon: Int = R.drawable.lock_outlined,
+) : Stepper
 
 enum class ServiceType {
     FREIGHT,
@@ -96,6 +109,7 @@ enum class ServiceType {
     TRANSPORT,
     EUROPE_TRANSPORT,
     UKRAINE_TRANSPORT,
+    OTHER
 }
 
 sealed interface ServiceScenario {

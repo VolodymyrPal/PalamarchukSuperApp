@@ -9,9 +9,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,7 +26,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -37,11 +38,13 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.compose.AppTheme
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
@@ -145,24 +148,32 @@ fun OrderCard(
             defaultElevation = 4.dp
         )
     ) {
+        val containerIcon = painterResource(R.drawable.container_svgrepo_com)
+
         Box(
             modifier = Modifier
         ) {
+            Icon(
+                painter = containerIcon,
+                contentDescription = "Container Icon",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 8.dp, top = 4.dp)
+            )
             AppText(
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .align(Alignment.TopCenter),
                 value = "Order: ${entity.name}",
             )
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                onClick = {},
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Expand",
-                )
-            }
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Expand",
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(16.dp),
+            )
             StepProgressionBar(
                 modifier = Modifier
                     .fillMaxWidth()
