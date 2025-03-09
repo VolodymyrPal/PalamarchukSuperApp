@@ -87,14 +87,18 @@ enum class OrderStatus {
     CREATED, CALCULATED, IN_PROGRESS, DONE
 }
 
-data class OrderService(
-    @PrimaryKey
+@Suppress("LongParameterList")
+class OrderService(
+    /* PrimaryKey - ID */
     val id: Int,
     val orderId: Int?,
     val name: ServiceType,
     val price: Float,
     val duration: Int,
-)
+    override val isComplete: Boolean = false,
+    override val serviceType: ServiceType = ServiceType.OTHER,
+    @DrawableRes override val icon: Int = R.drawable.lock_outlined,
+) : Stepper
 
 enum class ServiceType {
     FREIGHT,
@@ -105,6 +109,7 @@ enum class ServiceType {
     TRANSPORT,
     EUROPE_TRANSPORT,
     UKRAINE_TRANSPORT,
+    OTHER
 }
 
 sealed interface ServiceScenario {
