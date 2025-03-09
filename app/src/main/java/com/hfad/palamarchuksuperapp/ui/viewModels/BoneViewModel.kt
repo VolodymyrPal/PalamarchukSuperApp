@@ -1,8 +1,10 @@
 package com.hfad.palamarchuksuperapp.ui.viewModels
 
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import androidx.room.PrimaryKey
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
@@ -73,6 +75,13 @@ data class Order(
     val serviceList: OrderService,
     val status: OrderStatus = OrderStatus.CREATED,
 )
+
+interface Stepper {
+    val isComplete: Boolean
+    val serviceType: ServiceType
+    @get:DrawableRes
+    val icon: Int
+}
 
 enum class OrderStatus {
     CREATED, CALCULATED, IN_PROGRESS, DONE
