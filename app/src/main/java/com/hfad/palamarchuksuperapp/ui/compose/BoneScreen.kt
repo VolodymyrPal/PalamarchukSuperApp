@@ -263,7 +263,9 @@ fun HolderEntityCard(
     entity: BusinessEntity,
 ) {
     Surface(
-        modifier = modifier.size(150.dp, 150.dp),
+        modifier = modifier
+            .fillMaxWidth(0.9f)
+            .height(IntrinsicSize.Max),
         shape = MaterialTheme.shapes.medium
     ) {
         Box(
