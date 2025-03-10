@@ -79,6 +79,7 @@ data class Order(
 interface Stepper {
     val isComplete: Boolean
     val serviceType: ServiceType
+
     @get:DrawableRes
     val icon: Int
 }
@@ -90,11 +91,11 @@ enum class OrderStatus {
 @Suppress("LongParameterList")
 class OrderService(
     /* PrimaryKey - ID */
-    val id: Int,
-    val orderId: Int?,
-    val name: ServiceType,
-    val price: Float,
-    val duration: Int,
+    val id: Int = 0,
+    val orderId: Int? = null,
+    val name: ServiceType = ServiceType.OTHER,
+    val price: Float = 0.0f,
+    val duration: Int = 0,
     override val isComplete: Boolean = false,
     override val serviceType: ServiceType = ServiceType.OTHER,
     @DrawableRes override val icon: Int = R.drawable.lock_outlined,
