@@ -77,11 +77,15 @@ data class Order(
 )
 
 interface Stepper {
-    val isComplete: Boolean
+    val status: StepperStatus
     val serviceType: ServiceType
 
     @get:DrawableRes
     val icon: Int
+}
+
+enum class StepperStatus {
+    DONE, CANCELED, IN_PROGRESS, CREATED
 }
 
 enum class OrderStatus {
@@ -93,24 +97,23 @@ class OrderService(
     /* PrimaryKey - ID */
     val id: Int = 0,
     val orderId: Int? = null,
-    val name: ServiceType = ServiceType.OTHER,
+    override val serviceType: ServiceType = ServiceType.OTHER,
     val price: Float = 0.0f,
     val duration: Int = 0,
-    override val isComplete: Boolean = false,
-    override val serviceType: ServiceType = ServiceType.OTHER,
+    override val status: StepperStatus = StepperStatus.CREATED,
     @DrawableRes override val icon: Int = R.drawable.lock_outlined,
 ) : Stepper
 
-enum class ServiceType {
-    FREIGHT,
-    FORWARDING,
-    STORAGE,
-    PRR,
-    CUSTOMS,
-    TRANSPORT,
-    EUROPE_TRANSPORT,
-    UKRAINE_TRANSPORT,
-    OTHER
+enum class ServiceType(val title: String) {
+    FREIGHT("Freight"),
+    FORWARDING("Forwarding"),
+    STORAGE("Storage"),
+    PRR("PRR"),
+    CUSTOMS("Customs"),
+    TRANSPORT("Transport"),
+    EUROPE_TRANSPORT("Auto"),
+    UKRAINE_TRANSPORT("Auto"),
+    OTHER("Other")
 }
 
 sealed interface ServiceScenario {
@@ -160,4 +163,168 @@ data class Payment(
     val paymentNum: Int,
     val paymentSum: Float,
     val paymentDateCreatinon: Date,
+)
+
+
+val orderServiceList = persistentListOf<OrderService>(
+    OrderService(
+        id = 1,
+        orderId = 101,
+        price = 1500f,
+        duration = 3,
+        status = StepperStatus.DONE,
+        serviceType = ServiceType.FREIGHT,
+    ),
+    OrderService(
+        id = 2,
+        orderId = 102,
+        price = 1200f,
+        duration = 2,
+        status = StepperStatus.IN_PROGRESS,
+        serviceType = ServiceType.FORWARDING,
+    ),
+    OrderService(
+        id = 3,
+        orderId = 103,
+        price = 500f,
+        duration = 1,
+        status = StepperStatus.CREATED,
+        serviceType = ServiceType.STORAGE,
+    ),
+    OrderService(
+        id = 4,
+        orderId = 104,
+        price = 800f,
+        duration = 2,
+        status = StepperStatus.CANCELED,
+        serviceType = ServiceType.PRR,
+    ),
+    OrderService(
+        id = 5,
+        orderId = 105,
+        price = 3000f,
+        duration = 5,
+        status = StepperStatus.DONE,
+        serviceType = ServiceType.CUSTOMS,
+    ),
+    OrderService(
+        id = 6,
+        orderId = 106,
+        price = 1800f,
+        duration = 3,
+        status = StepperStatus.IN_PROGRESS,
+        serviceType = ServiceType.TRANSPORT,
+    ),
+    OrderService(
+        id = 7,
+        orderId = 107,
+        price = 2500f,
+        duration = 4,
+        status = StepperStatus.CREATED,
+        serviceType = ServiceType.UKRAINE_TRANSPORT,
+    ),
+    OrderService(
+        id = 8,
+        orderId = 108,
+        price = 2200f,
+        duration = 3,
+        status = StepperStatus.CANCELED,
+        serviceType = ServiceType.PRR,
+    ),
+    OrderService(
+        id = 9,
+        orderId = 109,
+        price = 600f,
+        duration = 1,
+        status = StepperStatus.DONE,
+        serviceType = ServiceType.OTHER,
+    ),
+    OrderService(
+        id = 10,
+        orderId = 110,
+        price = 1700f,
+        duration = 3,
+        status = StepperStatus.IN_PROGRESS,
+        serviceType = ServiceType.FREIGHT,
+    ),
+    OrderService(
+        id = 11,
+        orderId = 111,
+        price = 1100f,
+        duration = 2,
+        status = StepperStatus.CREATED,
+        serviceType = ServiceType.FORWARDING,
+    ),
+    OrderService(
+        id = 12,
+        orderId = 112,
+        price = 450f,
+        duration = 1,
+        status = StepperStatus.CANCELED,
+        serviceType = ServiceType.STORAGE,
+    ),
+    OrderService(
+        id = 13,
+        orderId = 113,
+        price = 850f,
+        duration = 2,
+        status = StepperStatus.DONE,
+        serviceType = ServiceType.PRR,
+    ),
+    OrderService(
+        id = 14,
+        orderId = 114,
+        price = 3100f,
+        duration = 5,
+        status = StepperStatus.IN_PROGRESS,
+        serviceType = ServiceType.CUSTOMS,
+    ),
+    OrderService(
+        id = 15,
+        orderId = 115,
+        price = 1750f,
+        duration = 3,
+        status = StepperStatus.CREATED,
+        serviceType = ServiceType.TRANSPORT,
+    ),
+    OrderService(
+        id = 16,
+        orderId = 116,
+        price = 2550f,
+        duration = 4,
+        status = StepperStatus.CANCELED,
+        serviceType = ServiceType.EUROPE_TRANSPORT,
+    ),
+    OrderService(
+        id = 17,
+        orderId = 117,
+        price = 2300f,
+        duration = 3,
+        status = StepperStatus.DONE,
+        serviceType = ServiceType.UKRAINE_TRANSPORT,
+    ),
+    OrderService(
+        id = 18,
+        orderId = 118,
+        price = 700f,
+        duration = 1,
+        status = StepperStatus.IN_PROGRESS,
+        serviceType = ServiceType.OTHER,
+    ),
+    OrderService(
+        id = 19,
+        orderId = 119,
+        price = 1600f,
+        duration = 3,
+        status = StepperStatus.CREATED,
+        serviceType = ServiceType.FREIGHT,
+    ),
+    OrderService(
+        id = 20,
+        orderId = 120,
+        price = 1300f,
+        duration = 2,
+        status = StepperStatus.CANCELED,
+        serviceType = ServiceType.FORWARDING,
+    )
 )
