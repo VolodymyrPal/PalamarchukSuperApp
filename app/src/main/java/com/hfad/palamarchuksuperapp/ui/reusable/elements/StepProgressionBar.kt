@@ -114,18 +114,27 @@ fun StepProgressionBar(
                 else -> Color(0xFFF5F5F5)
             }
 
+            val iconSize = 12.dp.toPx()
+            val iconOffset = Offset(
+                stepX - iconSize / 2,
+                centerY - iconSize / 2
+            )
+
             val strokeWidth = 2.dp.toPx()
 
-            drawCircle(
+//            val textLayout = textMeasurer.measure(step.serviceType.name, textStyle)
+
+            drawCircle(   //outer stroke color
                 color = outerColor,
-                radius = stepRadius - strokeWidth / 2,
+                radius = stepRadius,
                 center = Offset(stepX, centerY),
                 style = Stroke(width = strokeWidth)
             )
 
             drawCircle(
+                //inner fill color
                 color = innerColor,
-                radius = stepRadius - strokeWidth,
+                radius = stepRadius - strokeWidth / 2 + 1f,
                 center = Offset(stepX, centerY),
             )
 
@@ -133,10 +142,12 @@ fun StepProgressionBar(
                 val prevX = stepX + stepRadius
                 val newX = prevX + stepSpacing - stepRadius * 2
                 drawLine(
-                    color = Color.Black,
-                    start = Offset(prevX, centerY),
-                    end = Offset(newX, centerY),
-                    strokeWidth = (1.5).dp.toPx()
+                    color = if (currentStep >= index) Color(
+                        0xFF2E7D32
+                    ) else lineColorPrimary.copy(alpha = 0.5f),
+                    start = Offset(prevX + 10, centerY),
+                    end = Offset(newX - 10, centerY),
+                    strokeWidth = (1).dp.toPx()
                 )
             }
             drawIntoCanvas { canvas ->
