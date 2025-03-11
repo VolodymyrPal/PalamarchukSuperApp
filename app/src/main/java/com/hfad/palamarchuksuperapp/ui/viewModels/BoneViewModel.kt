@@ -97,11 +97,10 @@ class OrderService(
     /* PrimaryKey - ID */
     val id: Int = 0,
     val orderId: Int? = null,
-    val name: ServiceType = ServiceType.OTHER,
+    override val serviceType: ServiceType = ServiceType.OTHER,
     val price: Float = 0.0f,
     val duration: Int = 0,
     override val status: StepperStatus = StepperStatus.CREATED,
-    override val serviceType: ServiceType = ServiceType.OTHER,
     @DrawableRes override val icon: Int = R.drawable.lock_outlined,
 ) : Stepper
 
