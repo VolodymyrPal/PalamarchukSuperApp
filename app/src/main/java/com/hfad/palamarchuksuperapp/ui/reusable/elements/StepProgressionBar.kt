@@ -97,14 +97,20 @@ fun StepProgressionBar(
         listOfSteps.forEachIndexed { index, step ->
 
             val stepX = stepRadius + index * stepSpacing
-            val isCompleted = index < currentStep
+            val isCompleted = index < currentStep || step.status == StepperStatus.DONE
             val isCurrent = index == currentStep
 
-            val outerColor =
-                if (isCompleted || isCurrent) Color(0xFF2E7D32) else Color(0xFFBDBDBD)
+            val outerColor = when {
+                isCurrent -> Color(0xFF2E7D32)
+                isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                index < currentStep -> Color(0xFF2E7D32)
+                else -> Color(0xFFBDBDBD)
+            }
+
             val innerColor = when {
-                isCompleted -> Color(0xFF2E7D32)
-                isCurrent -> Color(0xFFFFD54F).copy(red = 0.7f, blue = 0.85f)
+                isCompleted && index < currentStep -> Color(0xFF2E7D32)
+                isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
                 else -> Color(0xFFF5F5F5)
             }
 
