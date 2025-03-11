@@ -105,16 +105,16 @@ class OrderService(
     @DrawableRes override val icon: Int = R.drawable.lock_outlined,
 ) : Stepper
 
-enum class ServiceType {
-    FREIGHT,
-    FORWARDING,
-    STORAGE,
-    PRR,
-    CUSTOMS,
-    TRANSPORT,
-    EUROPE_TRANSPORT,
-    UKRAINE_TRANSPORT,
-    OTHER
+enum class ServiceType(val title: String) {
+    FREIGHT("Freight"),
+    FORWARDING("Forwarding"),
+    STORAGE("Storage"),
+    PRR("PRR"),
+    CUSTOMS("Customs"),
+    TRANSPORT("Transport"),
+    EUROPE_TRANSPORT("Auto"),
+    UKRAINE_TRANSPORT("Auto"),
+    OTHER("Other")
 }
 
 sealed interface ServiceScenario {
