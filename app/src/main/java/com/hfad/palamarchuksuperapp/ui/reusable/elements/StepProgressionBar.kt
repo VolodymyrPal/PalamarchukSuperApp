@@ -150,12 +150,51 @@ fun StepProgressionBar(
                     strokeWidth = (1).dp.toPx()
                 )
             }
+
+            if (isCompleted) {
+                drawIntoCanvas { canvas ->
+                    translate(iconOffset.x, iconOffset.y) {
+                        with(painterStatusDone) {
+                            draw(
+                                Size(iconSize, iconSize),
+                                colorFilter = ColorFilter.tint(Color.White)
+                            )
+                        }
+                    }
+                }
+            }
+
+            val text = "0${index + 1}.02.25"
+//                SimpleDateFormat("dd.MM.yy", Locale.US).format(
+//                Date()
+//            )
+
+//            val text: String = StringBuilder()
+//                .append(Random.nextInt(1, 28))
+//                .append(".${Random.nextInt(1, 12)}")
+//                .toString()
+
+            val textLayoutInfo = textMeasurer.measure(text, textStyle)
+
+            Log.d("Center Y", "Center Y: $centerY")
+            drawText(
+                textMeasurer = textMeasurer,
+                text = text,
+                style = textStyle,
+                topLeft = Offset(
+                    stepX - textLayoutInfo.size.width / 2,
+                    centerY
+                )
+            )
+
             drawIntoCanvas { canvas ->
-                if (isCompleted) {
-                    with(painter) {
+                translate(
+                    stepX - iconSize / 2,
+                    center.y - stepRadius * 2 - 10
+                ) {
+                    with(painterServiceTypeMap[step.serviceType]!!) {
                         draw(
-                            Size(40f, 40f),
-                            colorFilter = ColorFilter.tint(Color.Black)
+                            Size(iconSize, iconSize),
                         )
                     }
                 }
