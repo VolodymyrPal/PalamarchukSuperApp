@@ -209,25 +209,139 @@ fun StepProgressionBarNewPreview(
 
 ) {
     AppTheme {
-        Box(modifier = Modifier.size(250.dp, 50.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        )
+        {
             StepProgressionBar(
-                listOfSteps = listOf(
-                    OrderService(isComplete = true),
-                    OrderService(),
-                    OrderService(isComplete = true),
-                    OrderService(),
-                    OrderService(),
-                    OrderService(),
-                    OrderService(),
-                    OrderService(),
-//                    OrderService(),
-//                    OrderService(),
-//                    OrderService(),
-//                    OrderService(),
-//                    OrderService(),
-//                    OrderService(),
-                ),
-                currentStep = 5
+                listOfSteps = orderServiceList.subList(0, 8),
+                currentStep = 2
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun BoneScreenPreview() {
+    AppTheme {
+        com.hfad.palamarchuksuperapp.ui.reusable.elements.BoneScreen()
+    }
+}
+
+@Composable
+fun BoneScreen(
+    modifier: Modifier = Modifier,
+//    viewModel: ViewModel? = null,
+    navController: NavController? = null,
+) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+
+        },
+        floatingActionButton = {
+
+        },
+        bottomBar = {
+
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = paddingValues.calculateTopPadding()
+                )
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AppText(
+                    modifier = Modifier.padding(8.dp),
+                    value = "Orders",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.displayMedium,
+                    )
+                )
+                val items = listOf(
+                    BusinessEntity(name = "43222", manager = "VP +3806338875"),
+                    BusinessEntity(name = "42224", manager = "VP +3806338875"),
+                    BusinessEntity(name = "43226", manager = "VP +3806338875")
+                )
+                Box(modifier = Modifier.wrapContentSize()) {
+                    LazyColumn {
+                        items(items = items) {
+                            OrderCard(
+                                modifier = Modifier
+                                    .wrapContentSize()
+                                    .padding(top = 8.dp),
+                                entity = it
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun OrderCard(
+    modifier: Modifier = Modifier,
+    entity: BusinessEntity,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth(0.9f)
+            .wrapContentHeight(),
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, Color.Blue),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+    ) {
+        val containerIcon = painterResource(R.drawable.container_svgrepo_com)
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Icon(
+                painter = containerIcon,
+                contentDescription = "Container Icon",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 8.dp, top = 4.dp)
+            )
+            AppText(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.TopCenter),
+                value = "Order: ${entity.name}",
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Expand",
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(16.dp),
+            )
+            StepProgressionBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(start = 4.dp, end = 4.dp)
+                    .height(50.dp),
+                listOfSteps = orderServiceList.subList(0, 8),
+                currentStep = 2
             )
         }
     }
