@@ -77,11 +77,15 @@ data class Order(
 )
 
 interface Stepper {
-    val isComplete: Boolean
+    val status: StepperStatus
     val serviceType: ServiceType
 
     @get:DrawableRes
     val icon: Int
+}
+
+enum class StepperStatus {
+    DONE, CANCELED, IN_PROGRESS, CREATED
 }
 
 enum class OrderStatus {
@@ -96,7 +100,7 @@ class OrderService(
     val name: ServiceType = ServiceType.OTHER,
     val price: Float = 0.0f,
     val duration: Int = 0,
-    override val isComplete: Boolean = false,
+    override val status: StepperStatus = StepperStatus.CREATED,
     override val serviceType: ServiceType = ServiceType.OTHER,
     @DrawableRes override val icon: Int = R.drawable.lock_outlined,
 ) : Stepper
