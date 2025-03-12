@@ -9,6 +9,9 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -81,6 +84,7 @@ import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.random.Random
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -286,10 +290,12 @@ fun MainScreenRow(
                                     action = { navController.navigate(Routes.BoneScreen) },
                                     imagePath = R.drawable.d_letter,
                                     text = stringResource(R.string.bone_button_name),
-                                    position = Modifier.offset((-15).dp, (-15).dp).sharedElement(
-                                        rememberSharedContentState("bone"), //TODO rename in prod
-                                        animatedContentScope
-                                    ),
+                                    position = Modifier
+                                        .offset((-15).dp, (-15).dp)
+                                        .sharedElement(
+                                            rememberSharedContentState("bone"), //TODO rename in prod
+                                            animatedContentScope
+                                        ),
                                     enable = true
                                 )
                             }
@@ -301,6 +307,13 @@ fun MainScreenRow(
                     val month = currentDay.get(Calendar.MONTH) + 1
                     val isValentine = day == 14 && month == 2
 
+                    item {
+                        val count = remember { mutableStateOf(0) }
+                        AnimatedCounter(count.value)
+                        Button(onClick = { count.value = Random.nextInt(0, 1000) }) {
+
+                        }
+                    }
                     item {
                         if (isValentine) {
                             val painterRes = painterResource(R.drawable.loveletter)
@@ -331,6 +344,18 @@ fun MainScreenRow(
             }
         }
     }
+}
+
+@Composable
+fun AnimatedCounter(count: Int) {
+    val animatedCount by animateIntAsState(
+        targetValue = count, // Настройка длительности анимации
+        animationSpec = TweenSpec(
+            durationMillis = 750,
+            easing = FastOutSlowInEasing
+        )
+    )
+    Text("Count: $animatedCount")
 }
 
 @Suppress("LongParameterList", "FunctionNaming")
