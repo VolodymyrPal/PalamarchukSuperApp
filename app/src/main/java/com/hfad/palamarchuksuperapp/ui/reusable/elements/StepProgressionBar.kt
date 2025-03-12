@@ -1,15 +1,16 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -56,149 +58,198 @@ fun StepProgressionBar(
     listOfSteps: List<Stepper>,
     currentStep: Int = 0,
 ) {
-
-    val painterServiceTypeMap = ServiceType.entries.associateWith {
-        when (it) {
-            ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
-            ServiceType.FORWARDING -> painterResource(R.drawable.freight)
-            ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
-            ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
-            ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
-            ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
-            ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
-            ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
-            ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
-        }
-    }
-
-    val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
-    val textMeasurer = rememberTextMeasurer()
-    val textStyle =
-        MaterialTheme.typography.bodySmall.copy(fontSize = 8.sp, letterSpacing = -0.4.sp)
-    val lineColorPrimary = MaterialTheme.colorScheme.primary
-
-
-
-    Canvas(
-        modifier = modifier
-            .width(250.dp)
-            .height(stepperHeight)
-    ) {
-        val widthPx = size.width
-        val stepRadius = 10.dp.toPx()
-        val centerY = size.height / 2
-
-        val stepSpacing = if (listOfSteps.size > 1) {
-            (widthPx - 2 * stepRadius) / (listOfSteps.size - 1)
-        } else {
-            0f
-        }
-
-        listOfSteps.forEachIndexed { index, step ->
-
-            val stepX = stepRadius + index * stepSpacing
-            val isCompleted = index < currentStep || step.status == StepperStatus.DONE
-            val isCurrent = index == currentStep
-
-            val outerColor = when {
-                isCurrent -> Color(0xFF2E7D32)
-                isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                index < currentStep -> Color(0xFF2E7D32)
-                else -> Color(0xFFBDBDBD)
+    Layout(
+        modifier = modifier,
+        content = {
+            val painterServiceTypeMap = ServiceType.entries.associateWith {
+                when (it) {
+                    ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
+                    ServiceType.FORWARDING -> painterResource(R.drawable.freight)
+                    ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
+                    ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
+                    ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
+                    ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
+                    ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
+                    ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
+                    ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
+                }
             }
 
-            val innerColor = when {
-                isCompleted && index < currentStep -> Color(0xFF2E7D32)
-                isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
-                else -> Color(0xFFF5F5F5)
-            }
-
-            val iconSize = 12.dp.toPx()
-            val iconOffset = Offset(
-                stepX - iconSize / 2,
-                centerY - iconSize / 2
+            val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
+            val textMeasurer = rememberTextMeasurer()
+            val textStyle = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 8.sp,
+                letterSpacing = -0.4.sp
             )
+            val lineColorPrimary = MaterialTheme.colorScheme.primary
 
-            val strokeWidth = 2.dp.toPx()
+            Canvas(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp) // Фиксированная высота для Canvas
+            ) {
+                val widthPx = size.width
+                val heightPx = size.height
 
-//            val textLayout = textMeasurer.measure(step.serviceType.name, textStyle)
+                // Динамически вычисляем радиус круга в зависимости от количества шагов и ширины
+                val maxNumSteps = listOfSteps.size
+                val minStepRadius = 8.dp.toPx()
+                val maxStepRadius = 12.dp.toPx()
 
-            drawCircle(   //outer stroke color
-                color = outerColor,
-                radius = stepRadius,
-                center = Offset(stepX, centerY),
-                style = Stroke(width = strokeWidth)
-            )
+                // Адаптивный размер круга: больше при меньшем количестве шагов
+                val stepRadius = (maxStepRadius -
+                        ((maxNumSteps - 1) * 0.5f).coerceIn(0f, maxStepRadius - minStepRadius)
+                        ).coerceAtLeast(minStepRadius)
 
-            drawCircle(
-                //inner fill color
-                color = innerColor,
-                radius = stepRadius - strokeWidth / 2 + 1f,
-                center = Offset(stepX, centerY),
-            )
+                // Разделяем канвас на 3 области: верхнюю для иконок, среднюю для кругов и нижнюю для дат
+                val topAreaHeight = heightPx * 0.3f
+                val centerY = topAreaHeight + (heightPx - topAreaHeight) * 0.3f
+                val bottomAreaY = centerY + stepRadius
 
-            if (index < listOfSteps.size - 1) {
-                val prevX = stepX + stepRadius
-                val newX = prevX + stepSpacing - stepRadius * 2
-                drawLine(
-                    color = if (currentStep >= index) Color(
-                        0xFF2E7D32
-                    ) else lineColorPrimary.copy(alpha = 0.5f),
-                    start = Offset(prevX + 10, centerY),
-                    end = Offset(newX - 10, centerY),
-                    strokeWidth = (1).dp.toPx()
-                )
-            }
+                // Рассчитываем минимальное расстояние между кругами
+                val minHorizontalPadding = 24.dp.toPx()
 
-            if (isCompleted) {
-                drawIntoCanvas { canvas ->
-                    translate(iconOffset.x, iconOffset.y) {
-                        with(painterStatusDone) {
-                            draw(
-                                Size(iconSize, iconSize),
-                                colorFilter = ColorFilter.tint(Color.White)
+                // Рассчитываем доступное пространство для шагов
+                val availableWidth = widthPx - (2 * minHorizontalPadding)
+
+                // Рассчитываем оптимальный интервал между шагами
+                val stepSpacing = if (maxNumSteps > 1) {
+                    availableWidth / (maxNumSteps - 1)
+                } else {
+                    0f
+                }
+
+                // Определяем левую и правую границы для размещения шагов (отступы)
+                val leftPadding = minHorizontalPadding
+
+                listOfSteps.forEachIndexed { index, step ->
+                    val stepX = leftPadding + index * stepSpacing
+                    val isCompleted = index < currentStep || step.status == StepperStatus.DONE
+                    val isCurrent = index == currentStep
+
+                    val outerColor = when {
+                        isCurrent -> Color(0xFF2E7D32)
+                        isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                        index < currentStep -> Color(0xFF2E7D32)
+                        else -> Color(0xFFBDBDBD)
+                    }
+
+                    val innerColor = when {
+                        isCompleted && index < currentStep -> Color(0xFF2E7D32)
+                        isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                        isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
+                        else -> Color(0xFFF5F5F5)
+                    }
+
+                    val iconSize = (stepRadius * 1.2f).coerceAtMost(16.dp.toPx())
+                    val iconOffset = Offset(stepX - iconSize / 2, centerY - iconSize / 2)
+                    val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
+
+                    // Рисуем внешний круг
+                    drawCircle(
+                        color = outerColor,
+                        radius = stepRadius,
+                        center = Offset(stepX, centerY),
+                        style = Stroke(width = strokeWidth)
+                    )
+
+                    // Рисуем внутренний круг
+                    drawCircle(
+                        color = innerColor,
+                        radius = stepRadius - strokeWidth / 2 + 1f,
+                        center = Offset(stepX, centerY),
+                    )
+
+                    // Рисуем соединительную линию между шагами с адаптивной длиной
+                    if (index < listOfSteps.size - 1) {
+                        val lineStartX = stepX + stepRadius + 4.dp.toPx()
+                        val lineEndX = stepX + stepSpacing - stepRadius - 4.dp.toPx()
+
+                        // Проверяем, что линия имеет положительную длину
+                        if (lineEndX > lineStartX) {
+                            drawLine(
+                                color = if (currentStep > index) Color(0xFF2E7D32)
+                                else lineColorPrimary.copy(alpha = 0.5f),
+                                start = Offset(lineStartX, centerY),
+                                end = Offset(lineEndX, centerY),
+                                strokeWidth = 1.dp.toPx()
                             )
+                        }
+                    }
+
+                    // Рисуем иконку галочки для завершенных шагов
+                    if (isCompleted) {
+                        drawIntoCanvas { canvas ->
+                            translate(iconOffset.x, iconOffset.y) {
+                                with(painterStatusDone) {
+                                    draw(
+                                        Size(iconSize, iconSize),
+                                        colorFilter = ColorFilter.tint(Color.White)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Форматируем и отображаем дату
+                    val day = String.format("%02d", index + 1)
+                    val text = "${day}.02.25"
+
+                    // Адаптируем размер текста в зависимости от доступного пространства
+                    val adaptiveTextStyle = textStyle.copy(
+                        fontSize = ((stepRadius / 10.dp.toPx()) * 8).sp
+                    )
+
+                    val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
+
+                    // Отображаем текст даты под кругом, с учетом нижней границы
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = text,
+                        style = adaptiveTextStyle,
+                        topLeft = Offset(
+                            stepX - textLayoutInfo.size.width / 2,
+                            bottomAreaY
+                        )
+                    )
+
+                    // Отображаем иконку сервиса над кругом
+                    drawIntoCanvas { canvas ->
+                        val serviceIconSize =
+                            (stepRadius * 1.6f).coerceIn(12.dp.toPx(), 20.dp.toPx())
+                        translate(
+                            stepX - serviceIconSize / 2,
+                            topAreaHeight / 2 - serviceIconSize / 2
+                        ) {
+                            with(painterServiceTypeMap[step.serviceType]!!) {
+                                draw(
+                                    Size(serviceIconSize, serviceIconSize),
+                                )
+                            }
                         }
                     }
                 }
             }
+        }
+    ) { measurables, constraints ->
+        // Важное исправление: явно задаем максимальную высоту
+        val maxHeight = 64.dp.roundToPx()
 
-            val text = "0${index + 1}.02.25"
-//                SimpleDateFormat("dd.MM.yy", Locale.US).format(
-//                Date()
-//            )
+        // Создаем новые ограничения с фиксированной высотой
+        val newConstraints = constraints.copy(
+            minHeight = constraints.minHeight.coerceAtMost(maxHeight),
+            maxHeight = maxHeight
+        )
 
-//            val text: String = StringBuilder()
-//                .append(Random.nextInt(1, 28))
-//                .append(".${Random.nextInt(1, 12)}")
-//                .toString()
+        // Используем новые ограничения для измерения
+        val placeables = measurables.map { it.measure(newConstraints) }
 
-            val textLayoutInfo = textMeasurer.measure(text, textStyle)
+        // Определяем итоговые размеры макета
+        val width = constraints.maxWidth
+        val height = maxHeight.coerceAtMost(constraints.maxHeight)
 
-            Log.d("Center Y", "Center Y: $centerY")
-            drawText(
-                textMeasurer = textMeasurer,
-                text = text,
-                style = textStyle,
-                topLeft = Offset(
-                    stepX - textLayoutInfo.size.width / 2,
-                    centerY
-                )
-            )
-
-            drawIntoCanvas { canvas ->
-                translate(
-                    stepX - iconSize / 2,
-                    center.y - stepRadius * 2 - 10
-                ) {
-                    with(painterServiceTypeMap[step.serviceType]!!) {
-                        draw(
-                            Size(iconSize, iconSize),
-                        )
-                    }
-                }
-            }
+        layout(width, height) {
+            placeables.forEach { it.place(0, 0) }
         }
     }
 }
@@ -310,36 +361,37 @@ fun OrderCard(
     ) {
         val containerIcon = painterResource(R.drawable.container_svgrepo_com)
 
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Icon(
-                painter = containerIcon,
-                contentDescription = "Container Icon",
-                tint = Color.Unspecified,
+        Column {
+            Row(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 8.dp, top = 4.dp)
-            )
-            AppText(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .align(Alignment.TopCenter),
-                value = "Order: ${entity.name}",
-            )
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Expand",
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(16.dp),
-            )
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Icon(
+                    painter = containerIcon,
+                    contentDescription = "Container Icon",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(start = 8.dp, top = 4.dp)
+                )
+                AppText(
+                    modifier = Modifier,
+                    value = "Order: ${entity.name}",
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Expand",
+                    modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                )
+            }
+
             StepProgressionBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(start = 4.dp, end = 4.dp)
-                    .height(50.dp),
+                    .padding(start = 4.dp, end = 4.dp),
                 listOfSteps = orderServiceList.subList(0, 8),
                 currentStep = 2
             )
