@@ -231,6 +231,26 @@ fun StepProgressionBar(
                 }
             }
         }
+    ) { measurables, constraints ->
+        // Важное исправление: явно задаем максимальную высоту
+        val maxHeight = 64.dp.roundToPx()
+
+        // Создаем новые ограничения с фиксированной высотой
+        val newConstraints = constraints.copy(
+            minHeight = constraints.minHeight.coerceAtMost(maxHeight),
+            maxHeight = maxHeight
+        )
+
+        // Используем новые ограничения для измерения
+        val placeables = measurables.map { it.measure(newConstraints) }
+
+        // Определяем итоговые размеры макета
+        val width = constraints.maxWidth
+        val height = maxHeight.coerceAtMost(constraints.maxHeight)
+
+        layout(width, height) {
+            placeables.forEach { it.place(0, 0) }
+        }
     }
 }
 
@@ -341,36 +361,37 @@ fun OrderCard(
     ) {
         val containerIcon = painterResource(R.drawable.container_svgrepo_com)
 
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Icon(
-                painter = containerIcon,
-                contentDescription = "Container Icon",
-                tint = Color.Unspecified,
+        Column {
+            Row(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 8.dp, top = 4.dp)
-            )
-            AppText(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .align(Alignment.TopCenter),
-                value = "Order: ${entity.name}",
-            )
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Expand",
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(16.dp),
-            )
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Icon(
+                    painter = containerIcon,
+                    contentDescription = "Container Icon",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(start = 8.dp, top = 4.dp)
+                )
+                AppText(
+                    modifier = Modifier,
+                    value = "Order: ${entity.name}",
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Expand",
+                    modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                )
+            }
+
             StepProgressionBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(start = 4.dp, end = 4.dp)
-                    .height(50.dp),
+                    .padding(start = 4.dp, end = 4.dp),
                 listOfSteps = orderServiceList.subList(0, 8),
                 currentStep = 2
             )
