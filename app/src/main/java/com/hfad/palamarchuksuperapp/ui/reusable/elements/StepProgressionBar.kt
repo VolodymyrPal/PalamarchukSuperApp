@@ -75,22 +75,26 @@ fun StepProgressionBar(
                 }
             }
 
-    val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
-    val textMeasurer = rememberTextMeasurer()
-    val textStyle =
-        MaterialTheme.typography.bodySmall.copy(fontSize = 8.sp, letterSpacing = -0.4.sp)
-    val lineColorPrimary = MaterialTheme.colorScheme.primary
+            val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
+            val textMeasurer = rememberTextMeasurer()
+            val textStyle = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 8.sp,
+                letterSpacing = -0.4.sp
+            )
+            val lineColorPrimary = MaterialTheme.colorScheme.primary
 
+            Canvas(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp) // Фиксированная высота для Canvas
+            ) {
+                val widthPx = size.width
+                val heightPx = size.height
 
-
-    Canvas(
-        modifier = modifier
-            .width(250.dp)
-            .height(stepperHeight)
-    ) {
-        val widthPx = size.width
-        val stepRadius = 10.dp.toPx()
-        val centerY = size.height / 2
+                // Динамически вычисляем радиус круга в зависимости от количества шагов и ширины
+                val maxNumSteps = listOfSteps.size
+                val minStepRadius = 8.dp.toPx()
+                val maxStepRadius = 12.dp.toPx()
 
         val stepSpacing = if (listOfSteps.size > 1) {
             (widthPx - 2 * stepRadius) / (listOfSteps.size - 1)
