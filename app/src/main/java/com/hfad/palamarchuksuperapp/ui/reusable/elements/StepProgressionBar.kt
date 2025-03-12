@@ -213,15 +213,20 @@ fun StepProgressionBar(
                         )
                     )
 
-            drawIntoCanvas { canvas ->
-                translate(
-                    stepX - iconSize / 2,
-                    center.y - stepRadius * 2 - 10
-                ) {
-                    with(painterServiceTypeMap[step.serviceType]!!) {
-                        draw(
-                            Size(iconSize, iconSize),
-                        )
+                    // Отображаем иконку сервиса над кругом
+                    drawIntoCanvas { canvas ->
+                        val serviceIconSize =
+                            (stepRadius * 1.6f).coerceIn(12.dp.toPx(), 20.dp.toPx())
+                        translate(
+                            stepX - serviceIconSize / 2,
+                            topAreaHeight / 2 - serviceIconSize / 2
+                        ) {
+                            with(painterServiceTypeMap[step.serviceType]!!) {
+                                draw(
+                                    Size(serviceIconSize, serviceIconSize),
+                                )
+                            }
+                        }
                     }
                 }
             }
