@@ -1,15 +1,16 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -56,20 +58,22 @@ fun StepProgressionBar(
     listOfSteps: List<Stepper>,
     currentStep: Int = 0,
 ) {
-
-    val painterServiceTypeMap = ServiceType.entries.associateWith {
-        when (it) {
-            ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
-            ServiceType.FORWARDING -> painterResource(R.drawable.freight)
-            ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
-            ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
-            ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
-            ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
-            ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
-            ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
-            ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
-        }
-    }
+    Layout(
+        modifier = modifier,
+        content = {
+            val painterServiceTypeMap = ServiceType.entries.associateWith {
+                when (it) {
+                    ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
+                    ServiceType.FORWARDING -> painterResource(R.drawable.freight)
+                    ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
+                    ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
+                    ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
+                    ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
+                    ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
+                    ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
+                    ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
+                }
+            }
 
     val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
     val textMeasurer = rememberTextMeasurer()
