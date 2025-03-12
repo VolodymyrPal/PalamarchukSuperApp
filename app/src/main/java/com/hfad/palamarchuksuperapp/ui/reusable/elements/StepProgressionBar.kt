@@ -119,98 +119,99 @@ fun StepProgressionBar(
                     0f
                 }
 
-        listOfSteps.forEachIndexed { index, step ->
+                // Определяем левую и правую границы для размещения шагов (отступы)
+                val leftPadding = minHorizontalPadding
 
-            val stepX = stepRadius + index * stepSpacing
-            val isCompleted = index < currentStep || step.status == StepperStatus.DONE
-            val isCurrent = index == currentStep
+                listOfSteps.forEachIndexed { index, step ->
+                    val stepX = leftPadding + index * stepSpacing
+                    val isCompleted = index < currentStep || step.status == StepperStatus.DONE
+                    val isCurrent = index == currentStep
 
-            val outerColor = when {
-                isCurrent -> Color(0xFF2E7D32)
-                isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                index < currentStep -> Color(0xFF2E7D32)
-                else -> Color(0xFFBDBDBD)
-            }
+                    val outerColor = when {
+                        isCurrent -> Color(0xFF2E7D32)
+                        isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                        index < currentStep -> Color(0xFF2E7D32)
+                        else -> Color(0xFFBDBDBD)
+                    }
 
-            val innerColor = when {
-                isCompleted && index < currentStep -> Color(0xFF2E7D32)
-                isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
-                else -> Color(0xFFF5F5F5)
-            }
+                    val innerColor = when {
+                        isCompleted && index < currentStep -> Color(0xFF2E7D32)
+                        isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                        isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
+                        else -> Color(0xFFF5F5F5)
+                    }
 
-            val iconSize = 12.dp.toPx()
-            val iconOffset = Offset(
-                stepX - iconSize / 2,
-                centerY - iconSize / 2
-            )
+                    val iconSize = (stepRadius * 1.2f).coerceAtMost(16.dp.toPx())
+                    val iconOffset = Offset(stepX - iconSize / 2, centerY - iconSize / 2)
+                    val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
 
-            val strokeWidth = 2.dp.toPx()
+                    // Рисуем внешний круг
+                    drawCircle(
+                        color = outerColor,
+                        radius = stepRadius,
+                        center = Offset(stepX, centerY),
+                        style = Stroke(width = strokeWidth)
+                    )
 
-//            val textLayout = textMeasurer.measure(step.serviceType.name, textStyle)
+                    // Рисуем внутренний круг
+                    drawCircle(
+                        color = innerColor,
+                        radius = stepRadius - strokeWidth / 2 + 1f,
+                        center = Offset(stepX, centerY),
+                    )
 
-            drawCircle(   //outer stroke color
-                color = outerColor,
-                radius = stepRadius,
-                center = Offset(stepX, centerY),
-                style = Stroke(width = strokeWidth)
-            )
+                    // Рисуем соединительную линию между шагами с адаптивной длиной
+                    if (index < listOfSteps.size - 1) {
+                        val lineStartX = stepX + stepRadius + 4.dp.toPx()
+                        val lineEndX = stepX + stepSpacing - stepRadius - 4.dp.toPx()
 
-            drawCircle(
-                //inner fill color
-                color = innerColor,
-                radius = stepRadius - strokeWidth / 2 + 1f,
-                center = Offset(stepX, centerY),
-            )
-
-            if (index < listOfSteps.size - 1) {
-                val prevX = stepX + stepRadius
-                val newX = prevX + stepSpacing - stepRadius * 2
-                drawLine(
-                    color = if (currentStep >= index) Color(
-                        0xFF2E7D32
-                    ) else lineColorPrimary.copy(alpha = 0.5f),
-                    start = Offset(prevX + 10, centerY),
-                    end = Offset(newX - 10, centerY),
-                    strokeWidth = (1).dp.toPx()
-                )
-            }
-
-            if (isCompleted) {
-                drawIntoCanvas { canvas ->
-                    translate(iconOffset.x, iconOffset.y) {
-                        with(painterStatusDone) {
-                            draw(
-                                Size(iconSize, iconSize),
-                                colorFilter = ColorFilter.tint(Color.White)
+                        // Проверяем, что линия имеет положительную длину
+                        if (lineEndX > lineStartX) {
+                            drawLine(
+                                color = if (currentStep > index) Color(0xFF2E7D32)
+                                else lineColorPrimary.copy(alpha = 0.5f),
+                                start = Offset(lineStartX, centerY),
+                                end = Offset(lineEndX, centerY),
+                                strokeWidth = 1.dp.toPx()
                             )
                         }
                     }
-                }
-            }
 
-            val text = "0${index + 1}.02.25"
-//                SimpleDateFormat("dd.MM.yy", Locale.US).format(
-//                Date()
-//            )
+                    // Рисуем иконку галочки для завершенных шагов
+                    if (isCompleted) {
+                        drawIntoCanvas { canvas ->
+                            translate(iconOffset.x, iconOffset.y) {
+                                with(painterStatusDone) {
+                                    draw(
+                                        Size(iconSize, iconSize),
+                                        colorFilter = ColorFilter.tint(Color.White)
+                                    )
+                                }
+                            }
+                        }
+                    }
 
-//            val text: String = StringBuilder()
-//                .append(Random.nextInt(1, 28))
-//                .append(".${Random.nextInt(1, 12)}")
-//                .toString()
+                    // Форматируем и отображаем дату
+                    val day = String.format("%02d", index + 1)
+                    val text = "${day}.02.25"
 
-            val textLayoutInfo = textMeasurer.measure(text, textStyle)
+                    // Адаптируем размер текста в зависимости от доступного пространства
+                    val adaptiveTextStyle = textStyle.copy(
+                        fontSize = ((stepRadius / 10.dp.toPx()) * 8).sp
+                    )
 
-            Log.d("Center Y", "Center Y: $centerY")
-            drawText(
-                textMeasurer = textMeasurer,
-                text = text,
-                style = textStyle,
-                topLeft = Offset(
-                    stepX - textLayoutInfo.size.width / 2,
-                    centerY
-                )
-            )
+                    val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
+
+                    // Отображаем текст даты под кругом, с учетом нижней границы
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = text,
+                        style = adaptiveTextStyle,
+                        topLeft = Offset(
+                            stepX - textLayoutInfo.size.width / 2,
+                            bottomAreaY
+                        )
+                    )
 
             drawIntoCanvas { canvas ->
                 translate(
