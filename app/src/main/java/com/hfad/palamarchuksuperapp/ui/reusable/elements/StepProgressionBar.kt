@@ -220,6 +220,7 @@ fun StepProgressionBar(
                             with(painterServiceTypeMap[step.serviceType]!!) {
                                 draw(
                                     Size(serviceIconSize, serviceIconSize),
+                                    colorFilter = ColorFilter.tint(iconColor)
                                 )
                             }
                         }
