@@ -136,7 +136,7 @@ fun StepProgressionBar(
                         else -> Color(0xFFF5F5F5)
                     }
 
-                    val iconSize = (stepRadius * 1.2f).coerceAtMost(16.dp.toPx())
+                    val iconSize = (stepRadius * 1.5f)//.coerceAtMost(16.dp.toPx())
                     val iconOffset = Offset(stepX - iconSize / 2, centerY - iconSize / 2)
                     val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
 
@@ -192,6 +192,7 @@ fun StepProgressionBar(
 
                     // Адаптируем размер текста в зависимости от доступного пространства
                     val adaptiveTextStyle = textStyle.copy(
+                        color = iconColor,
                         fontSize = ((stepRadius / 10.dp.toPx()) * 8).sp
                     )
 
