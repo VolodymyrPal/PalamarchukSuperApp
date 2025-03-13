@@ -250,10 +250,10 @@ fun StepProgressionBar(
         val placeables = measurables.map { it.measure(newConstraints) }
 
         // Определяем итоговые размеры макета
-        val width = constraints.maxWidth
-        val height = maxHeight.coerceAtMost(constraints.maxHeight)
-
-        layout(width, height) {
+        layout(
+            width = constraints.maxWidth,
+            height = desiredHeight
+        ) {
             placeables.forEach { it.place(0, 0) }
         }
     }
@@ -268,11 +268,13 @@ fun StepProgressionBarNewPreview(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
         )
         {
             StepProgressionBar(
-                listOfSteps = orderServiceList.subList(0, 8),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp),
+                listOfSteps = orderServiceList.subList(0, 4),
                 currentStep = 2
             )
         }
@@ -282,8 +284,8 @@ fun StepProgressionBarNewPreview(
 @Preview
 @Composable
 fun BoneScreenPreview() {
-    AppTheme {
-        com.hfad.palamarchuksuperapp.ui.reusable.elements.BoneScreen()
+    AppTheme(useDarkTheme = false) {
+        BoneScreen()
     }
 }
 
@@ -361,7 +363,7 @@ fun OrderCard(
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
+            defaultElevation = 0.dp
         )
     ) {
         val containerIcon = painterResource(R.drawable.container_svgrepo_com)
@@ -396,10 +398,25 @@ fun OrderCard(
             StepProgressionBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 4.dp, end = 4.dp),
+                    .padding(start = 12.dp, end = 4.dp),
                 listOfSteps = orderServiceList.subList(0, 8),
                 currentStep = 2
             )
         }
+    }
+}
+
+@Composable
+fun painterServiceTypeMap() = ServiceType.entries.associateWith {
+    when (it) {
+        ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
+        ServiceType.FORWARDING -> painterResource(R.drawable.freight)
+        ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
+        ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
+        ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
+        ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
+        ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
+        ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
+        ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
     }
 }
