@@ -85,22 +85,24 @@ fun StepProgressionBar(
                 val heightPx = size.height
 
                 // Динамически вычисляем радиус круга в зависимости от количества шагов и ширины
-                val maxNumSteps = listOfSteps.size
-                val minStepRadius = 8.dp.toPx()
-                val maxStepRadius = 12.dp.toPx()
-
                 // Адаптивный размер круга: больше при меньшем количестве шагов
-                val stepRadius = (maxStepRadius -
-                        ((maxNumSteps - 1) * 0.5f).coerceIn(0f, maxStepRadius - minStepRadius)
-                        ).coerceAtLeast(minStepRadius)
 
                 // Разделяем канвас на 3 области: верхнюю для иконок, среднюю для кругов и нижнюю для дат
-                val topAreaHeight = heightPx * 0.3f
-                val centerY = topAreaHeight + (heightPx - topAreaHeight) * 0.3f
-                val bottomAreaY = centerY + stepRadius
+                val topAreaHeight = heightPx * 0.35f
+                val centerY = heightPx * 0.55f
+                val bottomAreaY = centerY + topAreaHeight / 2
+
 
                 // Рассчитываем минимальное расстояние между кругами
-                val minHorizontalPadding = 24.dp.toPx()
+                val eachStepWidth = widthPx / maxNumSteps
+
+                val stepRadius1: Float = (centerY * 0.3).toFloat()
+                val stepRadius = minOf(
+                    stepRadius1,
+                    eachStepWidth
+                )
+
+                val minHorizontalPadding = stepRadius + stepRadius / 2
 
                 // Рассчитываем доступное пространство для шагов
                 val availableWidth = widthPx - (2 * minHorizontalPadding)
