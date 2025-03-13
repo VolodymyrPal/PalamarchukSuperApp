@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -61,33 +62,25 @@ fun StepProgressionBar(
     Layout(
         modifier = modifier,
         content = {
-            val painterServiceTypeMap = ServiceType.entries.associateWith {
-                when (it) {
-                    ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
-                    ServiceType.FORWARDING -> painterResource(R.drawable.freight)
-                    ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
-                    ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
-                    ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
-                    ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
-                    ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
-                    ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
-                    ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
-                }
-            }
 
+            // Icons for stepper
+            val painterServiceTypeMap = painterServiceTypeMap()
             val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
+
+            //Text policies
             val textMeasurer = rememberTextMeasurer()
             val textStyle = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 8.sp,
-                letterSpacing = -0.4.sp
+                fontSize = 8.sp, //TODO SIZE PARAMETER
+                letterSpacing = -0.2.sp
             )
-            val lineColorPrimary = MaterialTheme.colorScheme.primary
 
-            Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp) // Фиксированная высота для Canvas
-            ) {
+            // Colors
+            val lineColorPrimary = MaterialTheme.colorScheme.primary
+            val iconColor = MaterialTheme.colorScheme.onPrimaryContainer
+
+            val maxNumSteps = listOfSteps.size
+
+            Canvas(modifier = Modifier) {
                 val widthPx = size.width
                 val heightPx = size.height
 
