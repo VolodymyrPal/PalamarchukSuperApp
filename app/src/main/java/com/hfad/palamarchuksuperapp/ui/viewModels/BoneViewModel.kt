@@ -213,7 +213,7 @@ val orderServiceList = persistentListOf<OrderService>(
         price = 1800f,
         duration = 3,
         status = StepperStatus.IN_PROGRESS,
-        serviceType = ServiceType.TRANSPORT,
+        serviceType = ServiceType.OTHER,
     ),
     OrderService(
         id = 7,

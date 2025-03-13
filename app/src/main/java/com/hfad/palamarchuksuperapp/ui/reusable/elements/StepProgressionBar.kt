@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -61,53 +62,47 @@ fun StepProgressionBar(
     Layout(
         modifier = modifier,
         content = {
-            val painterServiceTypeMap = ServiceType.entries.associateWith {
-                when (it) {
-                    ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
-                    ServiceType.FORWARDING -> painterResource(R.drawable.freight)
-                    ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
-                    ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
-                    ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
-                    ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
-                    ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
-                    ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
-                    ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
-                }
-            }
 
+            // Icons for stepper
+            val painterServiceTypeMap = painterServiceTypeMap()
             val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
+
+            //Text policies
             val textMeasurer = rememberTextMeasurer()
             val textStyle = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 8.sp,
-                letterSpacing = -0.4.sp
+                fontSize = 8.sp, //TODO SIZE PARAMETER
+                letterSpacing = -0.2.sp
             )
-            val lineColorPrimary = MaterialTheme.colorScheme.primary
 
-            Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp) // Фиксированная высота для Canvas
-            ) {
+            // Colors
+            val lineColorPrimary = MaterialTheme.colorScheme.primary
+            val iconColor = MaterialTheme.colorScheme.onPrimaryContainer
+
+            val maxNumSteps = listOfSteps.size
+
+            Canvas(modifier = Modifier) {
                 val widthPx = size.width
                 val heightPx = size.height
 
                 // Динамически вычисляем радиус круга в зависимости от количества шагов и ширины
-                val maxNumSteps = listOfSteps.size
-                val minStepRadius = 8.dp.toPx()
-                val maxStepRadius = 12.dp.toPx()
-
                 // Адаптивный размер круга: больше при меньшем количестве шагов
-                val stepRadius = (maxStepRadius -
-                        ((maxNumSteps - 1) * 0.5f).coerceIn(0f, maxStepRadius - minStepRadius)
-                        ).coerceAtLeast(minStepRadius)
 
                 // Разделяем канвас на 3 области: верхнюю для иконок, среднюю для кругов и нижнюю для дат
-                val topAreaHeight = heightPx * 0.3f
-                val centerY = topAreaHeight + (heightPx - topAreaHeight) * 0.3f
-                val bottomAreaY = centerY + stepRadius
+                val topAreaHeight = heightPx * 0.35f
+                val centerY = heightPx * 0.55f
+                val bottomAreaY = centerY + topAreaHeight / 2
+
 
                 // Рассчитываем минимальное расстояние между кругами
-                val minHorizontalPadding = 24.dp.toPx()
+                val eachStepWidth = widthPx / maxNumSteps
+
+                val stepRadius1: Float = (centerY * 0.3).toFloat()
+                val stepRadius = minOf(
+                    stepRadius1,
+                    eachStepWidth
+                )
+
+                val minHorizontalPadding = stepRadius + stepRadius / 2
 
                 // Рассчитываем доступное пространство для шагов
                 val availableWidth = widthPx - (2 * minHorizontalPadding)
@@ -141,7 +136,7 @@ fun StepProgressionBar(
                         else -> Color(0xFFF5F5F5)
                     }
 
-                    val iconSize = (stepRadius * 1.2f).coerceAtMost(16.dp.toPx())
+                    val iconSize = (stepRadius * 1.5f)//.coerceAtMost(16.dp.toPx())
                     val iconOffset = Offset(stepX - iconSize / 2, centerY - iconSize / 2)
                     val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
 
@@ -197,6 +192,7 @@ fun StepProgressionBar(
 
                     // Адаптируем размер текста в зависимости от доступного пространства
                     val adaptiveTextStyle = textStyle.copy(
+                        color = iconColor,
                         fontSize = ((stepRadius / 10.dp.toPx()) * 8).sp
                     )
 
@@ -224,6 +220,7 @@ fun StepProgressionBar(
                             with(painterServiceTypeMap[step.serviceType]!!) {
                                 draw(
                                     Size(serviceIconSize, serviceIconSize),
+                                    colorFilter = ColorFilter.tint(iconColor)
                                 )
                             }
                         }
@@ -233,22 +230,30 @@ fun StepProgressionBar(
         }
     ) { measurables, constraints ->
         // Важное исправление: явно задаем максимальную высоту
-        val maxHeight = 64.dp.roundToPx()
+        val defaultHeight = 68.dp.roundToPx()
+        val desiredHeight = when {
+            // If wrap content, use our default height
+            constraints.hasBoundedHeight && constraints.maxHeight != Constraints.Infinity ->
+                constraints.maxHeight.coerceAtMost(defaultHeight)
+            else -> defaultHeight
+        }
 
         // Создаем новые ограничения с фиксированной высотой
-        val newConstraints = constraints.copy(
-            minHeight = constraints.minHeight.coerceAtMost(maxHeight),
-            maxHeight = maxHeight
+        val newConstraints = Constraints(
+            minWidth = constraints.minWidth,
+            maxWidth = constraints.maxWidth,
+            minHeight = desiredHeight,
+            maxHeight = desiredHeight
         )
 
         // Используем новые ограничения для измерения
         val placeables = measurables.map { it.measure(newConstraints) }
 
         // Определяем итоговые размеры макета
-        val width = constraints.maxWidth
-        val height = maxHeight.coerceAtMost(constraints.maxHeight)
-
-        layout(width, height) {
+        layout(
+            width = constraints.maxWidth,
+            height = desiredHeight
+        ) {
             placeables.forEach { it.place(0, 0) }
         }
     }
@@ -263,11 +268,13 @@ fun StepProgressionBarNewPreview(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
         )
         {
             StepProgressionBar(
-                listOfSteps = orderServiceList.subList(0, 8),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp),
+                listOfSteps = orderServiceList.subList(0, 4),
                 currentStep = 2
             )
         }
@@ -277,8 +284,8 @@ fun StepProgressionBarNewPreview(
 @Preview
 @Composable
 fun BoneScreenPreview() {
-    AppTheme {
-        com.hfad.palamarchuksuperapp.ui.reusable.elements.BoneScreen()
+    AppTheme(useDarkTheme = false) {
+        BoneScreen()
     }
 }
 
@@ -356,7 +363,7 @@ fun OrderCard(
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
+            defaultElevation = 0.dp
         )
     ) {
         val containerIcon = painterResource(R.drawable.container_svgrepo_com)
@@ -391,10 +398,25 @@ fun OrderCard(
             StepProgressionBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 4.dp, end = 4.dp),
+                    .padding(start = 12.dp, end = 4.dp),
                 listOfSteps = orderServiceList.subList(0, 8),
                 currentStep = 2
             )
         }
+    }
+}
+
+@Composable
+fun painterServiceTypeMap() = ServiceType.entries.associateWith {
+    when (it) {
+        ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
+        ServiceType.FORWARDING -> painterResource(R.drawable.freight)
+        ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
+        ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
+        ServiceType.CUSTOMS -> painterResource(R.drawable.freight)
+        ServiceType.TRANSPORT -> painterResource(R.drawable.truck)
+        ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
+        ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
+        ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
     }
 }
