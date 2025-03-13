@@ -230,12 +230,20 @@ fun StepProgressionBar(
         }
     ) { measurables, constraints ->
         // Важное исправление: явно задаем максимальную высоту
-        val maxHeight = 64.dp.roundToPx()
+        val defaultHeight = 68.dp.roundToPx()
+        val desiredHeight = when {
+            // If wrap content, use our default height
+            constraints.hasBoundedHeight && constraints.maxHeight != Constraints.Infinity ->
+                constraints.maxHeight.coerceAtMost(defaultHeight)
+            else -> defaultHeight
+        }
 
         // Создаем новые ограничения с фиксированной высотой
-        val newConstraints = constraints.copy(
-            minHeight = constraints.minHeight.coerceAtMost(maxHeight),
-            maxHeight = maxHeight
+        val newConstraints = Constraints(
+            minWidth = constraints.minWidth,
+            maxWidth = constraints.maxWidth,
+            minHeight = desiredHeight,
+            maxHeight = desiredHeight
         )
 
         // Используем новые ограничения для измерения
