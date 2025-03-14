@@ -59,6 +59,9 @@ fun StepProgressionBar(
     listOfSteps: List<Stepper>,
     currentStep: Int = 0,
 ) {
+    val circleScale = 0.9f
+
+
     Layout(
         modifier = modifier,
         content = {
@@ -93,16 +96,31 @@ fun StepProgressionBar(
                 val bottomAreaY = centerY + topAreaHeight / 2
 
 
+                // Разделяем области:
+                // Определяем высоту каждого элемента:
+                val iconHeight = heightPx * 0.4f
+                val circleHeight = heightPx * 0.4f
+                val dateHeight = heightPx * 0.1f
+                val spacing = heightPx * 0.02f
+
+                // Height of icon field, example 0 -> 150
+                val iconSectionY = iconHeight / 2
+
+                // Height of circle field, example 0->150->152->304
+                val circleSectionY = iconHeight + spacing + (circleHeight / 2)
+
+                // Height of date field, example 0->150->152->304->306->458a
+                val dateSectionY = iconHeight + circleHeight + (2 * spacing) + (dateHeight / 2)
+
+
                 // Рассчитываем минимальное расстояние между кругами
                 val eachStepWidth = widthPx / maxNumSteps
 
-                val stepRadius1: Float = (centerY * 0.3).toFloat()
-                val stepRadius = minOf(
-                    stepRadius1,
-                    eachStepWidth
-                )
+                val maxRadius = minOf(circleHeight / 2, eachStepWidth / 2) * 0.9f
+                val stepRadius = maxRadius
+                val circleRadius = stepRadius * circleScale
 
-                val minHorizontalPadding = stepRadius + stepRadius / 2
+                val minHorizontalPadding = stepRadius * 1.5f
 
                 // Рассчитываем доступное пространство для шагов
                 val availableWidth = widthPx - (2 * minHorizontalPadding)
@@ -136,38 +154,38 @@ fun StepProgressionBar(
                         else -> Color(0xFFF5F5F5)
                     }
 
-                    val iconSize = (stepRadius * 1.5f)//.coerceAtMost(16.dp.toPx())
-                    val iconOffset = Offset(stepX - iconSize / 2, centerY - iconSize / 2)
+                    val iconSize = stepRadius * 1.15f
                     val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
+                    val iconOffset = Offset(stepX - iconSize / 2, circleSectionY - iconSize / 2)
 
                     // Рисуем внешний круг
                     drawCircle(
                         color = outerColor,
-                        radius = stepRadius,
-                        center = Offset(stepX, centerY),
+                        radius = circleRadius,
+                        center = Offset(stepX, circleSectionY),
                         style = Stroke(width = strokeWidth)
                     )
 
                     // Рисуем внутренний круг
                     drawCircle(
                         color = innerColor,
-                        radius = stepRadius - strokeWidth / 2 + 1f,
-                        center = Offset(stepX, centerY),
+                        radius = circleRadius - strokeWidth / 2 + 1f,
+                        center = Offset(stepX, circleSectionY),
                     )
 
                     // Рисуем соединительную линию между шагами с адаптивной длиной
                     if (index < listOfSteps.size - 1) {
-                        val lineStartX = stepX + stepRadius + 4.dp.toPx()
-                        val lineEndX = stepX + stepSpacing - stepRadius - 4.dp.toPx()
+                        val lineStartX = stepX + circleRadius + 4.dp.toPx()
+                        val lineEndX = stepX + stepSpacing - circleRadius - 4.dp.toPx()
 
                         // Проверяем, что линия имеет положительную длину
                         if (lineEndX > lineStartX) {
                             drawLine(
                                 color = if (currentStep > index) Color(0xFF2E7D32)
                                 else lineColorPrimary.copy(alpha = 0.5f),
-                                start = Offset(lineStartX, centerY),
-                                end = Offset(lineEndX, centerY),
-                                strokeWidth = 1.dp.toPx()
+                                start = Offset(lineStartX, circleSectionY),
+                                end = Offset(lineEndX, circleSectionY),
+                                strokeWidth = 1.25.dp.toPx()
                             )
                         }
                     }
@@ -191,31 +209,33 @@ fun StepProgressionBar(
                     val text = "${day}.02.25"
 
                     // Адаптируем размер текста в зависимости от доступного пространства
+                    val fontSize = (stepRadius/2f).coerceAtLeast(6.sp.toPx())
                     val adaptiveTextStyle = textStyle.copy(
                         color = iconColor,
-                        fontSize = ((stepRadius / 10.dp.toPx()) * 8).sp
+                        fontSize = fontSize.toSp()
                     )
 
                     val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
 
                     // Отображаем текст даты под кругом, с учетом нижней границы
-                    drawText(
-                        textMeasurer = textMeasurer,
-                        text = text,
-                        style = adaptiveTextStyle,
-                        topLeft = Offset(
-                            stepX - textLayoutInfo.size.width / 2,
-                            bottomAreaY
+                    if (heightPx > 39.dp.toPx()) {
+                        drawText(
+                            textMeasurer = textMeasurer,
+                            text = text,
+                            style = adaptiveTextStyle,
+                            topLeft = Offset(
+                                stepX - textLayoutInfo.size.width / 2,
+                                dateSectionY - textLayoutInfo.size.height / 2
+                            )
                         )
-                    )
+                    }
 
                     // Отображаем иконку сервиса над кругом
                     drawIntoCanvas { canvas ->
-                        val serviceIconSize =
-                            (stepRadius * 1.6f).coerceIn(12.dp.toPx(), 20.dp.toPx())
+                        val serviceIconSize = stepRadius*2
                         translate(
                             stepX - serviceIconSize / 2,
-                            topAreaHeight / 2 - serviceIconSize / 2
+                            iconSectionY - serviceIconSize / 2
                         ) {
                             with(painterServiceTypeMap[step.serviceType]!!) {
                                 draw(
