@@ -113,13 +113,11 @@ fun StepProgressionBar(
                 // Рассчитываем минимальное расстояние между кругами
                 val eachStepWidth = widthPx / maxNumSteps
 
-                val stepRadius1: Float = (centerY * 0.3).toFloat()
-                val stepRadius = minOf(
-                    stepRadius1,
-                    eachStepWidth
-                )
+                val maxRadius = minOf(circleHeight / 2, eachStepWidth / 2) * 0.9f
+                val stepRadius = maxRadius
+                val circleRadius = stepRadius * circleScale
 
-                val minHorizontalPadding = stepRadius + stepRadius / 2
+                val minHorizontalPadding = stepRadius * 1.5f
 
                 // Рассчитываем доступное пространство для шагов
                 val availableWidth = widthPx - (2 * minHorizontalPadding)
