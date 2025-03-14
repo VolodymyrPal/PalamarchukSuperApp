@@ -59,6 +59,9 @@ fun StepProgressionBar(
     listOfSteps: List<Stepper>,
     currentStep: Int = 0,
 ) {
+    val circleScale = 0.9f
+
+
     Layout(
         modifier = modifier,
         content = {
