@@ -158,31 +158,31 @@ fun StepProgressionBar(
                     // Рисуем внешний круг
                     drawCircle(
                         color = outerColor,
-                        radius = stepRadius,
-                        center = Offset(stepX, centerY),
+                        radius = circleRadius,
+                        center = Offset(stepX, circleSectionY),
                         style = Stroke(width = strokeWidth)
                     )
 
                     // Рисуем внутренний круг
                     drawCircle(
                         color = innerColor,
-                        radius = stepRadius - strokeWidth / 2 + 1f,
-                        center = Offset(stepX, centerY),
+                        radius = circleRadius - strokeWidth / 2 + 1f,
+                        center = Offset(stepX, circleSectionY),
                     )
 
                     // Рисуем соединительную линию между шагами с адаптивной длиной
                     if (index < listOfSteps.size - 1) {
-                        val lineStartX = stepX + stepRadius + 4.dp.toPx()
-                        val lineEndX = stepX + stepSpacing - stepRadius - 4.dp.toPx()
+                        val lineStartX = stepX + circleRadius + 4.dp.toPx()
+                        val lineEndX = stepX + stepSpacing - circleRadius - 4.dp.toPx()
 
                         // Проверяем, что линия имеет положительную длину
                         if (lineEndX > lineStartX) {
                             drawLine(
                                 color = if (currentStep > index) Color(0xFF2E7D32)
                                 else lineColorPrimary.copy(alpha = 0.5f),
-                                start = Offset(lineStartX, centerY),
-                                end = Offset(lineEndX, centerY),
-                                strokeWidth = 1.dp.toPx()
+                                start = Offset(lineStartX, circleSectionY),
+                                end = Offset(lineEndX, circleSectionY),
+                                strokeWidth = 1.25.dp.toPx()
                             )
                         }
                     }
