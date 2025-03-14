@@ -93,6 +93,23 @@ fun StepProgressionBar(
                 val bottomAreaY = centerY + topAreaHeight / 2
 
 
+                // Разделяем области:
+                // Определяем высоту каждого элемента:
+                val iconHeight = heightPx * 0.4f
+                val circleHeight = heightPx * 0.4f
+                val dateHeight = heightPx * 0.1f
+                val spacing = heightPx * 0.02f
+
+                // Height of icon field, example 0 -> 150
+                val iconSectionY = iconHeight / 2
+
+                // Height of circle field, example 0->150->152->304
+                val circleSectionY = iconHeight + spacing + (circleHeight / 2)
+
+                // Height of date field, example 0->150->152->304->306->458a
+                val dateSectionY = iconHeight + circleHeight + (2 * spacing) + (dateHeight / 2)
+
+
                 // Рассчитываем минимальное расстояние между кругами
                 val eachStepWidth = widthPx / maxNumSteps
 
