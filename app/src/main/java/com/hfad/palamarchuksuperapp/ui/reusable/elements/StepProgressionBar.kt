@@ -151,9 +151,9 @@ fun StepProgressionBar(
                         else -> Color(0xFFF5F5F5)
                     }
 
-                    val iconSize = (stepRadius * 1.5f)//.coerceAtMost(16.dp.toPx())
-                    val iconOffset = Offset(stepX - iconSize / 2, centerY - iconSize / 2)
+                    val iconSize = stepRadius * 1.15f
                     val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
+                    val iconOffset = Offset(stepX - iconSize / 2, circleSectionY - iconSize / 2)
 
                     // Рисуем внешний круг
                     drawCircle(
