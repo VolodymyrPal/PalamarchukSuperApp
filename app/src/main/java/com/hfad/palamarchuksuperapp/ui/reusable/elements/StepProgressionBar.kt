@@ -206,31 +206,33 @@ fun StepProgressionBar(
                     val text = "${day}.02.25"
 
                     // Адаптируем размер текста в зависимости от доступного пространства
+                    val fontSize = (stepRadius/2f).coerceAtLeast(6.sp.toPx())
                     val adaptiveTextStyle = textStyle.copy(
                         color = iconColor,
-                        fontSize = ((stepRadius / 10.dp.toPx()) * 8).sp
+                        fontSize = fontSize.toSp()
                     )
 
                     val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
 
                     // Отображаем текст даты под кругом, с учетом нижней границы
-                    drawText(
-                        textMeasurer = textMeasurer,
-                        text = text,
-                        style = adaptiveTextStyle,
-                        topLeft = Offset(
-                            stepX - textLayoutInfo.size.width / 2,
-                            bottomAreaY
+                    if (heightPx > 39.dp.toPx()) {
+                        drawText(
+                            textMeasurer = textMeasurer,
+                            text = text,
+                            style = adaptiveTextStyle,
+                            topLeft = Offset(
+                                stepX - textLayoutInfo.size.width / 2,
+                                dateSectionY - textLayoutInfo.size.height / 2
+                            )
                         )
-                    )
+                    }
 
                     // Отображаем иконку сервиса над кругом
                     drawIntoCanvas { canvas ->
-                        val serviceIconSize =
-                            (stepRadius * 1.6f).coerceIn(12.dp.toPx(), 20.dp.toPx())
+                        val serviceIconSize = stepRadius*2
                         translate(
                             stepX - serviceIconSize / 2,
-                            topAreaHeight / 2 - serviceIconSize / 2
+                            iconSectionY - serviceIconSize / 2
                         ) {
                             with(painterServiceTypeMap[step.serviceType]!!) {
                                 draw(
