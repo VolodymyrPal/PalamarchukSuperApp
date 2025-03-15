@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,12 +41,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -392,36 +397,68 @@ fun OrderCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Icon(
                     painter = containerIcon,
                     contentDescription = "Container Icon",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .size(32.dp)
-                        .padding(start = 8.dp, top = 4.dp)
+                        .size(24.dp)
                 )
                 AppText(
                     modifier = Modifier,
                     value = "Order: ${entity.name}",
+                    appTextConfig = appTextConfig(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Expand",
-                    modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                    modifier = Modifier,
                 )
             }
 
-            StepProgressionBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 4.dp),
-                listOfSteps = orderServiceList.subList(0, 8),
-                currentStep = 2
-            )
+            if (true) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Column {
+                        Row {
+                            AppText("Price summ: ", modifier = Modifier)
+                            AppText("123")
+                        }
+                        AppText("123")
+                        AppText("123")
+                    }
+                    Column {
+                        AppText("123")
+                        AppText("123")
+                        AppText("123")
+                    }
+                }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StepProgressionBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .padding(start = 4.dp, end = 4.dp, bottom = 2.dp),
+                    listOfSteps = orderServiceList.subList(0, 8),
+                    currentStep = 2
+                )
+            }
         }
     }
 }
