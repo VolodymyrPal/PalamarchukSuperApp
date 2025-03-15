@@ -150,10 +150,6 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                             BoneScreenRoot()
                         }
                     }
-
-                    composable<Routes.ValentinesScreen> {
-                        ValentineScreenRoot()
-                    }
                 }
             }
         }
