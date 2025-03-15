@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,12 +41,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -58,223 +63,167 @@ fun StepProgressionBar(
     modifier: Modifier = Modifier,
     listOfSteps: List<Stepper>,
     currentStep: Int = 0,
+    circleScale: Float = 0.6f,
 ) {
-    val circleScale = 0.9f
+
+    var componentSize by remember { mutableStateOf(Size.Zero) }
+    val colorFilter = MaterialTheme.colorScheme.onPrimaryContainer
+
+    // Кэш иконок
+    val painterServiceTypeMap = painterServiceTypeMap()
+    val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
 
 
-    Layout(
-        modifier = modifier,
-        content = {
+    Box(
+        modifier = modifier
+            .defaultMinSize(minHeight = 20.dp, minWidth = 100.dp) // Увеличиваем базовую высоту
+            .onSizeChanged { size ->
+                componentSize = Size(size.width.toFloat(), size.height.toFloat())
+            }
+    ) {
+        val maxNumSteps = listOfSteps.size
 
-            // Icons for stepper
-            val painterServiceTypeMap = painterServiceTypeMap()
-            val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
+        // Текстовые настройки
+        val textMeasurer = rememberTextMeasurer()
+        val textStyle = MaterialTheme.typography.bodySmall.copy(
+            fontSize = 8.sp,
+            letterSpacing = (-0.2).sp,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
 
-            //Text policies
-            val textMeasurer = rememberTextMeasurer()
-            val textStyle = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 8.sp, //TODO SIZE PARAMETER
-                letterSpacing = -0.2.sp
-            )
+        Canvas(
+            modifier = Modifier
+                .matchParentSize()
+        ) {
+            val widthPx = size.width
+            val heightPx = size.height
 
-            // Colors
-            val lineColorPrimary = MaterialTheme.colorScheme.primary
-            val iconColor = MaterialTheme.colorScheme.onPrimaryContainer
+            // Распределение высоты
+            val iconFieldHeight = heightPx * 0.3f
+            val stepFieldHeight = heightPx * 0.45f
+            val textFieldHeight = heightPx * 0.2f
+            val spacing = heightPx * 0.01f
 
-            val maxNumSteps = listOfSteps.size
+            val iconSectionY = iconFieldHeight / 2 + spacing
+            val circleSectionY = iconFieldHeight + spacing + (stepFieldHeight / 2)
+            val textSectionY =
+                iconFieldHeight + stepFieldHeight + (2 * spacing) + (textFieldHeight / 2)
 
-            Canvas(modifier = Modifier) {
-                val widthPx = size.width
-                val heightPx = size.height
+            val eachStepWidth = widthPx / maxNumSteps
+            val stepRadius = minOf(stepFieldHeight / 2, eachStepWidth / 2)
+            val circleRadius = minOf(stepRadius * circleScale, eachStepWidth / 2)
+            val serviceIconSize = minOf(iconFieldHeight, eachStepWidth / 2)
 
-                // Динамически вычисляем радиус круга в зависимости от количества шагов и ширины
-                // Адаптивный размер круга: больше при меньшем количестве шагов
+            val minHorizontalPadding = stepRadius
+            val availableWidth = widthPx - (2 * minHorizontalPadding)
+            val stepSpacing = if (maxNumSteps > 1) availableWidth / (maxNumSteps - 1) else 0f
+            val leftPadding = minHorizontalPadding
 
-                // Разделяем канвас на 3 области: верхнюю для иконок, среднюю для кругов и нижнюю для дат
-                val topAreaHeight = heightPx * 0.35f
-                val centerY = heightPx * 0.55f
-                val bottomAreaY = centerY + topAreaHeight / 2
+            listOfSteps.forEachIndexed { index, step ->
+                val stepX = leftPadding + index * stepSpacing
+                val isCompleted = index < currentStep || step.status == StepperStatus.DONE
+                val isCurrent = index == currentStep
 
-
-                // Разделяем области:
-                // Определяем высоту каждого элемента:
-                val iconHeight = heightPx * 0.4f
-                val circleHeight = heightPx * 0.4f
-                val dateHeight = heightPx * 0.1f
-                val spacing = heightPx * 0.02f
-
-                // Height of icon field, example 0 -> 150
-                val iconSectionY = iconHeight / 2
-
-                // Height of circle field, example 0->150->152->304
-                val circleSectionY = iconHeight + spacing + (circleHeight / 2)
-
-                // Height of date field, example 0->150->152->304->306->458a
-                val dateSectionY = iconHeight + circleHeight + (2 * spacing) + (dateHeight / 2)
-
-
-                // Рассчитываем минимальное расстояние между кругами
-                val eachStepWidth = widthPx / maxNumSteps
-
-                val maxRadius = minOf(circleHeight / 2, eachStepWidth / 2) * 0.9f
-                val stepRadius = maxRadius
-                val circleRadius = stepRadius * circleScale
-
-                val minHorizontalPadding = stepRadius * 1.5f
-
-                // Рассчитываем доступное пространство для шагов
-                val availableWidth = widthPx - (2 * minHorizontalPadding)
-
-                // Рассчитываем оптимальный интервал между шагами
-                val stepSpacing = if (maxNumSteps > 1) {
-                    availableWidth / (maxNumSteps - 1)
-                } else {
-                    0f
+                val outerColor = when {
+                    isCurrent -> Color(0xFF2E7D32)
+                    isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                    index < currentStep -> Color(0xFF2E7D32)
+                    else -> Color(0xFFBDBDBD)
                 }
 
-                // Определяем левую и правую границы для размещения шагов (отступы)
-                val leftPadding = minHorizontalPadding
+                val innerColor = when {
+                    isCompleted && index < currentStep -> Color(0xFF2E7D32)
+                    isCompleted && index > currentStep -> Color(0xFFA5D6A7)
+                    isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
+                    else -> Color(0xFFF5F5F5)
+                }
 
-                listOfSteps.forEachIndexed { index, step ->
-                    val stepX = leftPadding + index * stepSpacing
-                    val isCompleted = index < currentStep || step.status == StepperStatus.DONE
-                    val isCurrent = index == currentStep
+                val checkIconSize = circleRadius * 2
+                val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
+                val iconOffset =
+                    Offset(stepX - checkIconSize / 2, circleSectionY - checkIconSize / 2)
 
-                    val outerColor = when {
-                        isCurrent -> Color(0xFF2E7D32)
-                        isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                        index < currentStep -> Color(0xFF2E7D32)
-                        else -> Color(0xFFBDBDBD)
-                    }
+                // Рисуем внешний круг
+                drawCircle(
+                    color = outerColor,
+                    radius = circleRadius,
+                    center = Offset(stepX, circleSectionY),
+                    style = Stroke(width = strokeWidth)
+                )
 
-                    val innerColor = when {
-                        isCompleted && index < currentStep -> Color(0xFF2E7D32)
-                        isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                        isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
-                        else -> Color(0xFFF5F5F5)
-                    }
+                // Рисуем внутренний круг
+                drawCircle(
+                    color = innerColor,
+                    radius = circleRadius - strokeWidth / 2 + 1f,
+                    center = Offset(stepX, circleSectionY),
+                )
 
-                    val iconSize = stepRadius * 1.15f
-                    val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
-                    val iconOffset = Offset(stepX - iconSize / 2, circleSectionY - iconSize / 2)
+                // Соединительная линия между шагами
+                if (index < listOfSteps.size - 1) {
+                    val lineStartX = stepX + circleRadius + 3.dp.toPx()
+                    val lineEndX = stepX + stepSpacing - circleRadius - 3.dp.toPx()
 
-                    // Рисуем внешний круг
-                    drawCircle(
-                        color = outerColor,
-                        radius = circleRadius,
-                        center = Offset(stepX, circleSectionY),
-                        style = Stroke(width = strokeWidth)
-                    )
-
-                    // Рисуем внутренний круг
-                    drawCircle(
-                        color = innerColor,
-                        radius = circleRadius - strokeWidth / 2 + 1f,
-                        center = Offset(stepX, circleSectionY),
-                    )
-
-                    // Рисуем соединительную линию между шагами с адаптивной длиной
-                    if (index < listOfSteps.size - 1) {
-                        val lineStartX = stepX + circleRadius + 4.dp.toPx()
-                        val lineEndX = stepX + stepSpacing - circleRadius - 4.dp.toPx()
-
-                        // Проверяем, что линия имеет положительную длину
-                        if (lineEndX > lineStartX) {
-                            drawLine(
-                                color = if (currentStep > index) Color(0xFF2E7D32)
-                                else lineColorPrimary.copy(alpha = 0.5f),
-                                start = Offset(lineStartX, circleSectionY),
-                                end = Offset(lineEndX, circleSectionY),
-                                strokeWidth = 1.25.dp.toPx()
-                            )
-                        }
-                    }
-
-                    // Рисуем иконку галочки для завершенных шагов
-                    if (isCompleted) {
-                        drawIntoCanvas { canvas ->
-                            translate(iconOffset.x, iconOffset.y) {
-                                with(painterStatusDone) {
-                                    draw(
-                                        Size(iconSize, iconSize),
-                                        colorFilter = ColorFilter.tint(Color.White)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // Форматируем и отображаем дату
-                    val day = String.format("%02d", index + 1)
-                    val text = "${day}.02.25"
-
-                    // Адаптируем размер текста в зависимости от доступного пространства
-                    val fontSize = (stepRadius/2f).coerceAtLeast(6.sp.toPx())
-                    val adaptiveTextStyle = textStyle.copy(
-                        color = iconColor,
-                        fontSize = fontSize.toSp()
-                    )
-
-                    val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
-
-                    // Отображаем текст даты под кругом, с учетом нижней границы
-                    if (heightPx > 39.dp.toPx()) {
-                        drawText(
-                            textMeasurer = textMeasurer,
-                            text = text,
-                            style = adaptiveTextStyle,
-                            topLeft = Offset(
-                                stepX - textLayoutInfo.size.width / 2,
-                                dateSectionY - textLayoutInfo.size.height / 2
-                            )
+                    if (lineEndX > lineStartX) {
+                        drawLine(
+                            color = if (currentStep > index) Color(0xFF2E7D32)
+                            else Color(0xFFBDBDBD),
+                            start = Offset(lineStartX, circleSectionY),
+                            end = Offset(lineEndX, circleSectionY),
+                            strokeWidth = 1.25.dp.toPx()
                         )
                     }
+                }
 
-                    // Отображаем иконку сервиса над кругом
+                // Рисуем иконку галочки для завершенных шагов
+                if (isCompleted) {
                     drawIntoCanvas { canvas ->
-                        val serviceIconSize = stepRadius*2
-                        translate(
-                            stepX - serviceIconSize / 2,
-                            iconSectionY - serviceIconSize / 2
-                        ) {
-                            with(painterServiceTypeMap[step.serviceType]!!) {
+                        translate(iconOffset.x, iconOffset.y) {
+                            with(painterStatusDone) {
                                 draw(
-                                    Size(serviceIconSize, serviceIconSize),
-                                    colorFilter = ColorFilter.tint(iconColor)
+                                    Size(checkIconSize, checkIconSize),
+                                    colorFilter = ColorFilter.tint(Color.White)
                                 )
                             }
                         }
                     }
                 }
+
+                // **Рисуем иконку сервиса**
+                drawIntoCanvas { canvas ->
+                    translate(
+                        stepX - serviceIconSize / 2,
+                        iconSectionY - serviceIconSize / 2
+                    ) {
+                        with(painterServiceTypeMap[step.serviceType]!!) {
+                            draw(
+                                Size(serviceIconSize, serviceIconSize),
+                                colorFilter = ColorFilter.tint(colorFilter)
+                            )
+                        }
+                    }
+                }
+
+                // **Рисуем текст (дату)**
+                val day = String.format("%02d", index + 1)
+                val text = "${day}.02.25"
+
+                val fontSize = (stepRadius / 2f).coerceIn(6.sp.toPx(), 12.sp.toPx())
+                val adaptiveTextStyle = textStyle.copy(fontSize = fontSize.toSp())
+
+                val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
+
+                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width * 1.02f < stepSpacing) {
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = text,
+                        style = adaptiveTextStyle,
+                        topLeft = Offset(
+                            stepX - textLayoutInfo.size.width / 2,
+                            textSectionY - textLayoutInfo.size.height / 2
+                        )
+                    )
+                }
             }
-        }
-    ) { measurables, constraints ->
-        // Важное исправление: явно задаем максимальную высоту
-        val defaultHeight = 68.dp.roundToPx()
-        val desiredHeight = when {
-            // If wrap content, use our default height
-            constraints.hasBoundedHeight && constraints.maxHeight != Constraints.Infinity ->
-                constraints.maxHeight.coerceAtMost(defaultHeight)
-            else -> defaultHeight
-        }
-
-        // Создаем новые ограничения с фиксированной высотой
-        val newConstraints = Constraints(
-            minWidth = constraints.minWidth,
-            maxWidth = constraints.maxWidth,
-            minHeight = desiredHeight,
-            maxHeight = desiredHeight
-        )
-
-        // Используем новые ограничения для измерения
-        val placeables = measurables.map { it.measure(newConstraints) }
-
-        // Определяем итоговые размеры макета
-        layout(
-            width = constraints.maxWidth,
-            height = desiredHeight
-        ) {
-            placeables.forEach { it.place(0, 0) }
         }
     }
 }
@@ -293,8 +242,8 @@ fun StepProgressionBarNewPreview(
             StepProgressionBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp),
-                listOfSteps = orderServiceList.subList(0, 4),
+                    .height(120.dp),
+                listOfSteps = orderServiceList.subList(0, 12),
                 currentStep = 2
             )
         }
@@ -392,36 +341,68 @@ fun OrderCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Icon(
                     painter = containerIcon,
                     contentDescription = "Container Icon",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .size(32.dp)
-                        .padding(start = 8.dp, top = 4.dp)
+                        .size(24.dp)
                 )
                 AppText(
                     modifier = Modifier,
                     value = "Order: ${entity.name}",
+                    appTextConfig = appTextConfig(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Expand",
-                    modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                    modifier = Modifier,
                 )
             }
 
-            StepProgressionBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 4.dp),
-                listOfSteps = orderServiceList.subList(0, 8),
-                currentStep = 2
-            )
+            if (true) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Column {
+                        Row {
+                            AppText("Price summ: ", modifier = Modifier)
+                            AppText("123")
+                        }
+                        AppText("123")
+                        AppText("123")
+                    }
+                    Column {
+                        AppText("123")
+                        AppText("123")
+                        AppText("123")
+                    }
+                }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StepProgressionBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp)
+                        .padding(start = 4.dp, end = 4.dp, bottom = 2.dp),
+                    listOfSteps = orderServiceList.subList(0, 8),
+                    currentStep = 2
+                )
+            }
         }
     }
 }
