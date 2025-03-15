@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.example.compose.AppTheme
 import kotlinx.serialization.Serializable
 
@@ -38,9 +39,10 @@ class ComposeMainActivity : AppCompatActivity() {
                 Routes.StoreScreen::class.qualifiedName -> Routes.StoreScreen
                 Routes.ChatBotScreen::class.qualifiedName -> Routes.ChatBotScreen
                 Routes.ValentinesScreen::class.qualifiedName -> Routes.ValentinesScreen
-                else -> Routes.MainScreenConstraint
+                Routes.MainScreen::class.qualifiedName -> Routes.MainScreen
+                else -> Routes.MainScreen
             }
-        } ?: Routes.MainScreenConstraint
+        } ?: Routes.MainScreen
         setContent {
             MainContent(startDestination)
         }
@@ -85,7 +87,7 @@ val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?
 @OptIn(ExperimentalSharedTransitionApi::class) //TODO
 @Suppress("detekt.FunctionNaming")
 @Composable
-fun MainContent(startDestination: Routes = Routes.MainScreenConstraint) {
+fun MainContent(startDestination: Routes = Routes.MainScreen) {
     val navController = rememberNavController()
 
 //    fun scaleIntoContainer(
@@ -112,9 +114,14 @@ fun MainContent(startDestination: Routes = Routes.MainScreenConstraint) {
                     navController = LocalNavController.current,
                     startDestination = startDestination
                 ) {
-                    composable<Routes.MainScreenConstraint> {
-                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-                            MainScreenRow()
+                    navigation<Routes.MainScreen>(startDestination = Routes.MainScreenConstraint) {
+                        composable<Routes.MainScreenConstraint> {
+                            CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                                MainScreenRow()
+                            }
+                        }
+                        composable<Routes.ValentinesScreen> {
+                            ValentineScreenRoot()
                         }
                     }
                     composable<Routes.SkillScreen> {
@@ -167,6 +174,16 @@ enum class ScaleTransitionDirection {
 @Serializable
 sealed interface Routes {
 
+    //Graphs routes
+    @Serializable
+    object MainScreen : Routes
+
+    //Nested graphs routes
+    @Serializable
+    object ValentinesScreen : Routes
+
+
+    //Routes
 
     @Serializable
     object Settings : Routes {
@@ -189,8 +206,4 @@ sealed interface Routes {
 
     @Serializable
     object BoneScreen : Routes //TODO Rename when prod
-
-
-    @Serializable
-    object ValentinesScreen : Routes
 }
