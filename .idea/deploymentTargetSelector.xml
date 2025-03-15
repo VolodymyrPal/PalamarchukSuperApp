@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-03-02T19:24:49.308143Z">
+        <DropdownSelection timestamp="2025-03-12T17:14:30.621555Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/palamarchukhome/.android/avd/Pixel_9_Pro.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/palamarchukhome/.android/avd/Small_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -40,9 +40,32 @@
       <SelectionState runConfigName="core">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="DialogAiHandlerPreview">
+      <SelectionState runConfigName="BoneScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-09T14:28:43.780785Z">
+      </SelectionState>
+      <SelectionState runConfigName="HolderEntityCardPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="palamarchukhome.AndroidStudioProjects.PalamarchukSuperApp.app">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="StepProgressionBarNewPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="StepProgressionBarNewPreview (1)">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-03-13T18:32:51.335937Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/palamarchukhome/.android/avd/Pixel_Fold_API_34.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="BoneScreenPreview (1)">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-03-12T17:16:58.898104Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/palamarchukhome/.android/avd/Small_Phone.avd" />
@@ -50,18 +73,6 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
-      </SelectionState>
-      <SelectionState runConfigName="AiHandlerScreenPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="StoreAppDialog">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="ListItemSkillPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="NewListItemSkillPreview">
-        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>
