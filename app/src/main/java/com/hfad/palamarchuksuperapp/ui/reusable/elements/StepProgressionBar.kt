@@ -373,20 +373,70 @@ fun OrderCard(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Column {
-                        Row {
-                            AppText("Price summ: ", modifier = Modifier)
-                            AppText("123")
-                        }
-                        AppText("123")
-                        AppText("123")
+                    Column(
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
                     }
-                    Column {
-                        AppText("123")
-                        AppText("123")
-                        AppText("123")
+                    Column(
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
+                    }
+                    Column(
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
+                        AppIconInfoField(
+                            modifier = Modifier,
+                            icon = painterResource(R.drawable.warehouse),
+                            text = "1fds 23"
+                        )
                     }
                 }
             }
