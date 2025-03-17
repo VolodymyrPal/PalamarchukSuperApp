@@ -333,10 +333,18 @@ fun OrderCard(
     modifier: Modifier = Modifier,
     entity: BusinessEntity,
 ) {
+    var expanded = remember { mutableStateOf(false) }
     Card(
         modifier = modifier
             .fillMaxWidth(0.9f)
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable(
+                onClick = {
+                    expanded.value = !expanded.value
+                },
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            ),
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, Color.Blue),
         colors = CardDefaults.cardColors(
@@ -345,7 +353,7 @@ fun OrderCard(
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 0.dp
-        )
+        ),
     ) {
         val containerIcon = painterResource(R.drawable.container_svgrepo_com)
 
@@ -381,76 +389,20 @@ fun OrderCard(
                 )
             }
 
-            if (true) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Column(
-                        modifier = Modifier,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                    }
-                    Column(
-                        modifier = Modifier,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                    }
-                    Column(
-                        modifier = Modifier,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                        AppIconInfoField(
-                            modifier = Modifier,
-                            icon = painterResource(R.drawable.warehouse),
-                            text = "1fds 23"
-                        )
-                    }
-                }
+            AnimatedVisibility(
+                enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessVeryLow)) +
+                        expandVertically(
+                            expandFrom = Alignment.CenterVertically
+                        ),
+                exit =// fadeOut() +
+                    shrinkVertically(
+                        shrinkTowards = Alignment.CenterVertically
+                    ),
+                visible = expanded.value
+            ) {
+                TableOrderInfo(
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             Row(
@@ -460,7 +412,7 @@ fun OrderCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(64.dp)
-                        .padding(start = 4.dp, end = 4.dp, bottom = 2.dp),
+                        .padding(start = 8.dp, end = 6.dp, bottom = 2.dp),
                     listOfSteps = orderServiceList.subList(0, 8),
                     currentStep = 2
                 )
