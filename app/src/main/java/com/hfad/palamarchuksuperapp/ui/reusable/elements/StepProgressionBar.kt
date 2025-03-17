@@ -1,7 +1,15 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +53,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -207,8 +216,11 @@ fun StepProgressionBar(
                 val day = String.format("%02d", index + 1)
                 val text = "${day}.02.25"
 
-                val fontSize = (stepRadius / 2f).coerceIn(6.sp.toPx(), 12.sp.toPx())
-                val adaptiveTextStyle = textStyle.copy(fontSize = fontSize.toSp())
+                val fontSize = (stepRadius / 2f).coerceIn(8.sp.toPx(), 12.sp.toPx())
+                val adaptiveTextStyle = textStyle.copy(
+                    fontSize = fontSize.toSp(),
+                    fontWeight = Bold
+                )
 
                 val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
 
