@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,44 +25,60 @@ fun AppIconInfoField(
     modifier: Modifier = Modifier,
     icon: Painter,
     text: String,
+    constraintsBack: ((Int, Int) -> Unit)? = null,
 ) {
-    Box(
-        modifier = modifier
-            .sizeIn(maxWidth = 130.dp),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = icon,
-                contentDescription = "Icon",
-                modifier = Modifier.size(24.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .height(IntrinsicSize.Min)
+    SubcomposeLayout { constraints ->
+        val measurable = subcompose("measure") {
+            Box(
+                modifier = modifier
+                    .sizeIn(maxWidth = 130.dp),
             ) {
-                AppText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
-                    value = "Title: Price",
-                    color = defaultAppTextColor().copy(alpha = 0.5f),
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.labelSmall
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = icon,
+                        contentDescription = "Icon",
+                        modifier = Modifier.size(24.dp)
                     )
-                )
-                AppText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Max),
-                    value = "Some information about the item",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.labelMedium,
-                        fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                    )
-                )
+                    Column(
+                        modifier = Modifier
+                            .height(IntrinsicSize.Min)
+                    ) {
+                        AppText(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min),
+                            value = "Title: Price",
+                            color = defaultAppTextColor().copy(alpha = 0.5f),
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.labelSmall
+                            )
+                        )
+                        AppText(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Max),
+                            value = "Some information about the item",
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.labelMedium,
+                                fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
+                            )
+                        )
+                    }
+                }
             }
+        }.first().measure(constraints)
+
+        // Получаем размеры
+        val width = measurable.width
+        val height = measurable.height
+
+        if (constraintsBack!= null) constraintsBack(width, height)
+
+        layout(width, height) {
+            // Теперь размещаем элемент с уже известными размерами
+            measurable.place(0, 0)
         }
     }
 }
@@ -73,6 +90,7 @@ fun IconInfoFieldPreview() {
     val iconPainter = painterResource(R.drawable.d_letter)
     AppIconInfoField(
         icon = iconPainter,
-        text = "Text"
+        text = "Text",
+        constraintsBack = { _, _ -> }
     )
 }
