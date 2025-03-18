@@ -125,58 +125,6 @@ fun BoneScreen(
 }
 
 
-@Composable
-fun OrderCard(
-    modifier: Modifier = Modifier,
-    entity: BusinessEntity,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(0.9f),
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, Color.Blue),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
-    ) {
-        val containerIcon = painterResource(R.drawable.container_svgrepo_com)
-
-        Box(
-            modifier = Modifier
-        ) {
-            Icon(
-                painter = containerIcon,
-                contentDescription = "Container Icon",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 8.dp, top = 4.dp)
-            )
-            AppText(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .align(Alignment.TopCenter),
-                value = "Order: ${entity.name}",
-            )
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Expand",
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(16.dp),
-            )
-            StepProgressionBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
-                    .align(Alignment.BottomCenter)
-            )
-        }
-    }
-}
 
 @Composable
 fun StepProgressionBar(
@@ -293,19 +241,7 @@ fun BoneScreenPreview() {
 }
 
 
-@Preview
-@Composable
-fun OrderCardPreview() {
-    AppTheme {
-        OrderCard(
-            modifier = Modifier,
-            entity = BusinessEntity(
-                name = "Client #1",
-                manager = "VP +3806338875"
-            )
-        )
-    }
-}
+
 
 @Preview
 @Composable
