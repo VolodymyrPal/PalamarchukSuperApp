@@ -241,36 +241,6 @@ fun StepProgressionBar(
 }
 
 @Composable
-@Preview
-fun StepProgressionBarNewPreview(
-
-) {
-    AppTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        {
-            StepProgressionBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp),
-                listOfSteps = orderServiceList.subList(0, 12),
-                currentStep = 2
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun BoneScreenPreview() {
-    AppTheme(useDarkTheme = false) {
-        BoneScreen()
-    }
-}
-
-@Composable
 fun BoneScreen(
     modifier: Modifier = Modifier,
 //    viewModel: ViewModel? = null,
@@ -348,7 +318,7 @@ fun OrderCard(
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(1.dp, Color.Blue),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         elevation = CardDefaults.cardElevation(
@@ -401,7 +371,17 @@ fun OrderCard(
                 visible = expanded.value
             ) {
                 TableOrderInfo(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    orderInfoList = listOf(
+                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
+                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
+                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
+                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
+                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
+                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
+                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
+                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight))
+                    )
                 )
             }
 
@@ -433,5 +413,35 @@ fun painterServiceTypeMap() = ServiceType.entries.associateWith {
         ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
         ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
         ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
+    }
+}
+
+@Composable
+@Preview
+fun StepProgressionBarNewPreview(
+
+) {
+    AppTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        {
+            StepProgressionBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                listOfSteps = orderServiceList.subList(0, 12),
+                currentStep = 2
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun BoneScreenPreview() {
+    AppTheme(useDarkTheme = false) {
+        BoneScreen()
     }
 }
