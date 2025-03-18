@@ -62,18 +62,15 @@ fun TableOrderInfo(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = 12.dp)
         ) {
-            var width  = remember { mutableIntStateOf(0) }
-            AppIconInfoField(
-                constraintsBack = { width1, _ -> width.value = width1 },
-                text = "Testing text",
-                icon = painterResource(R.drawable.d_letter)
-            )
-
-            Box(
-                modifier = Modifier.background(Color.Blue).size(this.maxWidth)
-            )
+            items(orderInfoList.size) { index ->
+                AppIconInfoField(
+                    modifier = Modifier,
+                    icon = orderInfoList[index].icon,
+                    title = orderInfoList[index].title,
+                    description = orderInfoList[index].description
+                )
+            }
         }
-        this.maxWidth
     }
 }
 
