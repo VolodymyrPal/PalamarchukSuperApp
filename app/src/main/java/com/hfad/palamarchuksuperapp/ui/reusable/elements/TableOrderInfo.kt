@@ -79,3 +79,22 @@ data class OrderInfo(
     val description: String,
     val icon: Painter?,
 )
+
+@Composable
+@Preview
+fun TableOrderInfoPreview() {
+    val iconPainter = painterResource(R.drawable.d_letter)
+    TableOrderInfo(
+        orderInfoList = listOf(
+            OrderInfo("123321", "123321", iconPainter),
+            OrderInfo("1233", "1233", iconPainter),
+            OrderInfo("12", "12", iconPainter),
+            OrderInfo("123321", "1233gfgffgfgfsdfdfgfdgsdfsfgfgf21", iconPainter),
+            OrderInfo("1233", "1233", iconPainter),
+            OrderInfo("12", "12", iconPainter),
+            OrderInfo("123321", "123321", iconPainter),
+            OrderInfo("1233", "1233", iconPainter),
+            OrderInfo("12", "12", iconPainter),
+        )
+    )
+}
