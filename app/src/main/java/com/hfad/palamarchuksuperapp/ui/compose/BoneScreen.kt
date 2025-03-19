@@ -147,15 +147,18 @@ fun BoneScreen(
                     BusinessEntity(name = "42224", manager = "VP +3806338875"),
                     BusinessEntity(name = "43226", manager = "VP +3806338875")
                 )
-                Box(modifier = Modifier.padding(16.dp)) {
-                    LazyColumn {
-                        items(items = items) {
-                            OrderCard(
-                                modifier = Modifier
-                                    .padding(top = 8.dp),
-                                entity = it
-                            )
-                        }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(vertical = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(items = items) {
+                        OrderCard(
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                            entity = it
+                        )
                     }
                 }
             }
