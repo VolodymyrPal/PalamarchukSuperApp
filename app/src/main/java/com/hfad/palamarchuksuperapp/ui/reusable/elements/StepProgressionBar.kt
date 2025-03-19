@@ -99,8 +99,9 @@ fun StepProgressionBar(
         val textMeasurer = rememberTextMeasurer()
         val textStyle = MaterialTheme.typography.bodySmall.copy(
             fontSize = 8.sp,
-            letterSpacing = (-0.2).sp,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            letterSpacing = (-0.8).sp,
+            color = onPrimaryContainerColor,
+            fontWeight = FontWeight.Medium
         )
 
         Canvas(
@@ -111,9 +112,9 @@ fun StepProgressionBar(
             val heightPx = size.height
 
             // Распределение высоты
-            val iconFieldHeight = heightPx * 0.3f
-            val stepFieldHeight = heightPx * 0.45f
-            val textFieldHeight = heightPx * 0.2f
+            val iconFieldHeight = heightPx * 0.32f
+            val stepFieldHeight = heightPx * 0.43f
+            val textFieldHeight = heightPx * 0.22f
             val spacing = heightPx * 0.01f
 
             val iconSectionY = iconFieldHeight / 2 + spacing
@@ -150,8 +151,8 @@ fun StepProgressionBar(
                     else -> Color(0xFFF5F5F5)
                 }
 
-                val checkIconSize = circleRadius * 2
-                val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
+                val checkIconSize = circleRadius * 1.8f
+                val strokeWidth = (stepRadius * 0.18f).coerceIn(1.dp.toPx(), 2.dp.toPx())
                 val iconOffset =
                     Offset(stepX - checkIconSize / 2, circleSectionY - checkIconSize / 2)
 
@@ -166,7 +167,7 @@ fun StepProgressionBar(
                 // Рисуем внутренний круг
                 drawCircle(
                     color = innerColor,
-                    radius = circleRadius - strokeWidth / 2 + 1f,
+                    radius = circleRadius - strokeWidth / 2 + 0.5f,
                     center = Offset(stepX, circleSectionY),
                 )
 
@@ -193,7 +194,7 @@ fun StepProgressionBar(
                             with(painterStatusDone) {
                                 draw(
                                     Size(checkIconSize, checkIconSize),
-                                    colorFilter = ColorFilter.tint(Color.White)
+                                    colorFilter = ColorFilter.tint(surfaceColor)
                                 )
                             }
                         }
@@ -201,6 +202,11 @@ fun StepProgressionBar(
                 }
 
                 // **Рисуем иконку сервиса**
+                val iconTint = when {
+                    index <= currentStep -> onPrimaryContainerColor
+                    else -> onPrimaryContainerColor.copy(alpha = 0.75f)
+                }
+
                 drawIntoCanvas { canvas ->
                     translate(
                         stepX - serviceIconSize / 2,
@@ -209,7 +215,7 @@ fun StepProgressionBar(
                         with(painterServiceTypeMap[step.serviceType]!!) {
                             draw(
                                 Size(serviceIconSize, serviceIconSize),
-                                colorFilter = ColorFilter.tint(colorFilter)
+                                colorFilter = ColorFilter.tint(iconTint)
                             )
                         }
                     }
@@ -227,7 +233,7 @@ fun StepProgressionBar(
 
                 val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
 
-                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width * 1.02f < stepSpacing) {
+                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width * 0.95f < stepSpacing) {
                     drawText(
                         textMeasurer = textMeasurer,
                         text = text,
