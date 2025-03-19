@@ -272,10 +272,23 @@ fun OrderCard(
     entity: BusinessEntity,
 ) {
     var expanded = remember { mutableStateOf(false) }
+
+    val rotationState by animateFloatAsState(
+        targetValue = if (expanded.value) 180f else 0f,
+        label = "rotationAnimation"
+    )
+
+    val elevation by animateDpAsState(
+        targetValue = if (expanded.value) 6.dp else 2.dp,
+        label = "elevationAnimation"
+    )
+
+    val colorScheme = MaterialTheme.colorScheme
+
+
     Card(
         modifier = modifier
-            .fillMaxWidth(0.9f)
-            .wrapContentHeight()
+            .fillMaxWidth()
             .clickable(
                 onClick = {
                     expanded.value = !expanded.value
@@ -284,9 +297,9 @@ fun OrderCard(
                 interactionSource = MutableInteractionSource()
             ),
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, Color.Blue),
+        border = BorderStroke(1.dp, colorScheme.outline),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         elevation = CardDefaults.cardElevation(
@@ -306,12 +319,14 @@ fun OrderCard(
             ) {
 
                 Icon(
-                    painter = containerIcon,
+                    painter = painterResource(R.drawable.container_svgrepo_com),
                     contentDescription = "Container Icon",
                     tint = Color.Unspecified,
                     modifier = Modifier
+                        .padding(8.dp)
                         .size(24.dp)
                 )
+
                 AppText(
                     modifier = Modifier,
                     value = "Order: ${entity.name}",
@@ -323,48 +338,58 @@ fun OrderCard(
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Expand",
-                    modifier = Modifier,
+                    modifier = Modifier.rotate(rotationState),
                 )
             }
 
             AnimatedVisibility(
-                enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessVeryLow)) +
+                enter = fadeIn(animationSpec = tween(300)) +
                         expandVertically(
-                            expandFrom = Alignment.CenterVertically
+                            expandFrom = Alignment.Top,
+                            animationSpec = tween(300)
                         ),
-                exit =// fadeOut() +
-                    shrinkVertically(
-                        shrinkTowards = Alignment.CenterVertically
-                    ),
+                exit = fadeOut(animationSpec = tween(300)) +
+                        shrinkVertically(
+                            shrinkTowards = Alignment.Top,
+                            animationSpec = tween(300)
+                        ),
                 visible = expanded.value
             ) {
-                TableOrderInfo(
-                    modifier = Modifier.fillMaxWidth(),
-                    orderInfoList = listOf(
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight))
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    TableOrderInfo(
+                        modifier = Modifier.fillMaxWidth(),
+                        orderInfoList = listOf(
+                            OrderInfo(
+                                "Origin",
+                                "Shanghai, China",
+                                painterResource(R.drawable.freight)
+                            ),
+                            OrderInfo(
+                                "Destination",
+                                "Odessa, Ukraine",
+                                painterResource(R.drawable.truck)
+                            ),
+                            OrderInfo("Status", "In Transit", painterResource(R.drawable.truck)),
+                            OrderInfo("ETA", "24.02.2025", painterResource(R.drawable.freight)),
+                            OrderInfo(
+                                "Container",
+                                "40HC-7865425",
+                                painterResource(R.drawable.container_svgrepo_com)
+                            ),
+                            OrderInfo("Cargo", "Electronics", painterResource(R.drawable.warehouse))
+                        )
                     )
-                )
+                }
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                StepProgressionBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .padding(start = 8.dp, end = 6.dp, bottom = 2.dp),
-                    listOfSteps = orderServiceList.subList(0, 8),
-                    currentStep = 2
-                )
-            }
+            StepProgressionBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
+                listOfSteps = orderServiceList.subList(0, 8),
+                currentStep = 2
+            )
         }
     }
 }
