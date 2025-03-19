@@ -1,10 +1,12 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -15,15 +17,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
@@ -32,8 +30,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,10 +37,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
@@ -58,9 +56,9 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.ui.compose.BoneScreen
 import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
 import com.hfad.palamarchuksuperapp.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.ui.viewModels.Stepper
@@ -76,7 +74,12 @@ fun StepProgressionBar(
 ) {
 
     var componentSize by remember { mutableStateOf(Size.Zero) }
-    val colorFilter = MaterialTheme.colorScheme.onPrimaryContainer
+
+    val colorScheme = MaterialTheme.colorScheme
+    val primaryColor = colorScheme.primary
+    val primaryContainerColor = colorScheme.primaryContainer
+    val onPrimaryContainerColor = colorScheme.onPrimaryContainer
+    val surfaceColor = colorScheme.surface
 
     // Кэш иконок
     val painterServiceTypeMap = painterServiceTypeMap()
@@ -96,8 +99,9 @@ fun StepProgressionBar(
         val textMeasurer = rememberTextMeasurer()
         val textStyle = MaterialTheme.typography.bodySmall.copy(
             fontSize = 8.sp,
-            letterSpacing = (-0.2).sp,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            letterSpacing = (-0.8).sp,
+            color = onPrimaryContainerColor,
+            fontWeight = FontWeight.Medium
         )
 
         Canvas(
@@ -108,9 +112,9 @@ fun StepProgressionBar(
             val heightPx = size.height
 
             // Распределение высоты
-            val iconFieldHeight = heightPx * 0.3f
-            val stepFieldHeight = heightPx * 0.45f
-            val textFieldHeight = heightPx * 0.2f
+            val iconFieldHeight = heightPx * 0.32f
+            val stepFieldHeight = heightPx * 0.43f
+            val textFieldHeight = heightPx * 0.22f
             val spacing = heightPx * 0.01f
 
             val iconSectionY = iconFieldHeight / 2 + spacing
@@ -134,21 +138,21 @@ fun StepProgressionBar(
                 val isCurrent = index == currentStep
 
                 val outerColor = when {
-                    isCurrent -> Color(0xFF2E7D32)
-                    isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                    index < currentStep -> Color(0xFF2E7D32)
-                    else -> Color(0xFFBDBDBD)
+                    isCurrent -> primaryColor.copy(alpha = 0.75f)
+                    isCompleted && index < currentStep -> primaryColor
+                    index < currentStep -> primaryColor
+                    else -> colorScheme.outline.copy(alpha = 0.7f)
                 }
 
                 val innerColor = when {
-                    isCompleted && index < currentStep -> Color(0xFF2E7D32)
-                    isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                    isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
-                    else -> Color(0xFFF5F5F5)
+                    isCompleted && index < currentStep -> primaryColor.copy(alpha = 0.7f)
+                    isCompleted && index > currentStep -> primaryColor.copy(alpha = 0.7f)
+                    isCurrent -> primaryContainerColor.copy(alpha = 0.4f)
+                    else -> surfaceColor
                 }
 
-                val checkIconSize = circleRadius * 2
-                val strokeWidth = (stepRadius * 0.2f).coerceIn(1.dp.toPx(), 2.dp.toPx())
+                val checkIconSize = circleRadius * 1.8f
+                val strokeWidth = (stepRadius * 0.18f).coerceIn(1.dp.toPx(), 2.dp.toPx())
                 val iconOffset =
                     Offset(stepX - checkIconSize / 2, circleSectionY - checkIconSize / 2)
 
@@ -163,7 +167,7 @@ fun StepProgressionBar(
                 // Рисуем внутренний круг
                 drawCircle(
                     color = innerColor,
-                    radius = circleRadius - strokeWidth / 2 + 1f,
+                    radius = circleRadius - strokeWidth / 2 + 0.5f,
                     center = Offset(stepX, circleSectionY),
                 )
 
@@ -173,13 +177,25 @@ fun StepProgressionBar(
                     val lineEndX = stepX + stepSpacing - circleRadius - 3.dp.toPx()
 
                     if (lineEndX > lineStartX) {
+                        // Фоновая линия (неактивная)
                         drawLine(
-                            color = if (currentStep > index) Color(0xFF2E7D32)
-                            else Color(0xFFBDBDBD),
+                            color = colorScheme.outline.copy(alpha = 0.4f),
                             start = Offset(lineStartX, circleSectionY),
                             end = Offset(lineEndX, circleSectionY),
-                            strokeWidth = 1.25.dp.toPx()
+                            strokeWidth = 1.5.dp.toPx(),
+                            pathEffect = PathEffect.cornerPathEffect(2.dp.toPx())
                         )
+
+                        // Активная линия (только до текущего шага)
+                        if (currentStep > index) {
+                            drawLine(
+                                color = primaryColor,
+                                start = Offset(lineStartX, circleSectionY),
+                                end = Offset(lineEndX, circleSectionY),
+                                strokeWidth = 1.5.dp.toPx(),
+                                pathEffect = PathEffect.cornerPathEffect(2.dp.toPx())
+                            )
+                        }
                     }
                 }
 
@@ -190,7 +206,7 @@ fun StepProgressionBar(
                             with(painterStatusDone) {
                                 draw(
                                     Size(checkIconSize, checkIconSize),
-                                    colorFilter = ColorFilter.tint(Color.White)
+                                    colorFilter = ColorFilter.tint(surfaceColor)
                                 )
                             }
                         }
@@ -198,6 +214,11 @@ fun StepProgressionBar(
                 }
 
                 // **Рисуем иконку сервиса**
+                val iconTint = when {
+                    index <= currentStep -> onPrimaryContainerColor
+                    else -> onPrimaryContainerColor.copy(alpha = 0.75f)
+                }
+
                 drawIntoCanvas { canvas ->
                     translate(
                         stepX - serviceIconSize / 2,
@@ -206,25 +227,30 @@ fun StepProgressionBar(
                         with(painterServiceTypeMap[step.serviceType]!!) {
                             draw(
                                 Size(serviceIconSize, serviceIconSize),
-                                colorFilter = ColorFilter.tint(colorFilter)
+                                colorFilter = ColorFilter.tint(iconTint)
                             )
                         }
                     }
                 }
 
                 // **Рисуем текст (дату)**
-                val day = String.format("%02d", index + 1)
+                val day = String.format("%02d", index + 1) //TODO Test only
                 val text = "${day}.02.25"
 
                 val fontSize = (stepRadius / 2f).coerceIn(8.sp.toPx(), 12.sp.toPx())
                 val adaptiveTextStyle = textStyle.copy(
                     fontSize = fontSize.toSp(),
-                    fontWeight = Bold
+                    fontWeight = Bold,
+                    color = if (index < currentStep) onPrimaryContainerColor else
+                        onPrimaryContainerColor.copy(
+                            alpha = 0.7f
+                        )
+
                 )
 
                 val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
 
-                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width * 1.02f < stepSpacing) {
+                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width * 0.95f < stepSpacing) {
                     drawText(
                         textMeasurer = textMeasurer,
                         text = text,
@@ -241,73 +267,28 @@ fun StepProgressionBar(
 }
 
 @Composable
-fun BoneScreen(
-    modifier: Modifier = Modifier,
-//    viewModel: ViewModel? = null,
-    navController: NavController? = null,
-) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-
-        },
-        floatingActionButton = {
-
-        },
-        bottomBar = {
-
-        }
-    ) { paddingValues ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                )
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AppText(
-                    modifier = Modifier.padding(8.dp),
-                    value = "Orders",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.displayMedium,
-                    )
-                )
-                val items = listOf(
-                    BusinessEntity(name = "43222", manager = "VP +3806338875"),
-                    BusinessEntity(name = "42224", manager = "VP +3806338875"),
-                    BusinessEntity(name = "43226", manager = "VP +3806338875")
-                )
-                Box(modifier = Modifier.wrapContentSize()) {
-                    LazyColumn {
-                        items(items = items) {
-                            OrderCard(
-                                modifier = Modifier
-                                    .wrapContentSize()
-                                    .padding(top = 8.dp),
-                                entity = it
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun OrderCard(
     modifier: Modifier = Modifier,
     entity: BusinessEntity,
 ) {
     var expanded = remember { mutableStateOf(false) }
+
+    val rotationState by animateFloatAsState(
+        targetValue = if (expanded.value) 180f else 0f,
+        label = "rotationAnimation"
+    )
+
+    val elevation by animateDpAsState(
+        targetValue = if (expanded.value) 6.dp else 2.dp,
+        label = "elevationAnimation"
+    )
+
+    val colorScheme = MaterialTheme.colorScheme
+
+
     Card(
         modifier = modifier
-            .fillMaxWidth(0.9f)
-            .wrapContentHeight()
+            .fillMaxWidth()
             .clickable(
                 onClick = {
                     expanded.value = !expanded.value
@@ -316,9 +297,9 @@ fun OrderCard(
                 interactionSource = MutableInteractionSource()
             ),
         shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(1.dp, Color.Blue),
+        border = BorderStroke(1.dp, colorScheme.outline),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         elevation = CardDefaults.cardElevation(
@@ -338,12 +319,14 @@ fun OrderCard(
             ) {
 
                 Icon(
-                    painter = containerIcon,
+                    painter = painterResource(R.drawable.container_svgrepo_com),
                     contentDescription = "Container Icon",
                     tint = Color.Unspecified,
                     modifier = Modifier
+                        .padding(8.dp)
                         .size(24.dp)
                 )
+
                 AppText(
                     modifier = Modifier,
                     value = "Order: ${entity.name}",
@@ -355,48 +338,58 @@ fun OrderCard(
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Expand",
-                    modifier = Modifier,
+                    modifier = Modifier.rotate(rotationState),
                 )
             }
 
             AnimatedVisibility(
-                enter = fadeIn(animationSpec = spring(stiffness = Spring.StiffnessVeryLow)) +
+                enter = fadeIn(animationSpec = tween(300)) +
                         expandVertically(
-                            expandFrom = Alignment.CenterVertically
+                            expandFrom = Alignment.Top,
+                            animationSpec = tween(300)
                         ),
-                exit =// fadeOut() +
-                    shrinkVertically(
-                        shrinkTowards = Alignment.CenterVertically
-                    ),
+                exit = fadeOut(animationSpec = tween(300)) +
+                        shrinkVertically(
+                            shrinkTowards = Alignment.Top,
+                            animationSpec = tween(300)
+                        ),
                 visible = expanded.value
             ) {
-                TableOrderInfo(
-                    modifier = Modifier.fillMaxWidth(),
-                    orderInfoList = listOf(
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight)),
-                        OrderInfo("Some", "Booleak", painterResource(R.drawable.truck)),
-                        OrderInfo("Dummy", "Any other info", painterResource(R.drawable.freight))
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    TableOrderInfo(
+                        modifier = Modifier.fillMaxWidth(),
+                        orderInfoList = listOf(
+                            OrderInfo(
+                                "Origin",
+                                "Shanghai, China",
+                                painterResource(R.drawable.freight)
+                            ),
+                            OrderInfo(
+                                "Destination",
+                                "Odessa, Ukraine",
+                                painterResource(R.drawable.truck)
+                            ),
+                            OrderInfo("Status", "In Transit", painterResource(R.drawable.truck)),
+                            OrderInfo("ETA", "24.02.2025", painterResource(R.drawable.freight)),
+                            OrderInfo(
+                                "Container",
+                                "40HC-7865425",
+                                painterResource(R.drawable.container_svgrepo_com)
+                            ),
+                            OrderInfo("Cargo", "Electronics", painterResource(R.drawable.warehouse))
+                        )
                     )
-                )
+                }
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                StepProgressionBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .padding(start = 8.dp, end = 6.dp, bottom = 2.dp),
-                    listOfSteps = orderServiceList.subList(0, 8),
-                    currentStep = 2
-                )
-            }
+            StepProgressionBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
+                listOfSteps = orderServiceList.subList(0, 8),
+                currentStep = 2
+            )
         }
     }
 }

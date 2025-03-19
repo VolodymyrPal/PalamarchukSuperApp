@@ -151,7 +151,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel = daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory()),
+    viewModel: StoreViewModel = daggerViewModel(),
 ) {
     val navController: NavHostController =
         if (!LocalInspectionMode.current) LocalNavController.current else

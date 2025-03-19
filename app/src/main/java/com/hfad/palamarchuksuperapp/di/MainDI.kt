@@ -185,6 +185,11 @@ interface UseCaseModule {
     fun bindUpdateMessageStatusUseCase(
         updateMessageStatusUseCaseImpl: UpdateMessageStatusUseCaseImpl,
     ): UpdateMessageStatusUseCase
+
+    @Binds
+    fun bindObserveAllChatsInfoUseCase(
+        observeAllChatsInfoUseCaseImpl: ObserveAllChatsInfoUseCaseImpl,
+    ): ObserveAllChatsInfoUseCase
 }
 
 
@@ -210,11 +215,6 @@ abstract class ViewModelsModule {
     @ViewModelKey(StoreViewModel::class)
     abstract fun bindStoreViewModel(viewModel: StoreViewModel): ViewModel
 
-    @Singleton
-    @Binds
-    abstract fun bindObserveAllChatsInfoUseCase(
-        observeAllChatsInfoUseCaseImpl: ObserveAllChatsInfoUseCaseImpl,
-    ): ObserveAllChatsInfoUseCase
 }
 
 @Module

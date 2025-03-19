@@ -117,7 +117,7 @@ fun AppIconInfoField(
     }
 }
 
-const val appIconInfoFieldWidth = 150
+const val appIconInfoFieldWidth = 120
 
 
 @Preview
