@@ -108,17 +108,40 @@ fun BoneScreen(
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
+            var searchQuery = remember { mutableStateOf("") }
+
             Column(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AppText(
-                    modifier = Modifier.padding(8.dp),
-                    value = "Orders",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.displayMedium,
-                    )
+
+                OutlinedTextField(
+                    value = searchQuery.value,
+                    onValueChange = { searchQuery.value = it },
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f),
+                    placeholder = { Text("Search orders...") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = "Search"
+                        )
+                    },
+                    trailingIcon = {
+                        if (searchQuery.value.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery.value = "" }) {
+                                Icon(Icons.Default.Clear, contentDescription = "Clear search")
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = colorScheme.primary,
+                        unfocusedBorderColor = colorScheme.outline.copy(alpha = 0.5f)
+                    ),
+                    singleLine = true
                 )
+
                 val items = listOf(
                     BusinessEntity(name = "43222", manager = "VP +3806338875"),
                     BusinessEntity(name = "42224", manager = "VP +3806338875"),
