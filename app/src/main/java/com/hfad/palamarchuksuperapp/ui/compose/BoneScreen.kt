@@ -166,81 +166,6 @@ fun BoneScreen(
     }
 }
 
-
-
-@Composable
-fun StepProgressionBar(
-    modifier: Modifier = Modifier,
-    numberOfSteps: Int = 3,
-    currentStep: Int = 1,
-) {
-
-    Box(modifier = modifier.background(Color.Transparent)) {
-        Divider(
-            modifier = Modifier.align(Alignment.CenterStart),
-            color = Color.Black.copy(1f),
-            thickness = (1.5).dp
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            for (step in 0..numberOfSteps - 1) {
-                Step(
-                    modifier = Modifier,
-                    isCompete = step < currentStep,
-                    isCurrent = step == currentStep,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun Step(
-    modifier: Modifier = Modifier,
-    isCurrent: Boolean = false,
-    isCompete: Boolean = false,
-) {
-    val color = if (isCompete || isCurrent) Color(0xFF2E7D32) else Color(0xFFBDBDBD)
-    val innerCircleColor =
-        if (isCompete) Color(0xFF2E7D32)
-        else if (isCurrent) {
-            Color(0xFFFFD54F).copy(red = 0.7f, blue = 0.85f)
-        } else Color(0xFFF5F5F5)
-    val painter = rememberVectorPainter(Icons.Default.Check)
-
-
-
-    Box(modifier = modifier) {
-        Canvas(
-            modifier = Modifier
-                .size(15.dp)
-                .align(Alignment.CenterEnd)
-                .border(
-                    shape = CircleShape,
-                    width = 2.dp,
-                    color = color
-                ),
-            onDraw = {
-                drawCircle(color = innerCircleColor)
-                drawIntoCanvas { canvas ->
-                    if (isCompete) {
-                        with(painter) {
-                            draw(
-                                Size(40f, 40f),
-                                colorFilter = ColorFilter.tint(Color.White)
-                            )
-                        }
-                    }
-                }
-            }
-        )
-    }
-}
-
-
 @Composable
 fun HolderEntityCard(
     modifier: Modifier = Modifier,
@@ -283,8 +208,6 @@ fun BoneScreenPreview() {
 }
 
 
-
-
 @Preview
 @Composable
 fun HolderEntityCardPreview(
@@ -296,7 +219,7 @@ fun HolderEntityCardPreview(
 ) {
     AppTheme {
         HolderEntityCard(
-            modifier = modifier,
+            modifier = modifier.size(125.dp),
             entity = entity
         )
     }
