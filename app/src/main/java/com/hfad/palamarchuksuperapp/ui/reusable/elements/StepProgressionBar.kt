@@ -234,7 +234,7 @@ fun StepProgressionBar(
                 }
 
                 // **Рисуем текст (дату)**
-                val day = String.format("%02d", index + 1)
+                val day = String.format("%02d", index + 1) //TODO Test only
                 val text = "${day}.02.25"
 
                 val fontSize = (stepRadius / 2f).coerceIn(8.sp.toPx(), 12.sp.toPx())
@@ -260,64 +260,6 @@ fun StepProgressionBar(
                             textSectionY - textLayoutInfo.size.height / 2
                         )
                     )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun BoneScreen(
-    modifier: Modifier = Modifier,
-//    viewModel: ViewModel? = null,
-    navController: NavController? = null,
-) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-
-        },
-        floatingActionButton = {
-
-        },
-        bottomBar = {
-
-        }
-    ) { paddingValues ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                )
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AppText(
-                    modifier = Modifier.padding(8.dp),
-                    value = "Orders",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.displayMedium,
-                    )
-                )
-                val items = listOf(
-                    BusinessEntity(name = "43222", manager = "VP +3806338875"),
-                    BusinessEntity(name = "42224", manager = "VP +3806338875"),
-                    BusinessEntity(name = "43226", manager = "VP +3806338875")
-                )
-                Box(modifier = Modifier.wrapContentSize()) {
-                    LazyColumn {
-                        items(items = items) {
-                            OrderCard(
-                                modifier = Modifier
-                                    .wrapContentSize()
-                                    .padding(top = 8.dp),
-                                entity = it
-                            )
-                        }
-                    }
                 }
             }
         }
