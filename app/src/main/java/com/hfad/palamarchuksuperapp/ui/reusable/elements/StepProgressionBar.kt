@@ -138,17 +138,17 @@ fun StepProgressionBar(
                 val isCurrent = index == currentStep
 
                 val outerColor = when {
-                    isCurrent -> Color(0xFF2E7D32)
-                    isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                    index < currentStep -> Color(0xFF2E7D32)
-                    else -> Color(0xFFBDBDBD)
+                    isCurrent -> primaryColor.copy(alpha = 0.75f)
+                    isCompleted && index < currentStep -> primaryColor
+                    index < currentStep -> primaryColor
+                    else -> colorScheme.outline.copy(alpha = 0.7f)
                 }
 
                 val innerColor = when {
-                    isCompleted && index < currentStep -> Color(0xFF2E7D32)
-                    isCompleted && index > currentStep -> Color(0xFFA5D6A7)
-                    isCurrent -> Color(0xFFB2D5D8).copy(alpha = 0.9f)
-                    else -> Color(0xFFF5F5F5)
+                    isCompleted && index < currentStep -> primaryColor.copy(alpha = 0.7f)
+                    isCompleted && index > currentStep -> primaryColor.copy(alpha = 0.7f)
+                    isCurrent -> primaryContainerColor.copy(alpha = 0.4f)
+                    else -> surfaceColor
                 }
 
                 val checkIconSize = circleRadius * 1.8f
@@ -177,13 +177,25 @@ fun StepProgressionBar(
                     val lineEndX = stepX + stepSpacing - circleRadius - 3.dp.toPx()
 
                     if (lineEndX > lineStartX) {
+                        // Фоновая линия (неактивная)
                         drawLine(
-                            color = if (currentStep > index) Color(0xFF2E7D32)
-                            else Color(0xFFBDBDBD),
+                            color = colorScheme.outline.copy(alpha = 0.4f),
                             start = Offset(lineStartX, circleSectionY),
                             end = Offset(lineEndX, circleSectionY),
-                            strokeWidth = 1.25.dp.toPx()
+                            strokeWidth = 1.5.dp.toPx(),
+                            pathEffect = PathEffect.cornerPathEffect(2.dp.toPx())
                         )
+
+                        // Активная линия (только до текущего шага)
+                        if (currentStep > index) {
+                            drawLine(
+                                color = primaryColor,
+                                start = Offset(lineStartX, circleSectionY),
+                                end = Offset(lineEndX, circleSectionY),
+                                strokeWidth = 1.5.dp.toPx(),
+                                pathEffect = PathEffect.cornerPathEffect(2.dp.toPx())
+                            )
+                        }
                     }
                 }
 
@@ -228,7 +240,12 @@ fun StepProgressionBar(
                 val fontSize = (stepRadius / 2f).coerceIn(8.sp.toPx(), 12.sp.toPx())
                 val adaptiveTextStyle = textStyle.copy(
                     fontSize = fontSize.toSp(),
-                    fontWeight = Bold
+                    fontWeight = Bold,
+                    color = if (index < currentStep) onPrimaryContainerColor else
+                        onPrimaryContainerColor.copy(
+                            alpha = 0.7f
+                        )
+
                 )
 
                 val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
