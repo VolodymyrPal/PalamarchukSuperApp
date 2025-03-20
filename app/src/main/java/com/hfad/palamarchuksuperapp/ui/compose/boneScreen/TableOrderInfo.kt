@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.reusable.elements
+package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppIconInfoField
 import kotlin.math.max
 
 @Composable
