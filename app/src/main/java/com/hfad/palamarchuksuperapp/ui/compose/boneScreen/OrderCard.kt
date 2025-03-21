@@ -56,10 +56,13 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.orderServiceList
 fun OrderCard(
     modifier: Modifier = Modifier,
     entity: BusinessEntity,
+    initialStatus: StepperStatus = StepperStatus.IN_PROGRESS,
+    currentStep: Int = 3,
+    initialExpanded: Boolean = false,
 ) {
-    var expanded = remember { mutableStateOf(false) }
-    val orderStatus = remember { mutableStateOf(StepperStatus.IN_PROGRESS) } // Симулируем статус заказа
-    val currentStepCount = remember { mutableStateOf(3) } // Симулируем текущий шаг
+    var expanded = remember { mutableStateOf(initialExpanded) }
+    val orderStatus = remember { mutableStateOf(initialStatus) }
+    val currentStepCount = remember { mutableStateOf(currentStep) }
 
     val rotationState by animateFloatAsState(
         targetValue = if (expanded.value) 180f else 0f,
@@ -173,7 +176,7 @@ fun OrderCard(
                     }
                 }
 
-                // Стрелка раскрытия
+                // Arrow
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -193,7 +196,6 @@ fun OrderCard(
                 }
             }
 
-            // Индикатор прогресса транспортировки (отображается всегда)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -208,7 +210,6 @@ fun OrderCard(
                 )
             }
 
-            // Расширяемая секция с дополнительной информацией
             AnimatedVisibility(
                 enter = fadeIn(animationSpec = tween(300)) +
                         expandVertically(
@@ -223,7 +224,6 @@ fun OrderCard(
                 visible = expanded.value
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    // Горизонтальный разделитель
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -245,15 +245,27 @@ fun OrderCard(
                                 "Одесса, Украина",
                                 painterResource(R.drawable.truck)
                             ),
-                            OrderInfo("Статус доставки", "В пути", painterResource(R.drawable.truck)),
-                            OrderInfo("Ожидаемая дата прибытия", "24.02.2025", painterResource(R.drawable.freight)),
+                            OrderInfo(
+                                "Статус доставки",
+                                "В пути",
+                                painterResource(R.drawable.truck)
+                            ),
+                            OrderInfo(
+                                "Ожидаемая дата прибытия",
+                                "24.02.2025",
+                                painterResource(R.drawable.freight)
+                            ),
                             OrderInfo(
                                 "Контейнер",
                                 "40HC-7865425",
                                 painterResource(R.drawable.container_svgrepo_com)
                             ),
                             OrderInfo("Груз", "Электроника", painterResource(R.drawable.warehouse)),
-                            OrderInfo("Менеджер", entity.manager, painterResource(R.drawable.baseline_shopping_basket_24))
+                            OrderInfo(
+                                "Менеджер",
+                                entity.manager,
+                                painterResource(R.drawable.baseline_shopping_basket_24)
+                            )
                         )
                     )
                 }
