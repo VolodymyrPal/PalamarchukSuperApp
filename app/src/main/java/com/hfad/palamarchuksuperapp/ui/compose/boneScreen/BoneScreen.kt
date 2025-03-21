@@ -83,7 +83,7 @@ fun BoneScreen(
                             pagerState.currentPage,
                             matchContentSize = true
                         ),
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = colorScheme.surface,
                         width = Dp.Unspecified,
                     )
                 }
@@ -121,8 +121,11 @@ fun BoneScreen(
         ) {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-                userScrollEnabled = true, // Разрешаем пользовательский свайп между страницами
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorScheme.primaryContainer),
+                userScrollEnabled = true,
+                beyondViewportPageCount = 1,
             ) { page ->
                 when (page) {
                     0 -> OrdersPage()
