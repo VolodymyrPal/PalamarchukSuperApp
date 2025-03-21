@@ -224,6 +224,86 @@ fun OrderStat(
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun OrderCardListPreview() {
+    AppTheme(
+        useDarkTheme = false
+    ) {
+        Column(
+            modifier = Modifier
+        ) {
+            val entity = BusinessEntity(
+                code = 1,
+                name = "12345",
+                manager = "Иван Петров",
+                type = EntityType.OTHER
+            )
+            OrderCard(
+                entity = entity,
+                initialStatus = StepperStatus.IN_PROGRESS,
+                currentStep = 3,
+                initialExpanded = true,
+                modifier = Modifier.padding(16.dp)
+            )
+            val entity1 = BusinessEntity(
+                code = 2,
+                name = "67890",
+                manager = "Мария Иванова",
+                type = EntityType.RESIDENT
+            )
+            OrderCard(
+                entity = entity1,
+                initialStatus = StepperStatus.DONE,
+                currentStep = 7,
+                initialExpanded = false,
+                modifier = Modifier.padding(16.dp)
+            )
+            val entity2 = BusinessEntity(
+                code = 3,
+                name = "11223",
+                manager = "Петр Сидоров",
+                type = EntityType.FACTORY
+            )
+            OrderCard(
+                entity = entity2,
+                initialStatus = StepperStatus.CANCELED,
+                currentStep = 2,
+                modifier = Modifier.padding(16.dp)
+            )
+            val entity3 = BusinessEntity(
+                code = 4,
+                name = "44556",
+                manager = "Анна Козлова",
+                type = EntityType.HOLDING
+            )
+            OrderCard(
+                entity = entity3,
+                initialStatus = StepperStatus.CREATED,
+                currentStep = 1,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrderStatisticsPreview() {
+    AppTheme {
+        val entity = BusinessEntity(
+            code = 1,
+            name = "12345",
+            manager = "Иван Петров",
+            type = EntityType.OTHER
+        )
+        OrderStatistics(
+            entity = entity,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
 @Preview
 @Composable
 fun OrdersPagePreview() {
