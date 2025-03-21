@@ -40,7 +40,7 @@ fun HolderEntityCard(
             )
             AppText(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                value = "Type: ${entity.entityType}",
+                value = "Type: ${entity.type}",
             )
             AppText(
                 modifier = Modifier.align(Alignment.Center),

@@ -55,7 +55,7 @@ data class BusinessEntity(
     @PrimaryKey
     val code: Int = 1,
     val name: String = " Base card ",
-    val entityType: EntityType = EntityType.OTHER,
+    val type: EntityType = EntityType.OTHER,
     val manager: String = "",
 )
 

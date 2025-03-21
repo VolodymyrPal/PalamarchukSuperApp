@@ -131,7 +131,6 @@ fun OrderCard(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(colorScheme.primaryContainer)
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
                     ) {
