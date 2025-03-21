@@ -16,175 +16,160 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.compose.AppTheme
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppOutlinedTextField
+import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.appEditOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
+import com.hfad.palamarchuksuperapp.ui.viewModels.EntityType
+import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
 
 
 @Composable
 fun OrdersPage(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val searchQuery = remember { mutableStateOf("") }
-
-    Column(
+    LazyColumn(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // Карта статистики заказов
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 4.dp
+        item {
+            OrderStatistics(
+                entity = BusinessEntity(
+                    code = 1,
+                    name = "12345",
+                    manager = "Иван Петров",
+                    type = EntityType.OTHER
+                ),
+                modifier = Modifier
             )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AppText(
-                    value = "Статистика заказов",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    thickness = 2.dp,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                )
-                
-                // Основные показатели в виде иконок с числами
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    OrderStat(
-                        icon = Icons.Default.Info,
-                        value = "42",
-                        label = "В пути"
-                    )
-                    
-                    OrderStat(
-                        icon = Icons.Default.Face,
-                        value = "15",
-                        label = "В обработке"
-                    )
-                    
-                    OrderStat(
-                        icon = Icons.Default.ShoppingCart,
-                        value = "8",
-                        label = "Ожидают"
-                    )
-                }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    thickness = 2.dp,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                )
-                
-                // Итоговая статистика
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AppText(
-                        value = "Всего активных заказов: ",
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.titleMedium
-                        )
-                    )
-                    AppText(
-                        value = "65",
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
         }
-
-//        AppOutlinedTextField(
-//            value = searchQuery.value,
-//            onValueChange = { searchQuery.value = it },
-//            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-//            placeholder = { Text("Поиск заказов...") },
-//            outlinedTextConfig = appEditOutlinedTextConfig(
-//                leadingIcon = {
-//                    Icon(
-//                        Icons.Default.Check,
-//                        contentDescription = "Поиск"
-//                    )
-//                },
-//                trailingIcon = {
-//                    if (searchQuery.value.isNotEmpty()) {
-//                        IconButton(onClick = { searchQuery.value = "" }) {
-//                            Icon(Icons.Default.Clear, contentDescription = "Очистить поиск")
-//                        }
-//                    }
-//                },
-//                singleLine = true
-//            ),
-//            shape = RoundedCornerShape(8.dp),
-//        )
 
         val items = listOf(
             BusinessEntity(name = "43222", manager = "VP +3806338875"),
             BusinessEntity(name = "42224", manager = "VP +3806338875"),
             BusinessEntity(name = "43226", manager = "VP +3806338875")
         )
-        
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+
+        items(items = items) {
+            OrderCard(
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                entity = it
+            )
+        }
+    }
+}
+
+@Composable
+fun OrderStatistics(
+    entity: BusinessEntity,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(items = items) {
-                OrderCard(
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                    entity = it
+            AppText(
+                value = "Orders statistic",
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                thickness = 2.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                OrderStat(
+                    modifier = Modifier.weight(0.3f),
+                    icon = Icons.Default.LocationOn,
+                    value = "2",
+                    label = "В работе",
+                    color = Color.Red
+                )
+
+                OrderStat(
+                    modifier = Modifier.weight(0.3f),
+                    icon = Icons.Default.Check,
+                    value = "15",
+                    label = "Выполнено",
+                    color = Color(0xFF064E3B)
+                )
+
+                val weightPainter = ImageVector.vectorResource(R.drawable.kilogram)
+
+                OrderStat(
+                    modifier = Modifier.weight(0.3f),
+                    icon = weightPainter,
+                    value = "450т",
+                    label = "Всего доставлено груза",
+                    color = Color.Black
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                thickness = 2.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(
+                    value = "Orders in summ: ",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.titleMedium
+                    )
+                )
+                AppText(
+                    value = "65",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -196,7 +181,8 @@ fun OrderStat(
     icon: ImageVector,
     value: String,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -207,31 +193,113 @@ fun OrderStat(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)),
+                .background(color.copy(alpha = 0.1f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary,
+                tint = color,
                 modifier = Modifier.size(24.dp)
             )
         }
-        
+
         AppText(
+            modifier = Modifier,
             value = value,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         )
-        
+
         AppText(
             value = label,
             appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.bodySmall
+                textStyle = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
             ),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun OrderCardListPreview() {
+    AppTheme(
+        useDarkTheme = false
+    ) {
+        Column(
+            modifier = Modifier
+        ) {
+            val entity = BusinessEntity(
+                code = 1,
+                name = "12345",
+                manager = "Иван Петров",
+                type = EntityType.OTHER
+            )
+            OrderCard(
+                entity = entity,
+                initialStatus = StepperStatus.IN_PROGRESS,
+                currentStep = 3,
+                initialExpanded = true,
+                modifier = Modifier.padding(16.dp)
+            )
+            val entity1 = BusinessEntity(
+                code = 2,
+                name = "67890",
+                manager = "Мария Иванова",
+                type = EntityType.RESIDENT
+            )
+            OrderCard(
+                entity = entity1,
+                initialStatus = StepperStatus.DONE,
+                currentStep = 7,
+                initialExpanded = false,
+                modifier = Modifier.padding(16.dp)
+            )
+            val entity2 = BusinessEntity(
+                code = 3,
+                name = "11223",
+                manager = "Петр Сидоров",
+                type = EntityType.FACTORY
+            )
+            OrderCard(
+                entity = entity2,
+                initialStatus = StepperStatus.CANCELED,
+                currentStep = 2,
+                modifier = Modifier.padding(16.dp)
+            )
+            val entity3 = BusinessEntity(
+                code = 4,
+                name = "44556",
+                manager = "Анна Козлова",
+                type = EntityType.HOLDING
+            )
+            OrderCard(
+                entity = entity3,
+                initialStatus = StepperStatus.CREATED,
+                currentStep = 1,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrderStatisticsPreview() {
+    AppTheme {
+        val entity = BusinessEntity(
+            code = 1,
+            name = "12345",
+            manager = "Иван Петров",
+            type = EntityType.OTHER
+        )
+        OrderStatistics(
+            entity = entity,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

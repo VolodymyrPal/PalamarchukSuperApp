@@ -3,12 +3,12 @@ package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
 import android.content.Context
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -64,7 +64,6 @@ fun BoneScreen(
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
     val coroutineScope = rememberCoroutineScope()
 
-    // Отслеживаем изменения страницы для обновления UI
 //    LaunchedEffect(pagerState) {
 //        snapshotFlow { pagerState.currentPage }.collectLatest { page ->
 //            // Можно добавить дополнительную логику при смене страницы, если необходимо
@@ -84,7 +83,7 @@ fun BoneScreen(
                             pagerState.currentPage,
                             matchContentSize = true
                         ),
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = colorScheme.surface,
                         width = Dp.Unspecified,
                     )
                 }
@@ -122,8 +121,11 @@ fun BoneScreen(
         ) {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-                userScrollEnabled = true, // Разрешаем пользовательский свайп между страницами
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorScheme.primaryContainer),
+                userScrollEnabled = true,
+                beyondViewportPageCount = 1,
             ) { page ->
                 when (page) {
                     0 -> OrdersPage()

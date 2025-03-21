@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.ui.reusable.elements
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.AppTheme
-import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.BoneScreen
 import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.painterServiceTypeMap
 import com.hfad.palamarchuksuperapp.ui.viewModels.Stepper
 import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
@@ -112,14 +112,15 @@ fun StepProgressionBar(
                 val outerColor = when {
                     isCurrent -> primaryColor.copy(alpha = 0.75f)
                     isCompleted && index < currentStep -> primaryColor
+                    isCompleted -> primaryColor.copy(alpha = 0.7f)
                     index < currentStep -> primaryColor
-                    else -> colorScheme.outline.copy(alpha = 0.7f)
+                    else -> colorScheme.outline.copy(alpha = 0.5f)
                 }
 
                 val innerColor = when {
                     isCompleted && index < currentStep -> primaryColor.copy(alpha = 0.7f)
-                    isCompleted && index > currentStep -> primaryColor.copy(alpha = 0.7f)
-                    isCurrent -> primaryContainerColor.copy(alpha = 0.4f)
+                    isCompleted && index > currentStep -> primaryColor.copy(alpha = 0.6f)
+                    isCurrent -> primaryContainerColor.copy(alpha = 0.5f)
                     else -> surfaceColor
                 }
 
@@ -240,13 +241,39 @@ fun StepProgressionBar(
 
 @Composable
 @Preview
-fun StepProgressionBarNewPreview(
+fun StepProgressionBarDarkPreview(
 
 ) {
-    AppTheme {
+    AppTheme(
+        useDarkTheme = true
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+        )
+        {
+            StepProgressionBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                listOfSteps = orderServiceList.subList(0, 12),
+                currentStep = 2
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun StepProgressionBarLightPreview(
+
+) {
+    AppTheme(useDarkTheme = false) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
         )
         {
             StepProgressionBar(
