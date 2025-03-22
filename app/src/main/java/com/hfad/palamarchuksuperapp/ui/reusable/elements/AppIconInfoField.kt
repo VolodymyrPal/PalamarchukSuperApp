@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -92,6 +93,7 @@ fun AppIconInfoField(
                 AppText(
                     value = title,
                     modifier = Modifier
+                        .fillMaxWidth()
                         .alpha(0.5f)
                         .width(IntrinsicSize.Min),
                     appTextConfig = appTextConfig(
@@ -104,7 +106,9 @@ fun AppIconInfoField(
 
                 AppText(
                     value = description,
-                    modifier = Modifier.width(250.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .width(IntrinsicSize.Min),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.labelMedium,
                         fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
@@ -117,8 +121,7 @@ fun AppIconInfoField(
     }
 }
 
-const val appIconInfoFieldWidth = 120
-
+const val appIconInfoFieldWidth = 150
 
 @Preview
 @Composable
