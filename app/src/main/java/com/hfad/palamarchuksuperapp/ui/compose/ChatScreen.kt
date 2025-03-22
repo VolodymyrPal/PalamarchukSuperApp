@@ -647,6 +647,7 @@ private fun TextMessage(
                             )
                             .padding(5.dp),
                         markdown = message.message.trimEnd(),
+                        isTextSelectable = true,
                         style = TextStyle(textAlign = TextAlign.Start),
                     )
                 }

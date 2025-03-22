@@ -41,13 +41,16 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.StepProgressionBar
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
+import com.hfad.palamarchuksuperapp.ui.viewModels.EntityType
 import com.hfad.palamarchuksuperapp.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
 import com.hfad.palamarchuksuperapp.ui.viewModels.orderServiceList
@@ -113,7 +116,6 @@ fun OrderCard(
         ),
     ) {
         Column {
-            // Заголовок карточки
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -126,23 +128,13 @@ fun OrderCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Иконка в круге
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(CircleShape)
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.container_svgrepo_com),
-                            contentDescription = "Container Icon",
-                            tint = colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(R.drawable.container_svgrepo_com),
+                        contentDescription = "Container Icon",
+                        tint = colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(24.dp)
+                    )
 
-                    // Номер заказа и статус
                     Column {
                         AppText(
                             value = "Заказ №${entity.name}",
@@ -152,7 +144,6 @@ fun OrderCard(
                             )
                         )
 
-                        // Статус заказа с цветовым индикатором
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -270,6 +261,25 @@ fun OrderCard(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun OrderCardPreview() {
+    AppTheme {
+        OrderCard(
+            modifier = Modifier
+                .height(475.dp)
+                .padding(8.dp),
+            entity = BusinessEntity(
+                code = 1,
+                name = "12345",
+                manager = "Иван Петров",
+                type = EntityType.OTHER
+            ),
+            initialExpanded = true
+        )
     }
 }
 
