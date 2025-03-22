@@ -119,12 +119,14 @@ fun OrderStatistics(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+                val inProgress = ImageVector.vectorResource(R.drawable.in_progress)
+
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
-                    icon = Icons.Default.LocationOn,
+                    icon = inProgress,
                     value = "2",
                     label = "В работе",
-                    color = Color.Red
+                    color = MaterialTheme.colorScheme.error
                 )
 
                 OrderStat(
@@ -132,7 +134,7 @@ fun OrderStatistics(
                     icon = Icons.Default.Check,
                     value = "15",
                     label = "Выполнено",
-                    color = Color(0xFF064E3B)
+                    color = Color(0xFF55940E)
                 )
 
                 val weightPainter = ImageVector.vectorResource(R.drawable.kilogram)
@@ -141,8 +143,8 @@ fun OrderStatistics(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
                     value = "450т",
-                    label = "Всего доставлено груза",
-                    color = Color.Black
+                    label = "Всего оформленно",
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -193,7 +195,7 @@ fun OrderStat(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(color.copy(alpha = 0.1f)),
+                .background(color.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -228,7 +230,7 @@ fun OrderStat(
 @Composable
 fun OrderCardListPreview() {
     AppTheme(
-        useDarkTheme = false
+        useDarkTheme = true
     ) {
         Column(
             modifier = Modifier
@@ -307,7 +309,9 @@ fun OrderStatisticsPreview() {
 @Preview
 @Composable
 fun OrdersPagePreview() {
-    AppTheme {
+    AppTheme  (
+        useDarkTheme = false
+    ){
         OrdersPage()
     }
 } 
