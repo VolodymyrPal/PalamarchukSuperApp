@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.PrimaryTabRow
@@ -18,6 +19,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -38,23 +40,17 @@ fun BoneScreenRoot(
     context: Context = LocalContext.current,
     navController: NavHostController = LocalNavController.current,
 ) {
-    val localTransitionScope = LocalSharedTransitionScope.current
-        ?: error(IllegalStateException("No SharedElementScope found"))
-    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
-        ?: error(IllegalStateException("No AnimatedVisibility found"))
-
-    with(localTransitionScope) {
-        BoneScreen(
-            modifier = modifier.sharedElement(
-                this.rememberSharedContentState("bone"),
-                animatedContentScope,
-            ),
-            navController = navController,
-        )
-    }
+    BoneScreen(
+        modifier = modifier,
+        navController = navController,
+    )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun BoneScreen(
     modifier: Modifier = Modifier,
@@ -66,38 +62,40 @@ fun BoneScreen(
 
 //    LaunchedEffect(pagerState) {
 //        snapshotFlow { pagerState.currentPage }.collectLatest { page ->
-//            // Можно добавить дополнительную логику при смене страницы, если необходимо
 //        }
 //    }
+
+    val tabColorContent = colorScheme.onSurface
+    val tabColorBackground = colorScheme.surface
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             PrimaryTabRow(
                 selectedTabIndex = pagerState.currentPage,
-                containerColor = colorScheme.primary,
-                contentColor = colorScheme.onPrimary,
+                containerColor = tabColorBackground,
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(
                         modifier = Modifier.tabIndicatorOffset(
                             pagerState.currentPage,
                             matchContentSize = true
                         ),
-                        color = colorScheme.surface,
+                        color = tabColorContent,
                         width = Dp.Unspecified,
                     )
                 }
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
+                        modifier = Modifier.clip(CircleShape),
                         text = {
                             AppText(
                                 value = title,
                                 appTextConfig = appTextConfig(),
                                 color = if (pagerState.currentPage == index)
-                                    colorScheme.onPrimary
+                                    tabColorContent
                                 else
-                                    colorScheme.onPrimary.copy(alpha = 0.6f)
+                                    tabColorContent.copy(alpha = 0.6f)
                             )
                         },
                         selected = pagerState.currentPage == index,
@@ -107,7 +105,6 @@ fun BoneScreen(
                             }
                         }
                     )
-//                    }
                 }
             }
         },
@@ -119,19 +116,30 @@ fun BoneScreen(
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorScheme.primaryContainer),
-                userScrollEnabled = true,
-                beyondViewportPageCount = 1,
-            ) { page ->
-                when (page) {
-                    0 -> OrdersPage()
-                    1 -> PaymentsPage()
-                    2 -> SalesPage()
-                    3 -> FinancePage()
+            val localTransitionScope = LocalSharedTransitionScope.current
+                ?: error(IllegalStateException("No SharedElementScope found"))
+            val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+                ?: error(IllegalStateException("No AnimatedVisibility found"))
+
+            with(localTransitionScope) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorScheme.primaryContainer)
+                        .sharedElement(
+                            this.rememberSharedContentState("bone"),
+                            animatedContentScope,
+                        ),
+                    userScrollEnabled = true,
+                    beyondViewportPageCount = 1,
+                ) { page ->
+                    when (page) {
+                        0 -> OrdersPage()
+                        1 -> PaymentsPage()
+                        2 -> SalesPage()
+                        3 -> FinancePage()
+                    }
                 }
             }
         }
@@ -141,7 +149,9 @@ fun BoneScreen(
 @Preview
 @Composable
 fun BoneScreenPreview() {
-    AppTheme {
+    AppTheme(
+        useDarkTheme = true
+    ) {
         BoneScreen()
     }
 }
