@@ -74,7 +74,8 @@ fun OrdersPage(
         items(items = items) {
             OrderCard(
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                entity = it
+                entity = it,
+                initialStatus = StepperStatus.entries.random()
             )
         }
     }
@@ -309,9 +310,9 @@ fun OrderStatisticsPreview() {
 @Preview
 @Composable
 fun OrdersPagePreview() {
-    AppTheme  (
+    AppTheme(
         useDarkTheme = false
-    ){
+    ) {
         OrdersPage()
     }
 } 
