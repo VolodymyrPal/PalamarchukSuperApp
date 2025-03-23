@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -43,28 +44,21 @@ import kotlin.random.Random
 fun PaymentsPage(
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    val payments = generateSamplePayments()
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            start = 16.dp, end = 16.dp, bottom = 16.dp
+        )
     ) {
-
-        // Карточка статистики платежей
-        PaymentsStatCard()
-
-        val payments = generateSamplePayments()
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                start = 16.dp, end = 16.dp, bottom = 16.dp
-            )
-        ) {
-            items(payments.size) { index ->
-                PaymentCard(payment = payments[index])
-            }
+        item() {
+            PaymentsStatCard()
+        }
+        items(payments.size) { index ->
+            PaymentCard(payment = payments[index])
         }
     }
 }
@@ -74,7 +68,7 @@ fun PaymentsStatCard() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -89,7 +83,7 @@ fun PaymentsStatCard() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AppText(
-                value = "Статистика платежей",
+                value = "Payments info",
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
@@ -97,12 +91,11 @@ fun PaymentsStatCard() {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
             )
 
-            // Статистика по валютам
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -126,7 +119,7 @@ fun PaymentsStatCard() {
                 )
             }
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
             )
