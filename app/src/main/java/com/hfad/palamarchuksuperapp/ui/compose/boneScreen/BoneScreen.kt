@@ -40,10 +40,21 @@ fun BoneScreenRoot(
     context: Context = LocalContext.current,
     navController: NavHostController = LocalNavController.current,
 ) {
-    BoneScreen(
-        modifier = modifier,
-        navController = navController,
-    )
+    val localTransitionScope = LocalSharedTransitionScope.current
+        ?: error(IllegalStateException("No SharedElementScope found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+        ?: error(IllegalStateException("No AnimatedVisibility found"))
+
+    with(localTransitionScope) {
+
+        BoneScreen(
+            modifier = modifier.sharedElement(
+                this.rememberSharedContentState("bone"),
+                animatedContentScope,
+            ),
+            navController = navController,
+        )
+    }
 }
 
 @OptIn(
@@ -116,30 +127,20 @@ fun BoneScreen(
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
-            val localTransitionScope = LocalSharedTransitionScope.current
-                ?: error(IllegalStateException("No SharedElementScope found"))
-            val animatedContentScope = LocalNavAnimatedVisibilityScope.current
-                ?: error(IllegalStateException("No AnimatedVisibility found"))
 
-            with(localTransitionScope) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(colorScheme.primaryContainer)
-                        .sharedElement(
-                            this.rememberSharedContentState("bone"),
-                            animatedContentScope,
-                        ),
-                    userScrollEnabled = true,
-                    beyondViewportPageCount = 1,
-                ) { page ->
-                    when (page) {
-                        0 -> OrdersPage()
-                        1 -> PaymentsPage()
-                        2 -> SalesPage()
-                        3 -> FinancePage()
-                    }
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorScheme.primaryContainer),
+                userScrollEnabled = true,
+                beyondViewportPageCount = 1,
+            ) { page ->
+                when (page) {
+                    0 -> OrdersPage()
+                    1 -> PaymentsPage()
+                    2 -> SalesPage()
+                    3 -> FinancePage()
                 }
             }
         }
@@ -150,7 +151,7 @@ fun BoneScreen(
 @Composable
 fun BoneScreenPreview() {
     AppTheme(
-        useDarkTheme = true
+        useDarkTheme = false
     ) {
         BoneScreen()
     }
