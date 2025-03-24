@@ -28,7 +28,7 @@ inline fun <reified VM : ViewModel> daggerViewModel(
     factory: ViewModelProvider.Factory = LocalContext.current.appComponent.viewModelFactory(),
     owner: ViewModelStoreOwner = LocalViewModelStoreOwner.current ?: error(
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-    )
+    ),
 ): VM {
     return ViewModelProvider(owner, factory)[VM::class.java]
 }
