@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.hfad.palamarchuksuperapp"
-    compileSdk = 35
+    compileSdk = 34
 
     val groqKey: String = gradleLocalProperties(rootDir, providers).getProperty("GROQ_KEY")
     val openAiKey: String = gradleLocalProperties(rootDir, providers).getProperty("OPEN_AI_KEY_USER")
