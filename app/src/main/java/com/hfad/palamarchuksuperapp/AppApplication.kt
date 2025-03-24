@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
 
-class AppApplication : Application() {
-
+class AppApplication : Application()
+//, ViewModelStoreOwner - implementing this to create view model for whole app
+{
     lateinit var appComponent: AppComponent
     private lateinit var dataStoreHandler: DataStoreHandler
 
