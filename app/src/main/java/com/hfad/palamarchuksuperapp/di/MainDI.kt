@@ -62,6 +62,7 @@ import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
 import com.hfad.palamarchuksuperapp.ui.screens.StoreFragment
+import com.hfad.palamarchuksuperapp.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
@@ -215,6 +216,12 @@ abstract class ViewModelsModule {
     @ViewModelKey(StoreViewModel::class)
     abstract fun bindStoreViewModel(viewModel: StoreViewModel): ViewModel
 
+    @Binds
+    @IntoMap
+    @ViewModelKey(BoneViewModel::class)
+    abstract fun bindBoneViewModel(viewModel: BoneViewModel): ViewModel
+
+
 }
 
 @Module
@@ -353,7 +360,7 @@ abstract class RepositoryModule {
 
     @Singleton
     @Binds
-    abstract fun bindMessageAiRepository(messageAiRepositoryImpl: MessageAiRepositoryImpl ): MessageAiRepository
+    abstract fun bindMessageAiRepository(messageAiRepositoryImpl: MessageAiRepositoryImpl): MessageAiRepository
 
     @Singleton
     @Binds
