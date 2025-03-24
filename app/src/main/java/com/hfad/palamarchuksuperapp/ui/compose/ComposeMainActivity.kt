@@ -45,6 +45,8 @@ class ComposeMainActivity : AppCompatActivity() {
             }
         } ?: Routes.MainScreen
         setContent {
+            //Provide viewModelStore to create viewModel scope for all activity
+            //CompositionLocalProvider(LocalParentViewModelStore provides this) {}
             MainContent(startDestination)
         }
 
@@ -75,6 +77,10 @@ class UncaughtExceptionHandler(
         defaultHandler?.uncaughtException(thread, throwable)
     }
 }
+//Composition local for viewmodel store to create view model for whole activity
+//val LocalParentViewModelStore = compositionLocalOf<ViewModelStoreOwner> {
+//    error("ViewModelStoreOwner not provided")
+//}
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("NavController not provided")
