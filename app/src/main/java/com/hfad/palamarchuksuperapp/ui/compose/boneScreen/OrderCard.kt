@@ -280,7 +280,7 @@ fun OrderCardPreview() {
 @Composable
 fun painterServiceTypeMap() = ServiceType.entries.associateWith {
     when (it) {
-        ServiceType.FREIGHT -> painterResource(R.drawable.sea_freight)
+        ServiceType.FULL_FREIGHT -> painterResource(R.drawable.sea_freight)
         ServiceType.FORWARDING -> painterResource(R.drawable.freight)
         ServiceType.STORAGE -> painterResource(R.drawable.warehouse)
         ServiceType.PRR -> painterResource(R.drawable.loading_boxes)
@@ -289,5 +289,6 @@ fun painterServiceTypeMap() = ServiceType.entries.associateWith {
         ServiceType.EUROPE_TRANSPORT -> painterResource(R.drawable.truck)
         ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
         ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
+        ServiceType.AIR_FREIGHT -> painterResource(R.drawable.plane)
     }
 }
