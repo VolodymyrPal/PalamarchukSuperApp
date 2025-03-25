@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.stateIn
 import java.util.Date
 import javax.inject.Inject
+import kotlin.random.Random
 
 class BoneViewModel @Inject constructor(
 
@@ -69,12 +70,22 @@ data class EntityDetails(
 
 data class Order(
     @PrimaryKey
-    val id: Int,
-    val businessEntityNum: Int,
-    val num: Int,
-    val serviceList: OrderService,
+    val id: Int = 0,
+    val businessEntityNum: Int = Random.nextInt(2001, 8300),  //TODO change
+    val num: Int = Random.nextInt(44000, 50000),              //TODO change
+    val serviceList: List<OrderService> = listOf(),
     val status: OrderStatus = OrderStatus.CREATED,
+    val cargoType: CargoType = when {
+        serviceList.any { it.serviceType == ServiceType.AIR_FREIGHT } -> CargoType.AIR
+        serviceList.any { it.serviceType == ServiceType.FULL_FREIGHT } -> CargoType.CONTAINER
+        serviceList.any { it.serviceType == ServiceType.EUROPE_TRANSPORT } -> CargoType.TRUCK
+        else -> CargoType.ANY
+    }
 )
+
+enum class CargoType {
+    ANY, CONTAINER, TRUCK, AIR
+}
 
 interface Stepper {
     val status: StepperStatus
@@ -97,6 +108,7 @@ class OrderService(
     /* PrimaryKey - ID */
     val id: Int = 0,
     val orderId: Int? = null,
+    val fullTransport: Boolean = true,
     override val serviceType: ServiceType = ServiceType.OTHER,
     val price: Float = 0.0f,
     val duration: Int = 0,
@@ -105,7 +117,8 @@ class OrderService(
 ) : Stepper
 
 enum class ServiceType(val title: String) {
-    FREIGHT("Freight"),
+    FULL_FREIGHT("Freight whole container"),
+    AIR_FREIGHT("Freight air"),
     FORWARDING("Forwarding"),
     STORAGE("Storage"),
     PRR("PRR"),
@@ -122,7 +135,7 @@ sealed interface ServiceScenario {
     sealed interface NonEuropeContainer : ServiceScenario {
         object WithFreight : NonEuropeContainer {
             override val scenario = listOf<ServiceType>(
-                ServiceType.FREIGHT,
+                ServiceType.FULL_FREIGHT,
                 ServiceType.FORWARDING,
                 ServiceType.TRANSPORT,
                 ServiceType.CUSTOMS,
@@ -132,7 +145,7 @@ sealed interface ServiceScenario {
 
     object ChinaEuropeContainer : ServiceScenario {
         override val scenario = listOf<ServiceType>(
-            ServiceType.FREIGHT,
+            ServiceType.FULL_FREIGHT,
             ServiceType.FORWARDING,
             ServiceType.EUROPE_TRANSPORT,
         )
@@ -140,7 +153,7 @@ sealed interface ServiceScenario {
 
     object ChinaUkraineContainer : ServiceScenario {
         override val scenario = listOf<ServiceType>(
-            ServiceType.FREIGHT,
+            ServiceType.FULL_FREIGHT,
             ServiceType.FORWARDING,
             ServiceType.UKRAINE_TRANSPORT,
         )
@@ -173,7 +186,7 @@ val orderServiceList = persistentListOf<OrderService>(
         price = 1500f,
         duration = 3,
         status = StepperStatus.DONE,
-        serviceType = ServiceType.FREIGHT,
+        serviceType = ServiceType.FULL_FREIGHT,
     ),
     OrderService(
         id = 2,
@@ -245,7 +258,7 @@ val orderServiceList = persistentListOf<OrderService>(
         price = 1700f,
         duration = 3,
         status = StepperStatus.IN_PROGRESS,
-        serviceType = ServiceType.FREIGHT,
+        serviceType = ServiceType.FULL_FREIGHT,
     ),
     OrderService(
         id = 11,
@@ -317,7 +330,7 @@ val orderServiceList = persistentListOf<OrderService>(
         price = 1600f,
         duration = 3,
         status = StepperStatus.CREATED,
-        serviceType = ServiceType.FREIGHT,
+        serviceType = ServiceType.FULL_FREIGHT,
     ),
     OrderService(
         id = 20,
@@ -389,7 +402,7 @@ val orderServiceList = persistentListOf<OrderService>(
         price = 1000f,
         duration = 2,
         status = StepperStatus.IN_PROGRESS,
-        serviceType = ServiceType.FREIGHT,
+        serviceType = ServiceType.FULL_FREIGHT,
     ),
     OrderService(
         id = 29,
