@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -39,6 +38,7 @@ import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
 import com.hfad.palamarchuksuperapp.ui.viewModels.EntityType
+import com.hfad.palamarchuksuperapp.ui.viewModels.Order
 import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
 
 
@@ -66,15 +66,15 @@ fun OrdersPage(
         }
 
         val items = listOf(
-            BusinessEntity(name = "43222", manager = "VP +3806338875"),
-            BusinessEntity(name = "42224", manager = "VP +3806338875"),
-            BusinessEntity(name = "43226", manager = "VP +3806338875")
+            Order(),
+            Order(),
+            Order()
         )
 
         items(items = items) {
             OrderCard(
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                entity = it,
+                order = it,
                 initialStatus = StepperStatus.entries.random()
             )
         }
@@ -85,7 +85,8 @@ fun OrdersPage(
 fun OrderStatistics(
     entity: BusinessEntity,
     modifier: Modifier = Modifier,
-) {
+
+    ) {
     Card(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -102,7 +103,7 @@ fun OrderStatistics(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AppText(
-                value = "Orders statistic",
+                value = "statisticVal",
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
@@ -126,7 +127,7 @@ fun OrderStatistics(
                     modifier = Modifier.weight(0.3f),
                     icon = inProgress,
                     value = "2",
-                    label = "В работе",
+                    label = "inVorkVal",
                     color = MaterialTheme.colorScheme.error
                 )
 
@@ -134,7 +135,7 @@ fun OrderStatistics(
                     modifier = Modifier.weight(0.3f),
                     icon = Icons.Default.Check,
                     value = "15",
-                    label = "Выполнено",
+                    label = "completedVal",
                     color = Color(0xFF55940E)
                 )
 
@@ -144,7 +145,7 @@ fun OrderStatistics(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
                     value = "450т",
-                    label = "Всего оформленно",
+                    label = "finishFull",
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -161,13 +162,13 @@ fun OrderStatistics(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    value = "Orders in summ: ",
+                    value = "summOrdersTitle",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium
                     )
                 )
                 AppText(
-                    value = "65",
+                    value = "summOrders",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
@@ -236,52 +237,40 @@ fun OrderCardListPreview() {
         Column(
             modifier = Modifier
         ) {
-            val entity = BusinessEntity(
-                code = 1,
-                name = "12345",
-                manager = "Иван Петров",
-                type = EntityType.OTHER
+            val entity = Order(
+                id = 0,
             )
             OrderCard(
-                entity = entity,
+                order = entity,
                 initialStatus = StepperStatus.IN_PROGRESS,
                 currentStep = 3,
                 initialExpanded = true,
                 modifier = Modifier.padding(16.dp)
             )
-            val entity1 = BusinessEntity(
-                code = 2,
-                name = "67890",
-                manager = "Мария Иванова",
-                type = EntityType.RESIDENT
+            val entity1 = Order(
+                id = 1,
             )
             OrderCard(
-                entity = entity1,
+                order = entity1,
                 initialStatus = StepperStatus.DONE,
                 currentStep = 7,
                 initialExpanded = false,
                 modifier = Modifier.padding(16.dp)
             )
-            val entity2 = BusinessEntity(
-                code = 3,
-                name = "11223",
-                manager = "Петр Сидоров",
-                type = EntityType.FACTORY
+            val entity2 = Order(
+                id = 2
             )
             OrderCard(
-                entity = entity2,
+                order = entity2,
                 initialStatus = StepperStatus.CANCELED,
                 currentStep = 2,
                 modifier = Modifier.padding(16.dp)
             )
-            val entity3 = BusinessEntity(
-                code = 4,
-                name = "44556",
-                manager = "Анна Козлова",
-                type = EntityType.HOLDING
+            val entity3 = Order(
+                id = 3
             )
             OrderCard(
-                entity = entity3,
+                order = entity3,
                 initialStatus = StepperStatus.CREATED,
                 currentStep = 1,
                 modifier = Modifier.padding(16.dp)
