@@ -49,8 +49,7 @@ import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.StepProgressionBar
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
-import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
-import com.hfad.palamarchuksuperapp.ui.viewModels.EntityType
+import com.hfad.palamarchuksuperapp.ui.viewModels.Order
 import com.hfad.palamarchuksuperapp.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
 import com.hfad.palamarchuksuperapp.ui.viewModels.orderServiceList
@@ -58,7 +57,7 @@ import com.hfad.palamarchuksuperapp.ui.viewModels.orderServiceList
 @Composable
 fun OrderCard(
     modifier: Modifier = Modifier,
-    entity: BusinessEntity,
+    order: Order,
     initialStatus: StepperStatus = StepperStatus.IN_PROGRESS,
     currentStep: Int = 3,
     initialExpanded: Boolean = false,
@@ -137,7 +136,7 @@ fun OrderCard(
 
                     Column {
                         AppText(
-                            value = "Заказ №${entity.name}",
+                            value = "Заказ №${order.status.toString()}",
                             appTextConfig = appTextConfig(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
@@ -253,7 +252,7 @@ fun OrderCard(
                             OrderInfo("Груз", "Электроника", painterResource(R.drawable.warehouse)),
                             OrderInfo(
                                 "Менеджер",
-                                entity.manager,
+                                order.id.toString(),
                                 painterResource(R.drawable.baseline_shopping_basket_24)
                             )
                         )
@@ -272,12 +271,7 @@ fun OrderCardPreview() {
             modifier = Modifier
                 .height(475.dp)
                 .padding(8.dp),
-            entity = BusinessEntity(
-                code = 1,
-                name = "12345",
-                manager = "Иван Петров",
-                type = EntityType.OTHER
-            ),
+            order = Order(),
             initialExpanded = true
         )
     }
