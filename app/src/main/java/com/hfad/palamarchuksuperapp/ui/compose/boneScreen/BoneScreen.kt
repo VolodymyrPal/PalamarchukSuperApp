@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -86,10 +87,18 @@ fun BoneScreen(
 //        snapshotFlow { pagerState.currentPage }.collectLatest { page ->
 //        }
 //    }
-
     val tabColorContent = colorScheme.onSurface
     val tabColorBackground = colorScheme.surface
 
+    BackHandler {
+        if (pagerState.currentPage != 0) {
+            coroutineScope.launch {
+                pagerState.animateScrollToPage(0)
+            }
+        } else {
+            navController?.popBackStack()
+        }
+    }
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
