@@ -21,7 +21,6 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,32 +56,38 @@ class GroqApiHandler @AssistedInject constructor(
                 )
             }
 
-            if (request.status.value in 200..299) {
-                val response = request.body<GroqChatCompletionResponse>()
-                val responseText = response.groqChoices[0].groqMessage
-                val responseMessage = MessageAI(
-                    message = if (responseText is GroqMessageText) responseText.content else "",
-                    model = initAiHandlerInfo.model,
-                    messageGroupId = 0 // Handler don't need to know message group
-                )
-                Result.Success(responseMessage)
-            } else if (request.status.value in 400..599) {
-                val groqError = request.body<GroqError>()
-                Result.Error(
-                    error = AppError.CustomError(groqError.error.message),
-                    MessageAI(
+            when (request.status.value) {
+                in 200..299 -> {
+                    val response = request.body<GroqChatCompletionResponse>()
+                    val responseText = response.groqChoices[0].groqMessage
+                    val responseMessage = MessageAI(
+                        message = if (responseText is GroqMessageText) responseText.content else "",
                         model = initAiHandlerInfo.model,
                         messageGroupId = 0 // Handler don't need to know message group
                     )
-                )
-            } else {
-                Result.Error(
-                    error = AppError.NetworkException.ApiError.BadApi(),
-                    MessageAI(
-                        model = initAiHandlerInfo.model,
-                        messageGroupId = 0 // Handler don't need to know message group
+                    Result.Success(responseMessage)
+                }
+
+                in 400..599 -> {
+                    val groqError = request.body<GroqError>()
+                    Result.Error(
+                        error = AppError.CustomError(groqError.error.message),
+                        MessageAI(
+                            model = initAiHandlerInfo.model,
+                            messageGroupId = 0 // Handler don't need to know message group
+                        )
                     )
-                )
+                }
+
+                else -> {
+                    Result.Error(
+                        error = AppError.NetworkException.ApiError.BadApi(),
+                        MessageAI(
+                            model = initAiHandlerInfo.model,
+                            messageGroupId = 0 // Handler don't need to know message group
+                        )
+                    )
+                }
             }
         }
     }
@@ -95,18 +100,28 @@ class GroqApiHandler @AssistedInject constructor(
                 header("Authorization", "Bearer ${aiHandlerInfo.value.aiApiKey}")
                 contentType(ContentType.Application.Json)
             }
-            if (response.status == HttpStatusCode.OK) {
-                val list = response.body<GroqModelList>()
-                Result.Success(list.data.map { it.toGroqModel() })
-            } else if (response.status.value in 400..599) {
-                val groqError = response.body<GroqError>()
-                Result.Error(AppError.NetworkException.ApiError.CustomApiError(groqError.error.message))
-            } else {
-                Result.Error(
-                    error = AppError.NetworkException.ApiError.UndefinedError(
-                        message = "Unknown error, please connect developer."
+            when (response.status.value) {
+                in 200..299 -> {
+                    val list = response.body<GroqModelList>()
+                    Result.Success(list.data.map { it.toGroqModel() })
+                }
+
+                in 400..599 -> {
+                    val groqError = response.body<GroqError>()
+                    Result.Error(
+                        AppError.NetworkException.ApiError.CustomApiError(
+                            groqError.error.message
+                        )
                     )
-                )
+                }
+
+                else -> {
+                    Result.Error(
+                        error = AppError.NetworkException.ApiError.UndefinedError(
+                            message = "Unknown error, please connect developer."
+                        )
+                    )
+                }
             }
         }
     }

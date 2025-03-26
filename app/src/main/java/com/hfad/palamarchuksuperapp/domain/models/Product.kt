@@ -6,7 +6,6 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
 import com.hfad.palamarchuksuperapp.data.dtos.ProductDTO
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Entity(tableName = DATABASE_MAIN_ENTITY_PRODUCT)
