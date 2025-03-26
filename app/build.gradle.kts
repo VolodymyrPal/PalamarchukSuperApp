@@ -137,5 +137,6 @@ dependencies {
 
     implementation ("com.github.jeziellago:compose-markdown:0.5.4")
 
+    implementation(project(":feature_bone"))
 
 }
