@@ -6,8 +6,6 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
-import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
-import kotlinx.serialization.json.Json
 
 typealias MessageAiContentString = String
 

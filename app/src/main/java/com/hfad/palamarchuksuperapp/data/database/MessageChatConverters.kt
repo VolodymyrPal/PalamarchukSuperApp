@@ -7,7 +7,6 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class MessageChatConverters { //TODO
@@ -30,10 +29,12 @@ class MessageChatConverters { //TODO
     fun toAiModel(value: String?): AiModel? = value?.let { Json.decodeFromString(it) }
 
     @TypeConverter
-    fun fromMessageAiContent(content: MessageAiContent?): String? = content?.let { Json.encodeToString(it) }
+    fun fromMessageAiContent(content: MessageAiContent?): String? =
+        content?.let { Json.encodeToString(it) }
 
     @TypeConverter
-    fun toMessageAiContent(value: String?): MessageAiContent? = value?.let { Json.decodeFromString(it) }
+    fun toMessageAiContent(value: String?): MessageAiContent? =
+        value?.let { Json.decodeFromString(it) }
 
     @TypeConverter
     fun fromPersistentList(list: PersistentList<*>): String = Json.encodeToString(list)

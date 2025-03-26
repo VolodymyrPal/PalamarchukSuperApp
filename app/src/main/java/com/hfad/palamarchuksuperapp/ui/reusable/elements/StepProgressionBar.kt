@@ -31,8 +31,8 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.compose.AppTheme
 import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.painterServiceTypeMap
+import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
 import com.hfad.palamarchuksuperapp.ui.viewModels.Stepper
 import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
 import com.hfad.palamarchuksuperapp.ui.viewModels.orderServiceList

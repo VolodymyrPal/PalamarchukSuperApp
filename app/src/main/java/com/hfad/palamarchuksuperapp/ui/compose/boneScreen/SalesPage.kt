@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,25 +29,23 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.compose.AppTheme
+import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import kotlin.random.Random
 
 @Composable
 fun SalesPage(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -163,7 +160,7 @@ fun SalesStat(
     icon: ImageVector,
     value: String,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -212,7 +209,7 @@ data class ProductSaleItem(
     val totalAmount: Int,
     val customerName: String,
     val saleDate: String,
-    val status: SaleStatus
+    val status: SaleStatus,
 )
 
 enum class SaleStatus {
@@ -222,15 +219,15 @@ enum class SaleStatus {
 @Composable
 fun ProductSaleCard(
     saleItem: ProductSaleItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val statusColor = when(saleItem.status) {
+    val statusColor = when (saleItem.status) {
         SaleStatus.COMPLETED -> MaterialTheme.colorScheme.primary
         SaleStatus.SHIPPING -> MaterialTheme.colorScheme.tertiary
         SaleStatus.PENDING -> MaterialTheme.colorScheme.error
     }
 
-    val statusText = when(saleItem.status) {
+    val statusText = when (saleItem.status) {
         SaleStatus.COMPLETED -> "Завершено"
         SaleStatus.SHIPPING -> "Доставляется"
         SaleStatus.PENDING -> "В обработке"

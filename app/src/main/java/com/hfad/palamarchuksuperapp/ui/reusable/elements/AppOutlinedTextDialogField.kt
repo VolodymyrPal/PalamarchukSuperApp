@@ -43,7 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.window.Dialog
-import com.example.compose.AppTheme
+import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
 import com.hfad.palamarchuksuperapp.R
 import kotlinx.coroutines.delay
 

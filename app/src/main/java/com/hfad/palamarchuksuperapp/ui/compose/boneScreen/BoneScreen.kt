@@ -24,18 +24,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.example.compose.AppTheme
-import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.ui.compose.LocalNavAnimatedVisibilityScope
 import com.hfad.palamarchuksuperapp.ui.compose.LocalNavController
 import com.hfad.palamarchuksuperapp.ui.compose.LocalSharedTransitionScope
+import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
-import com.hfad.palamarchuksuperapp.ui.viewModels.BoneViewModel
-import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -44,12 +40,6 @@ fun BoneScreenRoot(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
     navController: NavHostController = LocalNavController.current,
-    viewModel: BoneViewModel = daggerViewModel<BoneViewModel>(
-        factory = context.appComponent.viewModelFactory(),
-        owner = LocalViewModelStoreOwner.current ?: error(
-            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-        ),
-    ),
 ) {
     val localTransitionScope = LocalSharedTransitionScope.current
         ?: error(IllegalStateException("No SharedElementScope found"))

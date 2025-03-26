@@ -1,4 +1,4 @@
-package com.example.compose
+package com.hfad.palamarchuksuperapp.ui.compose.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ripple.RippleAlpha
@@ -13,8 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import com.hfad.palamarchuksuperapp.ui.compose.theme.shapes
-import com.hfad.palamarchuksuperapp.ui.compose.theme.typography
 
 
 private val LightColors = lightColorScheme(
