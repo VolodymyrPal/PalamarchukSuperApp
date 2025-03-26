@@ -124,13 +124,13 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
 
     implementation(libs.kotlinx.collections.immutable) // Immutable collection for better compose handling
 
-    implementation("androidx.compose.animation:animation:1.7.6")
-    implementation("io.ktor:ktor-client-logging:2.3.12")
+    implementation("androidx.compose.animation:animation:1.7.8")
 
     implementation("io.github.theapache64:rebugger:1.0.0-rc03")   //TODO using for checking number of recompositions
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
