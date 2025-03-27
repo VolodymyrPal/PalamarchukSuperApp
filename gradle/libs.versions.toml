@@ -26,6 +26,7 @@ retrofit = "2.11.0"
 serialization = "1.8.0"
 room_version = "2.6.1"
 ksp = "2.1.20-1.0.31"
+runtimeAndroid = "1.7.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -79,6 +80,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 room = { module = "androidx.room:room-runtime", name = "room-runtime", version.ref = "room_version" }
 room-ktx = { module = "androidx.room:room-ktx", name = "room-ktx", version.ref = "room_version" }
 room-annotation = { module = "androidx.room:room-compiler", name = "room-compiler", version.ref = "room_version" }
+androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
