@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
-import com.hfad.compose.AppTheme
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
 import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
 import kotlinx.coroutines.delay

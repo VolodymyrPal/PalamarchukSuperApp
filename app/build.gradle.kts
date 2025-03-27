@@ -133,10 +133,11 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.7.8")
 
     implementation("io.github.theapache64:rebugger:1.0.0-rc03")   //TODO using for checking number of recompositions
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
 
-    implementation ("com.github.jeziellago:compose-markdown:0.5.4")
+    implementation ("com.github.jeziellago:compose-markdown:0.5.7")
 
     implementation(project(":feature_bone"))
+    implementation(project(":core"))
 
 }

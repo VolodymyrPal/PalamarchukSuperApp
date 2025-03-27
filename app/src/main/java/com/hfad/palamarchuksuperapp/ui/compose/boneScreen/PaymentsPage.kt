@@ -349,7 +349,7 @@ fun PaymentCard(
                 }
             }
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
@@ -403,7 +403,7 @@ fun PaymentCard(
                 modifier = Modifier.padding(start = 24.dp)
             )
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )

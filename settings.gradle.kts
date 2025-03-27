@@ -23,3 +23,4 @@ dependencyResolutionManagement {
 rootProject.name = "PalamarchukSuperApp"
 include(":app")
 include(":feature_bone")
+include(":core")

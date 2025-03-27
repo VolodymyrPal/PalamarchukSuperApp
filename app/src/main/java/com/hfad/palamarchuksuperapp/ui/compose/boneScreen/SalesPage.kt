@@ -109,7 +109,7 @@ fun SalesPage(
                     )
                 }
 
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.padding(vertical = 4.dp),
                     color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
                 )
@@ -319,7 +319,7 @@ fun ProductSaleCard(
                 }
             }
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
@@ -361,7 +361,7 @@ fun ProductSaleCard(
                 }
             }
 
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
