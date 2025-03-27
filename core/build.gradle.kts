@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.hfad.palamarchuksuperapp.feature.bone"
+    namespace = "com.hfad.palamarchuksuperapp.core"
     compileSdk = 35
 
     defaultConfig {
@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.runtime.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -45,5 +46,5 @@ dependencies {
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
 
-    implementation(project(":core"))
+    implementation(libs.viewmodel)
 }
