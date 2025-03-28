@@ -1,7 +1,7 @@
 [versions]
 agp = "8.9.1"
+animation = "1.7.8"
 appUpdate = "2.1.0"
-converterMoshi = "2.11.0"
 datastorePreferences = "1.1.3"
 kotlin = "2.1.20"
 coreKtx = "1.15.0"
@@ -11,29 +11,29 @@ espressoCore = "3.6.1"
 appcompat = "1.7.0"
 kotlinxCollectionsImmutable = "0.3.8"
 ktorSerializationKotlinxJson = "3.1.1"
-material = "1.12.0"
 activity = "1.10.1"
 constraintlayout = "2.2.1"
 lifecycle = "2.8.7"
-moshiKotlin = "1.15.2"
-moshiKotlinCodegen = "1.15.2"
 nav_version = "2.8.9"
 fragment_version = "1.8.6"
 databindingRuntime = "8.9.1"
 dagger = "2.56.1"
 numberpicker = "1.0.3"
-retrofit = "2.11.0"
 serialization = "1.8.0"
 room_version = "2.6.1"
 ksp = "2.1.20-1.0.31"
 runtimeAndroid = "1.7.8"
+material = "1.12.0"
+#converterMoshi = "2.11.0"
+#moshiKotlin = "1.15.2"
+#moshiKotlinCodegen = "1.15.2"
+#retrofit = "2.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 app-update = { module = "com.google.android.play:app-update", version.ref = "appUpdate" }
 app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "appUpdate" }
-converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -43,18 +43,16 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorSeria
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorSerializationKotlinxJson" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorSerializationKotlinxJson" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview", name = "ui-tooling-preview" }
 compose-material3 = { module = "androidx.compose.material3:material3", name = "material3", version = "1.3.1" }
+androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity-compose = { module = "androidx.activity:activity-compose", name = "activity-compose", version.ref = "activity" }
-moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
-moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
 numberpicker = { module = "com.chargemap.compose:numberpicker", version.ref = "numberpicker" }
-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-viemodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 compose-ui = { module = "androidx.compose.ui:ui-tooling", name = "ui-tooling" }
 compose-runtime = { module = "androidx.compose.runtime:runtime", name = "runtime" }
@@ -64,7 +62,7 @@ constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayou
 navigation-fragment = { module = "androidx.navigation:navigation-fragment", name = "navigation-fragment", version.ref = "nav_version" }
 navigation-ui = { module = "androidx.navigation:navigation-ui", name = "navigation-ui", version.ref = "nav_version" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", name = "navigation-compose", version.ref = "nav_version" }
-framgent-navigation = { module = "androidx.fragment:fragment-ktx", name = "fragment-ktx", version.ref = "fragment_version" }
+fragment-navigation = { module = "androidx.fragment:fragment-ktx", name = "fragment-ktx", version.ref = "fragment_version" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", name = "recyclerview", version = "1.4.0" }
 recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", name = "recyclerview-selection", version = "1.1.0" }
 androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databindingRuntime" }
@@ -80,7 +78,61 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 room = { module = "androidx.room:room-runtime", name = "room-runtime", version.ref = "room_version" }
 room-ktx = { module = "androidx.room:room-ktx", name = "room-ktx", version.ref = "room_version" }
 room-annotation = { module = "androidx.room:room-compiler", name = "room-compiler", version.ref = "room_version" }
-androidx-runtime-android = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
+
+#moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
+#moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
+#converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
+#retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+
+[bundles]
+base = [
+    "androidx-core-ktx",
+    "androidx-appcompat",
+    "androidx-activity",
+    "androidx-constraintlayout",
+    "androidx-databinding-runtime",
+]
+networking = [
+    "ktor-client-cio",
+    "ktor-client-content-negotiation",
+    "ktor-client-logging",
+    "ktor-serialization-kotlinx-json",
+    "kotlinx-serialization-json",
+]
+image-loading = [
+    "coil",
+    "coil-compose",
+    "zelory-compressor"
+]
+navigation = [
+    "navigation-fragment",
+    "navigation-ui",
+    "navigation-compose",
+    "fragment-navigation"
+]
+database = [
+    "room",
+    "room-ktx",
+    "androidx-datastore-preferences"
+]
+compose = [
+    "compose-ui-preview",
+    "activity-compose",
+    "compose-ui",
+    "compose-runtime",
+    "compose-graphics",
+    "constraintlayout-compose",
+    "androidx-compose-runtime",
+    "compose-material3",
+    "androidx-compose-animation"
+]
+
+viewmodel = [
+    "viewmodel",
+    "viewmodel-compose",
+    "runtime-compose"
+]
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
