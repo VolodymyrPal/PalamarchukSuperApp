@@ -62,37 +62,38 @@ composeCompiler {
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
+    //Base block
+    implementation(libs.bundles.base)
     implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.databinding.runtime)
+
+    //Test block
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.androidx.datastore.preferences)
+    // Database bundles
+    implementation(libs.bundles.database)
+    annotationProcessor(libs.room.annotation)
+    ksp(libs.room.annotation)
 
-    val composeBom = platform("androidx.compose:compose-bom:2024.03.00")
+    // Network bundles
+    implementation(libs.bundles.networking)
+
+    // Image loading bundle
+    implementation(libs.bundles.image.loading)
+
+    // Navigation bundle
+    implementation(libs.bundles.navigation)
+
+    // Compose bundle
+    implementation(libs.bundles.compose)
+    val composeBom = platform("androidx.compose:compose-bom:2025.03.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    implementation(libs.compose.material3)
-    implementation(libs.compose.ui.preview)
-    debugImplementation(libs.compose.ui)
-    implementation(libs.activity.compose)
-    implementation(libs.viewmodel)
-    implementation(libs.viemodel.compose)
-    implementation(libs.compose.runtime)
-    implementation(libs.compose.graphics)
-    implementation(libs.runtime.compose)
-    implementation(libs.constraintlayout.compose)
+    // ViewModel bundle
+    implementation(libs.bundles.viewmodel)
 
-    implementation(libs.navigation.fragment)
-    implementation(libs.navigation.ui)
-    implementation(libs.navigation.compose)
-    implementation(libs.framgent.navigation)
 
     implementation(libs.recyclerview)
     implementation(libs.recyclerview.selection)
@@ -100,42 +101,18 @@ dependencies {
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
 
-    implementation(libs.coil)
-    implementation(libs.coil.compose)
-
-    implementation(libs.zelory.compressor)
-
     implementation(libs.compose.tracing)
-
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.room)
-    implementation(libs.room.ktx)
-    annotationProcessor(libs.room.annotation)
-    //noinspection KaptUsageInsteadOfKsp
-    ksp(libs.room.annotation)
-
-    //implementation(libs.moshi.kotlin)
-    //implementation(libs.converter.moshi)
-    //ksp(libs.moshi.kotlin.codegen)
-
 
     implementation(libs.numberpicker)
 
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.logging)
     implementation(libs.app.update)
     implementation(libs.app.update.ktx)
 
     implementation(libs.kotlinx.collections.immutable) // Immutable collection for better compose handling
 
-    implementation("androidx.compose.animation:animation:1.7.8")
-
     implementation("io.github.theapache64:rebugger:1.0.0-rc03")   //TODO using for checking number of recompositions
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
-
-    implementation ("com.github.jeziellago:compose-markdown:0.5.7")
+    implementation("com.github.jeziellago:compose-markdown:0.5.7")
 
     implementation(project(":feature_bone"))
     implementation(project(":core"))
