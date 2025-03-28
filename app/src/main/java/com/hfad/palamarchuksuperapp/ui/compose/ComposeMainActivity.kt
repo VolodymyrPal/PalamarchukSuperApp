@@ -23,7 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.BoneScreenRoot
 import kotlinx.serialization.Serializable
 

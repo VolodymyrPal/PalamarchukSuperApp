@@ -1,7 +1,7 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
-import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.Result
 
 inline fun <T> Result<T, AppError>.getOrHandleAppError(
     onError: (AppError) -> Nothing,

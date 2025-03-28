@@ -33,9 +33,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
 import com.hfad.palamarchuksuperapp.ui.viewModels.EntityType
 import com.hfad.palamarchuksuperapp.ui.viewModels.Order

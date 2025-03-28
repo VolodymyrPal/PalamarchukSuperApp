@@ -104,10 +104,13 @@ import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.BackgroundMusicService
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.effects.shimmerLoading
+import com.hfad.palamarchuksuperapp.core.ui.composables.elements.AppDialog
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
@@ -115,9 +118,6 @@ import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
-import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.shimmerLoading
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText

@@ -44,11 +44,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.StepProgressionBar
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.ui.compose.utils.StepProgressionBar
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.Order
 import com.hfad.palamarchuksuperapp.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus

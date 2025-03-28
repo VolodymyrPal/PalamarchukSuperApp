@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
-import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Product
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.coroutines.flow.Flow

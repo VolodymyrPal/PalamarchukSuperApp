@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 

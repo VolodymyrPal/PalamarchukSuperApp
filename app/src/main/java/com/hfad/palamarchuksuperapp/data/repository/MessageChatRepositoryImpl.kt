@@ -1,10 +1,11 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
+import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
-import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
-import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

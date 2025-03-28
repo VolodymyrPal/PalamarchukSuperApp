@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.reusable
+package com.hfad.palamarchuksuperapp.core.ui.composables.effects
 
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.exp
 import kotlin.math.pow
+import kotlin.ranges.rangeTo
 
 @Composable
 fun JumpyRow( // https://medium.com/@kappdev/how-to-create-a-jumpy-row-layout-in-jetpack-compose-45571835f4b2

@@ -2,9 +2,9 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.data.repository.MockChat
-import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
-import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope

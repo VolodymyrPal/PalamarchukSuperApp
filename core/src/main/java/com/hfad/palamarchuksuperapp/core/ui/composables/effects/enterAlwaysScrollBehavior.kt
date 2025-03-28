@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.reusable
+package com.hfad.palamarchuksuperapp.core.ui.composables.effects
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.AnimationState

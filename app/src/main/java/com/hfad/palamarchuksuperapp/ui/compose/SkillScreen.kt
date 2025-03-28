@@ -70,10 +70,10 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextConfig
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.defaultAppTextColor
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.defaultAppTextColor
 import com.hfad.palamarchuksuperapp.ui.screens.BottomSheetFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsChangeConst
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
