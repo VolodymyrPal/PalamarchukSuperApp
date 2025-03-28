@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -23,13 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.R
 
 @Suppress("LongParameterList")
 @Composable
@@ -126,7 +127,7 @@ const val appIconInfoFieldWidth = 150
 @Preview
 @Composable
 fun IconInfoFieldPreview() {
-    val iconPainter = painterResource(R.drawable.d_letter)
+    val iconPainter = rememberVectorPainter(Icons.Default.Info)
     AppIconInfoField(
         icon = iconPainter,
         description = "Description",

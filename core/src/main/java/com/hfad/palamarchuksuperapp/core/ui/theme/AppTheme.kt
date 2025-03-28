@@ -15,6 +15,57 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppTheme(
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    val colors = if (!useDarkTheme) {
+        LightColors
+    } else {
+        DarkColors
+    }
+    val myRippleConfiguration =
+        RippleConfiguration(
+            color = colors.primary,
+            rippleAlpha = RippleAlpha(
+                1f,
+                1f,
+                1f,
+                1f
+            )
+        )
+
+
+    MaterialTheme(
+        colorScheme = colors,
+        typography = typography,
+        shapes = shapes,
+
+        ) {
+        ProvideTextStyle(
+            value = TextStyle(color = Color.Black),
+        )
+        {
+            CompositionLocalProvider(
+                LocalRippleConfiguration provides myRippleConfiguration,
+                content = content
+            )
+        }
+    }
+}
+
+
+//    @Composable
+//    override fun rippleAlpha(): RippleAlpha {
+//        return RippleTheme.defaultRippleAlpha(
+//            Color.Black,
+//            lightTheme = true
+//        )
+//    }
+
+
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
@@ -46,8 +97,6 @@ private val LightColors = lightColorScheme(
     outlineVariant = md_theme_light_outlineVariant,
     scrim = md_theme_light_scrim,
 )
-
-
 private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
@@ -79,53 +128,3 @@ private val DarkColors = darkColorScheme(
     outlineVariant = md_theme_dark_outlineVariant,
     scrim = md_theme_dark_scrim,
 )
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
-) {
-    val colors = if (!useDarkTheme) {
-        LightColors
-    } else {
-        DarkColors
-    }
-    val MyRippleConfiguration =
-        RippleConfiguration(
-            color = colors.primary,
-            rippleAlpha = RippleAlpha(
-                1f,
-                1f,
-                1f,
-                1f
-            )
-        )
-
-
-    MaterialTheme(
-        colorScheme = colors,
-        typography = typography,
-        shapes = shapes,
-
-        ) {
-        ProvideTextStyle(
-            value = TextStyle(color = Color.Black),
-        )
-        {
-            CompositionLocalProvider(
-                LocalRippleConfiguration provides MyRippleConfiguration,
-                content = content
-            )
-        }
-    }
-}
-
-
-//    @Composable
-//    override fun rippleAlpha(): RippleAlpha {
-//        return RippleTheme.defaultRippleAlpha(
-//            Color.Black,
-//            lightTheme = true
-//        )
-//    }

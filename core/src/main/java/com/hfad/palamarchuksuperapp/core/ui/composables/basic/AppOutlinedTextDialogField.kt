@@ -43,8 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.window.Dialog
-import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
-import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.core.R
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 
 @Suppress("LongParameterList")
@@ -52,7 +52,7 @@ import kotlinx.coroutines.delay
 fun <T> AppOutlinedTextDialogField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    @StringRes label: Int = R.string.app_name,
+    @StringRes label: Int = R.string.place_holder_text,
     notSetLabel: String? = null,
     items: List<T>,
     selectedItem: T? = null,
@@ -120,7 +120,7 @@ fun <T> AppOutlinedTextDialogField(
 fun <T> AppOutlinedTextPopUpField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    @StringRes label: Int = R.string.app_name,
+    @StringRes label: Int = R.string.place_holder_text,
     notSetLabel: String? = null,
     items: List<T>,
     selectedItem: T? = null,
@@ -334,7 +334,7 @@ fun LargeDropdownMenuItemPreview() {
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AppTheme(useDarkTheme = true) {
+        AppTheme (useDarkTheme = true) {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -381,7 +381,7 @@ fun LargeDropdownMenuItemPreview() {
                         onItemSelected = { _, item ->
                             selected2Index = item
                         },
-                        notSetLabel = "Wow, what is it"
+                        notSetLabel = "Wow, what is it",
                     )
                 }
             }

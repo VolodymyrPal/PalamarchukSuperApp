@@ -7,10 +7,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -35,7 +32,7 @@ import androidx.compose.ui.unit.dp
 /**
  * Конфигурация текста для использования в текстовых компонентах.
  *
- * @property textStyle Стиль текста. По умолчанию используется [TextStyle.Default].
+ * @property textStyle Стиль текста. По умолчанию используется [androidx.compose.ui.text.TextStyle.Companion.Default].
  * @property overflow Определяет, как текст будет обрезаться, если он не помещается в доступное пространство.
  * @property softWrap Определяет, будет ли текст переноситься на новую строку, если он не помещается в одну строку.
  * @property maxLines Максимальное количество строк, которое может занимать текст.
@@ -63,7 +60,7 @@ data class AppTextConfig(
 /**
  * Запоминает конфигурацию текста для использования в текстовых компонентах.
  *
- * @param textStyle Стиль текста. По умолчанию используется [TextStyle.Default].
+ * @param textStyle Стиль текста. По умолчанию используется [androidx.compose.ui.text.TextStyle.Companion.Default].
  * @param overflow Определяет, как текст будет обрезаться, если он не помещается в доступное пространство.
  * @param softWrap Определяет, будет ли текст переноситься на новую строку, если он не помещается в одну строку.
  * @param maxLines Максимальное количество строк, которое может занимать текст.
@@ -167,9 +164,9 @@ fun appEditOutlinedTextConfig(
 
 
 /**
- * Возвращает цвета по умолчанию для [OutlinedTextField] на основе текущей темы.
+ * Возвращает цвета по умолчанию для [androidx.compose.material3.OutlinedTextField] на основе текущей темы.
  *
- * @return [TextFieldColors] с настройками цветов для [OutlinedTextField].
+ * @return [androidx.compose.material3.TextFieldColors] с настройками цветов для [androidx.compose.material3.OutlinedTextField].
  */
 @Composable
 fun OutlinedTextFieldDefaults.appColors() = OutlinedTextFieldDefaults.colors(
@@ -233,9 +230,9 @@ fun OutlinedTextFieldDefaults.appColors() = OutlinedTextFieldDefaults.colors(
 )
 
 /**
- * Возвращает цвета по умолчанию для [TextField] на основе текущей темы.
+ * Возвращает цвета по умолчанию для [androidx.compose.material3.TextField] на основе текущей темы.
  *
- * @return [TextFieldColors] с настройками цветов для [TextField].
+ * @return [androidx.compose.material3.TextFieldColors] с настройками цветов для [androidx.compose.material3.TextField].
  */
 @Composable
 fun TextFieldDefaults.appColors() = TextFieldDefaults.colors(

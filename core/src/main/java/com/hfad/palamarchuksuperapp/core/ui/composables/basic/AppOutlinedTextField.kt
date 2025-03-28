@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
-import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.core.R
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 
 /**
  * Компонент для редактирования текста с поддержкой метки и подсказки.
@@ -106,8 +106,8 @@ private fun AppOutlinedTextPreview() {
                         .padding(4.dp)
                         .align(Alignment.Center),
                     value = text.value,
-                    labelRes = R.string.model_hint,
-                    placeholderRes = R.string.edit,
+                    labelRes = R.string.place_holder_text,
+                    placeholderRes = R.string.place_holder_text,
                     onValueChange = { text.value = it },
                 )
             }
@@ -123,8 +123,8 @@ private fun AppOutlinedTextPreview() {
                         .padding(4.dp)
                         .align(Alignment.TopCenter),
                     value = text.value,
-                    labelRes = R.string.model_hint,
-                    placeholderRes = R.string.edit,
+                    labelRes = R.string.place_holder_text,
+                    placeholderRes = R.string.place_holder_text,
                     onValueChange = { text.value = it },
                 )
             }
