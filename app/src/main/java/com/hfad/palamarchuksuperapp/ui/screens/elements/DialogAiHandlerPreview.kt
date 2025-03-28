@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.reusable
+package com.hfad.palamarchuksuperapp.ui.screens.elements
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing

@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.reusable
+package com.hfad.palamarchuksuperapp.core.ui.composables.elements
 
 import android.app.Activity
 import android.content.Context

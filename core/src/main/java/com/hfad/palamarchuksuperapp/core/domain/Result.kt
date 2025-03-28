@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.domain.models
+package com.hfad.palamarchuksuperapp.core.domain
 
 typealias RootError = Error
 

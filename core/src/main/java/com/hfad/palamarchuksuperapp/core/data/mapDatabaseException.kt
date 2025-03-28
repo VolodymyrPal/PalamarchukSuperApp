@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.data.repository
+package com.hfad.palamarchuksuperapp.core.data
 
 import android.database.SQLException
 import android.database.sqlite.SQLiteAccessPermException

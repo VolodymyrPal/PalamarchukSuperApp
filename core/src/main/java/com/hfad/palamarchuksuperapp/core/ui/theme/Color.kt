@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.compose.theme
+package com.hfad.palamarchuksuperapp.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.data.repository
+package com.hfad.palamarchuksuperapp.core.data
 
 import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.AppError.CustomError

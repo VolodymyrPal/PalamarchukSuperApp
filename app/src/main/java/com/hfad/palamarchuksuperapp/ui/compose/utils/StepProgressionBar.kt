@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.reusable.elements
+package com.hfad.palamarchuksuperapp.ui.compose.utils
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
