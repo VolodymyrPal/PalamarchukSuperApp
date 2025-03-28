@@ -1,11 +1,12 @@
 package com.hfad.palamarchuksuperapp.core.data
 
-import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.Result
-import io.ktor.serialization.JsonConvertException
-import io.ktor.util.network.UnresolvedAddressException
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import java.net.SocketException
+import java.nio.channels.UnresolvedAddressException
+import io.ktor.serialization.JsonConvertException
+
 
 suspend fun <T> safeApiCall(call: suspend () -> Result<T, AppError>): Result<T, AppError> {
     return try {

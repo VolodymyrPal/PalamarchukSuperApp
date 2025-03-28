@@ -1,14 +1,14 @@
 package com.hfad.palamarchuksuperapp.core.data
 
-import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.AppError.CustomError
-import com.hfad.palamarchuksuperapp.domain.models.AppError.NetworkException.ApiError.BadApi
-import com.hfad.palamarchuksuperapp.domain.models.AppError.NetworkException.ApiError.Forbidden
-import com.hfad.palamarchuksuperapp.domain.models.AppError.NetworkException.ApiError.Unauthorized
-import com.hfad.palamarchuksuperapp.domain.models.AppError.NetworkException.ApiError.BadGateway
-import com.hfad.palamarchuksuperapp.domain.models.AppError.NetworkException.ApiError.GatewayTimeout
-import com.hfad.palamarchuksuperapp.domain.models.AppError.NetworkException.ApiError.InternalApiError
-import com.hfad.palamarchuksuperapp.domain.models.AppError.NetworkException.ApiError.ServiceUnavailable
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppError.CustomError
+import com.hfad.palamarchuksuperapp.core.domain.AppError.NetworkException.ApiError.BadApi
+import com.hfad.palamarchuksuperapp.core.domain.AppError.NetworkException.ApiError.Forbidden
+import com.hfad.palamarchuksuperapp.core.domain.AppError.NetworkException.ApiError.Unauthorized
+import com.hfad.palamarchuksuperapp.core.domain.AppError.NetworkException.ApiError.BadGateway
+import com.hfad.palamarchuksuperapp.core.domain.AppError.NetworkException.ApiError.GatewayTimeout
+import com.hfad.palamarchuksuperapp.core.domain.AppError.NetworkException.ApiError.InternalApiError
+import com.hfad.palamarchuksuperapp.core.domain.AppError.NetworkException.ApiError.ServiceUnavailable
 
 /** Maps an [Exception] to a specific [AppError.NetworkException] subtype.
  *
