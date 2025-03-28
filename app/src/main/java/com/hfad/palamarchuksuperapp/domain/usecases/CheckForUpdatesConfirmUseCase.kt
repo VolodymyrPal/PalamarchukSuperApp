@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.domain.usecases
 import android.content.Context
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.hfad.palamarchuksuperapp.ui.reusable.StrongAlertDialog
+import com.hfad.palamarchuksuperapp.core.ui.composables.elements.StrongAlertDialog
 
 /**
  * Use case for checking for updates if it's available.

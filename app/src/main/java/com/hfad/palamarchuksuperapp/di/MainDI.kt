@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.DataStoreHandler
+import com.hfad.palamarchuksuperapp.core.ui.di.AppDependencies
 import com.hfad.palamarchuksuperapp.data.dao.MessageAiDao
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.dao.MessageGroupDao
@@ -93,7 +94,7 @@ import kotlin.reflect.KClass
 
 @Singleton
 @Component(modules = [AppModule::class])
-interface AppComponent {
+interface AppComponent : AppDependencies {
     fun inject(mainActivity: MainActivity)
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)

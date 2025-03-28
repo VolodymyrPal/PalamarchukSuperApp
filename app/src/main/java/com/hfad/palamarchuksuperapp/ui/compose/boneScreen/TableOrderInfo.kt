@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppIconInfoField
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import kotlin.math.max
 
 @Composable

@@ -1,14 +1,15 @@
 package com.hfad.palamarchuksuperapp.data.services
 
+import com.hfad.palamarchuksuperapp.core.data.safeApiCall
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
-import com.hfad.palamarchuksuperapp.domain.models.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageAiContent
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
-import com.hfad.palamarchuksuperapp.domain.models.Result
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

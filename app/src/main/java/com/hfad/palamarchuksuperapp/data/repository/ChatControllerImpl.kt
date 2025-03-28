@@ -1,13 +1,14 @@
 package com.hfad.palamarchuksuperapp.data.repository
 
 import androidx.room.Transaction
+import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatWithRelationsEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
-import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.domain.repository.ChatController
 import com.hfad.palamarchuksuperapp.domain.repository.MessageAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository

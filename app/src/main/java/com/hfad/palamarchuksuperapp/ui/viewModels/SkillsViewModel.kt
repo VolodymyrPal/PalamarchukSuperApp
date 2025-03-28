@@ -3,8 +3,8 @@ package com.hfad.palamarchuksuperapp.ui.viewModels
 import IoDispatcher
 import MainDispatcher
 import androidx.lifecycle.viewModelScope
-import com.hfad.palamarchuksuperapp.domain.models.AppError
-import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import kotlinx.collections.immutable.PersistentList

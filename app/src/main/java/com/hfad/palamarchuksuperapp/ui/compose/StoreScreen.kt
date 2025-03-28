@@ -118,23 +118,24 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.chargemap.compose.numberpicker.NumberPicker
 import com.hfad.palamarchuksuperapp.R
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.data.database.DATABASE_MAIN_ENTITY_PRODUCT
 import com.hfad.palamarchuksuperapp.data.database.StoreDatabase
 import com.hfad.palamarchuksuperapp.data.dtos.ProductDTO
 import com.hfad.palamarchuksuperapp.data.dtos.ProductRating
 import com.hfad.palamarchuksuperapp.data.repository.FakeStoreApiRepository
 import com.hfad.palamarchuksuperapp.data.repository.StoreRepositoryImpl
-import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Product
-import com.hfad.palamarchuksuperapp.ui.compose.theme.md_theme_my_royal
+import com.hfad.palamarchuksuperapp.core.ui.theme.md_theme_my_royal
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import com.hfad.palamarchuksuperapp.ui.compose.utils.DrawerWrapper
 import com.hfad.palamarchuksuperapp.ui.compose.utils.MyNavigationDrawer
-import com.hfad.palamarchuksuperapp.ui.reusable.AppDialog
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppTextField
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.rememberTextFieldConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.elements.AppDialog
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppTextField
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.rememberTextFieldConfig
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.daggerViewModel
 import io.ktor.client.HttpClient
@@ -150,7 +151,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoreScreen(
     modifier: Modifier = Modifier,
-    viewModel: StoreViewModel = daggerViewModel(),
+    viewModel: StoreViewModel = daggerViewModel(
+        factory = LocalContext.current.appComponent.viewModelFactory(),
+    ),
 ) {
     val navController: NavHostController =
         if (!LocalInspectionMode.current) LocalNavController.current else

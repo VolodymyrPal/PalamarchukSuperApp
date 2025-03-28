@@ -1,9 +1,9 @@
 package com.hfad.palamarchuksuperapp.domain.repository
 
 import com.hfad.palamarchuksuperapp.data.entities.MessageChatEntity
-import com.hfad.palamarchuksuperapp.domain.models.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
-import com.hfad.palamarchuksuperapp.domain.models.Result
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import kotlinx.coroutines.flow.Flow
 
 interface MessageChatRepository {

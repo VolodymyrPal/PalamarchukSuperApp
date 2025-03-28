@@ -29,9 +29,9 @@ import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.ui.compose.LocalNavAnimatedVisibilityScope
 import com.hfad.palamarchuksuperapp.ui.compose.LocalNavController
 import com.hfad.palamarchuksuperapp.ui.compose.LocalSharedTransitionScope
-import com.hfad.palamarchuksuperapp.ui.compose.theme.AppTheme
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.AppText
-import com.hfad.palamarchuksuperapp.ui.reusable.elements.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
