@@ -3,6 +3,8 @@ package com.hfad.palamarchuksuperapp
 import AppComponent
 import android.app.Application
 import android.content.Context
+import com.hfad.palamarchuksuperapp.core.di.CoreComponent
+import com.hfad.palamarchuksuperapp.core.di.DaggerCoreComponent
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -11,6 +13,7 @@ class AppApplication : Application()
 //, ViewModelStoreOwner - implementing this to create view model for whole app
 {
     lateinit var appComponent: AppComponent
+    lateinit var coreComponent: CoreComponent
     private lateinit var dataStoreHandler: DataStoreHandler
 
 
@@ -18,7 +21,8 @@ class AppApplication : Application()
         super.onCreate()
 
         File(this.filesDir, "app_images").mkdir()  // Create app_images folder here for compose preview
-        appComponent = DaggerAppComponent.builder().getContext(this).build()
+        coreComponent = DaggerCoreComponent.builder().build()
+        appComponent = DaggerAppComponent.builder().getContext(this).coreComponent(coreComponent).build()
 
         dataStoreHandler = appComponent.provideDataStoreHandler()
 
