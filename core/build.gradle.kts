@@ -39,20 +39,23 @@ android {
 }
 
 dependencies {
+    // Base bundle
     implementation(libs.bundles.base)
 
     // ViewModel bundle
     implementation(libs.bundles.viewmodel)
 
+    // Network bundle
+    implementation(libs.bundles.networking)
+
     // Compose bundle
     implementation(libs.bundles.compose)
-
-    implementation(libs.dagger)
-    ksp(libs.dagger.compiler)
-
-    implementation(libs.ktor.serialization.kotlinx.json)
 
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
+
+    // DI bundle
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
 }
