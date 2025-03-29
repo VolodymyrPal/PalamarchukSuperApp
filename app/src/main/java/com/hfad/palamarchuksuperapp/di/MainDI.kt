@@ -76,25 +76,18 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.cio.endpoint
-import io.ktor.client.plugins.cache.HttpCache
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.client.plugins.logging.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.json.Json
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 @Singleton
-@Component(modules = [AppModule::class])
-interface AppComponent : AppDependencies {
+@Component(
+    dependencies = [CoreComponent::class],
+    modules = [AppModule::class]
+)
+interface AppComponent {
     fun inject(mainActivity: MainActivity)
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)
@@ -109,6 +102,7 @@ interface AppComponent : AppDependencies {
     @Component.Builder
     interface Builder {
         fun getContext(@BindsInstance context: Context): Builder
+        fun coreComponent(coreComponent: CoreComponent): Builder
         fun build(): AppComponent
     }
 }
