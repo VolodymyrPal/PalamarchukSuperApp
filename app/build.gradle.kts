@@ -62,9 +62,9 @@ composeCompiler {
 
 dependencies {
 
-    //Base block
-    implementation(libs.bundles.base)
-    implementation(libs.material)
+    // Modules block
+    implementation(project(":feature_bone"))
+    implementation(project(":core"))
 
     //Test block
     testImplementation(libs.junit)
@@ -82,21 +82,11 @@ dependencies {
     // Image loading bundle
     implementation(libs.bundles.image.loading)
 
-    // Navigation bundle
-    implementation(libs.bundles.navigation)
+    // XML bundles
+    implementation(libs.bundles.xml)
 
-    // Compose bundle
+    // Compose bundles
     implementation(libs.bundles.compose)
-    val composeBom = platform("androidx.compose:compose-bom:2025.03.00")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
-
-    // ViewModel bundle
-    implementation(libs.bundles.viewmodel)
-
-
-    implementation(libs.recyclerview)
-    implementation(libs.recyclerview.selection)
 
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
@@ -113,8 +103,5 @@ dependencies {
     implementation("io.github.theapache64:rebugger:1.0.0-rc03")   //TODO using for checking number of recompositions
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
     implementation("com.github.jeziellago:compose-markdown:0.5.7")
-
-    implementation(project(":feature_bone"))
-    implementation(project(":core"))
 
 }

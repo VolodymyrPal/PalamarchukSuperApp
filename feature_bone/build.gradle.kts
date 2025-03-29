@@ -34,9 +34,6 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.bundles.base)
-
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
 

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.DataStoreHandler
-import com.hfad.palamarchuksuperapp.core.ui.di.AppDependencies
+import com.hfad.palamarchuksuperapp.core.di.CoreComponent
 import com.hfad.palamarchuksuperapp.data.dao.MessageAiDao
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.dao.MessageGroupDao
@@ -76,25 +76,18 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.cio.endpoint
-import io.ktor.client.plugins.cache.HttpCache
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.client.plugins.logging.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.json.Json
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 @Singleton
-@Component(modules = [AppModule::class])
-interface AppComponent : AppDependencies {
+@Component(
+    dependencies = [CoreComponent::class],
+    modules = [AppModule::class]
+)
+interface AppComponent {
     fun inject(mainActivity: MainActivity)
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)
@@ -109,6 +102,7 @@ interface AppComponent : AppDependencies {
     @Component.Builder
     interface Builder {
         fun getContext(@BindsInstance context: Context): Builder
+        fun coreComponent(coreComponent: CoreComponent): Builder
         fun build(): AppComponent
     }
 }
@@ -228,8 +222,10 @@ abstract class ViewModelsModule {
 @Module
 object NetworkModule {
     @Provides
-    fun platziApiImpl(): FakeStoreApi {
-        return FakeStoreApiRepository(provideHttpClient())
+    fun platziApiImpl(
+        httpClient: HttpClient,
+    ): FakeStoreApi {
+        return FakeStoreApiRepository(httpClient)
     }
 
     @Provides
@@ -238,45 +234,6 @@ object NetworkModule {
         storeDao: StoreDao,
     ): StoreRepository {
         return StoreRepositoryImpl(storeApi, storeDao)
-    }
-
-    @Singleton
-    @Provides
-    fun provideHttpClient(): HttpClient {
-        return HttpClient(CIO) {
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.ALL
-            }
-            engine {
-                endpoint {
-                    socketTimeout =
-                        60_000       // Максимальное время ожидания соединения 30 секунд
-                    connectTimeout = 60_000        // Время ожидания соединения 30 секунд
-                    requestTimeout = 60_000       // Максимальное время ожидания запроса 30 секунд
-                    keepAliveTime =
-                        60_0000        // Время жизни соединения после использования 300 секунд
-                    maxConnectionsPerRoute = 10 // Максимум 10 соединений на маршрут
-                    pipelineMaxSize = 10        // Максимум 10 запросов в пайплайне
-                }
-                maxConnectionsCount = 10 // Максимум 10 соединений
-                https {
-                    trustManager // Настройки проверки сертификата, что бы не перехватывать запросы посредине
-                } // Настройки HTTPS, которые
-                // позволяют конфигурировать параметры TLS/SSL, используемые для защищенных соединений.
-                pipelining = false // Отключение пайпелинга
-                proxy // Настройки прокси
-            }
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    encodeDefaults = true
-                    prettyPrint = true
-                    isLenient = true  //TODO lenient for testing
-                })
-            }
-            install(HttpCache) // Добавляем кэширование запросов, чтобы не обращаться к API каждый раз
-        }
     }
 }
 
