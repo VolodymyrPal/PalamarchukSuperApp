@@ -39,17 +39,20 @@ android {
 }
 
 dependencies {
+    implementation(libs.bundles.base)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.runtime.android)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // ViewModel bundle
+    implementation(libs.bundles.viewmodel)
+
+    // Compose bundle
+    implementation(libs.bundles.compose)
 
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
 
-    implementation(libs.viewmodel)
+    implementation(libs.ktor.serialization.kotlinx.json)
+
+    val composeBom = platform(libs.compose.bom)
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 }
