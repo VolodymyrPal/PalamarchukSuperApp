@@ -88,7 +88,6 @@ dependencies {
     // Compose bundles
     implementation(libs.bundles.compose)
 
-    implementation(libs.dagger)
     ksp(libs.dagger.compiler)
 
     implementation(libs.compose.tracing)
