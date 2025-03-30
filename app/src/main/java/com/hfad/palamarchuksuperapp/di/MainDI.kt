@@ -59,6 +59,7 @@ import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
@@ -87,7 +88,7 @@ import kotlin.reflect.KClass
     dependencies = [CoreComponent::class],
     modules = [AppModule::class]
 )
-interface AppComponent {
+interface AppComponent : BoneDeps {
     fun inject(mainActivity: MainActivity)
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)
@@ -95,7 +96,8 @@ interface AppComponent {
     fun appVibrator(): AppVibrator
     fun viewModelFactory(): ViewModelProvider.Factory
     fun inject(storeFragment: StoreFragment)
-    fun getHttpClient(): HttpClient
+    val httpClient: HttpClient
+    override val viewModelFactory: ViewModelProvider.Factory
     fun getAiHandlerDispatcher(): AiHandlerRepositoryImpl
     fun provideDataStoreHandler(): DataStoreHandler
 
