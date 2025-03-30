@@ -24,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.feature.bone.ui.FeatureBoneScreen
 import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.BoneScreenRoot
 import kotlinx.serialization.Serializable
 
@@ -157,6 +158,9 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                             BoneScreenRoot()
                         }
                     }
+                    composable<Routes.FeatureScreen> {
+                        FeatureBoneScreen()
+                    }
                 }
             }
         }
@@ -209,4 +213,7 @@ sealed interface Routes {
 
     @Serializable
     object BoneScreen : Routes //TODO Rename when prod
+
+    @Serializable
+    object FeatureScreen: Routes
 }
