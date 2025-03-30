@@ -40,7 +40,7 @@ android {
 
 dependencies {
     // Base bundle
-    implementation(libs.bundles.base)
+    api(libs.bundles.base)
 
     // ViewModel bundle
     implementation(libs.bundles.viewmodel)
@@ -56,6 +56,6 @@ dependencies {
     androidTestImplementation(composeBom)
 
     // DI bundle
-    implementation(libs.dagger)
+    api(libs.dagger)
     ksp(libs.dagger.compiler)
 }
