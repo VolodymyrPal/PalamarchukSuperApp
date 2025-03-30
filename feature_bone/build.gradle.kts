@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -13,6 +14,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildFeatures {
+        compose = true
     }
 
     buildTypes {
@@ -34,8 +39,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.dagger)
     ksp(libs.dagger.compiler)
+    implementation(libs.bundles.networking)
+    implementation(libs.bundles.compose)
 
     implementation(project(":core"))
 }
