@@ -2,20 +2,20 @@ package com.hfad.palamarchuksuperapp.feature.bone.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.BoneFeatureViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
-import io.ktor.client.HttpClient
 import javax.inject.Scope
 import kotlin.properties.Delegates.notNull
 import kotlin.reflect.KClass
 
 @FeatureScope
-@Component (dependencies = [BoneDeps::class], modules = [ViewModelsModule::class])
-internal interface BoneComponent  {
+@Component (dependencies = [BoneDeps::class], modules = [ViewModelsModule::class, BoneModule::class])
+internal interface BoneComponent : BoneDeps  {
 
     val viewModelFactory : ViewModelProvider.Factory
 
@@ -24,6 +24,11 @@ internal interface BoneComponent  {
         fun deps(boneDeps: BoneDeps) : Builder
         fun build(): BoneComponent
     }
+}
+@Module
+internal abstract class BoneModule {
+    @Binds
+    abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
 }
 
 @Module
@@ -36,9 +41,7 @@ abstract class ViewModelsModule {
 }
 
 
-interface BoneDeps {
-    val viewModelFactory: ViewModelProvider.Factory
-}
+interface BoneDeps {}
 
 
 interface BoneDepsProvider {
