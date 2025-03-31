@@ -2,12 +2,12 @@ package com.hfad.palamarchuksuperapp.ui.screens
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.databinding.DrawerBasketStoreBinding
 import com.hfad.palamarchuksuperapp.databinding.FragmentStoreBinding
 import com.hfad.palamarchuksuperapp.domain.models.AppVibrator
@@ -23,7 +24,6 @@ import com.hfad.palamarchuksuperapp.ui.compose.WIDTH_ITEM
 import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreBasketAdapter
 import com.hfad.palamarchuksuperapp.ui.screens.adapters.StoreListAdapter
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
-import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject

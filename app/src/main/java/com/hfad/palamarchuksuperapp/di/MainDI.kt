@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.core.di.CoreComponent
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.data.dao.MessageAiDao
 import com.hfad.palamarchuksuperapp.data.dao.MessageChatDao
 import com.hfad.palamarchuksuperapp.data.dao.MessageGroupDao
@@ -59,13 +60,13 @@ import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
 import com.hfad.palamarchuksuperapp.ui.screens.StoreFragment
 import com.hfad.palamarchuksuperapp.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
-import com.hfad.palamarchuksuperapp.ui.viewModels.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
 import dagger.Binds
@@ -78,6 +79,7 @@ import dagger.multibindings.IntoMap
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import javax.inject.Provider
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlin.reflect.KClass
@@ -87,7 +89,7 @@ import kotlin.reflect.KClass
     dependencies = [CoreComponent::class],
     modules = [AppModule::class]
 )
-interface AppComponent {
+interface AppComponent : BoneDeps {
     fun inject(mainActivity: MainActivity)
     fun inject(fragmentActivity: FragmentActivity)
     fun inject(fragmentActivity: SkillsFragment)
@@ -95,7 +97,7 @@ interface AppComponent {
     fun appVibrator(): AppVibrator
     fun viewModelFactory(): ViewModelProvider.Factory
     fun inject(storeFragment: StoreFragment)
-    fun getHttpClient(): HttpClient
+    val httpClient: HttpClient
     fun getAiHandlerDispatcher(): AiHandlerRepositoryImpl
     fun provideDataStoreHandler(): DataStoreHandler
 

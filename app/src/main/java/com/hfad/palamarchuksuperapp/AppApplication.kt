@@ -1,10 +1,12 @@
 package com.hfad.palamarchuksuperapp
 
 import AppComponent
+import DaggerAppComponent
 import android.app.Application
 import android.content.Context
 import com.hfad.palamarchuksuperapp.core.di.CoreComponent
 import com.hfad.palamarchuksuperapp.core.di.DaggerCoreComponent
+import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDepsProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -23,6 +25,9 @@ class AppApplication : Application()
         File(this.filesDir, "app_images").mkdir()  // Create app_images folder here for compose preview
         coreComponent = DaggerCoreComponent.builder().build()
         appComponent = DaggerAppComponent.builder().getContext(this).coreComponent(coreComponent).build()
+
+        BoneDepsProvider.deps = appComponent
+
 
         dataStoreHandler = appComponent.provideDataStoreHandler()
 
