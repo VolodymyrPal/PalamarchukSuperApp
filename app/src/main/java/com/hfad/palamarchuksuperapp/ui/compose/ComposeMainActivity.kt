@@ -17,12 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.ui.FeatureBoneScreen
 import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.BoneScreenRoot
@@ -117,6 +119,7 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
             LocalNavController provides navController,
             LocalSharedTransitionScope provides this //TODO
         ) {
+            val context = LocalContext.current
             AppTheme {
                 NavHost(
                     navController = LocalNavController.current,
@@ -159,7 +162,9 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         }
                     }
                     composable<Routes.FeatureScreen> {
-                        FeatureBoneScreen()
+                        FeatureBoneScreen(
+                            context.appComponent
+                        )
                     }
                 }
             }

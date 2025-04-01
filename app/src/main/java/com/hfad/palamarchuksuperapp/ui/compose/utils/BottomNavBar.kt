@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -95,18 +96,10 @@ fun BottomNavBar(
     val appImages = remember { AppImages(context).mainImage }
     val selectedTabIndex by remember(currentScreen) {
         derivedStateOf {
-            when (currentScreen) {
-                Routes.MainScreenConstraint.route -> {
-                    0
-                }
-
-                Routes.Settings.route -> {
-                    2
-                }
-
-                else -> {
-                    3
-                }
+            when {
+                navBackStackEntry?.destination?.hasRoute<Routes.MainScreenConstraint>() == true -> 0
+                navBackStackEntry?.destination?.hasRoute<Routes.Settings>() == true -> 2
+                else -> 3
             }
         }
     }
