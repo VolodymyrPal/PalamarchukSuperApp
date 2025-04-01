@@ -44,16 +44,6 @@ abstract class ViewModelsModule {
 interface BoneDeps {}
 
 
-interface BoneDepsProvider {
-    var deps: BoneDeps
-    companion object : BoneDepsProvider by BoneDepsStore
-}
-
-object BoneDepsStore : BoneDepsProvider {
-    override var deps: BoneDeps by notNull()
-}
-
-
 @Retention(AnnotationRetention.RUNTIME)
 @Scope
 annotation class FeatureScope
