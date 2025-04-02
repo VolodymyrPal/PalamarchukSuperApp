@@ -42,8 +42,8 @@ interface UnidirectionalViewModel<STATE, EVENT, EFFECT> {
     fun effect(effect: EFFECT)
 }
 
-sealed interface BaseEvent
+interface BaseEvent
 
-sealed interface BaseEffect
+interface BaseEffect
 
 interface State<out T>
