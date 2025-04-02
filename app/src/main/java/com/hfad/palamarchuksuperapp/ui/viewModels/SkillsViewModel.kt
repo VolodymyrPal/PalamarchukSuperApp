@@ -5,6 +5,10 @@ import MainDispatcher
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import kotlinx.collections.immutable.PersistentList
