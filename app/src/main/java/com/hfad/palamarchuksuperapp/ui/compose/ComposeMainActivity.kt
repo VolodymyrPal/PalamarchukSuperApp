@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -26,8 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.feature.bone.ui.FeatureBoneScreen
-import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.BoneScreenRoot
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.FeatureBoneScreen
 import kotlinx.serialization.Serializable
 
 class ComposeMainActivity : AppCompatActivity() {
@@ -156,15 +156,16 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         }
                     }
 
-                    composable<Routes.BoneScreen> {
-                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-                            BoneScreenRoot()
-                        }
-                    }
                     composable<Routes.FeatureScreen> {
-                        FeatureBoneScreen(
-                            context.appComponent
-                        )
+                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                            FeatureBoneScreen(
+                                modifier = Modifier.sharedElement(
+                                    rememberSharedContentState("bone"),
+                                    this,
+                                ),
+                                diDependents = context.appComponent
+                            )
+                        }
                     }
                 }
             }

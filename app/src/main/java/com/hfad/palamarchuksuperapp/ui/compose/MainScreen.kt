@@ -294,11 +294,11 @@ fun MainScreenRow(
                                     imagePath = R.drawable.d_letter,
                                     text = stringResource(R.string.bone_button_name),
                                     position = Modifier
-                                        .offset((-15).dp, (-15).dp),
-//                                        .sharedElement(
-//                                            rememberSharedContentState("bone"), //TODO rename in prod
-//                                            animatedContentScope
-//                                        ),
+                                        .offset((-15).dp, (-15).dp)
+                                        .sharedElement(
+                                            rememberSharedContentState("bone"), //TODO rename in prod
+                                            animatedContentScope
+                                        ),
                                     enable = true
                                 )
                             }

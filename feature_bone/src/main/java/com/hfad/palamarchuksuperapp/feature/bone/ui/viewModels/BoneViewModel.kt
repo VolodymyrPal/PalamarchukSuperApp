@@ -1,13 +1,15 @@
-package com.hfad.palamarchuksuperapp.ui.viewModels
+package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import androidx.room.PrimaryKey
-import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
+import com.hfad.palamarchuksuperapp.feature.bone.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,12 +22,12 @@ import kotlin.random.Random
 class BoneViewModel @Inject constructor(
 
 
-) : GenericViewModel<BusinessEntity, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+) : GenericViewModel<BusinessEntity, BoneViewModel.Event, BoneViewModel.Effect>() {
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
 
-    override fun event(event: ChatBotViewModel.Event) {
+    override fun event(event: Event) {
 
     }
 
@@ -47,8 +49,8 @@ class BoneViewModel @Inject constructor(
     @Stable
     data class StateBone(
         val businessEntity: BusinessEntity = BusinessEntity(0, EntityDetails().toString()),
-        val ordedList: PersistentList<Order> = persistentListOf(),
-        val paymentList: PersistentList<Payment> = persistentListOf(),
+        val orderList: List<Order> = listOf(),
+        val paymentList: List<Payment> = listOf(),
     ) : State<BusinessEntity>
 }
 
@@ -179,7 +181,7 @@ data class Payment(
 )
 
 
-val orderServiceList = persistentListOf<OrderService>(
+val orderServiceList = listOf(
     OrderService(
         id = 1,
         orderId = 101,

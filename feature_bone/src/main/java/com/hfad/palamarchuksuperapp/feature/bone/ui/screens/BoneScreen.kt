@@ -1,6 +1,5 @@
-package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
+package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -21,41 +20,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.hfad.palamarchuksuperapp.ui.compose.LocalNavAnimatedVisibilityScope
-import com.hfad.palamarchuksuperapp.ui.compose.LocalNavController
-import com.hfad.palamarchuksuperapp.ui.compose.LocalSharedTransitionScope
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BoneScreenRoot(
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
     navController: NavHostController = LocalNavController.current,
 ) {
-    val localTransitionScope = LocalSharedTransitionScope.current
-        ?: error(IllegalStateException("No SharedElementScope found"))
-    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
-        ?: error(IllegalStateException("No AnimatedVisibility found"))
-
-    with(localTransitionScope) {
-
-        BoneScreen(
-            modifier = modifier.sharedElement(
-                this.rememberSharedContentState("bone"),
-                animatedContentScope,
-            ),
-            navController = navController,
-        )
-    }
+    BoneScreen(
+        modifier = modifier,
+        navController = navController,
+    )
 }
 
 @OptIn(

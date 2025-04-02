@@ -5,8 +5,12 @@ import MainDispatcher
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
+import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

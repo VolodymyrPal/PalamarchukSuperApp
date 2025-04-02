@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.compose.utils
+package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -32,10 +32,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.ui.compose.boneScreen.painterServiceTypeMap
-import com.hfad.palamarchuksuperapp.ui.viewModels.Stepper
-import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
-import com.hfad.palamarchuksuperapp.ui.viewModels.orderServiceList
+import com.hfad.palamarchuksuperapp.feature.bone.ui.painterServiceTypeMap
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Stepper
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.orderServiceList
 
 @Composable
 fun StepProgressionBar(
