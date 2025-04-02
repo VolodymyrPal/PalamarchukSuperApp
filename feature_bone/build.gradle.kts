@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -42,6 +43,7 @@ dependencies {
     ksp(libs.dagger.compiler)
     implementation(libs.bundles.networking)
     implementation(libs.bundles.compose)
+    implementation(libs.bundles.database)
 
     implementation(project(":core"))
 }
