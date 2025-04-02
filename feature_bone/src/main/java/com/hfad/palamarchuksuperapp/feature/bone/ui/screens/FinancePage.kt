@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
+package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,21 +19,21 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 
 @Composable
 fun FinancePage(
@@ -74,7 +74,7 @@ fun FinancePage(
                     modifier = Modifier.padding(vertical = 4.dp),
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
                 )
-                
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -85,14 +85,14 @@ fun FinancePage(
                         label = "Доход",
                         color = Color(0xFF2E7D32)
                     )
-                    
+
                     FinanceStat(
                         icon = Icons.Default.ThumbUp,
                         value = "75,000 грн",
                         label = "Расходы",
                         color = Color(0xFFD32F2F)
                     )
-                    
+
                     FinanceStat(
                         icon = Icons.Default.Info,
                         value = "75,000 грн",
@@ -136,7 +136,8 @@ fun FinancePage(
                                 appTextConfig = appTextConfig(
                                     textStyle = MaterialTheme.typography.titleSmall,
                                 ),
-                                color = if (index % 2 == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                                color = if (index % 2 == 0) MaterialTheme.colorScheme.primary else
+                                    MaterialTheme.colorScheme.error
                             )
                         }
 
@@ -167,7 +168,7 @@ fun FinanceStat(
     value: String,
     label: String,
     color: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -188,7 +189,7 @@ fun FinanceStat(
                 modifier = Modifier.size(24.dp)
             )
         }
-        
+
         AppText(
             value = value,
             appTextConfig = appTextConfig(
@@ -196,7 +197,7 @@ fun FinanceStat(
                 fontWeight = FontWeight.Bold
             )
         )
-        
+
         AppText(
             value = label,
             appTextConfig = appTextConfig(
@@ -213,4 +214,4 @@ fun FinancePagePreview() {
     AppTheme {
         FinancePage()
     }
-} 
+}

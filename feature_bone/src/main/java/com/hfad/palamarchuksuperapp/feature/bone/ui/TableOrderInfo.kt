@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
+package com.hfad.palamarchuksuperapp.feature.bone.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
+import com.hfad.palamarchuksuperapp.feature.bone.R
 import kotlin.math.max
 
 @Composable

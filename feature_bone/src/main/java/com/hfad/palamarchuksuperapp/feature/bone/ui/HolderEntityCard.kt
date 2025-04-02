@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
+package com.hfad.palamarchuksuperapp.feature.bone.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -14,9 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
-import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BusinessEntity
 
 @Composable
 fun HolderEntityCard(

@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.ui.compose.boneScreen
+package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,14 +32,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.R
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import com.hfad.palamarchuksuperapp.ui.viewModels.BusinessEntity
-import com.hfad.palamarchuksuperapp.ui.viewModels.EntityType
-import com.hfad.palamarchuksuperapp.ui.viewModels.Order
-import com.hfad.palamarchuksuperapp.ui.viewModels.StepperStatus
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BusinessEntity
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.EntityType
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
 
 
 @Composable
