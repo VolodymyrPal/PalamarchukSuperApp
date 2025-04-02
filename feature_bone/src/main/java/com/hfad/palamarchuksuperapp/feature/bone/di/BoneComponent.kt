@@ -10,7 +10,6 @@ import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
 import javax.inject.Scope
-import kotlin.properties.Delegates.notNull
 import kotlin.reflect.KClass
 
 @FeatureScope
