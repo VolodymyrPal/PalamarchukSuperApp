@@ -1,41 +1,36 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import kotlinx.serialization.Serializable
 
-@Composable
-fun FeatureBoneScreen(
+fun NavGraphBuilder.featureBoneNavGraph(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController = rememberNavController(),
+    navController: NavHostController,
     diDependents: BoneDeps,
 ) {
-    val component = remember {
-        DaggerBoneComponent.builder().deps(diDependents).build()
-    }
-    CompositionLocalProvider(
-        LocalBoneDependencies provides component,
-        LocalNavController provides navHostController
+    navigation<FeatureBoneRoutes.Root>(
+        startDestination = FeatureBoneRoutes.BoneScreen
     ) {
-        NavHost(
-            modifier = modifier,
-            navController = navHostController,
-            startDestination = FeatureBoneRoutes.BoneScreen,
-        ) {
-            composable<FeatureBoneRoutes.BoneScreen> {
+        val component = DaggerBoneComponent.builder().deps(diDependents).build()
+
+        composable<FeatureBoneRoutes.BoneScreen> {
+
+            CompositionLocalProvider(
+                LocalBoneDependencies provides component,
+                LocalNavController provides navController
+            ) {
                 BoneScreenRoot(
-                    navController = navHostController
+                    modifier = modifier,
                 )
             }
         }
