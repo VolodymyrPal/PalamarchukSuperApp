@@ -27,7 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.FeatureBoneScreen
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.featureBoneNavGraph
 import kotlinx.serialization.Serializable
 
 class ComposeMainActivity : AppCompatActivity() {
@@ -156,17 +156,11 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         }
                     }
 
-                    composable<Routes.FeatureScreen> {
-                        CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-                            FeatureBoneScreen(
-                                modifier = Modifier.sharedElement(
-                                    rememberSharedContentState("bone"),
-                                    this,
-                                ),
-                                diDependents = context.appComponent
-                            )
-                        }
-                    }
+                    featureBoneNavGraph(
+                        modifier = Modifier,
+                        navController = navController,
+                        diDependents = context.appComponent
+                    )
                 }
             }
         }
@@ -221,5 +215,5 @@ sealed interface Routes {
     object BoneScreen : Routes //TODO Rename when prod
 
     @Serializable
-    object FeatureScreen: Routes
+    object FeatureScreen : Routes
 }

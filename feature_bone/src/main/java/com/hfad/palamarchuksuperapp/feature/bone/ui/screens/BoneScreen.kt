@@ -22,22 +22,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.BoneFeatureViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BoneScreenRoot(
     modifier: Modifier = Modifier,
-    navController: NavHostController = LocalNavController.current,
 ) {
     BoneScreen(
         modifier = modifier,
-        navController = navController,
     )
 }
 
@@ -49,7 +47,7 @@ fun BoneScreenRoot(
 @Composable
 fun BoneScreen(
     modifier: Modifier = Modifier,
-    navController: NavController? = null,
+    viewModel: BoneFeatureViewModel = daggerViewModel<BoneFeatureViewModel>(),
 ) {
     val tabs = listOf("Заказы", "Платежи", "Продажи", "Финансы")
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
@@ -62,6 +60,7 @@ fun BoneScreen(
 //    }
     val tabColorContent = colorScheme.onSurface
     val tabColorBackground = colorScheme.surface
+    val navController = LocalNavController.current
 
     BackHandler {
         if (pagerState.currentPage != 0) {
@@ -69,7 +68,7 @@ fun BoneScreen(
                 pagerState.animateScrollToPage(0)
             }
         } else {
-            navController?.popBackStack()
+            navController.popBackStack()
         }
     }
     Scaffold(
