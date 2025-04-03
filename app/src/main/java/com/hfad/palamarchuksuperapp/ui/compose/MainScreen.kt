@@ -81,6 +81,7 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.domain.models.AppImages
 import com.hfad.palamarchuksuperapp.domain.usecases.ActivityKey
 import com.hfad.palamarchuksuperapp.domain.usecases.SwitchToActivityUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.FeatureBoneRoutes
 import com.hfad.palamarchuksuperapp.ui.compose.utils.BottomNavBar
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -288,9 +289,8 @@ fun MainScreenRow(
                                         animatedContentScope
                                     ),
                                     action = {
-//                                        navController.navigate(Routes.BoneScreen)
-                                        navController.navigate(Routes.FeatureScreen) //TODO fore feature module
-                                             },
+                                        navController.navigate(FeatureBoneRoutes.Root)
+                                    },
                                     imagePath = R.drawable.d_letter,
                                     text = stringResource(R.string.bone_button_name),
                                     position = Modifier
