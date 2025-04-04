@@ -26,8 +26,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.appComponent
+import com.hfad.palamarchuksuperapp.core.ui.navigation.featureRegister
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.featureBoneNavGraph
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.BoneFeature
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.FeatureBoneRoutes
 import kotlinx.serialization.Serializable
 
 class ComposeMainActivity : AppCompatActivity() {
@@ -156,10 +158,10 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         }
                     }
 
-                    featureBoneNavGraph(
-                        modifier = Modifier,
+                    featureRegister<FeatureBoneRoutes.Root>(
+                        featureApi = BoneFeature(context.appComponent),
                         navController = navController,
-                        diDependents = context.appComponent
+                        modifier = Modifier,
                     )
                 }
             }
@@ -212,8 +214,5 @@ sealed interface Routes {
     object ChatBotScreen : Routes
 
     @Serializable
-    object BoneScreen : Routes //TODO Rename when prod
-
-    @Serializable
-    object FeatureScreen : Routes
+    object BoneFeature : Routes
 }
