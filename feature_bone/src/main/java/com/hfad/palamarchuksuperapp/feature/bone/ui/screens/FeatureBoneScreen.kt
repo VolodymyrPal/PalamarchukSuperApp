@@ -4,34 +4,45 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import kotlinx.serialization.Serializable
 
-fun NavGraphBuilder.featureBoneNavGraph(
-    modifier: Modifier = Modifier,
-    navController: NavHostController,
+class BoneFeature(
     diDependents: BoneDeps,
-) {
-    navigation<FeatureBoneRoutes.Root>(
-        startDestination = FeatureBoneRoutes.BoneScreen
+) : FeatureApi {
+
+    companion object Route {
+        val route = FeatureBoneRoutes.Root
+    }
+
+    private val component = DaggerBoneComponent.builder().deps(diDependents).build()
+
+    override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.BoneScreen
+
+    override fun registerGraph(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavController,
+        modifier: Modifier,
     ) {
-        val component = DaggerBoneComponent.builder().deps(diDependents).build()
-
-        composable<FeatureBoneRoutes.BoneScreen> {
-
-            CompositionLocalProvider(
-                LocalBoneDependencies provides component,
-                LocalNavController provides navController
-            ) {
-                BoneScreenRoot(
-                    modifier = modifier,
-                )
+        navGraphBuilder.navigation<FeatureBoneRoutes.Root>(
+            startDestination = homeRoute,
+        ) {
+            composable<FeatureBoneRoutes.BoneScreen> {
+                CompositionLocalProvider(
+                    LocalBoneDependencies provides component,
+                    LocalNavController provides navController
+                ) {
+                    BoneScreenRoot(
+                        modifier = modifier,
+                    )
+                }
             }
         }
     }
@@ -40,7 +51,7 @@ fun NavGraphBuilder.featureBoneNavGraph(
 internal val LocalBoneDependencies = compositionLocalOf<BoneComponent> {
     error("BoneDependencies not provided!")
 }
-internal val LocalNavController = staticCompositionLocalOf<NavHostController> {
+internal val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController not provided")
 }
 
