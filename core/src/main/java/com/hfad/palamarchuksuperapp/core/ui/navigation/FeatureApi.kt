@@ -6,16 +6,17 @@ import androidx.navigation.NavGraphBuilder
 
 interface FeatureApi {
 
-    val homeRoute : Any
+    val homeRoute: Any
 
     fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavController,
         modifier: Modifier = Modifier,
+        coreRoute: Any,
     )
 }
 
-fun < T: Any> NavGraphBuilder.featureRegister(
+inline fun <reified T : Any> NavGraphBuilder.featureRegister(
     featureApi: FeatureApi,
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -24,5 +25,6 @@ fun < T: Any> NavGraphBuilder.featureRegister(
         navGraphBuilder = this,
         navController = navController,
         modifier = modifier,
+        coreRoute = T::class
     )
 }

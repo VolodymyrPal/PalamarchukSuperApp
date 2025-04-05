@@ -158,7 +158,7 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         }
                     }
 
-                    featureRegister<FeatureBoneRoutes.Root>(
+                    featureRegister<FeatureBoneRoutes.BoneScreen>(
                         featureApi = BoneFeature(context.appComponent),
                         navController = navController,
                         modifier = Modifier,
