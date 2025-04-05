@@ -48,6 +48,20 @@ class BoneFeature(
     }
 }
 
+inline fun NavGraphBuilder.navigation(
+    coreRoute: Any,
+    startDestination: Any,
+    typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
+    builder: NavGraphBuilder.() -> Unit,
+): Unit = destination(
+    NavGraphBuilder(
+        provider,
+        startDestination,
+        coreRoute::class,
+        typeMap
+    ).apply(builder)
+)
+
 internal val LocalBoneDependencies = compositionLocalOf<BoneComponent> {
     error("BoneDependencies not provided!")
 }
