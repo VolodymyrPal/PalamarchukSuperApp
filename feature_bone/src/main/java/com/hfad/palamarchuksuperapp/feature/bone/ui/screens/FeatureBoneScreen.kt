@@ -1,11 +1,13 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
+import android.util.Log
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
@@ -13,6 +15,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KType
 
 class BoneFeature(
     diDependents: BoneDeps,
@@ -30,7 +33,10 @@ class BoneFeature(
         navGraphBuilder: NavGraphBuilder,
         navController: NavController,
         modifier: Modifier,
+        coreRoute: Any,
     ) {
+        Log.d("Core", "${FeatureBoneRoutes.Root::class}")
+        Log.d("Core pass: ", "${coreRoute::class}")
         navGraphBuilder.navigation<FeatureBoneRoutes.Root>(
             startDestination = homeRoute,
         ) {
@@ -39,6 +45,7 @@ class BoneFeature(
                     LocalBoneDependencies provides component,
                     LocalNavController provides navController
                 ) {
+                    Log.d("Core", "${FeatureBoneRoutes.BoneScreen::class}")
                     BoneScreenRoot(
                         modifier = modifier,
                     )
