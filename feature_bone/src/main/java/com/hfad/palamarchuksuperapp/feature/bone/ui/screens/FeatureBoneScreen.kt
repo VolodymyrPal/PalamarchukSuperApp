@@ -31,12 +31,11 @@ class BoneFeature(
         navGraphBuilder: NavGraphBuilder,
         navController: NavController,
         modifier: Modifier,
-        coreRoute: Any,
+        coreRoute: KClass<*>, //class name from inline feature API
     ) {
-        Log.d("Core", "${FeatureBoneRoutes.Root::class}")
-        Log.d("Core pass: ", "${coreRoute::class}")
-        navGraphBuilder.navigation<FeatureBoneRoutes.Root>(
-            startDestination = homeRoute,
+        navGraphBuilder.navigation(
+            coreRoute = coreRoute,
+            startDestination = homeRoute
         ) {
             composable<FeatureBoneRoutes.BoneScreen> {
                 CompositionLocalProvider(
