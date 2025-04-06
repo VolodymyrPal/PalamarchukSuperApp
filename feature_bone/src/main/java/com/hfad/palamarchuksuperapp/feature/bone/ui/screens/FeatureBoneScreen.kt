@@ -1,21 +1,19 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
-import android.util.Log
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
+import com.hfad.palamarchuksuperapp.core.ui.navigation.navigation
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import kotlinx.serialization.Serializable
-import kotlin.reflect.KType
+import kotlin.reflect.KClass
 
 class BoneFeature(
     diDependents: BoneDeps,
@@ -33,19 +31,17 @@ class BoneFeature(
         navGraphBuilder: NavGraphBuilder,
         navController: NavController,
         modifier: Modifier,
-        coreRoute: Any,
+        coreRoute: KClass<*>, //class name from inline feature API
     ) {
-        Log.d("Core", "${FeatureBoneRoutes.Root::class}")
-        Log.d("Core pass: ", "${coreRoute::class}")
-        navGraphBuilder.navigation<FeatureBoneRoutes.Root>(
-            startDestination = homeRoute,
+        navGraphBuilder.navigation(
+            coreRoute = coreRoute,
+            startDestination = homeRoute
         ) {
             composable<FeatureBoneRoutes.BoneScreen> {
                 CompositionLocalProvider(
                     LocalBoneDependencies provides component,
                     LocalNavController provides navController
                 ) {
-                    Log.d("Core", "${FeatureBoneRoutes.BoneScreen::class}")
                     BoneScreenRoot(
                         modifier = modifier,
                     )
@@ -54,20 +50,6 @@ class BoneFeature(
         }
     }
 }
-
-inline fun NavGraphBuilder.navigation(
-    coreRoute: Any,
-    startDestination: Any,
-    typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
-    builder: NavGraphBuilder.() -> Unit,
-): Unit = destination(
-    NavGraphBuilder(
-        provider,
-        startDestination,
-        coreRoute::class,
-        typeMap
-    ).apply(builder)
-)
 
 internal val LocalBoneDependencies = compositionLocalOf<BoneComponent> {
     error("BoneDependencies not provided!")

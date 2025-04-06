@@ -29,7 +29,6 @@ import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.core.ui.navigation.featureRegister
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.BoneFeature
-import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.FeatureBoneRoutes
 import kotlinx.serialization.Serializable
 
 class ComposeMainActivity : AppCompatActivity() {
@@ -158,7 +157,7 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         }
                     }
 
-                    featureRegister<FeatureBoneRoutes.BoneScreen>(
+                    featureRegister<Routes.BoneFeature>(
                         featureApi = BoneFeature(context.appComponent),
                         navController = navController,
                         modifier = Modifier,

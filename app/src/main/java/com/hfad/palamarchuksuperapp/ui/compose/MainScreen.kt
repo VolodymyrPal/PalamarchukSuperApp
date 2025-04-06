@@ -289,7 +289,7 @@ fun MainScreenRow(
                                         animatedContentScope
                                     ),
                                     action = {
-                                        navController.navigate(BoneFeature.route)
+                                        navController.navigate(Routes.BoneFeature)
                                     },
                                     imagePath = R.drawable.d_letter,
                                     text = stringResource(R.string.bone_button_name),
