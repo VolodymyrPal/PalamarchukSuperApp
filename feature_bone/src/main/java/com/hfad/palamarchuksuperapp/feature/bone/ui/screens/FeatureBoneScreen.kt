@@ -16,14 +16,9 @@ import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
 class BoneFeature(
-    diDependents: BoneDeps,
+    featureDependenties: BoneDeps,
 ) : FeatureApi {
-
-    companion object Route {
-        val route = FeatureBoneRoutes.Root
-    }
-
-    private val component = DaggerBoneComponent.builder().deps(diDependents).build()
+    private val component = DaggerBoneComponent.builder().deps(featureDependenties).build()
 
     override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.BoneScreen
 
