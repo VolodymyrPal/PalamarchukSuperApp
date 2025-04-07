@@ -66,3 +66,26 @@ inline fun NavGraphBuilder.navigation(
         ).apply(builder)
     )
 }
+
+
+fun registerGraphSample() {
+    /**
+    override fun registerGraph(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavController,
+        modifier: Modifier,
+        coreRoute: AppFeatureRoute, //class name from inline feature API
+    ) {
+        navGraphBuilder.navigation(
+            coreRoute = coreRoute ,
+            startDestination = FeatureRoutes.Home
+        ) {
+            composable<FeatureRoutes.Home> {
+                Screen(
+                    modifier = modifier,
+                    navController = navController
+                )
+            }
+        }
+    } */
+}
