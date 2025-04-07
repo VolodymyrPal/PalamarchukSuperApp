@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.core.ui.navigation
 
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import kotlin.reflect.KClass
@@ -30,6 +31,13 @@ interface FeatureApi {
     )
 }
 
+/**
+ * Connect feature class/navigation graph to main navigation graph.
+ *
+ * @param featureApi Feature API implementation
+ * @param navController Navigation controller for navigation threw this feature in parent graph
+ * @param modifier Modifier for composable screen of feature
+ */
 inline fun <reified T : Any> NavGraphBuilder.featureRegister(
     featureApi: FeatureApi,
     navController: NavController,
