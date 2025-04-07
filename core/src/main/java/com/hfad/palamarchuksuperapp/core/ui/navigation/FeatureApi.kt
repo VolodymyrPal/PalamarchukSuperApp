@@ -51,6 +51,18 @@ inline fun <reified T : Any> NavGraphBuilder.featureRegister(
     )
 }
 
+/**
+ * Construct a nested [NavGraph]
+ *
+ * @param coreRoute the graph's unique route from a KClass<T>
+ * @param startDestination the starting destination's route feature from an Object for this NavGraph.
+ * The graph's unique route used by the parent NavHost or navigation to navigate into this nested
+ * graph, represented by a KClass<*>..
+ * @param typeMap A mapping of KType to custom NavType<*> in the [T]. May be empty if [T] does not
+ *   use custom NavTypes.
+ * @param builder the builder used to construct the graph
+ * @return the newly constructed nested NavGraph
+ */
 inline fun NavGraphBuilder.navigation(
     coreRoute: KClass<*>,
     startDestination: Any,
