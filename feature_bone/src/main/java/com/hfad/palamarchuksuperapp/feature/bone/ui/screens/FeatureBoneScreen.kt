@@ -57,10 +57,6 @@ internal val LocalNavController = staticCompositionLocalOf<NavController> {
 @Serializable
 sealed interface FeatureBoneRoutes {
 
-    //Graphs routes
-    @Serializable
-    object Root : FeatureBoneRoutes
-
     @Serializable
     object BoneScreen : FeatureBoneRoutes
 
