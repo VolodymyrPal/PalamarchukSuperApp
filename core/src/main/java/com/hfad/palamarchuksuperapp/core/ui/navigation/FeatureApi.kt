@@ -11,6 +11,17 @@ interface FeatureApi {
 
     val homeRoute: Any
 
+    /**
+     * Describe feature navigation graph.
+     * Directly not used, only with function [featureRegister] from [NavGraphBuilder] of app module.
+     *
+     * @param navGraphBuilder Builder for navigation graph
+     * @param navController Navigation controller for navigation threw this feature in parent graph
+     * @param modifier Modifier for composable screen of feature
+     * @param coreRoute KClass<*> of base route from app module
+     *
+     * @sample com.hfad.palamarchuksuperapp.core.ui.navigation.registerGraphSample
+     */
     fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavController,
