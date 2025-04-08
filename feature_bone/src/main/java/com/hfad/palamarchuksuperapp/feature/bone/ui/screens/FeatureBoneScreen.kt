@@ -52,6 +52,44 @@ class BoneFeature(
     }
 }
 
+/**
+ * Расширение для NavGraphBuilder, регистрирующее composable с автоматической обёрткой зависимостей.
+ *
+ * @param route маршрут для экрана
+ * @param component общий компонент (зависимость)
+ * @param navController NavController, используемый для навигации
+ * @param sharedTransitionScope опциональный shared transition scope
+ * @param content Composable, представляющий содержимое экрана
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
+internal inline fun <reified T : Any> NavGraphBuilder.featureComposable(
+    component: BoneComponent,
+    navController: NavController,
+    sharedTransitionScope: SharedTransitionScope?,
+    noinline content: @Composable (NavBackStackEntry) -> Unit,
+) {
+    composable(route = T::class) { navBackStackEntry ->
+        // Оборачиваем содержимое экрана в CompositionLocalProvider, чтобы передать необходимые зависимости
+        CompositionLocalProvider(
+            LocalBoneDependencies provides component,
+            LocalNavController provides navController,
+            // Передаем текущий NavGraphBuilder в качестве LocalNavAnimatedVisibilityScope,
+            // если это требуется логикой приложения
+            LocalNavAnimatedVisibilityScope provides this,
+            LocalSharedTransitionScope provides sharedTransitionScope
+        ) {
+            content(navBackStackEntry)
+        }
+    }
+}
+
+internal val LocalNavAnimatedVisibilityScope =
+    compositionLocalOf<AnimatedVisibilityScope?> { null } //TODO
+
+@OptIn(ExperimentalSharedTransitionApi::class) //TODO
+val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?> { null } //TODO
+
+
 internal val LocalBoneDependencies = compositionLocalOf<BoneComponent> {
     error("BoneDependencies not provided!")
 }
