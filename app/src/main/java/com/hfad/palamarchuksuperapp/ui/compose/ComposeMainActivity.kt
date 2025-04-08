@@ -161,6 +161,7 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         featureApi = BoneFeature(context.appComponent),
                         navController = navController,
                         modifier = Modifier,
+                        sharedTransitionScope = this@SharedTransitionLayout
                     )
                 }
             }
