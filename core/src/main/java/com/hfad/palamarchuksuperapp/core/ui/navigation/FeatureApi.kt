@@ -18,6 +18,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.ComposeNavigatorDestinationBuilder
 import androidx.navigation.get
+import kotlin.collections.forEach
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -42,7 +43,7 @@ interface FeatureApi {
         navController: NavController,
         modifier: Modifier = Modifier,
         coreRoute: KClass<*>,
-        sharedTransitionScope: SharedTransitionScope? = null,
+        sharedTransitionScope: SharedTransitionScope? = null
     )
 }
 
@@ -58,7 +59,7 @@ inline fun <reified T : Any> NavGraphBuilder.featureRegister(
     featureApi: FeatureApi,
     navController: NavController,
     modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope? = null,
+    sharedTransitionScope: SharedTransitionScope? = null
 ) {
     featureApi.registerGraph(
         navGraphBuilder = this,
@@ -94,6 +95,51 @@ inline fun NavGraphBuilder.navigation(
             coreRoute,
             typeMap
         ).apply(builder)
+    )
+}
+
+@Suppress("LongParameterList")
+fun NavGraphBuilder.composable(
+    route : KClass<*>,
+    typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    noinline enterTransition:
+    (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards
+    EnterTransition?)? =
+        null,
+    noinline exitTransition:
+    (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards
+    ExitTransition?)? =
+        null,
+    noinline popEnterTransition:
+    (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards
+    EnterTransition?)? =
+        enterTransition,
+    noinline popExitTransition:
+    (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards
+    ExitTransition?)? =
+        exitTransition,
+    noinline sizeTransform:
+    (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards
+    SizeTransform?)? =
+        null,
+    noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+) {
+    destination(
+        ComposeNavigatorDestinationBuilder(
+            provider[ComposeNavigator::class],
+            route,
+            typeMap,
+            content
+        )
+            .apply {
+                deepLinks.forEach { deepLink -> deepLink(deepLink) }
+                this.enterTransition = enterTransition
+                this.exitTransition = exitTransition
+                this.popEnterTransition = popEnterTransition
+                this.popExitTransition = popExitTransition
+                this.sizeTransform = sizeTransform
+            }
     )
 }
 
