@@ -24,9 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.BoneFeatureViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -47,7 +45,7 @@ fun BoneScreenRoot(
 @Composable
 fun BoneScreen(
     modifier: Modifier = Modifier,
-    viewModel: BoneFeatureViewModel = daggerViewModel<BoneFeatureViewModel>(),
+//    viewModel: BoneFeatureViewModel = daggerViewModel<BoneFeatureViewModel>(),
 ) {
     val tabs = listOf("Заказы", "Платежи", "Продажи", "Финансы")
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
@@ -71,68 +69,80 @@ fun BoneScreen(
             navController.popBackStack()
         }
     }
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            PrimaryTabRow(
-                selectedTabIndex = pagerState.currentPage,
-                containerColor = tabColorBackground,
-                indicator = {
-                    TabRowDefaults.PrimaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(
-                            pagerState.currentPage,
-                            matchContentSize = true
-                        ),
-                        color = tabColorContent,
-                        width = Dp.Unspecified,
-                    )
-                }
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        modifier = Modifier.clip(CircleShape),
-                        text = {
-                            AppText(
-                                value = title,
-                                appTextConfig = appTextConfig(),
-                                color = if (pagerState.currentPage == index)
-                                    tabColorContent
-                                else
-                                    tabColorContent.copy(alpha = 0.6f)
-                            )
-                        },
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        }
-                    )
-                }
-            }
-        },
-    ) { paddingValues ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                )
-        ) {
+    val localTransitionScope = LocalSharedTransitionScope.current
+        ?: error(IllegalStateException("No SharedElementScope found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+        ?: error(IllegalStateException("No AnimatedVisibility found"))
 
-            HorizontalPager(
-                state = pagerState,
+    with(localTransitionScope) { //TODO
+        Scaffold(
+            modifier = modifier
+                .fillMaxSize()
+                .sharedElement(
+                    this.rememberSharedContentState("bone"),
+                    animatedContentScope,
+                ),
+            topBar = {
+                PrimaryTabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    containerColor = tabColorBackground,
+                    indicator = {
+                        TabRowDefaults.PrimaryIndicator(
+                            modifier = Modifier.tabIndicatorOffset(
+                                pagerState.currentPage,
+                                matchContentSize = true
+                            ),
+                            color = tabColorContent,
+                            width = Dp.Unspecified,
+                        )
+                    }
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            modifier = Modifier.clip(CircleShape),
+                            text = {
+                                AppText(
+                                    value = title,
+                                    appTextConfig = appTextConfig(),
+                                    color = if (pagerState.currentPage == index)
+                                        tabColorContent
+                                    else
+                                        tabColorContent.copy(alpha = 0.6f)
+                                )
+                            },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            }
+                        )
+                    }
+                }
+            },
+        ) { paddingValues ->
+            Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(colorScheme.primaryContainer),
-                userScrollEnabled = true,
-                beyondViewportPageCount = 1,
-            ) { page ->
-                when (page) {
-                    0 -> OrdersPage()
-                    1 -> PaymentsPage()
-                    2 -> SalesPage()
-                    3 -> FinancePage()
+                    .padding(
+                        top = paddingValues.calculateTopPadding()
+                    )
+            ) {
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorScheme.primaryContainer),
+                    userScrollEnabled = true,
+                    beyondViewportPageCount = 1,
+                ) { page ->
+                    when (page) {
+                        0 -> OrdersPage()
+                        1 -> PaymentsPage()
+                        2 -> SalesPage()
+                        3 -> FinancePage()
+                    }
                 }
             }
         }
