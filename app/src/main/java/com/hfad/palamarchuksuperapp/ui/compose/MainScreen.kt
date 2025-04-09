@@ -284,10 +284,7 @@ fun MainScreenRow(
                                     )
                                 )
                                 ButtonToNavConstraint(
-                                    modifier = Modifier.sharedBounds(
-                                        rememberSharedContentState("key"),
-                                        animatedContentScope
-                                    ),
+                                    modifier = Modifier,
                                     action = {
                                         navController.navigate(Routes.BoneFeature)
                                     },
@@ -295,11 +292,12 @@ fun MainScreenRow(
                                     text = stringResource(R.string.bone_button_name),
                                     position = Modifier
                                         .offset((-15).dp, (-15).dp)
-                                        .sharedElement(
-                                            rememberSharedContentState("bone"), //TODO rename in prod
-                                            animatedContentScope
-                                        ),
-                                    enable = true
+                                    ,
+                                    enable = true,
+                                    modifierToTransit = Modifier.sharedBounds(
+                                        rememberSharedContentState("bone"),
+                                        animatedContentScope
+                                    )
                                 )
                             }
                         }
