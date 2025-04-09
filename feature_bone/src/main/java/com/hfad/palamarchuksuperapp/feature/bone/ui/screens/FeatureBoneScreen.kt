@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
 import com.hfad.palamarchuksuperapp.core.ui.navigation.composable
 import com.hfad.palamarchuksuperapp.core.ui.navigation.navigation
@@ -21,9 +22,9 @@ import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 
 class BoneFeature(
-    featureDependenties: BoneDeps,
+    featureDependencies: BoneDeps,
 ) : FeatureApi {
-    private val component = DaggerBoneComponent.builder().deps(featureDependenties).build()
+    private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
 
     override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.BoneScreen
 
@@ -34,6 +35,7 @@ class BoneFeature(
         modifier: Modifier,
         coreRoute: KClass<*>, //class name from inline feature API
         sharedTransitionScope: SharedTransitionScope?,
+        transitionKey: String
     ) {
         navGraphBuilder.navigation(
             coreRoute = coreRoute,
@@ -44,8 +46,21 @@ class BoneFeature(
                 navController = navController,
                 sharedTransitionScope = sharedTransitionScope
             ) {
+                val transition = LocalSharedTransitionScope.current
+                val anim = LocalNavAnimatedVisibilityScope.current
+                val modifier = if (transition != null) {
+                    with(transition) {
+                        modifier.sharedElement(
+                                rememberSharedContentState(key = transitionKey),
+                                anim
+                            )
+                    }
+                } else {
+                        modifier
+                }
                 BoneScreenRoot(
                     modifier = modifier,
+                    viewModel = daggerViewModel(component.viewModelFactory)
                 )
             }
         }
@@ -69,12 +84,9 @@ internal inline fun <reified T : Any> NavGraphBuilder.featureComposable(
     noinline content: @Composable (NavBackStackEntry) -> Unit,
 ) {
     composable(route = T::class) { navBackStackEntry ->
-        // Оборачиваем содержимое экрана в CompositionLocalProvider, чтобы передать необходимые зависимости
         CompositionLocalProvider(
             LocalBoneDependencies provides component,
             LocalNavController provides navController,
-            // Передаем текущий NavGraphBuilder в качестве LocalNavAnimatedVisibilityScope,
-            // если это требуется логикой приложения
             LocalNavAnimatedVisibilityScope provides this,
             LocalSharedTransitionScope provides sharedTransitionScope
         ) {
@@ -84,7 +96,7 @@ internal inline fun <reified T : Any> NavGraphBuilder.featureComposable(
 }
 
 internal val LocalNavAnimatedVisibilityScope =
-    compositionLocalOf<AnimatedVisibilityScope?> { null } //TODO
+    compositionLocalOf<AnimatedVisibilityScope> { error("Animated visibility scope not provided") }
 
 @OptIn(ExperimentalSharedTransitionApi::class) //TODO
 val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?> { null } //TODO

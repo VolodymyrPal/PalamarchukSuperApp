@@ -43,7 +43,8 @@ interface FeatureApi {
         navController: NavController,
         modifier: Modifier = Modifier,
         coreRoute: KClass<*>,
-        sharedTransitionScope: SharedTransitionScope? = null
+        sharedTransitionScope: SharedTransitionScope? = null,
+        transitionKey: String = "",
     )
 }
 
@@ -53,20 +54,23 @@ interface FeatureApi {
  * @param featureApi Feature API implementation
  * @param navController Navigation controller for navigation threw this feature in parent graph
  * @param modifier Modifier for composable screen of feature
+ * @param sharedTransitionScope Shared transition scope for smoother animation
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 inline fun <reified T : Any> NavGraphBuilder.featureRegister(
     featureApi: FeatureApi,
     navController: NavController,
     modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope? = null
+    sharedTransitionScope: SharedTransitionScope? = null,
+    transitionKey : String = ""
 ) {
     featureApi.registerGraph(
         navGraphBuilder = this,
         navController = navController,
         modifier = modifier,
         coreRoute = T::class,
-        sharedTransitionScope = sharedTransitionScope
+        sharedTransitionScope = sharedTransitionScope,
+        transitionKey = transitionKey
     )
 }
 
@@ -98,8 +102,12 @@ inline fun NavGraphBuilder.navigation(
     )
 }
 
+/**
+ * Constructs a [ComposeNavigatorDestinationBuilder] and adds it to the graph with type safe
+ * [route].
+ */
 @Suppress("LongParameterList")
-fun NavGraphBuilder.composable(
+inline fun NavGraphBuilder.composable(
     route : KClass<*>,
     typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
     deepLinks: List<NavDeepLink> = emptyList(),
