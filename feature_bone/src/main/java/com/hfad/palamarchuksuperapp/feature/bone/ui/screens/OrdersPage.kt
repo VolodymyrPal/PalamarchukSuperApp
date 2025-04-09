@@ -90,7 +90,7 @@ fun OrderStatistics(
     ) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 8.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -104,7 +104,7 @@ fun OrderStatistics(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AppText(
-                value = "statisticVal",
+                value = "Замовлення",
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
