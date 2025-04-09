@@ -161,7 +161,8 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         featureApi = BoneFeature(context.appComponent),
                         navController = navController,
                         modifier = Modifier,
-                        sharedTransitionScope = this@SharedTransitionLayout
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        transitionKey = Routes.BoneFeature.TRANS_KEY
                     )
                 }
             }
@@ -214,5 +215,7 @@ sealed interface Routes {
     object ChatBotScreen : Routes
 
     @Serializable
-    object BoneFeature : Routes
+    object BoneFeature : Routes {
+        const val TRANS_KEY = "bone"
+    }
 }
