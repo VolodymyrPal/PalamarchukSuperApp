@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
@@ -35,8 +36,11 @@ fun BoneScreenRoot(
     viewModel: BoneFeatureViewModel,
 ) {
     val a = viewModel
+    val navController = LocalNavController.current
+
     BoneScreen(
         modifier = modifier,
+        navController = null
     )
 }
 
@@ -48,6 +52,7 @@ fun BoneScreenRoot(
 @Composable
 fun BoneScreen(
     modifier: Modifier = Modifier,
+    navController: NavController? = null,
 ) {
     val tabs = listOf("Заказы", "Платежи", "Продажи", "Финансы")
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
@@ -60,7 +65,6 @@ fun BoneScreen(
 //    }
     val tabColorContent = colorScheme.onSurface
     val tabColorBackground = colorScheme.surface
-    val navController = LocalNavController.current
 
     BackHandler {
         if (pagerState.currentPage != 0) {
@@ -68,7 +72,7 @@ fun BoneScreen(
                 pagerState.animateScrollToPage(0)
             }
         } else {
-            navController.popBackStack()
+            navController?.popBackStack()
         }
     }
     Scaffold(
