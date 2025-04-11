@@ -218,7 +218,21 @@ fun OrderStat(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+data class OrderPageState(
+    val orderMetrics: OrderMetrics = OrderMetrics(),
+    val orders: List<Order> = emptyList(),
+)
+
+
+data class OrderMetrics(
+    val totalOrders: Int = 0,
+    val completedOrders: Int = 0,
+    val inProgressOrders: Int = 0,
+    val totalOrderWeight: Double = 0.0,
+)
+
+
+@Preview
 @Composable
 fun OrderCardListPreview() {
     AppTheme(
