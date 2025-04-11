@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,8 +38,6 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BusinessEntity
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.EntityType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
 
@@ -46,6 +45,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
 @Composable
 fun OrdersPage(
     modifier: Modifier = Modifier,
+    orderPageState: OrderPageState = OrderPageState(),
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -56,23 +56,12 @@ fun OrdersPage(
 
         item {
             OrderStatistics(
-                entity = BusinessEntity(
-                    code = 1,
-                    name = "12345",
-                    manager = "Иван Петров",
-                    type = EntityType.OTHER
-                ),
-                modifier = Modifier
+                modifier = Modifier,
+                orderMetrics = orderPageState.orderMetrics
             )
         }
 
-        val items = listOf(
-            Order(),
-            Order(),
-            Order()
-        )
-
-        items(items = items) {
+        items(items = orderPageState.orders) {
             OrderCard(
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                 order = it,
