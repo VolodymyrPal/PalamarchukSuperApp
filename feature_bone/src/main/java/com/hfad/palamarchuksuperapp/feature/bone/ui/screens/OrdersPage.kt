@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,8 +38,6 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BusinessEntity
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.EntityType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
 
@@ -46,6 +45,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
 @Composable
 fun OrdersPage(
     modifier: Modifier = Modifier,
+    orderPageState: OrderPageState = OrderPageState(),
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -56,23 +56,12 @@ fun OrdersPage(
 
         item {
             OrderStatistics(
-                entity = BusinessEntity(
-                    code = 1,
-                    name = "12345",
-                    manager = "Иван Петров",
-                    type = EntityType.OTHER
-                ),
-                modifier = Modifier
+                modifier = Modifier,
+                orderMetrics = orderPageState.orderMetrics
             )
         }
 
-        val items = listOf(
-            Order(),
-            Order(),
-            Order()
-        )
-
-        items(items = items) {
+        items(items = orderPageState.orders) {
             OrderCard(
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
                 order = it,
@@ -84,12 +73,11 @@ fun OrdersPage(
 
 @Composable
 fun OrderStatistics(
-    entity: BusinessEntity,
+    orderMetrics: OrderMetrics = OrderMetrics(),
     modifier: Modifier = Modifier,
-
-    ) {
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 8.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -103,8 +91,9 @@ fun OrderStatistics(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val title = stringResource(R.string.order_statistic_title)
             AppText(
-                value = "Замовлення",
+                value = title,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
@@ -124,29 +113,31 @@ fun OrderStatistics(
             ) {
                 val inProgress = ImageVector.vectorResource(R.drawable.in_progress)
 
+                val inWork = stringResource(R.string.in_work)
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = inProgress,
-                    value = "2",
-                    label = "inVorkVal",
+                    value = "${orderMetrics.inProgressOrders}",
+                    label = inWork,
                     color = MaterialTheme.colorScheme.error
                 )
 
+                val completed = stringResource(R.string.completed)
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = Icons.Default.Check,
-                    value = "15",
-                    label = "completedVal",
+                    value = "${orderMetrics.completedOrders}",
+                    label = completed,
                     color = Color(0xFF55940E)
                 )
 
                 val weightPainter = ImageVector.vectorResource(R.drawable.kilogram)
-
+                val finishFull = stringResource(R.string.finish_full)
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
-                    value = "450т",
-                    label = "finishFull",
+                    value = "${orderMetrics.totalOrderWeight} т",
+                    label = finishFull,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -157,19 +148,21 @@ fun OrderStatistics(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
+            val sumOrderTitle = stringResource(R.string.summ_orders)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    value = "summOrdersTitle",
+                    value = "$sumOrderTitle ",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium
-                    )
+                    ),
+                    color = MaterialTheme.colorScheme.primary
                 )
                 AppText(
-                    value = "summOrders",
+                    value = "${orderMetrics.totalOrders}",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
@@ -229,80 +222,79 @@ fun OrderStat(
     }
 }
 
+data class OrderPageState(
+    val orderMetrics: OrderMetrics = OrderMetrics(),
+    val orders: List<Order> = emptyList(),
+)
+
+
+data class OrderMetrics(
+    val totalOrders: Int = 0,
+    val completedOrders: Int = 0,
+    val inProgressOrders: Int = 0,
+    val totalOrderWeight: Double = 0.0,
+)
+
+
+@Preview
+@Composable
+fun OrdersPagePreview() {
+    AppTheme(
+        useDarkTheme = true
+    ) {
+        OrdersPage(
+            orderPageState = OrderPageState(
+                orders = listOf(
+                    Order(), Order(), Order()
+                ),
+                orderMetrics = OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            ),
+        )
+    }
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun OrderCardListPreview() {
     AppTheme(
-        useDarkTheme = true
+        useDarkTheme = false
     ) {
-        Column(
-            modifier = Modifier
-        ) {
-            val entity = Order(
-                id = 0,
+        OrdersPage(
+            orderPageState = OrderPageState(
+                orders = listOf(
+                    Order(), Order(), Order()
+                ),
+                orderMetrics = OrderMetrics(
+                    53, 40, 5, 534.25
+                )
             )
-            OrderCard(
-                order = entity,
-                initialStatus = StepperStatus.IN_PROGRESS,
-                currentStep = 3,
-                initialExpanded = true,
-                modifier = Modifier.padding(16.dp)
-            )
-            val entity1 = Order(
-                id = 1,
-            )
-            OrderCard(
-                order = entity1,
-                initialStatus = StepperStatus.DONE,
-                currentStep = 7,
-                initialExpanded = false,
-                modifier = Modifier.padding(16.dp)
-            )
-            val entity2 = Order(
-                id = 2
-            )
-            OrderCard(
-                order = entity2,
-                initialStatus = StepperStatus.CANCELED,
-                currentStep = 2,
-                modifier = Modifier.padding(16.dp)
-            )
-            val entity3 = Order(
-                id = 3
-            )
-            OrderCard(
-                order = entity3,
-                initialStatus = StepperStatus.CREATED,
-                currentStep = 1,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun OrderStatisticsPreview() {
-    AppTheme {
-        val entity = BusinessEntity(
-            code = 1,
-            name = "12345",
-            manager = "Иван Петров",
-            type = EntityType.OTHER
-        )
-        OrderStatistics(
-            entity = entity,
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
 @Preview
 @Composable
-fun OrdersPagePreview() {
-    AppTheme(
-        useDarkTheme = false
-    ) {
-        OrdersPage()
+fun OrderStatPreview() {
+    Column {
+        AppTheme(
+            useDarkTheme = false
+        ) {
+            OrderStatistics(
+                OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            )
+        }
+        AppTheme(
+            useDarkTheme = true
+        ) {
+            OrderStatistics(
+                OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            )
+        }
     }
-} 
+}
