@@ -73,12 +73,11 @@ fun OrdersPage(
 
 @Composable
 fun OrderStatistics(
-    entity: BusinessEntity,
+    orderMetrics: OrderMetrics = OrderMetrics(),
     modifier: Modifier = Modifier,
-
-    ) {
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 8.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -92,8 +91,9 @@ fun OrderStatistics(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val title = stringResource(R.string.order_statistic_title)
             AppText(
-                value = "Замовлення",
+                value = title,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
@@ -113,29 +113,31 @@ fun OrderStatistics(
             ) {
                 val inProgress = ImageVector.vectorResource(R.drawable.in_progress)
 
+                val inWork = stringResource(R.string.in_work)
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = inProgress,
-                    value = "2",
-                    label = "inVorkVal",
+                    value = "${orderMetrics.inProgressOrders}",
+                    label = inWork,
                     color = MaterialTheme.colorScheme.error
                 )
 
+                val completed = stringResource(R.string.completed)
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = Icons.Default.Check,
-                    value = "15",
-                    label = "completedVal",
+                    value = "${orderMetrics.completedOrders}",
+                    label = completed,
                     color = Color(0xFF55940E)
                 )
 
                 val weightPainter = ImageVector.vectorResource(R.drawable.kilogram)
-
+                val finishFull = stringResource(R.string.finish_full)
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
-                    value = "450т",
-                    label = "finishFull",
+                    value = "${orderMetrics.totalOrderWeight} т",
+                    label = finishFull,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -146,19 +148,21 @@ fun OrderStatistics(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
+            val sumOrderTitle = stringResource(R.string.summ_orders)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    value = "summOrdersTitle",
+                    value = "$sumOrderTitle ",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium
-                    )
+                    ),
+                    color = MaterialTheme.colorScheme.primary
                 )
                 AppText(
-                    value = "summOrders",
+                    value = "${orderMetrics.totalOrders}",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
@@ -293,4 +297,4 @@ fun OrderStatPreview() {
             )
         }
     }
-} 
+}
