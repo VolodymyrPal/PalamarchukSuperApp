@@ -234,78 +234,63 @@ data class OrderMetrics(
 
 @Preview
 @Composable
-fun OrderCardListPreview() {
+fun OrdersPagePreview() {
     AppTheme(
         useDarkTheme = true
     ) {
-        Column(
-            modifier = Modifier
-        ) {
-            val entity = Order(
-                id = 0,
-            )
-            OrderCard(
-                order = entity,
-                initialStatus = StepperStatus.IN_PROGRESS,
-                currentStep = 3,
-                initialExpanded = true,
-                modifier = Modifier.padding(16.dp)
-            )
-            val entity1 = Order(
-                id = 1,
-            )
-            OrderCard(
-                order = entity1,
-                initialStatus = StepperStatus.DONE,
-                currentStep = 7,
-                initialExpanded = false,
-                modifier = Modifier.padding(16.dp)
-            )
-            val entity2 = Order(
-                id = 2
-            )
-            OrderCard(
-                order = entity2,
-                initialStatus = StepperStatus.CANCELED,
-                currentStep = 2,
-                modifier = Modifier.padding(16.dp)
-            )
-            val entity3 = Order(
-                id = 3
-            )
-            OrderCard(
-                order = entity3,
-                initialStatus = StepperStatus.CREATED,
-                currentStep = 1,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+        OrdersPage(
+            orderPageState = OrderPageState(
+                orders = listOf(
+                    Order(), Order(), Order()
+                ),
+                orderMetrics = OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            ),
+        )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun OrderStatisticsPreview() {
-    AppTheme {
-        val entity = BusinessEntity(
-            code = 1,
-            name = "12345",
-            manager = "Иван Петров",
-            type = EntityType.OTHER
-        )
-        OrderStatistics(
-            entity = entity,
-            modifier = Modifier.fillMaxWidth()
+fun OrderCardListPreview() {
+    AppTheme(
+        useDarkTheme = false
+    ) {
+        OrdersPage(
+            orderPageState = OrderPageState(
+                orders = listOf(
+                    Order(), Order(), Order()
+                ),
+                orderMetrics = OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            )
         )
     }
 }
 
 @Preview
 @Composable
-fun OrdersPagePreview() {
-    AppTheme(
-        useDarkTheme = false
-    ) {
-        OrdersPage()
+fun OrderStatPreview() {
+    Column {
+        AppTheme(
+            useDarkTheme = false
+        ) {
+            OrderStatistics(
+                OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            )
+        }
+        AppTheme(
+            useDarkTheme = true
+        ) {
+            OrderStatistics(
+                OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            )
+        }
     }
 } 
