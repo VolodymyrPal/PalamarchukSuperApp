@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_work">In work</string>
+    <string name="completed">Completed</string>
+    <string name="finish_full">Delivered Amount</string>
+    <string name="summ_orders">Total orders:  </string>
+    <string name="order_statistic_title">Orders</string>
+
+</resources>
