@@ -20,11 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.effects.HideShowSystemBar
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.BoneFeatureViewModel
 import kotlinx.coroutines.launch
@@ -38,9 +40,10 @@ fun BoneScreenRoot(
     val a = viewModel
     val navController = LocalNavController.current
 
+    HideShowSystemBar()
     BoneScreen(
         modifier = modifier,
-        navController = null
+        navController = navController
     )
 }
 
