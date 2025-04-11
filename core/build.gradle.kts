@@ -51,6 +51,9 @@ dependencies {
     // Compose bundle
     implementation(libs.bundles.compose)
 
+    // Base theme bundle
+    implementation(libs.material)
+
     val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)

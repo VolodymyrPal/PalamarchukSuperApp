@@ -6,19 +6,19 @@
     android:viewportHeight="32">
 
     <path
-        android:fillColor="?attr/colorOnPrimaryContainer"
+        android:fillColor="@color/md_theme_onPrimaryContainer"
         android:pathData="M29.482,8.624l-10,-5.5a1,1 0,0 0,-0.964 0l-10,5.5a1,1 0,0 0,0 1.752L18,15.591L18,26.309l-3.036,-1.669L14,26.391l4.518,2.485a0.998,0.998 0,0 0,0.964 0l10,-5.5A1,1 0,0 0,30 22.5L30,9.5A1,1 0,0 0,29.482 8.624ZM19,5.142 L26.925,9.5 19,13.858 11.075,9.5ZM28,21.909 L20,26.309L20,15.591l8,-4.4Z" />
 
     <path
-        android:fillColor="?attr/colorOnPrimaryContainer"
+        android:fillColor="@color/md_theme_onPrimaryContainer"
         android:pathData="M10,16l-8,-0l-0,-2l8,-0z" />
 
     <path
-        android:fillColor="?attr/colorOnPrimaryContainer"
+        android:fillColor="@color/md_theme_onPrimaryContainer"
         android:pathData="M12,24l-8,-0l-0,-2l8,-0z" />
 
     <path
-        android:fillColor="?attr/colorOnPrimaryContainer"
+        android:fillColor="@color/md_theme_onPrimaryContainer"
         android:pathData="M14,20l-8,-0l-0,-2l8,-0z" />
 
 </vector>
