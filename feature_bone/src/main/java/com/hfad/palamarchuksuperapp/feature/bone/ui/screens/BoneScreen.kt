@@ -102,11 +102,13 @@ fun BoneScreen(
                         text = {
                             AppText(
                                 value = title,
-                                appTextConfig = appTextConfig(),
+                                appTextConfig = appTextConfig(
+                                    textAlign = TextAlign.Center
+                                ),
                                 color = if (pagerState.currentPage == index)
                                     tabColorContent
                                 else
-                                    tabColorContent.copy(alpha = 0.6f)
+                                    tabColorContent.copy(alpha = 0.6f),
                             )
                         },
                         selected = pagerState.currentPage == index,
