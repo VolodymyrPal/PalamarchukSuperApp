@@ -39,7 +39,12 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderService
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatus
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
+import kotlin.random.Random
 
 
 @Composable
@@ -47,6 +52,10 @@ fun OrdersPage(
     modifier: Modifier = Modifier,
     orderPageState: OrderPageState = OrderPageState(),
 ) {
+    val orderPageState = OrderPageState(
+        orders = generateSampleOrders() //TODO for testing
+    )
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
