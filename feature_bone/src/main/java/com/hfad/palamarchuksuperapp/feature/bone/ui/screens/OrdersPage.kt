@@ -243,22 +243,48 @@ data class OrderMetrics(
     val totalOrderWeight: Double = 0.0,
 )
 
+private fun generateSampleOrders(): List<Order> {
+    val serviceScenarios = listOf(
+        ServiceScenario.NonEuropeContainer.WithFreight.scenario,
+        ServiceScenario.ChinaEuropeContainer.scenario,
+        ServiceScenario.ChinaUkraineContainer.scenario,
+        ServiceScenario.SimpleEurope.scenario,
+        ServiceScenario.DynamicScenario(
+            listOf(
+                ServiceType.AIR_FREIGHT,
+                ServiceType.FORWARDING,
+                ServiceType.CUSTOMS
+            )
+        ).scenario
+    )
 
-@Preview
-@Composable
-fun OrdersPagePreview() {
-    AppTheme(
-        useDarkTheme = true
-    ) {
-        OrdersPage(
-            orderPageState = OrderPageState(
-                orders = listOf(
-                    Order(), Order(), Order()
-                ),
-                orderMetrics = OrderMetrics(
-                    53, 40, 5, 534.25
-                )
-            ),
+    return List(10) { index ->
+        val selectedScenario = serviceScenarios[index % serviceScenarios.size]
+        val orderServices = selectedScenario.mapIndexed { serviceIndex, serviceType ->
+            OrderService(
+                id = index * 100 + serviceIndex,
+                orderId = index,
+                fullTransport = Random.nextBoolean(),
+                serviceType = serviceType,
+                price = Random.nextFloat() * 10000 + 1000,
+                duration = Random.nextInt(3, 30),
+                status = StepperStatus.entries[Random.nextInt(StepperStatus.entries.size)],
+                icon = when (serviceType) {
+                    ServiceType.FULL_FREIGHT -> R.drawable.in_progress
+                    ServiceType.AIR_FREIGHT -> R.drawable.kilogram
+                    ServiceType.CUSTOMS -> R.drawable.lock_outlined
+                    else -> R.drawable.in_progress
+                }
+            )
+        }
+
+        Order(
+            id = index,
+            businessEntityNum = Random.nextInt(2001, 8300),
+            num = Random.nextInt(44000, 50000),
+            serviceList = orderServices,
+            status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)]
+            // cargoType будет определен автоматически на основе serviceList в data class
         )
     }
 }
