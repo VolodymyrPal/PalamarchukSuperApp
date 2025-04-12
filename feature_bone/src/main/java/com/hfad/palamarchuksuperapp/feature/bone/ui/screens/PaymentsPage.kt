@@ -35,9 +35,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import kotlin.random.Random
 
 @Composable
@@ -50,21 +50,22 @@ fun PaymentsPage(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(
-            start = 16.dp, end = 16.dp, bottom = 16.dp
-        )
+        contentPadding = PaddingValues(vertical = 12.dp)
     ) {
-        item() {
-            PaymentsStatCard()
+        item {
+            PaymentsStatistics()
         }
         items(payments.size) { index ->
-            PaymentCard(payment = payments[index])
+            PaymentCard(
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                payment = payments[index]
+            )
         }
     }
 }
 
 @Composable
-fun PaymentsStatCard() {
+fun PaymentsStatistics() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -453,7 +454,7 @@ fun PaymentCard(
     }
 }
 
-// Генерация примеров платежей
+
 private fun generateSamplePayments(): List<PaymentData> {
     val factories = listOf(
         "Guangzhou Metal Works", "Berlin Precision Manufacturing",
