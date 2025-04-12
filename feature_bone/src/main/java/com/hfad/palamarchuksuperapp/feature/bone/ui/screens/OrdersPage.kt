@@ -39,7 +39,12 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderService
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatus
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
+import kotlin.random.Random
 
 
 @Composable
@@ -47,6 +52,10 @@ fun OrdersPage(
     modifier: Modifier = Modifier,
     orderPageState: OrderPageState = OrderPageState(),
 ) {
+    val orderPageState = OrderPageState(
+        orders = generateSampleOrders() //TODO for testing
+    )
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -56,7 +65,7 @@ fun OrdersPage(
 
         item {
             OrderStatistics(
-                modifier = Modifier,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                 orderMetrics = orderPageState.orderMetrics
             )
         }
@@ -77,8 +86,7 @@ fun OrderStatistics(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -235,22 +243,48 @@ data class OrderMetrics(
     val totalOrderWeight: Double = 0.0,
 )
 
+private fun generateSampleOrders(): List<Order> {
+    val serviceScenarios = listOf(
+        ServiceScenario.NonEuropeContainer.WithFreight.scenario,
+        ServiceScenario.ChinaEuropeContainer.scenario,
+        ServiceScenario.ChinaUkraineContainer.scenario,
+        ServiceScenario.SimpleEurope.scenario,
+        ServiceScenario.DynamicScenario(
+            listOf(
+                ServiceType.AIR_FREIGHT,
+                ServiceType.FORWARDING,
+                ServiceType.CUSTOMS
+            )
+        ).scenario
+    )
 
-@Preview
-@Composable
-fun OrdersPagePreview() {
-    AppTheme(
-        useDarkTheme = true
-    ) {
-        OrdersPage(
-            orderPageState = OrderPageState(
-                orders = listOf(
-                    Order(), Order(), Order()
-                ),
-                orderMetrics = OrderMetrics(
-                    53, 40, 5, 534.25
-                )
-            ),
+    return List(10) { index ->
+        val selectedScenario = serviceScenarios[index % serviceScenarios.size]
+        val orderServices = selectedScenario.mapIndexed { serviceIndex, serviceType ->
+            OrderService(
+                id = index * 100 + serviceIndex,
+                orderId = index,
+                fullTransport = Random.nextBoolean(),
+                serviceType = serviceType,
+                price = Random.nextFloat() * 10000 + 1000,
+                duration = Random.nextInt(3, 30),
+                status = StepperStatus.entries[Random.nextInt(StepperStatus.entries.size)],
+                icon = when (serviceType) {
+                    ServiceType.FULL_FREIGHT -> R.drawable.in_progress
+                    ServiceType.AIR_FREIGHT -> R.drawable.kilogram
+                    ServiceType.CUSTOMS -> R.drawable.lock_outlined
+                    else -> R.drawable.in_progress
+                }
+            )
+        }
+
+        Order(
+            id = index,
+            businessEntityNum = Random.nextInt(2001, 8300),
+            num = Random.nextInt(44000, 50000),
+            serviceList = orderServices,
+            status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)]
+            // cargoType будет определен автоматически на основе serviceList в data class
         )
     }
 }
@@ -296,5 +330,24 @@ fun OrderStatPreview() {
                 )
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun OrdersPagePreview() {
+    AppTheme(
+        useDarkTheme = true
+    ) {
+        OrdersPage(
+            orderPageState = OrderPageState(
+                orders = listOf(
+                    Order(), Order(), Order()
+                ),
+                orderMetrics = OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            ),
+        )
     }
 }

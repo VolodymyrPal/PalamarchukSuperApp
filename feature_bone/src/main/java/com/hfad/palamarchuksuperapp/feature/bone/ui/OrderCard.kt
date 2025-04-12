@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -62,7 +61,7 @@ fun OrderCard(
     currentStep: Int = 3,
     initialExpanded: Boolean = false,
 ) {
-    var expanded = remember { mutableStateOf(initialExpanded) }
+    val expanded = remember { mutableStateOf(initialExpanded) }
     val orderStatus = remember { mutableStateOf(initialStatus) }
     val currentStepCount = remember { mutableStateOf(currentStep) }
 
@@ -78,7 +77,6 @@ fun OrderCard(
 
     val colorScheme = MaterialTheme.colorScheme
 
-    // Определяем цвет статуса заказа
     val statusColor = when (orderStatus.value) {
         StepperStatus.DONE -> colorScheme.primary
         StepperStatus.IN_PROGRESS -> colorScheme.tertiary
@@ -86,14 +84,13 @@ fun OrderCard(
         StepperStatus.CANCELED -> colorScheme.error
     }
 
-    // Определяем текст статуса заказа
     val statusText = when (orderStatus.value) {
         StepperStatus.DONE -> "Завершен"
         StepperStatus.IN_PROGRESS -> "В процессе"
         StepperStatus.CREATED -> "Создан"
         StepperStatus.CANCELED -> "Отменен"
     }
-
+    val interactionSource = remember { MutableInteractionSource() }
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -102,7 +99,7 @@ fun OrderCard(
                     expanded.value = !expanded.value
                 },
                 indication = null,
-                interactionSource = MutableInteractionSource()
+                interactionSource = interactionSource
             ),
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.3f)),
@@ -136,7 +133,7 @@ fun OrderCard(
 
                     Column {
                         AppText(
-                            value = "Заказ №${order.status.toString()}",
+                            value = "Заказ №${order.status}",
                             appTextConfig = appTextConfig(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
@@ -188,7 +185,7 @@ fun OrderCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
             ) {
                 StepProgressionBar(
                     modifier = Modifier
@@ -199,7 +196,7 @@ fun OrderCard(
                 )
             }
 
-            AnimatedVisibility(
+            androidx.compose.animation.AnimatedVisibility(
                 enter = fadeIn(animationSpec = tween(300)) +
                         expandVertically(
                             expandFrom = Alignment.Top,
@@ -212,7 +209,7 @@ fun OrderCard(
                         ),
                 visible = expanded.value
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
