@@ -332,3 +332,22 @@ fun OrderStatPreview() {
         }
     }
 }
+
+@Preview
+@Composable
+fun OrdersPagePreview() {
+    AppTheme(
+        useDarkTheme = true
+    ) {
+        OrdersPage(
+            orderPageState = OrderPageState(
+                orders = listOf(
+                    Order(), Order(), Order()
+                ),
+                orderMetrics = OrderMetrics(
+                    53, 40, 5, 534.25
+                )
+            ),
+        )
+    }
+}
