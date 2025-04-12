@@ -65,7 +65,7 @@ fun OrdersPage(
 
         item {
             OrderStatistics(
-                modifier = Modifier,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                 orderMetrics = orderPageState.orderMetrics
             )
         }
@@ -86,8 +86,7 @@ fun OrderStatistics(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
