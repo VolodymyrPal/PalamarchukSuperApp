@@ -40,6 +40,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderService
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceType
@@ -48,12 +49,13 @@ import kotlin.random.Random
 
 
 @Composable
-fun OrdersPage(
+internal fun OrdersPage(
     modifier: Modifier = Modifier,
     orderPageState: OrderPageState = OrderPageState(),
 ) {
     val orderPageState = OrderPageState(
-        orders = generateSampleOrders() //TODO for testing
+        orders = generateSampleOrders(), //TODO for testing
+        orderMetrics = generateOrderStatistic() //TODO for testing
     )
 
     LazyColumn(
@@ -64,7 +66,7 @@ fun OrdersPage(
     ) {
 
         item {
-            OrderStatistics(
+            OrderStatisticCard(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                 orderMetrics = orderPageState.orderMetrics
             )
@@ -81,8 +83,8 @@ fun OrdersPage(
 }
 
 @Composable
-fun OrderStatistics(
-    orderMetrics: OrderMetrics = OrderMetrics(),
+private fun OrderStatisticCard(
+    orderMetrics: OrderStatistic = OrderStatistic(),
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -144,7 +146,7 @@ fun OrderStatistics(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
-                    value = "${orderMetrics.totalOrderWeight} т",
+                    value = "${(orderMetrics.totalOrderWeight * 100).toInt() / 100.0} т",
                     label = finishFull,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -183,7 +185,7 @@ fun OrderStatistics(
 }
 
 @Composable
-fun OrderStat(
+private fun OrderStat(
     icon: ImageVector,
     value: String,
     label: String,
@@ -230,17 +232,9 @@ fun OrderStat(
     }
 }
 
-data class OrderPageState(
-    val orderMetrics: OrderMetrics = OrderMetrics(),
+internal data class OrderPageState(
+    val orderMetrics: OrderStatistic = OrderStatistic(),
     val orders: List<Order> = emptyList(),
-)
-
-
-data class OrderMetrics(
-    val totalOrders: Int = 0,
-    val completedOrders: Int = 0,
-    val inProgressOrders: Int = 0,
-    val totalOrderWeight: Double = 0.0,
 )
 
 private fun generateSampleOrders(): List<Order> {
@@ -280,27 +274,31 @@ private fun generateSampleOrders(): List<Order> {
 
         Order(
             id = index,
-            businessEntityNum = Random.nextInt(2001, 8300),
-            num = Random.nextInt(44000, 50000),
             serviceList = orderServices,
-            status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)]
+            status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)],
             // cargoType будет определен автоматически на основе serviceList в data class
         )
     }
 }
 
+private fun generateOrderStatistic(): OrderStatistic {
+    return OrderStatistic(
+        totalOrders = Random.nextInt(20, 30),
+        completedOrders = Random.nextInt(5, 15),
+        inProgressOrders = Random.nextInt(1, 5),
+        totalOrderWeight = Random.nextDouble(10.0, 100.0)
+    )
+}
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun OrderCardListPreview() {
+private fun OrderCardListPreview() {
     AppTheme(
         useDarkTheme = false
     ) {
         OrdersPage(
             orderPageState = OrderPageState(
-                orders = listOf(
-                    Order(), Order(), Order()
-                ),
-                orderMetrics = OrderMetrics(
+                orderMetrics = OrderStatistic(
                     53, 40, 5, 534.25
                 )
             )
@@ -310,24 +308,26 @@ fun OrderCardListPreview() {
 
 @Preview
 @Composable
-fun OrderStatPreview() {
+private fun OrderStatPreview() {
     Column {
         AppTheme(
             useDarkTheme = false
         ) {
-            OrderStatistics(
-                OrderMetrics(
+            OrderStatisticCard(
+                OrderStatistic(
                     53, 40, 5, 534.25
-                )
+                ),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
         }
         AppTheme(
             useDarkTheme = true
         ) {
-            OrderStatistics(
-                OrderMetrics(
+            OrderStatisticCard(
+                OrderStatistic(
                     53, 40, 5, 534.25
-                )
+                ),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
         }
     }
@@ -335,16 +335,13 @@ fun OrderStatPreview() {
 
 @Preview
 @Composable
-fun OrdersPagePreview() {
+private fun OrdersPagePreview() {
     AppTheme(
         useDarkTheme = true
     ) {
         OrdersPage(
             orderPageState = OrderPageState(
-                orders = listOf(
-                    Order(), Order(), Order()
-                ),
-                orderMetrics = OrderMetrics(
+                orderMetrics = OrderStatistic(
                     53, 40, 5, 534.25
                 )
             ),
