@@ -5,5 +5,16 @@
     <string name="finish_full">Delivered Amount</string>
     <string name="summ_orders">Total orders:  </string>
     <string name="order_statistic_title">Orders</string>
+    <string name="departure_point">Departure</string>
+    <string name="destination_point">Destination</string>
+    <string name="delivery_status">Status</string>
+    <string name="expected_arrival_date">Arrival Date</string>
+    <string name="conatiner_number">Container</string>
+    <string name="cargo">Cargo</string>
+    <string name="manager">Manager</string>
+    <string name="order_status_created">Created</string>
+    <string name="order_status_calculated">Calculated</string>
+    <string name="order_status_in_progress">In progress</string>
+    <string name="order_status_done">Done.</string>
 
 </resources>
