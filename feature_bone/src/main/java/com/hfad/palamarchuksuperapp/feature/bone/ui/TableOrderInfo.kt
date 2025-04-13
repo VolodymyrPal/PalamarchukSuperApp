@@ -85,18 +85,94 @@ data class OrderInfo(
 @Composable
 @Preview
 fun TableOrderInfoPreview() {
-    val iconPainter = painterResource(R.drawable.d_letter)
-    TableOrderInfo(
-        orderInfoList = listOf(
-            OrderInfo("123321", "123321", iconPainter),
-            OrderInfo("1233", "1233", iconPainter),
-            OrderInfo("12", "12", iconPainter),
-            OrderInfo("123321", "1233gfgffgfgfsdfdfgfdgsdfsfgfgf21", iconPainter),
-            OrderInfo("1233", "1233", iconPainter),
-            OrderInfo("12", "12", iconPainter),
-            OrderInfo("123321", "123321", iconPainter),
-            OrderInfo("1233", "1233", iconPainter),
-            OrderInfo("12", "12", iconPainter),
-        )
-    )
+    Column {
+        AppTheme {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) {
+                TableOrderInfo(
+                    orderInfoList = listOf(
+                        OrderInfo(
+                            "Пункт отправления",
+                            "Шанхай, Китай",
+                            painterResource(R.drawable.freight)
+                        ),
+                        OrderInfo(
+                            "Пункт назначения",
+                            "Одесса, Украина",
+                            painterResource(R.drawable.truck)
+                        ),
+                        OrderInfo(
+                            "Статус доставки",
+                            "В пути",
+                            painterResource(R.drawable.truck)
+                        ),
+                        OrderInfo(
+                            "Ожидаемая дата прибытия",
+                            "24.02.2025",
+                            painterResource(R.drawable.freight)
+                        ),
+                        OrderInfo(
+                            "Контейнер",
+                            "40HC-7865425",
+                            painterResource(R.drawable.container_svgrepo_com)
+                        ),
+                        OrderInfo("Груз", "Электроника", painterResource(R.drawable.warehouse)),
+                        OrderInfo(
+                            "Менеджер",
+                            "Ванько",
+                            painterResource(R.drawable.baseline_shopping_basket_24)
+                        )
+                    )
+                )
+            }
+        }
+        AppTheme(
+            useDarkTheme = true
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) {
+                TableOrderInfo(
+                    orderInfoList = listOf(
+                        OrderInfo(
+                            "Пункт отправления",
+                            "Шанхай, Китай",
+                            painterResource(R.drawable.freight)
+                        ),
+                        OrderInfo(
+                            "Пункт назначения",
+                            "Одесса, Украина",
+                            painterResource(R.drawable.truck)
+                        ),
+                        OrderInfo(
+                            "Статус доставки",
+                            "В пути",
+                            painterResource(R.drawable.truck)
+                        ),
+                        OrderInfo(
+                            "Ожидаемая дата прибытия",
+                            "24.02.2025",
+                            painterResource(R.drawable.freight)
+                        ),
+                        OrderInfo(
+                            "Контейнер",
+                            "40HC-7865425",
+                            painterResource(R.drawable.container_svgrepo_com)
+                        ),
+                        OrderInfo("Груз", "Электроника", painterResource(R.drawable.warehouse)),
+                        OrderInfo(
+                            "Менеджер",
+                            "Ванько",
+                            painterResource(R.drawable.baseline_shopping_basket_24)
+                        )
+                    )
+                )
+            }
+        }
+    }
 }
