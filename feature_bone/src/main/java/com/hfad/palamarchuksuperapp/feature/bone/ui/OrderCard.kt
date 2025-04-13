@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -39,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,9 +51,57 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepProgressionBar
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.orderServiceList
+
+@Composable
+private fun Order.mapForOrderInfo(): List<OrderInfo> {
+    val list = listOf(
+        OrderInfo(
+            stringResource(R.string.departure_point),
+            this.departurePoint,
+            painterResource(R.drawable.freight)
+        ),
+        OrderInfo(
+            stringResource(R.string.destination_point),
+            this.destinationPoint,
+            painterResource(R.drawable.truck)
+        ),
+        OrderInfo(
+            stringResource(R.string.delivery_status),
+            when (this.status) {
+                OrderStatus.CREATED -> stringResource(R.string.order_status_created)
+                OrderStatus.CALCULATED -> stringResource(R.string.order_status_calculated)
+                OrderStatus.IN_PROGRESS -> stringResource(R.string.order_status_in_progress)
+                OrderStatus.DONE -> stringResource(R.string.order_status_done)
+            },
+            painterResource(R.drawable.truck)
+        ),
+        OrderInfo(
+            stringResource(R.string.expected_arrival_date),
+            this.arrivalDate,
+            painterResource(R.drawable.freight)
+        ),
+        OrderInfo(
+            stringResource(R.string.conatiner_number),
+            this.containerNumber,
+            painterResource(R.drawable.container_svgrepo_com)
+        ),
+        OrderInfo(
+            stringResource(R.string.cargo),
+            this.cargo,
+            painterResource(R.drawable.warehouse)
+        ),
+        OrderInfo(
+            stringResource(R.string.manager),
+            this.manager,
+            painterResource(R.drawable.baseline_shopping_basket_24)
+        )
+    )
+    return list
+}
 
 @Composable
 fun OrderCard(
