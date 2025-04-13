@@ -108,7 +108,7 @@ fun OrderCard(
     modifier: Modifier = Modifier,
     order: Order,
     initialStatus: StepperStatus = StepperStatus.IN_PROGRESS,
-    currentStep: Int = 3,
+    currentStep: Int = 2,
     initialExpanded: Boolean = false,
 ) {
     val expanded = remember { mutableStateOf(initialExpanded) }
@@ -183,7 +183,7 @@ fun OrderCard(
 
                     Column {
                         AppText(
-                            value = "Заказ №${order.status}",
+                            value = "Заказ № ${order.num}",
                             appTextConfig = appTextConfig(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
@@ -240,13 +240,13 @@ fun OrderCard(
                 StepProgressionBar(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(72.dp),
+                        .height(86.dp),
                     listOfSteps = orderServiceList.subList(0, 7),
                     currentStep = currentStepCount.value
                 )
             }
 
-            androidx.compose.animation.AnimatedVisibility(
+            this.AnimatedVisibility(
                 enter = fadeIn(animationSpec = tween(300)) +
                         expandVertically(
                             expandFrom = Alignment.Top,
@@ -260,49 +260,10 @@ fun OrderCard(
                 visible = expanded.value
             ) {
                 Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .padding(vertical = 8.dp)
-                            .background(colorScheme.outline.copy(alpha = 0.2f))
-                    )
 
                     TableOrderInfo(
                         modifier = Modifier.fillMaxWidth(),
-                        orderInfoList = listOf(
-                            OrderInfo(
-                                "Пункт отправления",
-                                "Шанхай, Китай",
-                                painterResource(R.drawable.freight)
-                            ),
-                            OrderInfo(
-                                "Пункт назначения",
-                                "Одесса, Украина",
-                                painterResource(R.drawable.truck)
-                            ),
-                            OrderInfo(
-                                "Статус доставки",
-                                "В пути",
-                                painterResource(R.drawable.truck)
-                            ),
-                            OrderInfo(
-                                "Ожидаемая дата прибытия",
-                                "24.02.2025",
-                                painterResource(R.drawable.freight)
-                            ),
-                            OrderInfo(
-                                "Контейнер",
-                                "40HC-7865425",
-                                painterResource(R.drawable.container_svgrepo_com)
-                            ),
-                            OrderInfo("Груз", "Электроника", painterResource(R.drawable.warehouse)),
-                            OrderInfo(
-                                "Менеджер",
-                                order.id.toString(),
-                                painterResource(R.drawable.baseline_shopping_basket_24)
-                            )
-                        )
+                        orderInfoList = order.mapForOrderInfo()
                     )
                 }
             }
@@ -310,17 +271,28 @@ fun OrderCard(
     }
 }
 
-@Preview
+@Preview(heightDp = 920)
 @Composable
 fun OrderCardPreview() {
-    AppTheme {
-        OrderCard(
-            modifier = Modifier
-                .height(475.dp)
-                .padding(8.dp),
-            order = Order(),
-            initialExpanded = true
-        )
+    Column {
+        AppTheme {
+            OrderCard(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .height(425.dp),
+                order = Order(),
+                initialExpanded = true
+            )
+        }
+        AppTheme(useDarkTheme = true) {
+            OrderCard(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .height(475.dp),
+                order = Order(),
+                initialExpanded = true
+            )
+        }
     }
 }
 
