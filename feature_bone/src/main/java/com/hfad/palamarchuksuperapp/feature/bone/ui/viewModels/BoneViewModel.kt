@@ -82,7 +82,20 @@ data class Order(
         serviceList.any { it.serviceType == ServiceType.FULL_FREIGHT } -> CargoType.CONTAINER
         serviceList.any { it.serviceType == ServiceType.EUROPE_TRANSPORT } -> CargoType.TRUCK
         else -> CargoType.ANY
-    }
+    },
+    val destinationPoint: String = "Тест: Киев",
+    val arrivalDate: String = "Тест: 20.05.2025",
+    val containerNumber: String = "Тест: 40HC-7865425",
+    val departurePoint: String = "Тест: Гонконг",
+    val cargo: String = "Тест: Мебель",
+    val manager: String = "Тест: VP +3806338875",
+)
+
+data class OrderStatistic (
+    val totalOrders: Int = 0,
+    val completedOrders: Int = 0,
+    val inProgressOrders: Int = 0,
+    val totalOrderWeight: Double = 0.0,
 )
 
 enum class CargoType {
