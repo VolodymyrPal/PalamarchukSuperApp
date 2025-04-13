@@ -27,16 +27,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 
 @Suppress("LongParameterList")
 @Composable
 fun AppIconInfoField(
     modifier: Modifier = Modifier,
-    icon: Painter?,
+    icon: Painter? = null,
     title: String = "Title",
     description: String = "Description",
     iconSize: Dp = 24.dp,
@@ -79,8 +81,7 @@ fun AppIconInfoField(
                     painter = icon,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(iconSize)
-                        .padding(end = 4.dp),
+                        .size(iconSize),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
@@ -95,13 +96,14 @@ fun AppIconInfoField(
                     value = title,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .alpha(0.5f)
+                        .alpha(0.7f)
                         .width(IntrinsicSize.Min),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Medium,
                         overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
+                        maxLines = 2,
+                        textAlign = TextAlign.Unspecified
                     ),
                 )
 
@@ -127,10 +129,41 @@ const val appIconInfoFieldWidth = 150
 @Preview
 @Composable
 fun IconInfoFieldPreview() {
-    val iconPainter = rememberVectorPainter(Icons.Default.Info)
-    AppIconInfoField(
-        icon = iconPainter,
-        description = "Description",
-        title = "123"
-    )
+    Column {
+        AppTheme {
+            val iconPainter = rememberVectorPainter(Icons.Default.Info)
+            Column {
+                AppIconInfoField(
+                    modifier = Modifier.padding(4.dp),
+                    icon = iconPainter,
+                    description = "Description",
+                    title = "123"
+                )
+                AppIconInfoField(
+                    modifier = Modifier.padding(4.dp),
+                    description = "Description",
+                    title = "123",
+                )
+
+            }
+        }
+        AppTheme(
+            useDarkTheme = true
+        ) {
+            val iconPainter = rememberVectorPainter(Icons.Default.Info)
+            Column {
+                AppIconInfoField(
+                    modifier = Modifier.padding(4.dp),
+                    icon = iconPainter,
+                    description = "Description",
+                    title = "123"
+                )
+                AppIconInfoField(
+                    modifier = Modifier.padding(4.dp),
+                    description = "Description",
+                    title = "123",
+                )
+            }
+        }
+    }
 }
