@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -56,6 +54,7 @@ fun AppText(
         style = mergedStyle,
     )
 }
+
 @Composable
 fun defaultAppTextColor() = MaterialTheme.colorScheme.onPrimaryContainer
 
@@ -101,8 +100,7 @@ fun AppText(
 @Preview(showBackground = false)
 private fun AppTextPreview() {
     Column {
-        val text = remember { mutableStateOf("Text Text Text Text Text Text") }
-        AppTheme(useDarkTheme = true) {
+        AppTheme {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -116,7 +114,7 @@ private fun AppTextPreview() {
                 )
             }
         }
-        AppTheme(useDarkTheme = false) {
+        AppTheme(useDarkTheme = true) {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
