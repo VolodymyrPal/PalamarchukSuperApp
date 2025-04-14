@@ -228,6 +228,7 @@ fun CurrencyStat(
 
 @Composable
 fun StatItem(
+    modifier: Modifier = Modifier,
     title: String,
     value: String,
     icon: ImageVector,
@@ -560,6 +561,21 @@ private fun generateSamplePayments(): List<PaymentData> {
     }
 }
 
+data class PaymentPageState(
+    val payments: List<PaymentData> = generateSamplePayments(), //TODO for test only
+    val paymentStatistic: PaymentStatistic = PaymentStatistic(),
+)
+
+internal val colorSet = setOf(
+    Color(0xFF2196F3),
+    Color(0xFF2E7D32),
+    Color(0xFF1565C0),
+    Color(0xFFD32F2F),
+    Color(0xFF823333),
+    Color(0xFFB8860B),
+    Color(0xFF9C27B0),
+)
+
 @Preview
 @Composable
 fun PaymentsPagePreview() {
@@ -571,19 +587,38 @@ fun PaymentsPagePreview() {
 @Preview
 @Composable
 fun PaymentCardPreview() {
-    AppTheme {
-        PaymentCard(
-            payment = PaymentData(
-                id = "Платеж #1001",
-                amount = "25,430",
-                currency = "USD",
-                factory = "Guangzhou Metal Works",
-                productType = "Металлопрокат",
-                batchInfo = "B-2354-42",
-                paymentDate = "15.09.2023",
-                dueDate = "15.10.2023",
-                status = PaymentStatus.PAID
+    Column {
+        AppTheme {
+            PaymentCard(
+                modifier = Modifier.padding(8.dp),
+                payment = PaymentData(
+                    id = "Платеж #1001",
+                    amount = "25,430",
+                    currency = "USD",
+                    factory = "Guangzhou Metal Works",
+                    productType = "Металлопрокат",
+                    batchInfo = "B-2354-42",
+                    paymentDate = "15.09.2023",
+                    dueDate = "15.10.2023",
+                    status = PaymentStatus.PAID
+                )
             )
-        )
+        }
+        AppTheme(useDarkTheme = true) {
+            PaymentCard(
+                modifier = Modifier.padding(8.dp),
+                payment = PaymentData(
+                    id = "Платеж #1001",
+                    amount = "25,430",
+                    currency = "USD",
+                    factory = "Guangzhou Metal Works",
+                    productType = "Металлопрокат",
+                    batchInfo = "B-2354-42",
+                    paymentDate = "15.09.2023",
+                    dueDate = "15.10.2023",
+                    status = PaymentStatus.PAID
+                )
+            )
+        }
     }
-} 
+}
