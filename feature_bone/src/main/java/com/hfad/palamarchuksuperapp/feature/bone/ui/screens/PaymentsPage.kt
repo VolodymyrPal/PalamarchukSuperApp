@@ -67,13 +67,14 @@ fun PaymentsPage(
         contentPadding = PaddingValues(vertical = 12.dp)
     ) {
         item {
-            PaymentsStatistics()
+            PaymentsStatistics(
                 paymentPageState.paymentStatistic
+            )
         }
-        items(payments.size) { index ->
+        items(paymentPageState.payments) { payment ->
             PaymentCard(
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                payment = payments[index]
+                payment = payment
             )
         }
     }
@@ -98,10 +99,11 @@ fun PaymentsStatistics(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppText(
-                value = "Payments info",
+                value = stringResource(R.string.payment_statistic_title),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
@@ -149,20 +151,23 @@ fun PaymentsStatistics(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 StatItem(
-                    title = "Всего платежей",
+                    modifier = Modifier.weight(0.3f),
+                    title = stringResource(R.string.total_payment),
                     value = "42",
                     icon = Icons.Default.ThumbUp
                 )
 
                 StatItem(
-                    title = "Фабрики",
+                    modifier = Modifier.weight(0.3f),
+                    title = stringResource(R.string.factory_payment_amount),
                     value = "7",
                     icon = Icons.Default.Info
                 )
 
                 StatItem(
-                    title = "Просрочено",
-                    value = "3",
+                    modifier = Modifier.weight(0.3f),
+                    title = stringResource(R.string.avg_payment_due_date),
+                    value = "2",
                     icon = Icons.Default.DateRange,
                     isNegative = true
                 )
@@ -174,7 +179,7 @@ fun PaymentsStatistics(
 @Composable
 fun CurrencyStat(
     currency: String,
-    amount: String,
+    amount: Double,
     color: Color,
     modifier: Modifier = Modifier,
 ) {
@@ -200,7 +205,7 @@ fun CurrencyStat(
         }
 
         AppText(
-            value = amount,
+            value = "${((amount * 100).toInt() / 100.0)}",
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
@@ -217,7 +222,10 @@ fun StatItem(
     isNegative: Boolean = false,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier
+            .height(intrinsicSize = IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = icon,
@@ -231,17 +239,25 @@ fun StatItem(
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 ),
-                color = if (isNegative) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                color = if (isNegative) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
 
             AppText(
                 value = title,
                 appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodySmall
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
                 ),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.padding(
+                    horizontal = 4.dp
+                )
             )
         }
     }
@@ -283,13 +299,16 @@ fun PaymentCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
         ),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
-        )
-    ) {
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
+
+        ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
