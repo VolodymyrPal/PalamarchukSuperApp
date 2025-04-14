@@ -16,5 +16,9 @@
     <string name="order_status_calculated">Calculated</string>
     <string name="order_status_in_progress">In progress</string>
     <string name="order_status_done">Done.</string>
+    <string name="avg_payment_due_date">Avg term</string>
+    <string name="payment_statistic_title">Payments</string>
+    <string name="total_payment">Total</string>
+    <string name="factory_payment_amount">Factories</string>
 
 </resources>
