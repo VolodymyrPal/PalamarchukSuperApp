@@ -26,6 +26,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -55,53 +60,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.orderServiceList
-
-@Composable
-private fun Order.mapForOrderInfo(): List<OrderInfo> {
-    val list = listOf(
-        OrderInfo(
-            stringResource(R.string.departure_point),
-            this.departurePoint,
-            painterResource(R.drawable.freight)
-        ),
-        OrderInfo(
-            stringResource(R.string.destination_point),
-            this.destinationPoint,
-            painterResource(R.drawable.truck)
-        ),
-        OrderInfo(
-            stringResource(R.string.delivery_status),
-            when (this.status) {
-                OrderStatus.CREATED -> stringResource(R.string.order_status_created)
-                OrderStatus.CALCULATED -> stringResource(R.string.order_status_calculated)
-                OrderStatus.IN_PROGRESS -> stringResource(R.string.order_status_in_progress)
-                OrderStatus.DONE -> stringResource(R.string.order_status_done)
-            },
-            painterResource(R.drawable.truck)
-        ),
-        OrderInfo(
-            stringResource(R.string.expected_arrival_date),
-            this.arrivalDate,
-            painterResource(R.drawable.freight)
-        ),
-        OrderInfo(
-            stringResource(R.string.conatiner_number),
-            this.containerNumber,
-            painterResource(R.drawable.container_svgrepo_com)
-        ),
-        OrderInfo(
-            stringResource(R.string.cargo),
-            this.cargo,
-            painterResource(R.drawable.warehouse)
-        ),
-        OrderInfo(
-            stringResource(R.string.manager),
-            this.manager,
-            painterResource(R.drawable.baseline_shopping_basket_24)
-        )
-    )
-    return list
-}
 
 @Composable
 fun OrderCard(
@@ -271,29 +229,51 @@ fun OrderCard(
     }
 }
 
-@Preview(heightDp = 920)
 @Composable
-fun OrderCardPreview() {
-    Column {
-        AppTheme {
-            OrderCard(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .height(425.dp),
-                order = Order(),
-                initialExpanded = true
-            )
-        }
-        AppTheme(useDarkTheme = true) {
-            OrderCard(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .height(475.dp),
-                order = Order(),
-                initialExpanded = true
-            )
-        }
-    }
+private fun Order.mapForOrderInfo(): List<OrderInfo> {
+    val list = listOf(
+        OrderInfo(
+            stringResource(R.string.departure_point),
+            this.departurePoint,
+            rememberVectorPainter(Icons.Outlined.Place)
+        ),
+        OrderInfo(
+            stringResource(R.string.destination_point),
+            this.destinationPoint,
+            rememberVectorPainter(Icons.Outlined.Home)
+        ),
+        OrderInfo(
+            stringResource(R.string.delivery_status),
+            when (this.status) {
+                OrderStatus.CREATED -> stringResource(R.string.order_status_created)
+                OrderStatus.CALCULATED -> stringResource(R.string.order_status_calculated)
+                OrderStatus.IN_PROGRESS -> stringResource(R.string.order_status_in_progress)
+                OrderStatus.DONE -> stringResource(R.string.order_status_done)
+            },
+            painterResource(R.drawable.truck)
+        ),
+        OrderInfo(
+            stringResource(R.string.expected_arrival_date),
+            this.arrivalDate,
+            rememberVectorPainter(Icons.Outlined.DateRange)
+        ),
+        OrderInfo(
+            stringResource(R.string.conatiner_number),
+            this.containerNumber,
+            painterResource(R.drawable.container_svgrepo_com)
+        ),
+        OrderInfo(
+            stringResource(R.string.cargo),
+            this.cargo,
+            rememberVectorPainter(Icons.Outlined.ShoppingCart)
+        ),
+        OrderInfo(
+            stringResource(R.string.manager),
+            this.manager,
+            rememberVectorPainter(Icons.Outlined.Person)
+        )
+    )
+    return list
 }
 
 @Composable
@@ -309,5 +289,30 @@ fun painterServiceTypeMap() = ServiceType.entries.associateWith {
         ServiceType.UKRAINE_TRANSPORT -> painterResource(R.drawable.truck)
         ServiceType.OTHER -> rememberVectorPainter(Icons.Default.Search)
         ServiceType.AIR_FREIGHT -> painterResource(R.drawable.plane)
+    }
+}
+
+@Preview(heightDp = 920)
+@Composable
+fun OrderCardPreview() {
+    Column {
+        AppTheme {
+            OrderCard(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .height(450.dp),
+                order = Order(),
+                initialExpanded = true
+            )
+        }
+        AppTheme(useDarkTheme = true) {
+            OrderCard(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .height(450.dp),
+                order = Order(),
+                initialExpanded = true
+            )
+        }
     }
 }
