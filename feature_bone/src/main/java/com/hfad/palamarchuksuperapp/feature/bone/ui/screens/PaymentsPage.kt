@@ -115,28 +115,40 @@ fun PaymentsStatistics(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
             )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            val currencyPayments = remember { paymentStatistic.paymentsByCurrency }
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .sizeIn(maxHeight = 800.dp)
+                    .fillMaxWidth(),
+                columns = object : GridCells {
+                    override fun Density.calculateCrossAxisCellSizes(
+                        availableSize: Int,
+                        spacing: Int,
+                    ): List<Int> {
+                        val maxCount = minOf(
+                            (availableSize + spacing) / (120.dp.roundToPx() + spacing),
+                            currencyPayments.size
+                        )
+                        val count = maxOf(maxCount, 1)
+                        val cellSize = (availableSize - spacing * (count - 1)) / count
+                        return List(count) { cellSize }
+                    }
+                },
+                contentPadding = PaddingValues(
+                    horizontal = 4.dp,
+                    vertical = 4.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
-                CurrencyStat(
-                    currency = "USD",
-                    amount = "542,800",
-                    color = Color(0xFF2E7D32)
-                )
-
-                CurrencyStat(
-                    currency = "EUR",
-                    amount = "387,600",
-                    color = Color(0xFF1565C0)
-                )
-
-                CurrencyStat(
-                    currency = "CNY",
-                    amount = "1,250,000",
-                    color = Color(0xFFD32F2F)
-                )
+                itemsIndexed(currencyPayments) { index, pair ->
+                    CurrencyStat(
+                        modifier = Modifier,
+                        currency = pair.first,
+                        amount = pair.second,
+                        color = colorSet.elementAt(index % colorSet.size),
+                    )
+                }
             }
 
             HorizontalDivider(
