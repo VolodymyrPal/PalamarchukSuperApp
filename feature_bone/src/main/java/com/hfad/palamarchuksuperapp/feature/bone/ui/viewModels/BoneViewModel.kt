@@ -98,6 +98,19 @@ data class OrderStatistic (
     val totalOrderWeight: Double = 0.0,
 )
 
+data class PaymentStatistic(
+    val totalPayment: Int = 0,
+    val totalReceiver: Int = 0,
+    val paymentsByCurrency: List<Pair<String, Double>> = listOf( //TODO test only
+        Pair("USD", 24445.0),
+        Pair("EUR", 335000.0),
+        Pair("CNY", 220544.45),
+        Pair("UAH", 8650.5),
+        Pair("JPY", 66643.0),
+        Pair("GBP", 95000.0),
+    )
+)
+
 enum class CargoType {
     ANY, CONTAINER, TRUCK, AIR
 }
