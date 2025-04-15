@@ -18,7 +18,11 @@
     <string name="order_status_done">Done.</string>
     <string name="avg_payment_due_date">Avg term</string>
     <string name="payment_statistic_title">Payments</string>
-    <string name="total_payment">Total</string>
+    <string name="total_payment">Total sent</string>
     <string name="factory_payment_amount">Factories</string>
+    <string name="payment_paid">Paid</string>
+    <string name="payment_pending">Pending</string>
+    <string name="payment_overdue">Overdue</string>
+    <string name="payment_payment_card_title">Payment: %1$s</string>
 
 </resources>

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -22,12 +21,11 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -39,7 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +59,7 @@ fun PaymentsPage(
     modifier: Modifier = Modifier,
     paymentPageState: PaymentPageState = PaymentPageState(),
 ) {
+    val paymentPageState = generatePaymentSample() //TODO for test only
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -67,7 +68,7 @@ fun PaymentsPage(
         contentPadding = PaddingValues(vertical = 12.dp)
     ) {
         item {
-            PaymentsStatistics(
+            PaymentsStatisticsCard(
                 paymentPageState.paymentStatistic
             )
         }
@@ -81,11 +82,12 @@ fun PaymentsPage(
 }
 
 @Composable
-fun PaymentsStatistics(
+fun PaymentsStatisticsCard(
     paymentStatistic: PaymentStatistic = PaymentStatistic(),
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
@@ -115,7 +117,7 @@ fun PaymentsStatistics(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
             )
-            val currencyPayments = remember { paymentStatistic.paymentsByCurrency }
+            val gridItems = remember { paymentStatistic.paymentsByCurrency }
             LazyVerticalGrid(
                 modifier = Modifier
                     .sizeIn(maxHeight = 800.dp)
@@ -126,8 +128,8 @@ fun PaymentsStatistics(
                         spacing: Int,
                     ): List<Int> {
                         val maxCount = minOf(
-                            (availableSize + spacing) / (120.dp.roundToPx() + spacing),
-                            currencyPayments.size
+                            (availableSize + spacing) / (100.dp.roundToPx() + spacing),
+                            gridItems.size
                         )
                         val count = maxOf(maxCount, 1)
                         val cellSize = (availableSize - spacing * (count - 1)) / count
@@ -141,11 +143,11 @@ fun PaymentsStatistics(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                itemsIndexed(currencyPayments) { index, pair ->
+                itemsIndexed(gridItems) { index, (currency, amount) ->
                     CurrencyStat(
                         modifier = Modifier,
-                        currency = pair.first,
-                        amount = pair.second,
+                        currency = currency,
+                        amount = amount,
                         color = colorSet.elementAt(index % colorSet.size),
                     )
                 }
@@ -156,32 +158,30 @@ fun PaymentsStatistics(
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
             )
 
-            // Итоговая статистика
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 StatItem(
-                    modifier = Modifier.weight(0.3f),
+                    modifier = Modifier,
                     title = stringResource(R.string.total_payment),
-                    value = "42",
-                    icon = Icons.Default.ThumbUp
+                    value = paymentStatistic.totalPayment.toString(),
+                    icon = rememberVectorPainter(Icons.Outlined.Star)
                 )
 
                 StatItem(
-                    modifier = Modifier.weight(0.3f),
+                    modifier = Modifier,
                     title = stringResource(R.string.factory_payment_amount),
-                    value = "7",
-                    icon = Icons.Default.Info
+                    value = "${paymentStatistic.totalReceiver}",
+                    icon = painterResource(R.drawable.truck)
                 )
 
                 StatItem(
-                    modifier = Modifier.weight(0.3f),
+                    modifier = Modifier,
                     title = stringResource(R.string.avg_payment_due_date),
-                    value = "2",
-                    icon = Icons.Default.DateRange,
-                    isNegative = true
+                    value = "${paymentStatistic.daysToSend} day",
+                    icon = rememberVectorPainter(Icons.Outlined.DateRange),
                 )
             }
         }
@@ -191,7 +191,7 @@ fun PaymentsStatistics(
 @Composable
 fun CurrencyStat(
     currency: String,
-    amount: Double,
+    amount: Float,
     color: Color,
     modifier: Modifier = Modifier,
 ) {
@@ -231,35 +231,40 @@ fun StatItem(
     modifier: Modifier = Modifier,
     title: String,
     value: String,
-    icon: ImageVector,
-    isNegative: Boolean = false,
+    icon: Painter,
 ) {
     Row(
-        modifier = modifier
-            .height(intrinsicSize = IntrinsicSize.Min),
+        modifier = modifier.width(100.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
-            tint = if (isNegative) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(end = 4.dp)
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
         )
 
-        Column {
+        Column(
+            modifier = Modifier
+                .padding(vertical = 2.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
             AppText(
+                modifier = Modifier.fillMaxWidth().width(IntrinsicSize.Min),//.background(colorSet.random()),
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 ),
-                color = if (isNegative) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             AppText(
+                modifier = Modifier.fillMaxWidth().width(IntrinsicSize.Min),
                 value = title,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.bodySmall,
@@ -268,16 +273,13 @@ fun StatItem(
                     textAlign = TextAlign.Center,
                 ),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                modifier = Modifier.padding(
-                    horizontal = 4.dp
-                )
             )
         }
     }
 }
 
 data class PaymentData(
-    val id: String,
+    val id: Int,
     val amount: String,
     val currency: String,
     val factory: String,
@@ -304,9 +306,9 @@ fun PaymentCard(
     }
 
     val statusText = when (payment.status) {
-        PaymentStatus.PAID -> "Оплачено"
-        PaymentStatus.PENDING -> "Ожидается"
-        PaymentStatus.OVERDUE -> "Просрочено"
+        PaymentStatus.PAID -> stringResource(R.string.payment_paid)
+        PaymentStatus.PENDING -> stringResource(R.string.payment_pending)
+        PaymentStatus.OVERDUE -> stringResource(R.string.payment_overdue)
     }
 
     Card(
@@ -326,14 +328,14 @@ fun PaymentCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Заголовок и статус
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    value = payment.id,
+                    value = stringResource(R.string.payment_payment_card_title, payment.id),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleSmall
                     )
@@ -356,7 +358,6 @@ fun PaymentCard(
                 }
             }
 
-            // Сумма платежа с валютой
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -517,7 +518,6 @@ private fun generateSamplePayments(): List<PaymentData> {
     )
 
     val currencies = listOf("USD", "EUR", "CNY", "GBP", "JPY")
-    val statuses = PaymentStatus.values()
 
     return List(15) { index ->
         val currencyIdx = Random.nextInt(currencies.size)
@@ -548,7 +548,7 @@ private fun generateSamplePayments(): List<PaymentData> {
         val dueDate = "$day.${dueMonth.toString().padStart(2, '0')}.$dueYear"
 
         PaymentData(
-            id = "Платеж #${1001 + index}",
+            id = Random.nextInt(100, 200),
             amount = amount,
             currency = currencySymbol,
             factory = factories[Random.nextInt(factories.size)],
@@ -559,6 +559,17 @@ private fun generateSamplePayments(): List<PaymentData> {
             status = status
         )
     }
+}
+
+private fun generatePaymentSample(): PaymentPageState {
+    return PaymentPageState(
+        payments = generateSamplePayments(),
+        paymentStatistic = PaymentStatistic(
+            totalPayment = Random.nextInt(10, 20),
+            totalReceiver = Random.nextInt(1, 4),
+            daysToSend = 1
+        )
+    )
 }
 
 data class PaymentPageState(
@@ -592,7 +603,7 @@ fun PaymentCardPreview() {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
-                    id = "Платеж #1001",
+                    id = Random.nextInt(100, 200),
                     amount = "25,430",
                     currency = "USD",
                     factory = "Guangzhou Metal Works",
@@ -608,7 +619,7 @@ fun PaymentCardPreview() {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
-                    id = "Платеж #1001",
+                    id = Random.nextInt(100, 200),
                     amount = "25,430",
                     currency = "USD",
                     factory = "Guangzhou Metal Works",

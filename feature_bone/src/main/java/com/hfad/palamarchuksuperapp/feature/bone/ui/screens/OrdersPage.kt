@@ -286,7 +286,7 @@ private fun generateOrderStatistic(): OrderStatistic {
         totalOrders = Random.nextInt(20, 30),
         completedOrders = Random.nextInt(5, 15),
         inProgressOrders = Random.nextInt(1, 5),
-        totalOrderWeight = Random.nextDouble(10.0, 100.0)
+        totalOrderWeight = Random.nextInt(10, 20) + (Random.nextFloat() * 100).toInt() / 100f
     )
 }
 
@@ -299,7 +299,7 @@ private fun OrderCardListPreview() {
         OrdersPage(
             orderPageState = OrderPageState(
                 orderMetrics = OrderStatistic(
-                    53, 40, 5, 534.25
+                    53, 40, 5, 534.25f
                 )
             )
         )
@@ -315,7 +315,7 @@ private fun OrderStatPreview() {
         ) {
             OrderStatisticCard(
                 OrderStatistic(
-                    53, 40, 5, 534.25
+                    53, 40, 5, 534.25f
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
@@ -325,7 +325,7 @@ private fun OrderStatPreview() {
         ) {
             OrderStatisticCard(
                 OrderStatistic(
-                    53, 40, 5, 534.25
+                    53, 40, 5, 534.25f
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
@@ -342,7 +342,7 @@ private fun OrdersPagePreview() {
         OrdersPage(
             orderPageState = OrderPageState(
                 orderMetrics = OrderStatistic(
-                    53, 40, 5, 534.25
+                    53, 40, 5, 534.25f
                 )
             ),
         )
