@@ -191,7 +191,7 @@ fun PaymentsStatisticsCard(
 @Composable
 fun CurrencyStat(
     currency: String,
-    amount: Double,
+    amount: Float,
     color: Color,
     modifier: Modifier = Modifier,
 ) {
@@ -231,35 +231,40 @@ fun StatItem(
     modifier: Modifier = Modifier,
     title: String,
     value: String,
-    icon: ImageVector,
-    isNegative: Boolean = false,
+    icon: Painter,
 ) {
     Row(
-        modifier = modifier
-            .height(intrinsicSize = IntrinsicSize.Min),
+        modifier = modifier.width(100.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = null,
-            tint = if (isNegative) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(end = 4.dp)
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
         )
 
-        Column {
+        Column(
+            modifier = Modifier
+                .padding(vertical = 2.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
             AppText(
+                modifier = Modifier.fillMaxWidth().width(IntrinsicSize.Min),//.background(colorSet.random()),
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 ),
-                color = if (isNegative) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             AppText(
+                modifier = Modifier.fillMaxWidth().width(IntrinsicSize.Min),
                 value = title,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.bodySmall,
@@ -268,9 +273,6 @@ fun StatItem(
                     textAlign = TextAlign.Center,
                 ),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                modifier = Modifier.padding(
-                    horizontal = 4.dp
-                )
             )
         }
     }
