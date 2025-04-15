@@ -95,20 +95,21 @@ data class OrderStatistic (
     val totalOrders: Int = 0,
     val completedOrders: Int = 0,
     val inProgressOrders: Int = 0,
-    val totalOrderWeight: Double = 0.0,
+    val totalOrderWeight: Float = 0f,
 )
 
 data class PaymentStatistic(
     val totalPayment: Int = 0,
     val totalReceiver: Int = 0,
-    val paymentsByCurrency: List<Pair<String, Double>> = listOf( //TODO test only
-        Pair("USD", 24445.0),
-        Pair("EUR", 335000.0),
-        Pair("CNY", 220544.45),
-        Pair("UAH", 8650.5),
-        Pair("JPY", 66643.0),
-        Pair("GBP", 95000.0),
-    )
+    val paymentsByCurrency: List<Pair<String, Float>> = listOf( //TODO test only
+        Pair("USD", 24445f),
+        Pair("EUR", 335000f),
+        Pair("CNY", 220544.45f),
+        Pair("UAH", 8650.5f),
+        Pair("JPY", 66643.0f),
+        Pair("GBP", 95000.0f),
+    ),
+    val daysToSend : Int = 1,
 )
 
 enum class CargoType {
