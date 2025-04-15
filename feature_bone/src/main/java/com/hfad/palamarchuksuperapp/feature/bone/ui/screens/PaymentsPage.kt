@@ -279,7 +279,7 @@ fun StatItem(
 }
 
 data class PaymentData(
-    val id: String,
+    val id: Int,
     val amount: String,
     val currency: String,
     val factory: String,
@@ -306,9 +306,9 @@ fun PaymentCard(
     }
 
     val statusText = when (payment.status) {
-        PaymentStatus.PAID -> "Оплачено"
-        PaymentStatus.PENDING -> "Ожидается"
-        PaymentStatus.OVERDUE -> "Просрочено"
+        PaymentStatus.PAID -> stringResource(R.string.payment_paid)
+        PaymentStatus.PENDING -> stringResource(R.string.payment_pending)
+        PaymentStatus.OVERDUE -> stringResource(R.string.payment_overdue)
     }
 
     Card(
@@ -328,14 +328,14 @@ fun PaymentCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Заголовок и статус
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    value = payment.id,
+                    value = stringResource(R.string.payment_payment_card_title, payment.id),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleSmall
                     )
@@ -358,7 +358,6 @@ fun PaymentCard(
                 }
             }
 
-            // Сумма платежа с валютой
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -519,7 +518,6 @@ private fun generateSamplePayments(): List<PaymentData> {
     )
 
     val currencies = listOf("USD", "EUR", "CNY", "GBP", "JPY")
-    val statuses = PaymentStatus.values()
 
     return List(15) { index ->
         val currencyIdx = Random.nextInt(currencies.size)
@@ -550,7 +548,7 @@ private fun generateSamplePayments(): List<PaymentData> {
         val dueDate = "$day.${dueMonth.toString().padStart(2, '0')}.$dueYear"
 
         PaymentData(
-            id = "Платеж #${1001 + index}",
+            id = Random.nextInt(100, 200),
             amount = amount,
             currency = currencySymbol,
             factory = factories[Random.nextInt(factories.size)],
