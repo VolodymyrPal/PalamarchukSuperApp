@@ -68,7 +68,7 @@ fun PaymentsPage(
         contentPadding = PaddingValues(vertical = 12.dp)
     ) {
         item {
-            PaymentsStatistics(
+            PaymentsStatisticsCard(
                 paymentPageState.paymentStatistic
             )
         }
@@ -82,11 +82,12 @@ fun PaymentsPage(
 }
 
 @Composable
-fun PaymentsStatistics(
+fun PaymentsStatisticsCard(
     paymentStatistic: PaymentStatistic = PaymentStatistic(),
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
@@ -116,7 +117,7 @@ fun PaymentsStatistics(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
             )
-            val currencyPayments = remember { paymentStatistic.paymentsByCurrency }
+            val gridItems = remember { paymentStatistic.paymentsByCurrency }
             LazyVerticalGrid(
                 modifier = Modifier
                     .sizeIn(maxHeight = 800.dp)
@@ -127,8 +128,8 @@ fun PaymentsStatistics(
                         spacing: Int,
                     ): List<Int> {
                         val maxCount = minOf(
-                            (availableSize + spacing) / (120.dp.roundToPx() + spacing),
-                            currencyPayments.size
+                            (availableSize + spacing) / (100.dp.roundToPx() + spacing),
+                            gridItems.size
                         )
                         val count = maxOf(maxCount, 1)
                         val cellSize = (availableSize - spacing * (count - 1)) / count
@@ -142,11 +143,11 @@ fun PaymentsStatistics(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                itemsIndexed(currencyPayments) { index, pair ->
+                itemsIndexed(gridItems) { index, (currency, amount) ->
                     CurrencyStat(
                         modifier = Modifier,
-                        currency = pair.first,
-                        amount = pair.second,
+                        currency = currency,
+                        amount = amount,
                         color = colorSet.elementAt(index % colorSet.size),
                     )
                 }
@@ -157,32 +158,30 @@ fun PaymentsStatistics(
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
             )
 
-            // Итоговая статистика
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 StatItem(
-                    modifier = Modifier.weight(0.3f),
+                    modifier = Modifier,
                     title = stringResource(R.string.total_payment),
-                    value = "42",
-                    icon = Icons.Default.ThumbUp
+                    value = paymentStatistic.totalPayment.toString(),
+                    icon = rememberVectorPainter(Icons.Outlined.Star)
                 )
 
                 StatItem(
-                    modifier = Modifier.weight(0.3f),
+                    modifier = Modifier,
                     title = stringResource(R.string.factory_payment_amount),
-                    value = "7",
-                    icon = Icons.Default.Info
+                    value = "${paymentStatistic.totalReceiver}",
+                    icon = painterResource(R.drawable.truck)
                 )
 
                 StatItem(
-                    modifier = Modifier.weight(0.3f),
+                    modifier = Modifier,
                     title = stringResource(R.string.avg_payment_due_date),
-                    value = "2",
-                    icon = Icons.Default.DateRange,
-                    isNegative = true
+                    value = "${paymentStatistic.daysToSend} day",
+                    icon = rememberVectorPainter(Icons.Outlined.DateRange),
                 )
             }
         }
