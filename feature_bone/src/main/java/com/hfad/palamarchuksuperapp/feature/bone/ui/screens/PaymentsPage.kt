@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -22,12 +21,11 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -39,7 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +59,7 @@ fun PaymentsPage(
     modifier: Modifier = Modifier,
     paymentPageState: PaymentPageState = PaymentPageState(),
 ) {
+    val paymentPageState = generatePaymentSample() //TODO for test only
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -561,6 +562,17 @@ private fun generateSamplePayments(): List<PaymentData> {
     }
 }
 
+private fun generatePaymentSample(): PaymentPageState {
+    return PaymentPageState(
+        payments = generateSamplePayments(),
+        paymentStatistic = PaymentStatistic(
+            totalPayment = Random.nextInt(10, 20),
+            totalReceiver = Random.nextInt(1, 4),
+            daysToSend = 1
+        )
+    )
+}
+
 data class PaymentPageState(
     val payments: List<PaymentData> = generateSamplePayments(), //TODO for test only
     val paymentStatistic: PaymentStatistic = PaymentStatistic(),
@@ -592,7 +604,7 @@ fun PaymentCardPreview() {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
-                    id = "Платеж #1001",
+                    id = Random.nextInt(100, 200),
                     amount = "25,430",
                     currency = "USD",
                     factory = "Guangzhou Metal Works",
@@ -608,7 +620,7 @@ fun PaymentCardPreview() {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
-                    id = "Платеж #1001",
+                    id = Random.nextInt(100, 200),
                     amount = "25,430",
                     currency = "USD",
                     factory = "Guangzhou Metal Works",
