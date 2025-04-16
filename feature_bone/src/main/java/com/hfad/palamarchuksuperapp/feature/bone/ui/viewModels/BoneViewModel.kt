@@ -112,6 +112,24 @@ data class PaymentStatistic(
     val daysToSend : Int = 1,
 )
 
+data class AmoutCurrency(
+    val currency: Currency,
+    val amount: Float,
+    val iconResource: Int = when (currency) {
+        Currency.USD -> R.drawable.usd_sign
+        Currency.EUR -> R.drawable.euro_sign
+        Currency.CNY -> R.drawable.d_letter
+        Currency.UAH -> R.drawable.uah_sign
+        Currency.PLN -> R.drawable.zloty_sign
+        Currency.BTC -> R.drawable.btc_sign
+        Currency.OTHER -> R.drawable.d_letter
+    },
+)
+
+enum class Currency {
+    USD, EUR, CNY, UAH, PLN, BTC, OTHER
+}
+
 enum class CargoType {
     ANY, CONTAINER, TRUCK, AIR
 }
