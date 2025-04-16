@@ -91,7 +91,7 @@ data class Order(
     val manager: String = "Тест: VP +3806338875",
 )
 
-data class OrderStatistic (
+data class OrderStatistic(
     val totalOrders: Int = 0,
     val completedOrders: Int = 0,
     val inProgressOrders: Int = 0,
@@ -101,16 +101,56 @@ data class OrderStatistic (
 data class PaymentStatistic(
     val totalPayment: Int = 0,
     val totalReceiver: Int = 0,
-    val paymentsByCurrency: List<Pair<String, Float>> = listOf( //TODO test only
-        Pair("USD", 24445f),
-        Pair("EUR", 335000f),
-        Pair("CNY", 220544.45f),
-        Pair("UAH", 8650.5f),
-        Pair("JPY", 66643.0f),
-        Pair("GBP", 95000.0f),
+    val paymentsByCurrency: List<AmoutCurrency> = listOf( //TODO test only
+        AmoutCurrency(
+            currency = Currency.USD,
+            amount = 24445f
+        ),
+        AmoutCurrency(
+            currency = Currency.EUR,
+            amount = 335000f
+        ),
+        AmoutCurrency(
+            currency = Currency.BTC,
+            amount = 220544.45f
+        ),
+        AmoutCurrency(
+            currency = Currency.UAH,
+            amount = 8650.5f
+        ),
+        AmoutCurrency(
+            currency = Currency.CNY,
+            amount = 8650.5f
+        ),
+        AmoutCurrency(
+            currency = Currency.PLN,
+            amount = 9500f
+        ),
+        AmoutCurrency(
+            currency = Currency.OTHER,
+            amount = 8882f,
+        )
     ),
-    val daysToSend : Int = 1,
+    val daysToSend: Int = 1,
 )
+
+data class AmoutCurrency(
+    val currency: Currency,
+    val amount: Float,
+    val iconResource: Int = when (currency) {
+        Currency.USD -> R.drawable.usd_sign
+        Currency.EUR -> R.drawable.euro_sign
+        Currency.CNY -> R.drawable.d_letter
+        Currency.UAH -> R.drawable.uah_sign
+        Currency.PLN -> R.drawable.zloty_sign
+        Currency.BTC -> R.drawable.btc_sign
+        Currency.OTHER -> R.drawable.d_letter
+    },
+)
+
+enum class Currency {
+    USD, EUR, CNY, UAH, PLN, BTC, OTHER
+}
 
 enum class CargoType {
     ANY, CONTAINER, TRUCK, AIR

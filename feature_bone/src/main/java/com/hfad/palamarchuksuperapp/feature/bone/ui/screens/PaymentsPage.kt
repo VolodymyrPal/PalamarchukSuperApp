@@ -51,7 +51,10 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmoutCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
+import java.text.DecimalFormat
 import kotlin.random.Random
 
 @Composable
@@ -143,11 +146,10 @@ fun PaymentsStatisticsCard(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                itemsIndexed(gridItems) { index, (currency, amount) ->
+                itemsIndexed(gridItems) { index, currencyAmount ->
                     CurrencyStat(
                         modifier = Modifier,
-                        currency = currency,
-                        amount = amount,
+                        amoutCurrency = currencyAmount,
                         color = colorSet.elementAt(index % colorSet.size),
                     )
                 }
@@ -190,8 +192,7 @@ fun PaymentsStatisticsCard(
 
 @Composable
 fun CurrencyStat(
-    currency: String,
-    amount: Float,
+    amoutCurrency: AmoutCurrency,
     color: Color,
     modifier: Modifier = Modifier,
 ) {
@@ -207,7 +208,7 @@ fun CurrencyStat(
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             AppText(
-                value = currency,
+                value = amoutCurrency.currency.toString(),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
@@ -215,9 +216,11 @@ fun CurrencyStat(
                 color = color
             )
         }
+        val floatToShow = (amoutCurrency.amount * 100).toInt() / 100f
+        val stringToShow = DecimalFormat("0.##").format(floatToShow)
 
         AppText(
-            value = "${((amount * 100).toInt() / 100.0)}",
+            value = "${stringToShow ?: "0"} ",
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
@@ -251,7 +254,9 @@ fun StatItem(
             verticalArrangement = Arrangement.Center
         ) {
             AppText(
-                modifier = Modifier.fillMaxWidth().width(IntrinsicSize.Min),//.background(colorSet.random()),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .width(IntrinsicSize.Min),//.background(colorSet.random()),
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
@@ -264,7 +269,9 @@ fun StatItem(
             )
 
             AppText(
-                modifier = Modifier.fillMaxWidth().width(IntrinsicSize.Min),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .width(IntrinsicSize.Min),
                 value = title,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.bodySmall,
@@ -280,8 +287,7 @@ fun StatItem(
 
 data class PaymentData(
     val id: Int,
-    val amount: String,
-    val currency: String,
+    val amoutCurrency: AmoutCurrency,
     val factory: String,
     val productType: String,
     val batchInfo: String,
@@ -373,7 +379,7 @@ fun PaymentCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AppText(
-                        value = payment.amount,
+                        value = payment.amoutCurrency.amount.toString(),
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
@@ -389,7 +395,7 @@ fun PaymentCard(
                             .padding(horizontal = 4.dp, vertical = 2.dp)
                     ) {
                         AppText(
-                            value = payment.currency,
+                            value = payment.amoutCurrency.currency.toString(),
                             appTextConfig = appTextConfig(
                                 textStyle = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium
@@ -517,18 +523,8 @@ private fun generateSamplePayments(): List<PaymentData> {
         "Автозапчасти", "Сталь", "Микрочипы", "Сырье"
     )
 
-    val currencies = listOf("USD", "EUR", "CNY", "GBP", "JPY")
 
     return List(15) { index ->
-        val currencyIdx = Random.nextInt(currencies.size)
-        val currencySymbol = currencies[currencyIdx]
-
-        val amount = when (currencySymbol) {
-            "USD", "EUR", "GBP" -> "${Random.nextInt(10, 100)},${Random.nextInt(100, 999)}"
-            "CNY" -> "${Random.nextInt(100, 999)},${Random.nextInt(100, 999)}"
-            "JPY" -> "${Random.nextInt(1000, 9999)},${Random.nextInt(100, 999)}"
-            else -> "${Random.nextInt(10, 100)},${Random.nextInt(100, 999)}"
-        }
 
         val isPaid = Random.nextInt(10) > 3
         val isOverdue = !isPaid && Random.nextInt(10) > 5
@@ -549,8 +545,10 @@ private fun generateSamplePayments(): List<PaymentData> {
 
         PaymentData(
             id = Random.nextInt(100, 200),
-            amount = amount,
-            currency = currencySymbol,
+            amoutCurrency = AmoutCurrency(
+                currency = Currency.entries.random(),
+                amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+            ),
             factory = factories[Random.nextInt(factories.size)],
             productType = productTypes[Random.nextInt(productTypes.size)],
             batchInfo = "B-${Random.nextInt(1000, 9999)}-${Random.nextInt(10, 100)}",
@@ -604,8 +602,10 @@ fun PaymentCardPreview() {
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
                     id = Random.nextInt(100, 200),
-                    amount = "25,430",
-                    currency = "USD",
+                    amoutCurrency = AmoutCurrency(
+                        currency = Currency.entries.random(),
+                        amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+                    ),
                     factory = "Guangzhou Metal Works",
                     productType = "Металлопрокат",
                     batchInfo = "B-2354-42",
@@ -620,8 +620,10 @@ fun PaymentCardPreview() {
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
                     id = Random.nextInt(100, 200),
-                    amount = "25,430",
-                    currency = "USD",
+                    amoutCurrency = AmoutCurrency(
+                        currency = Currency.entries.random(),
+                        amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+                    ),
                     factory = "Guangzhou Metal Works",
                     productType = "Металлопрокат",
                     batchInfo = "B-2354-42",
