@@ -51,7 +51,10 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmoutCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
+import java.text.DecimalFormat
 import kotlin.random.Random
 
 @Composable
@@ -143,11 +146,10 @@ fun PaymentsStatisticsCard(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                itemsIndexed(gridItems) { index, (currency, amount) ->
+                itemsIndexed(gridItems) { index, currencyAmount ->
                     CurrencyStat(
                         modifier = Modifier,
-                        currency = currency,
-                        amount = amount,
+                        amoutCurrency = currencyAmount,
                         color = colorSet.elementAt(index % colorSet.size),
                     )
                 }
@@ -190,8 +192,7 @@ fun PaymentsStatisticsCard(
 
 @Composable
 fun CurrencyStat(
-    currency: String,
-    amount: Float,
+    amoutCurrency: AmoutCurrency,
     color: Color,
     modifier: Modifier = Modifier,
 ) {
@@ -207,7 +208,7 @@ fun CurrencyStat(
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             AppText(
-                value = currency,
+                value = amoutCurrency.currency.toString(),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
@@ -215,9 +216,11 @@ fun CurrencyStat(
                 color = color
             )
         }
+        val floatToShow = (amoutCurrency.amount * 100).toInt() / 100f
+        val stringToShow = DecimalFormat("0.##").format(floatToShow)
 
         AppText(
-            value = "${((amount * 100).toInt() / 100.0)}",
+            value = "${stringToShow ?: "0"} ",
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
