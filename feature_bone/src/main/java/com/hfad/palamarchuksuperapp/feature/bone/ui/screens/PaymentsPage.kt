@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
@@ -54,6 +55,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmoutCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.random.Random
 
@@ -254,7 +256,7 @@ fun StatItem(
             AppText(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .width(IntrinsicSize.Min),//.background(colorSet.random()),
+                    .width(IntrinsicSize.Min),
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
@@ -617,7 +619,7 @@ fun PaymentCardPreview() {
                     id = Random.nextInt(100, 200),
                     amoutCurrency = AmoutCurrency(
                         currency = Currency.entries.random(),
-                        amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+                        amount = Random.nextDouble(1000.0, 10000000.0).toFloat()
                     ),
                     factory = "Guangzhou Metal Works",
                     productType = "Металлопрокат",
