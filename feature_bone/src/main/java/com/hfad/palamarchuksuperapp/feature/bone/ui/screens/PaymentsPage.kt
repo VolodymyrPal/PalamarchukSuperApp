@@ -585,6 +585,19 @@ internal val colorSet = setOf(
     Color(0xFF9C27B0),
 )
 
+internal fun Float.formatTrim(numOfDigital: Int = 2): String {
+    val pattern = "0." + "#".repeat(numOfDigital)
+    return DecimalFormat(pattern).apply {
+        isGroupingUsed = true
+        groupingSize = 3
+        roundingMode = RoundingMode.HALF_EVEN
+        decimalFormatSymbols = decimalFormatSymbols.apply {
+            decimalSeparator = ','
+            groupingSeparator = '.'
+        }
+    }.format(this)
+}
+
 @Preview
 @Composable
 fun PaymentsPagePreview() {
