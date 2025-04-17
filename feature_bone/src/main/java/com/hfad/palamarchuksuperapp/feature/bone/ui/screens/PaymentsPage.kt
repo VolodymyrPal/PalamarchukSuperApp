@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
@@ -54,6 +55,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmoutCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.random.Random
 
@@ -216,11 +218,9 @@ fun CurrencyStat(
                 color = color
             )
         }
-        val floatToShow = (amoutCurrency.amount * 100).toInt() / 100f
-        val stringToShow = DecimalFormat("0.##").format(floatToShow)
 
         AppText(
-            value = "${stringToShow ?: "0"} ",
+            value = amoutCurrency.amount.formatTrim() + " " + amoutCurrency.iconChar,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
@@ -256,7 +256,7 @@ fun StatItem(
             AppText(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .width(IntrinsicSize.Min),//.background(colorSet.random()),
+                    .width(IntrinsicSize.Min),
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
@@ -378,13 +378,15 @@ fun PaymentCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AppText(
-                        value = payment.amoutCurrency.amount.toString(),
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                    SelectionContainer {
+                        AppText(
+                            value = payment.amoutCurrency.amount.formatTrim(),
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
                         )
-                    )
+                    }
 
                     Spacer(modifier = Modifier.width(4.dp))
 
@@ -585,6 +587,19 @@ internal val colorSet = setOf(
     Color(0xFF9C27B0),
 )
 
+internal fun Float.formatTrim(numOfDigital: Int = 2): String {
+    val pattern = "0." + "#".repeat(numOfDigital)
+    return DecimalFormat(pattern).apply {
+        isGroupingUsed = true
+        groupingSize = 3
+        roundingMode = RoundingMode.HALF_EVEN
+        decimalFormatSymbols = decimalFormatSymbols.apply {
+            decimalSeparator = ','
+            groupingSeparator = '.'
+        }
+    }.format(this)
+}
+
 @Preview
 @Composable
 fun PaymentsPagePreview() {
@@ -604,7 +619,7 @@ fun PaymentCardPreview() {
                     id = Random.nextInt(100, 200),
                     amoutCurrency = AmoutCurrency(
                         currency = Currency.entries.random(),
-                        amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+                        amount = Random.nextDouble(1000.0, 10000000.0).toFloat()
                     ),
                     factory = "Guangzhou Metal Works",
                     productType = "Металлопрокат",

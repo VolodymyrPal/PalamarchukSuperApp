@@ -146,6 +146,15 @@ data class AmoutCurrency(
         Currency.BTC -> R.drawable.btc_sign
         Currency.OTHER -> R.drawable.d_letter
     },
+    val iconChar : Char = when (currency) {
+        Currency.USD -> '$'
+        Currency.EUR -> '€'
+        Currency.CNY -> '¥'
+        Currency.UAH -> '₴'
+        Currency.PLN -> 'z'
+        Currency.BTC -> '₿'
+        Currency.OTHER -> '¤'
+    }
 )
 
 enum class Currency {
