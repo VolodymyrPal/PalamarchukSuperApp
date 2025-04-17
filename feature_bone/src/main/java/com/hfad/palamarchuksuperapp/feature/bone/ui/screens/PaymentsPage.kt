@@ -376,6 +376,7 @@ fun PaymentCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    SelectionContainer {
                         AppText(
                             value = payment.amoutCurrency.amount.formatTrim(),
                             appTextConfig = appTextConfig(
@@ -383,6 +384,7 @@ fun PaymentCard(
                                 fontWeight = FontWeight.Bold
                             )
                         )
+                    }
 
                     Spacer(modifier = Modifier.width(4.dp))
 
