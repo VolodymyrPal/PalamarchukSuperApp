@@ -216,11 +216,9 @@ fun CurrencyStat(
                 color = color
             )
         }
-        val floatToShow = (amoutCurrency.amount * 100).toInt() / 100f
-        val stringToShow = DecimalFormat("0.##").format(floatToShow)
 
         AppText(
-            value = "${stringToShow ?: "0"} ",
+            value = amoutCurrency.amount.formatTrim() + " " + amoutCurrency.iconChar,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
@@ -378,13 +376,13 @@ fun PaymentCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AppText(
-                        value = payment.amoutCurrency.amount.toString(),
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                        AppText(
+                            value = payment.amoutCurrency.amount.formatTrim(),
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
                         )
-                    )
 
                     Spacer(modifier = Modifier.width(4.dp))
 
