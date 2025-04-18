@@ -140,11 +140,11 @@ data class AmoutCurrency(
     val iconResource: Int = when (currency) {
         Currency.USD -> R.drawable.usd_sign
         Currency.EUR -> R.drawable.euro_sign
-        Currency.CNY -> R.drawable.d_letter
+        Currency.CNY -> R.drawable.cny_sign
         Currency.UAH -> R.drawable.uah_sign
         Currency.PLN -> R.drawable.zloty_sign
         Currency.BTC -> R.drawable.btc_sign
-        Currency.OTHER -> R.drawable.d_letter
+        Currency.OTHER -> R.drawable.shekel_sign
     },
     val iconChar : Char = when (currency) {
         Currency.USD -> '$'
@@ -156,6 +156,21 @@ data class AmoutCurrency(
         Currency.OTHER -> '¤'
     }
 )
+
+data class PaymentData(
+    val id: Int,
+    val amoutCurrency: AmoutCurrency,
+    val factory: String,
+    val productType: String,
+    val batchInfo: String,
+    val paymentDate: String,
+    val dueDate: String,
+    val status: PaymentStatus,
+)
+
+enum class PaymentStatus {
+    PAID, PENDING, OVERDUE
+}
 
 enum class Currency {
     USD, EUR, CNY, UAH, PLN, BTC, OTHER
