@@ -22,9 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
@@ -54,7 +51,9 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmoutCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentData
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatus
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.random.Random
@@ -285,21 +284,6 @@ fun StatItem(
     }
 }
 
-data class PaymentData(
-    val id: Int,
-    val amoutCurrency: AmoutCurrency,
-    val factory: String,
-    val productType: String,
-    val batchInfo: String,
-    val paymentDate: String,
-    val dueDate: String,
-    val status: PaymentStatus,
-)
-
-enum class PaymentStatus {
-    PAID, PENDING, OVERDUE
-}
-
 @Composable
 fun PaymentCard(
     payment: PaymentData,
@@ -366,45 +350,35 @@ fun PaymentCard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
+                SelectionContainer {
+                    AppText(
+                        value = payment.amoutCurrency.amount.formatTrim(),
+                        appTextConfig = appTextConfig(
+                            textStyle = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
-                    SelectionContainer {
-                        AppText(
-                            value = payment.amoutCurrency.amount.formatTrim(),
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(4.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(horizontal = 4.dp, vertical = 2.dp)
-                    ) {
-                        AppText(
-                            value = payment.amoutCurrency.currency.toString(),
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Medium
-                            ),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
+                    AppText(
+                        value = payment.amoutCurrency.currency.toString(),
+                        appTextConfig = appTextConfig(
+                            textStyle = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 }
             }
 
@@ -413,36 +387,49 @@ fun PaymentCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
-            // Информация о фабрике и партии товаров
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.weight(0.7f)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.PlayArrow,
+                        painter = painterResource(R.drawable.factory_icon),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.padding(end = 4.dp)
                     )
-                    AppText(
-                        value = payment.factory,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
+                    Column {
+                        AppText(
+                            value = payment.factory,
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.bodyMedium
+                            )
                         )
-                    )
+                        AppText(
+                            value = "Партия: ${payment.batchInfo}",
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.bodySmall
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                        )
+                    }
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier.weight(0.3f),
+//                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Face,
+                        painter = painterResource(R.drawable.product_icon),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(end = 4.dp)
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .align(Alignment.CenterHorizontally)
                     )
                     AppText(
                         value = payment.productType,
@@ -452,15 +439,6 @@ fun PaymentCard(
                     )
                 }
             }
-
-            AppText(
-                value = "Партия: ${payment.batchInfo}",
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodySmall
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 24.dp)
-            )
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
