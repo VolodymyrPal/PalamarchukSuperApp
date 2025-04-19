@@ -405,54 +405,48 @@ fun PaymentCard(
                     Icon(
                         painter = painterResource(R.drawable.factory_icon),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(end = 4.dp)
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(4.dp)
                     )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     Column {
+                        AppText(
+                            value = stringResource(R.string.factory),
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.labelSmall,
+
+                                ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+
                         AppText(
                             value = payment.factory,
                             appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodyMedium
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium
                             )
-                        )
-                        AppText(
-                            value = "Партия: ${payment.batchInfo}",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier
                         )
                     }
                 }
-
-                Column(
-                    modifier = Modifier.weight(0.3f),
-//                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.product_icon),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
-                    AppText(
-                        value = payment.productType,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
-                        )
-                    )
-                }
             }
+
+            AppIconInfoField(
+                modifier = Modifier.fillMaxWidth(),
+                icon = painterResource(R.drawable.product_icon),
+                iconSize = 36.dp,
+                title = stringResource(R.string.cargo),
+                description = payment.productType,
+            )
+
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
-            // Даты платежей
+            // Dates
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
