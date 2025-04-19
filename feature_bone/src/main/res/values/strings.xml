@@ -24,5 +24,6 @@
     <string name="payment_pending">Pending</string>
     <string name="payment_overdue">Overdue</string>
     <string name="payment_payment_card_title">Payment: %1$s</string>
+    <string name="factory">Factory</string>
 
 </resources>
