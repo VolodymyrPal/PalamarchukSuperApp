@@ -388,48 +388,6 @@ fun PaymentCard(
             )
 
 
-            Card(
-                modifier = Modifier,
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
-                )
-            ) {
-                Row(
-                    modifier = Modifier.padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-
-                    Icon(
-                        painter = painterResource(R.drawable.factory_icon),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.padding(4.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Column {
-                        AppText(
-                            value = stringResource(R.string.factory),
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.labelSmall,
-
-                                ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
-
-                        AppText(
-                            value = payment.factory,
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
-                            )
-                        )
-                    }
-                }
-            }
-
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(R.drawable.product_icon),
