@@ -308,13 +308,11 @@ fun PaymentCard(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
-
-        ) {
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -389,48 +387,13 @@ fun PaymentCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
-
-            Card(
-                modifier = Modifier,
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.Transparent
-                )
-            ) {
-                Row(
-                    modifier = Modifier.padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-
-                    Icon(
-                        painter = painterResource(R.drawable.factory_icon),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.padding(4.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Column {
-                        AppText(
-                            value = stringResource(R.string.factory),
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.labelSmall,
-
-                                ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
-
-                        AppText(
-                            value = payment.factory,
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
-                            )
-                        )
-                    }
-                }
-            }
+            AppIconInfoField(
+                modifier = Modifier.fillMaxWidth(),
+                icon = painterResource(R.drawable.factory_icon),
+                iconSize = 36.dp,
+                title = stringResource(R.string.factory),
+                description = payment.factory,
+            )
 
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
