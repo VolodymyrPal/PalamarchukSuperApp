@@ -387,6 +387,13 @@ fun PaymentCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
+            AppIconInfoField(
+                modifier = Modifier.fillMaxWidth(),
+                icon = painterResource(R.drawable.factory_icon),
+                iconSize = 36.dp,
+                title = stringResource(R.string.factory),
+                description = payment.factory,
+            )
 
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
