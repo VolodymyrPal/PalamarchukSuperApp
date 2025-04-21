@@ -152,7 +152,6 @@ fun PaymentsStatisticsCard(
                     CurrencyStat(
                         modifier = Modifier,
                         amoutCurrency = currencyAmount,
-                        color = colorSet.elementAt(index % colorSet.size),
                     )
                 }
             }
@@ -195,7 +194,6 @@ fun PaymentsStatisticsCard(
 @Composable
 fun CurrencyStat(
     amoutCurrency: AmoutCurrency,
-    color: Color,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -206,7 +204,7 @@ fun CurrencyStat(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(color.copy(alpha = 0.1f))
+                .background(amoutCurrency.color.copy(alpha = 0.1f))
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             AppText(
@@ -215,7 +213,7 @@ fun CurrencyStat(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 ),
-                color = color
+                color = amoutCurrency.color
             )
         }
 
