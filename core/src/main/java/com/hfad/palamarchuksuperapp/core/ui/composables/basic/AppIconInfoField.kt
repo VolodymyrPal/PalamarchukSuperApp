@@ -99,7 +99,7 @@ fun AppIconInfoField(
                         .alpha(0.7f)
                         .width(IntrinsicSize.Min),
                     appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.labelSmall,
+                        textStyle = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Medium,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
@@ -113,7 +113,7 @@ fun AppIconInfoField(
                         .fillMaxWidth()
                         .width(IntrinsicSize.Min),
                     appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.labelMedium,
+                        textStyle = MaterialTheme.typography.labelLarge,
                         fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
