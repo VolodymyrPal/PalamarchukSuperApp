@@ -152,7 +152,6 @@ fun PaymentsStatisticsCard(
                     CurrencyStat(
                         modifier = Modifier,
                         amoutCurrency = currencyAmount,
-                        color = colorSet.elementAt(index % colorSet.size),
                     )
                 }
             }
@@ -195,7 +194,6 @@ fun PaymentsStatisticsCard(
 @Composable
 fun CurrencyStat(
     amoutCurrency: AmoutCurrency,
-    color: Color,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -206,7 +204,7 @@ fun CurrencyStat(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(color.copy(alpha = 0.1f))
+                .background(amoutCurrency.color.copy(alpha = 0.1f))
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             AppText(
@@ -215,7 +213,7 @@ fun CurrencyStat(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 ),
-                color = color
+                color = amoutCurrency.color
             )
         }
 
@@ -368,7 +366,7 @@ fun PaymentCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .background(payment.amoutCurrency.color.copy(alpha = 0.1f))
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     AppText(
@@ -377,7 +375,7 @@ fun PaymentCard(
                             textStyle = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium
                         ),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = payment.amoutCurrency.color
                     )
                 }
             }
@@ -390,7 +388,7 @@ fun PaymentCard(
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(R.drawable.factory_icon),
-                iconSize = 36.dp,
+                iconSize = 40.dp,
                 title = stringResource(R.string.factory),
                 description = payment.factory,
             )
@@ -398,7 +396,7 @@ fun PaymentCard(
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(R.drawable.product_icon),
-                iconSize = 36.dp,
+                iconSize = 40.dp,
                 title = stringResource(R.string.cargo),
                 description = payment.productType,
             )

@@ -206,24 +206,21 @@ fun StepProgressionBar(
                     }
                 }
 
-                // **Рисуем текст (дату)**
                 val day = String.format("%02d", index + 1) //TODO Test only
                 val text = "${day}.02.25"
 
-                val fontSize = (stepRadius / 2f).coerceIn(8.sp.toPx(), 12.sp.toPx())
+                val fontSize = (stepRadius / 2f).coerceIn(10.sp.toPx(), 18.sp.toPx())
                 val adaptiveTextStyle = textStyle.copy(
                     fontSize = fontSize.toSp(),
                     fontWeight = Bold,
                     color = if (index < currentStep) onPrimaryContainerColor else
-                        onPrimaryContainerColor.copy(
-                            alpha = 0.7f
-                        )
+                        onPrimaryContainerColor.copy(alpha = 0.7f)
 
                 )
 
                 val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
 
-                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width * 0.95f < stepSpacing) {
+                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width  < stepSpacing) {
                     drawText(
                         textMeasurer = textMeasurer,
                         text = text,
@@ -257,7 +254,7 @@ fun StepProgressionBarDarkPreview(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                listOfSteps = orderServiceList.subList(0, 12),
+                listOfSteps = orderServiceList.subList(0, 6),
                 currentStep = 2
             )
         }
