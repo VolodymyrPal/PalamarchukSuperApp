@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
@@ -146,7 +147,7 @@ data class AmoutCurrency(
         Currency.BTC -> R.drawable.btc_sign
         Currency.OTHER -> R.drawable.shekel_sign
     },
-    val iconChar : Char = when (currency) {
+    val iconChar: Char = when (currency) {
         Currency.USD -> '$'
         Currency.EUR -> '€'
         Currency.CNY -> '¥'
@@ -154,7 +155,16 @@ data class AmoutCurrency(
         Currency.PLN -> 'z'
         Currency.BTC -> '₿'
         Currency.OTHER -> '¤'
-    }
+    },
+    val color: Color = when (currency) {
+        Currency.USD -> Color(0xFF4CAF50)
+        Currency.EUR -> Color(0xFF2196F3)
+        Currency.CNY -> Color(0xFFF44336)
+        Currency.UAH -> Color(0xFFFFC107)
+        Currency.PLN -> Color(0xFF9C27B0)
+        Currency.BTC -> Color(0xFFFF5722)
+        Currency.OTHER -> Color(0xFF9E9E9E)
+    },
 )
 
 data class PaymentData(
