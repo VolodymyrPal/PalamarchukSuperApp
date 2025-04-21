@@ -366,7 +366,7 @@ fun PaymentCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .background(payment.amoutCurrency.color.copy(alpha = 0.1f))
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     AppText(
@@ -375,7 +375,7 @@ fun PaymentCard(
                             textStyle = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium
                         ),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = payment.amoutCurrency.color
                     )
                 }
             }
@@ -388,7 +388,7 @@ fun PaymentCard(
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(R.drawable.factory_icon),
-                iconSize = 36.dp,
+                iconSize = 40.dp,
                 title = stringResource(R.string.factory),
                 description = payment.factory,
             )
@@ -396,7 +396,7 @@ fun PaymentCard(
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(R.drawable.product_icon),
-                iconSize = 36.dp,
+                iconSize = 40.dp,
                 title = stringResource(R.string.cargo),
                 description = payment.productType,
             )
