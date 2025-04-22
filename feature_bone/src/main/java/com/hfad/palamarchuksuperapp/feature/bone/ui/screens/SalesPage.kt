@@ -53,8 +53,7 @@ fun SalesPage(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // Карта статистики продаж
-        Card(
+        SalesStatisticsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -150,6 +149,102 @@ fun SalesPage(
         ) {
             items(salesItems) { item ->
                 ProductSaleCard(saleItem = item)
+            }
+        }
+    }
+}
+
+@Composable
+fun SalesStatisticsCard(
+    modifier: Modifier = Modifier,
+    salesStatistics: SalesStatistics,
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            AppText(
+                value = "Статистика продаж",
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                thickness = 2.dp,
+                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
+            )
+
+            // Основные показатели в виде иконок с числами
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                val totalAmount = salesStatistics.totalSalesAmount.amount.formatTrim(0)
+                val totalAmountStr = totalAmount + " " + salesStatistics.totalSalesAmount.iconChar
+                SalesStat(
+                    icon = Icons.Default.ShoppingCart,
+                    value = totalAmountStr,
+                    label = stringResource(R.string.summ_sales),
+                    color = salesStatistics.totalSalesAmount.color
+                )
+
+                val totalSalesNds = salesStatistics.totalSalesNdsAmount.amount.formatTrim(0)
+                val totalSalesNdsStr = totalSalesNds + " " + salesStatistics.totalSalesNdsAmount.iconChar
+
+                SalesStat(
+                    icon = Icons.Default.Search,
+                    value = "127",
+                    label = "Товары",
+                    color = Color.Blue
+                )
+
+                SalesStat(
+                    icon = Icons.Default.Info,
+                    value = "18",
+                    label = "Клиенты",
+                    color = Color.Cyan
+                )
+            }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
+            )
+
+            // Итоговая выручка
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(
+                    value = "Общая выручка: ",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.titleMedium
+                    )
+                )
+                AppText(
+                    value = "1,456,780 грн",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
     }
