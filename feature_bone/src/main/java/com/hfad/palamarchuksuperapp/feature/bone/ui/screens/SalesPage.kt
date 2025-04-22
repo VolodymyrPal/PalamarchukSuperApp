@@ -134,7 +134,8 @@ fun SalesStatisticsCard(
                 )
 
                 val totalSalesNds = salesStatistics.totalSalesNdsAmount.amount.formatTrim(0)
-                val totalSalesNdsStr = totalSalesNds + " " + salesStatistics.totalSalesNdsAmount.iconChar
+                val totalSalesNdsStr =
+                    totalSalesNds + " " + salesStatistics.totalSalesNdsAmount.iconChar
 
                 SalesStat(
                     icon = Icons.Default.Search,
@@ -186,6 +187,7 @@ fun SalesStat(
     icon: ImageVector,
     value: String,
     label: String,
+    color: Color,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -197,29 +199,31 @@ fun SalesStat(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)),
+                .background(color.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.tertiary,
+                tint = color,
                 modifier = Modifier.size(24.dp)
             )
         }
 
         AppText(
+            modifier = Modifier,
             value = value,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         )
 
         AppText(
             value = label,
             appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.bodySmall
+                textStyle = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
             ),
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
