@@ -102,32 +102,32 @@ data class OrderStatistic(
 data class PaymentStatistic(
     val totalPayment: Int = 0,
     val totalReceiver: Int = 0,
-    val paymentsByCurrency: List<AmoutCurrency> = listOf( //TODO test only
-        AmoutCurrency(
+    val paymentsByCurrency: List<AmountCurrency> = listOf( //TODO test only
+        AmountCurrency(
             currency = Currency.USD,
             amount = 24445f
         ),
-        AmoutCurrency(
+        AmountCurrency(
             currency = Currency.EUR,
             amount = 335000f
         ),
-        AmoutCurrency(
+        AmountCurrency(
             currency = Currency.BTC,
             amount = 220544.45f
         ),
-        AmoutCurrency(
+        AmountCurrency(
             currency = Currency.UAH,
             amount = 8650.5f
         ),
-        AmoutCurrency(
+        AmountCurrency(
             currency = Currency.CNY,
             amount = 8650.5f
         ),
-        AmoutCurrency(
+        AmountCurrency(
             currency = Currency.PLN,
             amount = 9500f
         ),
-        AmoutCurrency(
+        AmountCurrency(
             currency = Currency.OTHER,
             amount = 8882f,
         )
@@ -135,7 +135,7 @@ data class PaymentStatistic(
     val daysToSend: Int = 1,
 )
 
-data class AmoutCurrency(
+data class AmountCurrency(
     val currency: Currency,
     val amount: Float,
     val iconResource: Int = when (currency) {
@@ -167,9 +167,25 @@ data class AmoutCurrency(
     },
 )
 
+data class ProductSaleItem(
+    val id: String,
+    val productName: String,
+    val category: String,
+    val quantity: Int,
+    val price: Int,
+    val totalAmount: Int,
+    val customerName: String,
+    val saleDate: String,
+    val status: SaleStatus,
+)
+
+enum class SaleStatus {
+    COMPLETED, SHIPPING, PENDING
+}
+
 data class PaymentData(
     val id: Int,
-    val amoutCurrency: AmoutCurrency,
+    val amountCurrency: AmountCurrency,
     val factory: String,
     val productType: String,
     val batchInfo: String,
