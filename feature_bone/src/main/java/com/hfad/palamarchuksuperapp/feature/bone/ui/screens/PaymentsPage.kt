@@ -527,7 +527,7 @@ internal val colorSet = setOf(
 )
 
 internal fun Float.formatTrim(numOfDigital: Int = 2): String {
-    val pattern = "0." + "#".repeat(numOfDigital)
+    val pattern = "0" + if (numOfDigital>0) { "."+"#".repeat(numOfDigital) }  else ""
     return DecimalFormat(pattern).apply {
         isGroupingUsed = true
         groupingSize = 3
