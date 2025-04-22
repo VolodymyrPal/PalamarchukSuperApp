@@ -50,7 +50,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmoutCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentData
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
@@ -62,12 +62,11 @@ import kotlin.random.Random
 @Composable
 fun PaymentsPage(
     modifier: Modifier = Modifier,
-    paymentPageState: PaymentPageState = PaymentPageState(),
+    paymentPageState: PaymentPageState = generatePaymentSample(), //TODO for test only
 ) {
-    val paymentPageState = generatePaymentSample() //TODO for test only
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(vertical = 12.dp)
@@ -151,7 +150,7 @@ fun PaymentsStatisticsCard(
                 itemsIndexed(gridItems) { index, currencyAmount ->
                     CurrencyStat(
                         modifier = Modifier,
-                        amoutCurrency = currencyAmount,
+                        amountCurrency = currencyAmount,
                     )
                 }
             }
@@ -193,7 +192,7 @@ fun PaymentsStatisticsCard(
 
 @Composable
 fun CurrencyStat(
-    amoutCurrency: AmoutCurrency,
+    amountCurrency: AmountCurrency,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -204,21 +203,21 @@ fun CurrencyStat(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(amoutCurrency.color.copy(alpha = 0.1f))
+                .background(amountCurrency.color.copy(alpha = 0.1f))
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             AppText(
-                value = amoutCurrency.currency.toString(),
+                value = amountCurrency.currency.toString(),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 ),
-                color = amoutCurrency.color
+                color = amountCurrency.color
             )
         }
 
         AppText(
-            value = amoutCurrency.amount.formatTrim() + " " + amoutCurrency.iconChar,
+            value = amountCurrency.amount.formatTrim() + " " + amountCurrency.iconChar,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
@@ -353,7 +352,7 @@ fun PaymentCard(
             ) {
                 SelectionContainer {
                     AppText(
-                        value = payment.amoutCurrency.amount.formatTrim(),
+                        value = payment.amountCurrency.amount.formatTrim(),
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
@@ -366,16 +365,16 @@ fun PaymentCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
-                        .background(payment.amoutCurrency.color.copy(alpha = 0.1f))
+                        .background(payment.amountCurrency.color.copy(alpha = 0.1f))
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     AppText(
-                        value = payment.amoutCurrency.currency.toString(),
+                        value = payment.amountCurrency.currency.toString(),
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Medium
                         ),
-                        color = payment.amoutCurrency.color
+                        color = payment.amountCurrency.color
                     )
                 }
             }
@@ -487,7 +486,7 @@ private fun generateSamplePayments(): List<PaymentData> {
 
         PaymentData(
             id = Random.nextInt(100, 200),
-            amoutCurrency = AmoutCurrency(
+            amountCurrency = AmountCurrency(
                 currency = Currency.entries.random(),
                 amount = Random.nextDouble(1000.0, 100000.0).toFloat()
             ),
@@ -557,7 +556,7 @@ fun PaymentCardPreview() {
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
                     id = Random.nextInt(100, 200),
-                    amoutCurrency = AmoutCurrency(
+                    amountCurrency = AmountCurrency(
                         currency = Currency.entries.random(),
                         amount = Random.nextDouble(1000.0, 10000000.0).toFloat()
                     ),
@@ -575,7 +574,7 @@ fun PaymentCardPreview() {
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentData(
                     id = Random.nextInt(100, 200),
-                    amoutCurrency = AmoutCurrency(
+                    amountCurrency = AmountCurrency(
                         currency = Currency.entries.random(),
                         amount = Random.nextDouble(1000.0, 100000.0).toFloat()
                     ),
