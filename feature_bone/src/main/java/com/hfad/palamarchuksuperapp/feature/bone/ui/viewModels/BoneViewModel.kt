@@ -167,6 +167,22 @@ data class AmountCurrency(
     },
 )
 
+data class ProductSaleItem(
+    val id: String,
+    val productName: String,
+    val category: String,
+    val quantity: Int,
+    val price: Int,
+    val totalAmount: Int,
+    val customerName: String,
+    val saleDate: String,
+    val status: SaleStatus,
+)
+
+enum class SaleStatus {
+    COMPLETED, SHIPPING, PENDING
+}
+
 data class PaymentData(
     val id: Int,
     val amountCurrency: AmountCurrency,
