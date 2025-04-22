@@ -25,5 +25,6 @@
     <string name="payment_overdue">Overdue</string>
     <string name="payment_payment_card_title">Payment: %1$s</string>
     <string name="factory">Factory</string>
+    <string name="summ_sales">Full amount</string>
 
 </resources>
