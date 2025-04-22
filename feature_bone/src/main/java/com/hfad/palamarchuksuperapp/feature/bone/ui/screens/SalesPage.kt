@@ -33,19 +33,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmountCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ProductSaleItem
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SaleStatus
 import kotlin.random.Random
 
 @Composable
 fun SalesPage(
     modifier: Modifier = Modifier,
+    state: SalesPageState = SalesPageState(),
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -57,85 +65,8 @@ fun SalesPage(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 4.dp
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AppText(
-                    value = "Статистика продаж",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    thickness = 2.dp,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                )
-
-                // Основные показатели в виде иконок с числами
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    SalesStat(
-                        icon = Icons.Default.ShoppingCart,
-                        value = "324",
-                        label = "Продажи"
-                    )
-
-                    SalesStat(
-                        icon = Icons.Default.Search,
-                        value = "127",
-                        label = "Товары"
-                    )
-
-                    SalesStat(
-                        icon = Icons.Default.Info,
-                        value = "18",
-                        label = "Клиенты"
-                    )
-                }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-                )
-
-                // Итоговая выручка
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AppText(
-                        value = "Общая выручка: ",
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.titleMedium
-                        )
-                    )
-                    AppText(
-                        value = "1,456,780 грн",
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
+            salesStatistics = state.salesStatistics
+        )
 
         val salesItems = generateSampleSalesItems()
 
@@ -293,22 +224,6 @@ fun SalesStat(
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
     }
-}
-
-data class ProductSaleItem(
-    val id: String,
-    val productName: String,
-    val category: String,
-    val quantity: Int,
-    val price: Int,
-    val totalAmount: Int,
-    val customerName: String,
-    val saleDate: String,
-    val status: SaleStatus,
-)
-
-enum class SaleStatus {
-    COMPLETED, SHIPPING, PENDING
 }
 
 @Composable
@@ -505,7 +420,6 @@ fun ProductSaleCard(
     }
 }
 
-// Функция для генерации примера данных
 private fun generateSampleSalesItems(): List<ProductSaleItem> {
     val products = listOf(
         "Сталь листовая", "Металлопрофиль", "Трубы стальные",
@@ -541,6 +455,23 @@ private fun generateSampleSalesItems(): List<ProductSaleItem> {
         )
     }
 }
+
+data class SalesStatistics(
+    val totalSalesAmount: AmountCurrency = AmountCurrency(
+        currency = Currency.UAH,
+        amount = 495000f
+    ),
+    val totalSalesNdsAmount: AmountCurrency = AmountCurrency(
+        currency = Currency.UAH,
+        amount = totalSalesAmount.amount * 0.2f
+    ),
+    val totalBuyers: Int = 12,
+)
+
+data class SalesPageState(
+    val salesItems: List<ProductSaleItem> = generateSampleSalesItems(),
+    val salesStatistics: SalesStatistics = SalesStatistics(),
+)
 
 @Preview
 @Composable
