@@ -139,16 +139,16 @@ fun SalesStatisticsCard(
 
                 SalesStat(
                     icon = Icons.Default.Search,
-                    value = "127",
-                    label = "Товары",
-                    color = Color.Blue
+                    value = totalSalesNdsStr,
+                    label = stringResource(R.string.total_nds),
+                    color = colorSet.random()
                 )
 
                 SalesStat(
                     icon = Icons.Default.Info,
-                    value = "18",
-                    label = "Клиенты",
-                    color = Color.Cyan
+                    value = salesStatistics.totalBuyers.toString(),
+                    label = stringResource(R.string.total_sale_buyer),
+                    color = colorSet.random()
                 )
             }
 

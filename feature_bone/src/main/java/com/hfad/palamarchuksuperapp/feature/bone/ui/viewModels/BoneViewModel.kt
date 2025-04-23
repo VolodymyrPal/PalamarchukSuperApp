@@ -160,11 +160,20 @@ data class AmountCurrency(
         Currency.USD -> Color(0xFF4CAF50)
         Currency.EUR -> Color(0xFF2196F3)
         Currency.CNY -> Color(0xFFF44336)
-        Currency.UAH -> Color(0xFFFFC107)
+        Currency.UAH -> Color(0xFF3F51B5)
         Currency.PLN -> Color(0xFF9C27B0)
         Currency.BTC -> Color(0xFFFF5722)
         Currency.OTHER -> Color(0xFF9E9E9E)
     },
+    val currencyTextRes : Int = when (currency) {
+        Currency.USD -> R.string.usd
+        Currency.EUR -> R.string.eur
+        Currency.CNY -> R.string.yuan
+        Currency.UAH -> R.string.uah
+        Currency.PLN -> R.string.zloty
+        Currency.BTC -> R.string.bitcoin
+        Currency.OTHER -> R.string.undefined_currency
+    }
 )
 
 data class ProductSaleItem(
