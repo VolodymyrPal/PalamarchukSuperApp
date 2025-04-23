@@ -26,5 +26,14 @@
     <string name="payment_payment_card_title">Payment: %1$s</string>
     <string name="factory">Factory</string>
     <string name="summ_sales">Full amount</string>
+    <string name="uah">uah</string>
+    <string name="usd">usd</string>
+    <string name="eur">euro</string>
+    <string name="yuan">yuan</string>
+    <string name="zloty">zloty</string>
+    <string name="bitcoin">btc</string>
+    <string name="undefined_currency">other</string>
+    <string name="total_nds">Total nds</string>
+    <string name="total_sale_buyer">Total buyers</string>
 
 </resources>
