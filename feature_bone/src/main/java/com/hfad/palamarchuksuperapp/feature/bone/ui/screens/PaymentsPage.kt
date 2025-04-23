@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
+import android.icu.text.NumberFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -55,8 +56,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentData
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatus
-import java.math.RoundingMode
-import java.text.DecimalFormat
+import java.util.Locale
 import kotlin.random.Random
 
 @Composable
@@ -526,16 +526,14 @@ internal val colorSet = setOf(
     Color(0xFF9C27B0),
 )
 
-internal fun Float.formatTrim(numOfDigital: Int = 2): String {
-    val pattern = "0" + if (numOfDigital>0) { "."+"#".repeat(numOfDigital) }  else ""
-    return DecimalFormat(pattern).apply {
+internal fun Float.formatTrim(
+    numOfDigital: Int = 2,
+    locale: Locale = Locale.getDefault(),
+): String {
+    return NumberFormat.getNumberInstance(locale).apply {
+        maximumFractionDigits = numOfDigital
+        minimumFractionDigits = 0
         isGroupingUsed = true
-        groupingSize = 3
-        roundingMode = RoundingMode.HALF_EVEN
-        decimalFormatSymbols = decimalFormatSymbols.apply {
-            decimalSeparator = ','
-            groupingSeparator = '.'
-        }
     }.format(this)
 }
 
