@@ -39,8 +39,8 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 fun AppIconInfoField(
     modifier: Modifier = Modifier,
     icon: Painter? = null,
-    title: String = "Title",
-    description: String = "Description",
+    title: String = "",
+    description: String = "",
     iconSize: Dp = 24.dp,
     iconPadding: Dp = 6.dp,
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
@@ -92,7 +92,7 @@ fun AppIconInfoField(
                     .padding(vertical = 2.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                AppText(
+                if (title.isNotBlank()) AppText(
                     value = title,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,7 +107,7 @@ fun AppIconInfoField(
                     ),
                 )
 
-                AppText(
+                if (description.isNotBlank()) AppText(
                     value = description,
                     modifier = Modifier
                         .fillMaxWidth()
