@@ -154,7 +154,7 @@ data class AmountCurrency(
         Currency.UAH -> '₴'
         Currency.PLN -> 'z'
         Currency.BTC -> '₿'
-        Currency.OTHER -> '¤'
+        Currency.OTHER -> '₪'
     },
     val color: Color = when (currency) {
         Currency.USD -> Color(0xFF4CAF50)
@@ -165,7 +165,7 @@ data class AmountCurrency(
         Currency.BTC -> Color(0xFFFF5722)
         Currency.OTHER -> Color(0xFF9E9E9E)
     },
-    val currencyTextRes : Int = when (currency) {
+    val currencyTextRes: Int = when (currency) {
         Currency.USD -> R.string.usd
         Currency.EUR -> R.string.eur
         Currency.CNY -> R.string.yuan
@@ -173,23 +173,29 @@ data class AmountCurrency(
         Currency.PLN -> R.string.zloty
         Currency.BTC -> R.string.bitcoin
         Currency.OTHER -> R.string.undefined_currency
-    }
+    },
 )
 
 data class ProductSaleItem(
     val id: String,
     val productName: String,
-    val category: String,
-    val quantity: Int,
+    val cargoCategory: String,
+    val quantity: Int, //Quantity of what?
     val price: Int,
     val totalAmount: Int,
+    val vatAmount: Double,
     val customerName: String,
-    val saleDate: String,
     val status: SaleStatus,
+    val requestDate: String,
+    val documentDate: String,
+    val companyName: String,
+    val commissionPercent: Double,
+    val prepayment: Boolean,
+    val order: Order? = null,
 )
 
 enum class SaleStatus {
-    COMPLETED, SHIPPING, PENDING
+    CREATED, IN_PROGRESS, DOCUMENT_PROCEED, COMPLETED, CANCELED
 }
 
 data class PaymentData(

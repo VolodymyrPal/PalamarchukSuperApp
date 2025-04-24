@@ -236,15 +236,15 @@ fun ProductSaleCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (saleItem.status) {
-        SaleStatus.COMPLETED -> MaterialTheme.colorScheme.primary
-        SaleStatus.SHIPPING -> MaterialTheme.colorScheme.tertiary
-        SaleStatus.PENDING -> MaterialTheme.colorScheme.error
+        else  -> MaterialTheme.colorScheme.primary
+//        SaleStatus.IN_PROGRESS -> MaterialTheme.colorScheme.tertiary
+//        SaleStatus.DOCUMENT_PROCEED -> MaterialTheme.colorScheme.error
     }
 
     val statusText = when (saleItem.status) {
-        SaleStatus.COMPLETED -> "Завершено"
-        SaleStatus.SHIPPING -> "Доставляется"
-        SaleStatus.PENDING -> "В обработке"
+        else -> "Завершено"
+//        SaleStatus.IN_PROGRESS -> "Доставляется"
+//        SaleStatus.DOCUMENT_PROCEED -> "В обработке"
     }
 
     Card(
@@ -323,7 +323,7 @@ fun ProductSaleCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         AppText(
-                            value = saleItem.category,
+                            value = saleItem.cargoCategory,
                             appTextConfig = appTextConfig(
                                 textStyle = MaterialTheme.typography.bodySmall
                             ),
@@ -412,7 +412,7 @@ fun ProductSaleCard(
                         modifier = Modifier.padding(end = 4.dp)
                     )
                     AppText(
-                        value = saleItem.saleDate,
+                        value = saleItem.documentDate,
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodySmall
                         ),
@@ -449,13 +449,18 @@ private fun generateSampleSalesItems(): List<ProductSaleItem> {
         ProductSaleItem(
             id = "Продажа #${500 + index}",
             productName = products[Random.nextInt(products.size)],
-            category = categories[Random.nextInt(categories.size)],
+            cargoCategory = categories[Random.nextInt(categories.size)],
             quantity = quantity,
             price = price,
             totalAmount = quantity * price,
             customerName = customers[Random.nextInt(customers.size)],
-            saleDate = "10.${Random.nextInt(1, 12)}.2023",
-            status = statuses[Random.nextInt(statuses.size)]
+            documentDate = "10.${Random.nextInt(1, 12)}.2023",
+            status = SaleStatus.entries.random(),
+            vatAmount = 999.0,
+            requestDate = "12.04.1996",
+            companyName = "Some company name",
+            commissionPercent = 10.0,
+            prepayment = false
         )
     }
 }
@@ -464,12 +469,12 @@ data class SalesStatistics(
     val totalSalesAmount: AmountCurrency = AmountCurrency(
         currency = Currency.UAH,
         amount = 495000f
-    ),
+    ), //TODO test purpose
     val totalSalesNdsAmount: AmountCurrency = AmountCurrency(
         currency = Currency.UAH,
-        amount = totalSalesAmount.amount * 0.2f
-    ),
-    val totalBuyers: Int = 12,
+        amount = totalSalesAmount.amount * (20f/(100+20f))
+    ), //TODO test purpose
+    val totalBuyers: Int = 12, //TODO test purpose
 )
 
 data class SalesPageState(
@@ -493,13 +498,18 @@ fun ProductSaleCardPreview() {
             saleItem = ProductSaleItem(
                 id = "Продажа #501",
                 productName = "Сталь листовая",
-                category = "Металлопрокат",
+                cargoCategory = "Металлопрокат",
                 quantity = 25,
                 price = 3500,
                 totalAmount = 87500,
                 customerName = "ООО Стройинвест",
-                saleDate = "10.05.2023",
-                status = SaleStatus.COMPLETED
+                documentDate = "10.${Random.nextInt(1, 12)}.2023",
+                status = SaleStatus.entries.random(),
+                vatAmount = 999.0,
+                requestDate = "12.04.1996",
+                companyName = "Some company name",
+                commissionPercent = 10.0,
+                prepayment = false
             )
         )
     }
