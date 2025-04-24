@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import com.hfad.palamarchuksuperapp.core.ui.composables.effects.HideShowSystemBar
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.BoneFeatureViewModel
 import kotlinx.coroutines.launch
@@ -40,7 +39,7 @@ fun BoneScreenRoot(
     val a = viewModel
     val navController = LocalNavController.current
 
-    HideShowSystemBar()
+//    HideShowSystemBar()
     BoneScreen(
         modifier = modifier,
         navController = navController
@@ -129,14 +128,13 @@ fun BoneScreen(
                     top = paddingValues.calculateTopPadding()
                 )
         ) {
-
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(colorScheme.primaryContainer),
                 userScrollEnabled = true,
-                beyondViewportPageCount = 1,
+                beyondViewportPageCount = 4,
             ) { page ->
                 when (page) {
                     0 -> OrdersPage()
