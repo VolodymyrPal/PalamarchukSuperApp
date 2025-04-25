@@ -79,7 +79,9 @@ fun SalesPage(
             )
         ) {
             items(salesItems) { item ->
-                ProductSaleCard(saleItem = item)
+                SaleCard(saleItem = item,
+                    )
+//                ProductSaleCard(saleItem = item)
             }
         }
     }
