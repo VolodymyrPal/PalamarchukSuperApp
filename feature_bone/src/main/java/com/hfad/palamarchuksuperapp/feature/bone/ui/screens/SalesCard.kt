@@ -19,23 +19,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.MoreVert
@@ -64,7 +58,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
@@ -78,7 +71,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ProductSaleItem
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SaleStatus
 
 @Composable
-fun EnhancedProductSaleCard(
+fun SaleCard(
     saleItem: ProductSaleItem,
     modifier: Modifier = Modifier,
 ) {
@@ -109,7 +102,7 @@ fun EnhancedProductSaleCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Header part
@@ -118,22 +111,26 @@ fun EnhancedProductSaleCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Icon(
+                    painter = painterResource(R.drawable.money_pack),
+                    modifier = Modifier.padding(12.dp),
+                    contentDescription = null
+                )
                 AppText(
-                    modifier = Modifier.weight(0.5f),
-                    value = "Заявка №${saleItem.id}",
+                    modifier = Modifier.weight(1f),
+                    value = "Заявка: №${saleItem.id}",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Unspecified
                     )
                 )
 
                 AppIconInfoField(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .weight(0.5f),
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
                     icon = rememberVectorPainter(Icons.Default.DateRange),
-                    title = saleItem.status.toString()
+                    title = saleItem.status.toString(),
+                    fillMaxWidth = false
                 )
             }
 
@@ -759,7 +756,7 @@ fun SalesPageExample() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(sampleItems) { item ->
-                EnhancedProductSaleCard(saleItem = item)
+                SaleCard(saleItem = item)
             }
         }
     }
