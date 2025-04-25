@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.core.ui.composables.basic
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -47,7 +47,7 @@ fun AppIconInfoField(
     elevation: Dp = 2.dp,
     onClick: (() -> Unit)? = null,
 ) {
-    val cardModifier = if (onClick != null) {
+    val boxModifier = if (onClick != null) {
         modifier
             .sizeIn(maxWidth = appIconInfoFieldWidth.dp)
             .width(IntrinsicSize.Min)
@@ -59,66 +59,69 @@ fun AppIconInfoField(
             .width(IntrinsicSize.Min)
             .height(IntrinsicSize.Min)
     }
-
-    Card(
-        modifier = cardModifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        ),
-        shape = RoundedCornerShape(12.dp),
+    Box(
+        modifier = boxModifier
     ) {
-        Row(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(contentPadding),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(iconPadding)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+            shape = RoundedCornerShape(12.dp),
         ) {
-            if (icon != null) {
-                Icon(
-                    painter = icon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(iconSize),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            Column(
+            Row(
                 modifier = Modifier
-                    .weight(1f, fill = false)
-                    .padding(vertical = 2.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .padding(contentPadding)
+                    .align(Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(iconPadding)
             ) {
-                if (title.isNotBlank()) AppText(
-                    value = title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .alpha(0.7f)
-                        .width(IntrinsicSize.Min),
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Medium,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 2,
-                        textAlign = TextAlign.Unspecified
-                    ),
-                )
+                if (icon != null) {
+                    Icon(
+                        painter = icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(iconSize),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
 
-                if (description.isNotBlank()) AppText(
-                    value = description,
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .width(IntrinsicSize.Min),
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.labelLarge,
-                        fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    ),
-                )
+                        .weight(1f, fill = false)
+                        .padding(vertical = 2.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (title.isNotBlank()) AppText(
+                        value = title,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(0.7f)
+                            .width(IntrinsicSize.Min),
+                        appTextConfig = appTextConfig(
+                            textStyle = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Medium,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
+                            textAlign = TextAlign.Unspecified
+                        ),
+                    )
+
+                    if (description.isNotBlank()) AppText(
+                        value = description,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .width(IntrinsicSize.Min),
+                        appTextConfig = appTextConfig(
+                            textStyle = MaterialTheme.typography.labelLarge,
+                            fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        ),
+                    )
+                }
             }
         }
     }
