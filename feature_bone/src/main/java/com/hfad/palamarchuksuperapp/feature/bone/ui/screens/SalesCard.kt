@@ -129,8 +129,7 @@ fun SaleCard(
                     modifier = Modifier
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     icon = rememberVectorPainter(Icons.Default.DateRange),
-                    title = saleItem.status.toString(),
-                    fillMaxWidth = false
+                    title = statusText,
                 )
             }
 
