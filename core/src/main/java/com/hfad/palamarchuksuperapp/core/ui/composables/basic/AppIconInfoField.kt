@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +47,10 @@ fun AppIconInfoField(
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
     elevation: Dp = 2.dp,
     onClick: (() -> Unit)? = null,
+    cardColors : CardColors = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 ) {
     val boxModifier = if (onClick != null) {
         modifier
@@ -65,10 +70,7 @@ fun AppIconInfoField(
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = elevation),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-            ),
+            colors = cardColors,
             shape = RoundedCornerShape(12.dp),
         ) {
             Row(
@@ -99,7 +101,7 @@ fun AppIconInfoField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .alpha(0.7f)
-                            .width(IntrinsicSize.Min),
+                            .width(IntrinsicSize.Max),
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Medium,
