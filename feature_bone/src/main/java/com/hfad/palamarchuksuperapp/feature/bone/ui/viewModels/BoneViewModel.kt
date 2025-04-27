@@ -177,7 +177,7 @@ data class AmountCurrency(
 )
 
 data class ProductSaleItem(
-    val id: String,
+    val id: Int,
     val productName: String,
     val cargoCategory: String,
     val quantity: Int, //Quantity of what?
