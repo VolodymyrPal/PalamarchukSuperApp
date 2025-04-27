@@ -526,7 +526,7 @@ internal val colorSet = setOf(
     Color(0xFF9C27B0),
 )
 
-internal fun Float.formatTrim(
+internal fun Number.formatTrim(
     numOfDigital: Int = 2,
     locale: Locale = Locale.getDefault(),
 ): String {
