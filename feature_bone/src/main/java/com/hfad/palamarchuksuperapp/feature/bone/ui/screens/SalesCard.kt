@@ -20,9 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -54,7 +54,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,9 +64,9 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderService
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ProductSaleItem
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SaleStatus
+import kotlin.random.Random
 
 @Composable
 fun SaleCard(
@@ -123,7 +122,7 @@ fun SaleCard(
                 )
                 AppText(
                     modifier = Modifier.weight(1f),
-                    value = "Заявка: №${saleItem.id}",
+                    value = stringResource(R.string.sale_card_title, saleItem.id),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -132,7 +131,8 @@ fun SaleCard(
 
                 AppIconInfoField(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ,
                     icon = rememberVectorPainter(Icons.Default.DateRange),
                     title = statusText,
                 )
@@ -143,7 +143,6 @@ fun SaleCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
-            // Информация о компании и товаре
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -155,12 +154,11 @@ fun SaleCard(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.AccountBox,
+                            imageVector = Icons.Outlined.AccountBox,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.padding(4.dp).size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
                         AppText(
                             value = saleItem.companyName,
                             appTextConfig = appTextConfig(
@@ -170,13 +168,15 @@ fun SaleCard(
                         )
                     }
 
-                    AppText(
-                        value = saleItem.productName,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
-                        ),
-                        modifier = Modifier.padding(start = 22.dp)
-                    )
+                    if (saleItem.productName.isNotBlank()) {
+                        AppText(
+                            value = saleItem.productName,
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.bodyMedium
+                            ),
+                            modifier = Modifier.padding(start = 22.dp)
+                        )
+                    }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
