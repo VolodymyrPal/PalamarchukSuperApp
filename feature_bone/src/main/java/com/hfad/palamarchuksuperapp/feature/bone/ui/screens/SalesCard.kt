@@ -36,14 +36,13 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,7 +75,7 @@ fun SaleCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (saleItem.status) {
-        SaleStatus.COMPLETED -> MaterialTheme.colorScheme.primary
+        SaleStatus.COMPLETED -> MaterialTheme.colorScheme.onPrimaryContainer
         SaleStatus.IN_PROGRESS -> MaterialTheme.colorScheme.tertiary
         SaleStatus.CREATED -> MaterialTheme.colorScheme.tertiary
         SaleStatus.DOCUMENT_PROCEED -> MaterialTheme.colorScheme.primary
@@ -105,16 +104,22 @@ fun SaleCard(
             modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Header part
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.money_pack),
-                    modifier = Modifier.padding(12.dp),
-                    contentDescription = null
+//                Icon(
+//                    painter = painterResource(R.drawable.money_pack),
+//                    modifier = Modifier.size(34.dp).padding(8.dp),
+//                    contentDescription = null
+//                )
+                Box(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(statusColor)
                 )
                 AppText(
                     modifier = Modifier.weight(1f),
