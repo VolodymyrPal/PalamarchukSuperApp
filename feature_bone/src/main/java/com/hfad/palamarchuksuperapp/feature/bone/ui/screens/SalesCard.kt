@@ -20,9 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -36,14 +36,13 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +54,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,9 +64,9 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderService
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ProductSaleItem
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SaleStatus
+import kotlin.random.Random
 
 @Composable
 fun SaleCard(
@@ -76,7 +74,7 @@ fun SaleCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (saleItem.status) {
-        SaleStatus.COMPLETED -> MaterialTheme.colorScheme.primary
+        SaleStatus.COMPLETED -> MaterialTheme.colorScheme.onPrimaryContainer
         SaleStatus.IN_PROGRESS -> MaterialTheme.colorScheme.tertiary
         SaleStatus.CREATED -> MaterialTheme.colorScheme.tertiary
         SaleStatus.DOCUMENT_PROCEED -> MaterialTheme.colorScheme.primary
@@ -105,20 +103,26 @@ fun SaleCard(
             modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Header part
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.money_pack),
-                    modifier = Modifier.padding(12.dp),
-                    contentDescription = null
+//                Icon(
+//                    painter = painterResource(R.drawable.money_pack),
+//                    modifier = Modifier.size(34.dp).padding(8.dp),
+//                    contentDescription = null
+//                )
+                Box(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(statusColor)
                 )
                 AppText(
                     modifier = Modifier.weight(1f),
-                    value = "Заявка: №${saleItem.id}",
+                    value = stringResource(R.string.sale_card_title, saleItem.id),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
@@ -127,7 +131,8 @@ fun SaleCard(
 
                 AppIconInfoField(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ,
                     icon = rememberVectorPainter(Icons.Default.DateRange),
                     title = statusText,
                 )
@@ -138,7 +143,6 @@ fun SaleCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
-            // Информация о компании и товаре
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -150,12 +154,11 @@ fun SaleCard(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.AccountBox,
+                            imageVector = Icons.Outlined.AccountBox,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.padding(4.dp).size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
                         AppText(
                             value = saleItem.companyName,
                             appTextConfig = appTextConfig(
@@ -165,13 +168,15 @@ fun SaleCard(
                         )
                     }
 
-                    AppText(
-                        value = saleItem.productName,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
-                        ),
-                        modifier = Modifier.padding(start = 22.dp)
-                    )
+                    if (saleItem.productName.isNotBlank()) {
+                        AppText(
+                            value = saleItem.productName,
+                            appTextConfig = appTextConfig(
+                                textStyle = MaterialTheme.typography.bodyMedium
+                            ),
+                            modifier = Modifier.padding(start = 22.dp)
+                        )
+                    }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -432,236 +437,6 @@ private fun OrderInfoSection(order: Order) {
                 order = order,
                 initialExpanded = true
             )
-//            Card(
-//                modifier = Modifier.fillMaxWidth(),
-//                colors = CardDefaults.cardColors(
-//                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
-//                ),
-//                shape = RoundedCornerShape(12.dp)
-//            ) {
-//                Column(
-//                    modifier = Modifier.padding(12.dp),
-//                    verticalArrangement = Arrangement.spacedBy(8.dp)
-//                ) {
-//                    // Основная информация
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        OrderDetailItem(
-//                            label = "Бизнес-сущность",
-//                            value = "#${order.businessEntityNum}"
-//                        )
-//
-//                        OrderDetailItem(
-//                            label = "Статус",
-//                            value = when (order.status) {
-//                                else -> "Неизвестно"
-//                            }
-//                        )
-//                    }
-//
-//                    // Тип груза и содержимое
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ) {
-//                        OrderDetailItem(
-//                            label = "Тип груза",
-//                            value = when (order.cargoType) {
-//                                else -> "Неизвестно"
-//                            }
-//                        )
-//
-//                        OrderDetailItem(
-//                            label = "Груз",
-//                            value = order.cargo
-//                        )
-//                    }
-//
-//                    HorizontalDivider(
-//                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.1f)
-//                    )
-//
-//                    // Маршрут
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Column(
-//                            horizontalAlignment = Alignment.CenterHorizontally,
-//                            modifier = Modifier.weight(1f)
-//                        ) {
-//                            AppText(
-//                                value = "Отправление",
-//                                appTextConfig = appTextConfig(
-//                                    textStyle = MaterialTheme.typography.bodySmall
-//                                ),
-//                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(
-//                                    alpha =
-//                                        0.7f
-//                                )
-//                            )
-//                            AppText(
-//                                value = order.departurePoint,
-//                                appTextConfig = appTextConfig(
-//                                    textStyle = MaterialTheme.typography.bodyMedium,
-//                                    fontWeight = FontWeight.Medium
-//                                )
-//                            )
-//                        }
-//
-//                        Icon(
-//                            imageVector = Icons.Default.ArrowForward,
-//                            contentDescription = null,
-//                            tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f),
-//                            modifier = Modifier.padding(horizontal = 8.dp)
-//                        )
-//
-//                        Column(
-//                            horizontalAlignment = Alignment.CenterHorizontally,
-//                            modifier = Modifier.weight(1f)
-//                        ) {
-//                            AppText(
-//                                value = "Прибытие",
-//                                appTextConfig = appTextConfig(
-//                                    textStyle = MaterialTheme.typography.bodySmall
-//                                ),
-//                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(
-//                                    alpha =
-//                                        0.7f
-//                                )
-//                            )
-//                            AppText(
-//                                value = order.destinationPoint,
-//                                appTextConfig = appTextConfig(
-//                                    textStyle = MaterialTheme.typography.bodyMedium,
-//                                    fontWeight = FontWeight.Medium
-//                                )
-//                            )
-//                        }
-//                    }
-//
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.SpaceBetween,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        OrderDetailItem(
-//                            label = "Дата прибытия",
-//                            value = order.arrivalDate
-//                        )
-//
-//                        // Если это контейнерная перевозка, показываем номер контейнера
-//                        OrderDetailItem(
-//                            label = "Номер контейнера",
-//                            value = order.containerNumber
-//                        )
-//                    }
-//
-//                    // Информация о менеджере
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 4.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Add,
-//                            contentDescription = null,
-//                            tint = MaterialTheme.colorScheme.secondary,
-//                            modifier = Modifier.size(20.dp)
-//                        )
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        AppText(
-//                            value = "Менеджер: ${order.manager}",
-//                            appTextConfig = appTextConfig(
-//                                textStyle = MaterialTheme.typography.bodyMedium
-//                            )
-//                        )
-//                    }
-//
-//                    // Услуги, если они есть
-//                    if (order.serviceList.isNotEmpty()) {
-//                        HorizontalDivider(
-//                            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.1f),
-//                            modifier = Modifier.padding(vertical = 4.dp)
-//                        )
-//
-//                        AppText(
-//                            value = "Услуги:",
-//                            appTextConfig = appTextConfig(
-//                                textStyle = MaterialTheme.typography.bodyMedium,
-//                                fontWeight = FontWeight.Medium
-//                            )
-//                        )
-//
-//                        LazyRow(
-//                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                            contentPadding = PaddingValues(vertical = 4.dp)
-//                        ) {
-//                            items(order.serviceList) { service ->
-//                                ServiceChip(service = service)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-        }
-    }
-}
-
-@Composable
-private fun OrderDetailItem(
-    label: String,
-    value: String,
-) {
-    Column {
-        AppText(
-            value = label,
-            appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.bodySmall
-            ),
-            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
-        )
-        AppText(
-            value = value,
-            appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-        )
-    }
-}
-
-@Composable
-private fun ServiceChip(service: OrderService) {
-    Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 2.dp
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = when (service.serviceType) {
-                    else -> Icons.Default.ThumbUp
-                },
-                contentDescription = null,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            AppText(
-                value = service.serviceType.title,
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium
-                )
-            )
         }
     }
 }
@@ -670,7 +445,7 @@ private fun ServiceChip(service: OrderService) {
 fun generateSampleProductSaleItems(): List<ProductSaleItem> {
     return listOf(
         ProductSaleItem(
-            id = "SO-2024-001",
+            id = Random.nextInt(10000, 99999),
             productName = "Офисная мебель",
             cargoCategory = "Мебель",
             companyName = "ООО «Офис Плюс»",
@@ -696,7 +471,7 @@ fun generateSampleProductSaleItems(): List<ProductSaleItem> {
             )
         ),
         ProductSaleItem(
-            id = "SO-2024-002",
+            id = Random.nextInt(10000, 99999),
             productName = "Электроника",
             cargoCategory = "Техника",
             companyName = "ТОВ «Техноимпорт»",
@@ -713,7 +488,7 @@ fun generateSampleProductSaleItems(): List<ProductSaleItem> {
             order = null
         ),
         ProductSaleItem(
-            id = "SO-2024-003",
+            id = Random.nextInt(10000, 99999),
             productName = "Строительные материалы",
             cargoCategory = "Стройматериалы",
             companyName = "ООО «СтройМир»",

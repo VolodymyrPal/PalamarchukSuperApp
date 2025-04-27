@@ -449,7 +449,7 @@ private fun generateSampleSalesItems(): List<ProductSaleItem> {
         val price = Random.nextInt(1000, 10000)
 
         ProductSaleItem(
-            id = "Продажа #${500 + index}",
+            id = Random.nextInt(10000, 99999)+index,
             productName = products[Random.nextInt(products.size)],
             cargoCategory = categories[Random.nextInt(categories.size)],
             quantity = quantity,
@@ -498,7 +498,7 @@ fun ProductSaleCardPreview() {
     AppTheme {
         ProductSaleCard(
             saleItem = ProductSaleItem(
-                id = "Продажа #501",
+                id = Random.nextInt(10000, 99999),
                 productName = "Сталь листовая",
                 cargoCategory = "Металлопрокат",
                 quantity = 25,
