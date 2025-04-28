@@ -42,7 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.theme.Status
+import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
@@ -143,14 +146,14 @@ fun SalesStatisticsCard(
                     icon = Icons.Default.Search,
                     value = totalSalesNdsStr,
                     label = stringResource(R.string.total_nds),
-                    color = colorSet.random()
+                    color = statusColor(Status.entries.random())
                 )
 
                 SalesStat(
                     icon = Icons.Default.Info,
                     value = salesStatistics.totalBuyers.toString(),
                     label = stringResource(R.string.total_sale_buyer),
-                    color = colorSet.random()
+                    color = statusColor(Status.entries.random())
                 )
             }
 
