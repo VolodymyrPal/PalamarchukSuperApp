@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.theme.Status
+import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepProgressionBar
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
@@ -86,10 +88,10 @@ fun OrderCard(
     val colorScheme = MaterialTheme.colorScheme
 
     val statusColor = when (orderStatus.value) {
-        StepperStatus.DONE -> colorScheme.primary
-        StepperStatus.IN_PROGRESS -> colorScheme.tertiary
-        StepperStatus.CREATED -> colorScheme.outline
-        StepperStatus.CANCELED -> colorScheme.error
+        StepperStatus.DONE -> statusColor(Status.DONE)
+        StepperStatus.IN_PROGRESS -> statusColor(Status.IN_PROGRESS)
+        StepperStatus.CREATED -> statusColor(Status.CREATED)
+        StepperStatus.CANCELED -> statusColor(Status.CANCELED)
     }
 
     val statusText = when (orderStatus.value) {

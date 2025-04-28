@@ -61,6 +61,8 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.theme.Status
+import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
@@ -74,11 +76,11 @@ fun SaleCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (saleItem.status) {
-        SaleStatus.COMPLETED -> MaterialTheme.colorScheme.onPrimaryContainer
-        SaleStatus.IN_PROGRESS -> MaterialTheme.colorScheme.tertiary
-        SaleStatus.CREATED -> MaterialTheme.colorScheme.tertiary
-        SaleStatus.DOCUMENT_PROCEED -> MaterialTheme.colorScheme.primary
-        SaleStatus.CANCELED -> MaterialTheme.colorScheme.error
+        SaleStatus.COMPLETED -> statusColor(Status.DONE)
+        SaleStatus.IN_PROGRESS -> statusColor(Status.IN_PROGRESS)
+        SaleStatus.CREATED -> statusColor(Status.CREATED)
+        SaleStatus.DOCUMENT_PROCEED -> statusColor(Status.PROCEED)
+        SaleStatus.CANCELED -> statusColor(Status.CANCELED)
     }
 
     val statusText = when (saleItem.status) {

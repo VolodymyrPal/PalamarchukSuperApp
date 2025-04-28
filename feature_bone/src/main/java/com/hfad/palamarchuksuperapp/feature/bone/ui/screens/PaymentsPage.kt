@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
-import android.icu.text.NumberFormat
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
@@ -49,14 +47,16 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.core.ui.theme.Status
+import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentData
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatus
-import java.util.Locale
 import kotlin.random.Random
 
 @Composable
@@ -288,9 +288,9 @@ fun PaymentCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (payment.status) {
-        PaymentStatus.PAID -> MaterialTheme.colorScheme.primary
-        PaymentStatus.PENDING -> MaterialTheme.colorScheme.tertiary
-        PaymentStatus.OVERDUE -> MaterialTheme.colorScheme.error
+        PaymentStatus.PAID -> statusColor(Status.DONE)
+        PaymentStatus.PENDING -> statusColor(Status.IN_PROGRESS)
+        PaymentStatus.OVERDUE ->statusColor(Status.OVERDUE)
     }
 
     val statusText = when (payment.status) {
@@ -515,27 +515,6 @@ data class PaymentPageState(
     val payments: List<PaymentData> = generateSamplePayments(), //TODO for test only
     val paymentStatistic: PaymentStatistic = PaymentStatistic(),
 )
-
-internal val colorSet = setOf(
-    Color(0xFF2196F3),
-    Color(0xFF2E7D32),
-    Color(0xFF1565C0),
-    Color(0xFFD32F2F),
-    Color(0xFF823333),
-    Color(0xFFB8860B),
-    Color(0xFF9C27B0),
-)
-
-internal fun Number.formatTrim(
-    numOfDigital: Int = 2,
-    locale: Locale = Locale.getDefault(),
-): String {
-    return NumberFormat.getNumberInstance(locale).apply {
-        maximumFractionDigits = numOfDigital
-        minimumFractionDigits = 0
-        isGroupingUsed = true
-    }.format(this)
-}
 
 @Preview
 @Composable
