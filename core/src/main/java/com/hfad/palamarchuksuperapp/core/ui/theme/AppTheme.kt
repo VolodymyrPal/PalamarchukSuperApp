@@ -65,6 +65,30 @@ fun AppTheme(
 //        )
 //    }
 
+@Composable
+fun statusColor(
+    status: Status,
+): Color {
+    val isDark = isSystemInDarkTheme()
+    return when (status) {
+        Status.CREATED -> if (!isDark) Color(0xFF42A5F5) else Color(0xFF90CAF9) // Синий
+        Status.IN_PROGRESS -> if (!isDark) Color(0xFFAB47BC) else Color(0xFFCE93D8) // Фиолетовый
+        Status.PROCEED -> if (!isDark) Color(0xFFFF9800) else Color(0xFFFFB74D) // Оранжевый (оставлен без изменений)
+        Status.DONE -> if (!isDark) Color(0xFF2E7D32) else Color(0xFF66BB6A) // Зеленый (оставлен без изменений)
+        Status.CANCELED -> if (!isDark) Color(0xFFBBBBBB) else Color(0xFFE0E0E0)
+        Status.OVERDUE -> if (!isDark) Color(0xFFE53935) else Color(0xFFEF5350)
+    }
+}
+
+enum class Status {
+    CREATED,
+    IN_PROGRESS,
+    PROCEED,
+    DONE,
+    CANCELED,
+    OVERDUE
+}
+
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
