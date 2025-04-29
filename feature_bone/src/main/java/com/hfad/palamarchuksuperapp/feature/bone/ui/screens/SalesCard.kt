@@ -129,8 +129,12 @@ fun SaleCard(
                     modifier = Modifier
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                     ,
-                    icon = rememberVectorPainter(Icons.Default.DateRange),
                     title = statusText,
+                    cardColors = CardDefaults.cardColors(
+                        containerColor = statusColor.copy(alpha = 0.2f),
+                        contentColor = statusColor
+                    ),
+                    elevation = 0.dp
                 )
             }
 
