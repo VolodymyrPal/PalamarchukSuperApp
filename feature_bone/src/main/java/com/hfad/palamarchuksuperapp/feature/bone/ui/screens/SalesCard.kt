@@ -198,13 +198,14 @@ fun SaleCard(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                Row (
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column (
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.SpaceAround
                     ) {
                         DetailItem(
                             icon = Icons.Default.DateRange,
@@ -219,9 +220,9 @@ fun SaleCard(
                         )
                     }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column (
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.SpaceAround
                     ) {
                         DetailItem(
                             icon = Icons.Default.Share,
