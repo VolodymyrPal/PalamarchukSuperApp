@@ -177,56 +177,20 @@ fun SaleCard(
                             modifier = Modifier.padding(start = 22.dp)
                         )
                     }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 22.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Create,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        AppText(
-                            value = saleItem.cargoCategory,
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                    }
                 }
 
-                // Ценовая информация
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        AppText(
-                            value = "${saleItem.totalAmount} грн",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        AppText(
-                            value = "НДС: ${saleItem.vatAmount} грн",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall
-                            ),
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                        )
-                    }
-                }
+                AppIconInfoField(
+                    modifier = Modifier,
+                    description = "Сумма: ${saleItem.totalAmount.formatTrim()} грн",
+                    title = "НДС: ${saleItem.vatAmount} грн",
+                    cardColors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    elevation = 0.dp
+                )
             }
 
-            // Детали продажи (даты, комиссия)
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
