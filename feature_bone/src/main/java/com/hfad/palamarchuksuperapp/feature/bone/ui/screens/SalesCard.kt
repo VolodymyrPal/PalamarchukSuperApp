@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
@@ -53,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -110,15 +109,10 @@ fun SaleCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                Icon(
-//                    painter = painterResource(R.drawable.money_pack),
-//                    modifier = Modifier.size(34.dp).padding(8.dp),
-//                    contentDescription = null
-//                )
                 Box(
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(12.dp)
+                        .size(8.dp)
                         .clip(CircleShape)
                         .background(statusColor)
                 )
