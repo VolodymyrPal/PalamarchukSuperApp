@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
@@ -53,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -110,15 +109,10 @@ fun SaleCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                Icon(
-//                    painter = painterResource(R.drawable.money_pack),
-//                    modifier = Modifier.size(34.dp).padding(8.dp),
-//                    contentDescription = null
-//                )
                 Box(
                     modifier = Modifier
                         .padding(8.dp)
-                        .size(12.dp)
+                        .size(8.dp)
                         .clip(CircleShape)
                         .background(statusColor)
                 )
@@ -135,8 +129,12 @@ fun SaleCard(
                     modifier = Modifier
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                     ,
-                    icon = rememberVectorPainter(Icons.Default.DateRange),
                     title = statusText,
+                    cardColors = CardDefaults.cardColors(
+                        containerColor = statusColor.copy(alpha = 0.2f),
+                        contentColor = statusColor
+                    ),
+                    elevation = 0.dp
                 )
             }
 
@@ -179,56 +177,20 @@ fun SaleCard(
                             modifier = Modifier.padding(start = 22.dp)
                         )
                     }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 22.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Create,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        AppText(
-                            value = saleItem.cargoCategory,
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                    }
                 }
 
-                // Ценовая информация
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        AppText(
-                            value = "${saleItem.totalAmount} грн",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        AppText(
-                            value = "НДС: ${saleItem.vatAmount} грн",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall
-                            ),
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
-                        )
-                    }
-                }
+                AppIconInfoField(
+                    modifier = Modifier,
+                    description = "Сумма: ${saleItem.totalAmount.formatTrim()} грн",
+                    title = "НДС: ${saleItem.vatAmount} грн",
+                    cardColors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    elevation = 0.dp
+                )
             }
 
-            // Детали продажи (даты, комиссия)
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -236,13 +198,14 @@ fun SaleCard(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                Row (
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column (
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.SpaceAround
                     ) {
                         DetailItem(
                             icon = Icons.Default.DateRange,
@@ -257,9 +220,9 @@ fun SaleCard(
                         )
                     }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column (
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.SpaceAround
                     ) {
                         DetailItem(
                             icon = Icons.Default.Share,
