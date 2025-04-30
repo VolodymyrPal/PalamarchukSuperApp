@@ -55,14 +55,14 @@ fun AppIconInfoField(
     val boxModifier = if (onClick != null) {
         modifier
             .sizeIn(maxWidth = appIconInfoFieldWidth.dp)
-            .width(IntrinsicSize.Min)
-            .height(IntrinsicSize.Min)
+            .width(IntrinsicSize.Max)
+            .height(IntrinsicSize.Max)
             .clickable(onClick = onClick)
     } else {
         modifier
             .sizeIn(maxWidth = appIconInfoFieldWidth.dp)
-            .width(IntrinsicSize.Min)
-            .height(IntrinsicSize.Min)
+            .width(IntrinsicSize.Max)
+            .height(IntrinsicSize.Max)
     }
     Box(
         modifier = boxModifier
