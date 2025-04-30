@@ -23,24 +23,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -127,8 +122,7 @@ fun SaleCard(
 
                 AppIconInfoField(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                    ,
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
                     title = statusText,
                     cardColors = CardDefaults.cardColors(
                         containerColor = statusColor.copy(alpha = 0.2f),
@@ -157,7 +151,9 @@ fun SaleCard(
                             imageVector = Icons.Outlined.AccountBox,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.padding(4.dp).size(20.dp)
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(20.dp)
                         )
                         AppText(
                             value = saleItem.companyName,
@@ -182,7 +178,7 @@ fun SaleCard(
                 AppIconInfoField(
                     modifier = Modifier,
                     description = "Сумма: ${saleItem.totalAmount.formatTrim()} грн",
-                    title = "НДС: ${saleItem.vatAmount} грн",
+                    title = "НДС: ${saleItem.vatAmount.formatTrim()} грн",
                     cardColors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                         contentColor = MaterialTheme.colorScheme.primary
@@ -198,12 +194,14 @@ fun SaleCard(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Row (
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Column (
+                    Column(
                         modifier = Modifier,
                         verticalArrangement = Arrangement.SpaceAround
                     ) {
@@ -220,7 +218,7 @@ fun SaleCard(
                         )
                     }
 
-                    Column (
+                    Column(
                         modifier = Modifier,
                         verticalArrangement = Arrangement.SpaceAround
                     ) {
@@ -242,72 +240,11 @@ fun SaleCard(
                 }
             }
 
-            // Если есть предоплата, показываем информацию о заказе
             if (saleItem.prepayment && saleItem.order != null) {
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                )
                 OrderInfoSection(order = saleItem.order)
-            }
-
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-
-            // Нижняя панель с контактами и дополнительной информацией
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    AppText(
-                        value = saleItem.customerName,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
-                        )
-                    )
-                }
-
-                Row {
-                    IconButton(
-                        onClick = { /* Действие при нажатии на кнопку звонка */ },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Call,
-                            contentDescription = "Позвонить",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    IconButton(
-                        onClick = { /* Действие при нажатии на кнопку сообщения */ },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = "Отправить сообщение",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    IconButton(
-                        onClick = { /* Действие при нажатии на кнопку дополнительной информации */ },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Дополнительные действия",
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
-                }
             }
         }
     }
@@ -349,45 +286,47 @@ private fun DetailItem(
 }
 
 @Composable
-private fun OrderInfoSection(order: Order) {
+private fun OrderInfoSection(
+    modifier: Modifier = Modifier,
+    order: Order,
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Заголовок секции заказа с возможностью раскрытия
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(CircleShape)
                 .clickable { expanded = !expanded }
                 .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                AppText(
-                    value = "Информация о заказе №${order.num}",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .size(20.dp)
+            )
+            AppText(
+                value = "Информация о заказе №${order.num}",
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.secondary
+            )
             Icon(
                 imageVector = if (expanded)
-                    Icons.Default.MailOutline else Icons.Default.Edit,
+                    Icons.Outlined.KeyboardArrowUp else Icons.Outlined.ArrowDropDown,
                 contentDescription = if (expanded) "Скрыть детали" else "Показать детали",
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(end = 8.dp)
             )
         }
 
