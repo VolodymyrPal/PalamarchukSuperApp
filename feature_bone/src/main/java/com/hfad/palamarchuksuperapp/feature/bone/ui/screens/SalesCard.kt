@@ -286,45 +286,47 @@ private fun DetailItem(
 }
 
 @Composable
-private fun OrderInfoSection(order: Order) {
+private fun OrderInfoSection(
+    modifier: Modifier = Modifier,
+    order: Order,
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // Заголовок секции заказа с возможностью раскрытия
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(CircleShape)
                 .clickable { expanded = !expanded }
                 .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                AppText(
-                    value = "Информация о заказе №${order.num}",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .size(20.dp)
+            )
+            AppText(
+                value = "Информация о заказе №${order.num}",
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.secondary
+            )
             Icon(
                 imageVector = if (expanded)
-                    Icons.Default.MailOutline else Icons.Default.Edit,
+                    Icons.Outlined.KeyboardArrowUp else Icons.Outlined.ArrowDropDown,
                 contentDescription = if (expanded) "Скрыть детали" else "Показать детали",
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(end = 8.dp)
             )
         }
 
