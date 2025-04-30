@@ -240,8 +240,10 @@ fun SaleCard(
                 }
             }
 
-            // Если есть предоплата, показываем информацию о заказе
             if (saleItem.prepayment && saleItem.order != null) {
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                )
                 OrderInfoSection(order = saleItem.order)
             }
 
