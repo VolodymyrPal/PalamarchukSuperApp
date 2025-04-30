@@ -23,24 +23,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -127,8 +122,7 @@ fun SaleCard(
 
                 AppIconInfoField(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                    ,
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
                     title = statusText,
                     cardColors = CardDefaults.cardColors(
                         containerColor = statusColor.copy(alpha = 0.2f),
@@ -157,7 +151,9 @@ fun SaleCard(
                             imageVector = Icons.Outlined.AccountBox,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.padding(4.dp).size(20.dp)
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(20.dp)
                         )
                         AppText(
                             value = saleItem.companyName,
@@ -182,7 +178,7 @@ fun SaleCard(
                 AppIconInfoField(
                     modifier = Modifier,
                     description = "Сумма: ${saleItem.totalAmount.formatTrim()} грн",
-                    title = "НДС: ${saleItem.vatAmount} грн",
+                    title = "НДС: ${saleItem.vatAmount.formatTrim()} грн",
                     cardColors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                         contentColor = MaterialTheme.colorScheme.primary
@@ -198,12 +194,14 @@ fun SaleCard(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Row (
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Column (
+                    Column(
                         modifier = Modifier,
                         verticalArrangement = Arrangement.SpaceAround
                     ) {
@@ -220,7 +218,7 @@ fun SaleCard(
                         )
                     }
 
-                    Column (
+                    Column(
                         modifier = Modifier,
                         verticalArrangement = Arrangement.SpaceAround
                     ) {
