@@ -133,7 +133,7 @@ fun SalesStatisticsCard(
                 val totalAmount = salesStatistics.totalSalesAmount.amount.formatTrim(0)
                 val totalAmountStr = totalAmount + " " + salesStatistics.totalSalesAmount.iconChar
                 SalesStat(
-                    icon = Icons.Default.ShoppingCart,
+                    icon = painterResource(R.drawable.money_pack),
                     value = totalAmountStr,
                     label = stringResource(R.string.summ_sales),
                     color = salesStatistics.totalSalesAmount.color
@@ -144,14 +144,14 @@ fun SalesStatisticsCard(
                     totalSalesNds + " " + salesStatistics.totalSalesNdsAmount.iconChar
 
                 SalesStat(
-                    icon = Icons.Default.Search,
+                    icon = rememberVectorPainter(Icons.Default.Search),
                     value = totalSalesNdsStr,
                     label = stringResource(R.string.total_nds),
                     color = statusColor(Status.entries.random())
                 )
 
                 SalesStat(
-                    icon = Icons.Default.Info,
+                    icon = rememberVectorPainter(Icons.Default.Info),
                     value = salesStatistics.totalBuyers.toString(),
                     label = stringResource(R.string.total_sale_buyer),
                     color = statusColor(Status.entries.random())
@@ -190,7 +190,7 @@ fun SalesStatisticsCard(
 
 @Composable
 fun SalesStat(
-    icon: ImageVector,
+    icon: Painter,
     value: String,
     label: String,
     color: Color,
@@ -209,7 +209,7 @@ fun SalesStat(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = icon,
+                painter = icon,
                 contentDescription = null,
                 tint = color,
                 modifier = Modifier.size(24.dp)
