@@ -12,10 +12,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -23,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
@@ -96,27 +102,53 @@ fun BoneScreen(
                 }
             ) {
                 tabs.forEachIndexed { index, title ->
-                    Tab(
-                        modifier = Modifier.clip(CircleShape),
-                        text = {
-                            AppText(
-                                value = title,
-                                appTextConfig = appTextConfig(
-                                    textAlign = TextAlign.Center
+                    val tooltipState = rememberTooltipState(isPersistent = false)
+                    TooltipBox(
+                        positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(12.dp),
+                        tooltip = {
+                            RichTooltip(
+                                caretSize = TooltipDefaults.caretSize,
+                                title = {
+                                    Text(title)
+                                },
+                                colors = TooltipDefaults.richTooltipColors(
+                                    containerColor = colorScheme.secondaryContainer,
+                                    contentColor = colorScheme.secondary,
                                 ),
-                                color = if (pagerState.currentPage == index)
-                                    tabColorContent
-                                else
-                                    tabColorContent.copy(alpha = 0.6f),
-                            )
-                        },
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
+                                tonalElevation = 0.dp,
+                                shadowElevation = 5.dp
+                            ) {
+                                Text("This is the main content of the rich tooltip") //Add additional information
                             }
-                        }
-                    )
+                        },
+                        state = tooltipState,
+                    ) {
+                        Tab(
+                            modifier = Modifier.clip(CircleShape),
+                            text = {
+                                AppText(
+                                    value = title,
+                                    appTextConfig = appTextConfig(
+                                        textAlign = TextAlign.Center
+                                    ),
+                                    color = if (pagerState.currentPage == index)
+                                        tabColorContent
+                                    else
+                                        tabColorContent.copy(alpha = 0.6f),
+                                )
+                            },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (pagerState.currentPage == index) {
+                                        tooltipState.show()
+                                    } else {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         },

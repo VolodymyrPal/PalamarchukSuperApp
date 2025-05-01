@@ -33,7 +33,7 @@
     <string name="zloty">zloty</string>
     <string name="bitcoin">btc</string>
     <string name="undefined_currency">other</string>
-    <string name="total_nds">Nds received</string>
+    <string name="total_nds">NDS</string>
     <string name="total_sale_buyer">Total buyers</string>
     <string name="sale_status_completed">Completed</string>
     <string name="sale_status_created">Created</string>
