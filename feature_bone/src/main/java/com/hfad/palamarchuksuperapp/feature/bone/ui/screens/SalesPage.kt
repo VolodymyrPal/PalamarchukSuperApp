@@ -240,7 +240,7 @@ fun ProductSaleCard(
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (saleItem.status) {
-        else  -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.primary
 //        SaleStatus.IN_PROGRESS -> MaterialTheme.colorScheme.tertiary
 //        SaleStatus.DOCUMENT_PROCEED -> MaterialTheme.colorScheme.error
     }
@@ -265,14 +265,13 @@ fun ProductSaleCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Заголовок и статус
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    value = saleItem.id,
+                    value = saleItem.id.toString(),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleSmall
                     )
@@ -428,47 +427,6 @@ fun ProductSaleCard(
     }
 }
 
-private fun generateSampleSalesItems(): List<ProductSaleItem> {
-    val products = listOf(
-        "Сталь листовая", "Металлопрофиль", "Трубы стальные",
-        "Арматура", "Швеллер", "Профнастил", "Металлоконструкции"
-    )
-
-    val categories = listOf(
-        "Металлопрокат", "Строительные материалы", "Сырье",
-        "Промышленное оборудование", "Инструменты"
-    )
-
-    val customers = listOf(
-        "ООО Стройинвест", "АО СтройПрогресс", "ЧП Металлоконструкции",
-        "ЗАО ТехМонтаж", "ООО Спецстрой", "ОАО Промстрой"
-    )
-
-    val statuses = SaleStatus.values()
-
-    return List(12) { index ->
-        val quantity = Random.nextInt(5, 100)
-        val price = Random.nextInt(1000, 10000)
-
-        ProductSaleItem(
-            id = Random.nextInt(10000, 99999)+index,
-            productName = products[Random.nextInt(products.size)],
-            cargoCategory = categories[Random.nextInt(categories.size)],
-            quantity = quantity,
-            price = price,
-            totalAmount = quantity * price,
-            customerName = customers[Random.nextInt(customers.size)],
-            documentDate = "10.${Random.nextInt(1, 12)}.2023",
-            status = SaleStatus.entries.random(),
-            vatAmount = 999.0,
-            requestDate = "12.04.1996",
-            companyName = "Some company name",
-            commissionPercent = 10.0,
-            prepayment = false
-        )
-    }
-}
-
 data class SalesStatistics(
     val totalSalesAmount: AmountCurrency = AmountCurrency(
         currency = Currency.UAH,
@@ -476,13 +434,13 @@ data class SalesStatistics(
     ), //TODO test purpose
     val totalSalesNdsAmount: AmountCurrency = AmountCurrency(
         currency = Currency.UAH,
-        amount = totalSalesAmount.amount * (20f/(100+20f))
+        amount = totalSalesAmount.amount * (20f / (100 + 20f))
     ), //TODO test purpose
     val totalBuyers: Int = 12, //TODO test purpose
 )
 
 data class SalesPageState(
-    val salesItems: List<ProductSaleItem> = generateSampleSalesItems(),
+    val salesItems: List<ProductSaleItem> = generateSampleProductSaleItems(),
     val salesStatistics: SalesStatistics = SalesStatistics(),
 )
 
