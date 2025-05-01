@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,7 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -64,26 +65,26 @@ fun SalesPage(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        SalesStatisticsCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            salesStatistics = state.salesStatistics
-        )
-
-        val salesItems = generateSampleSalesItems()
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(
-                start = 16.dp, end = 16.dp, bottom = 16.dp
+                vertical = 12.dp
             )
         ) {
-            items(salesItems) { item ->
-                SaleCard(saleItem = item,
-                    )
+            item {
+                SalesStatisticsCard(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    salesStatistics = state.salesStatistics
+                )
+            }
+            items(state.salesItems) { item ->
+                SaleCard(
+                    saleItem = item,
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                )
 //                ProductSaleCard(saleItem = item)
             }
         }
