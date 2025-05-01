@@ -158,32 +158,30 @@ fun SalesStatisticsCard(
                 )
             }
 
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
-            )
-
-            // Итоговая выручка
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AppText(
-                    value = "Общая выручка: ",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleMedium
-                    )
-                )
-                AppText(
-                    value = "1,456,780 грн",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+//            HorizontalDivider(
+//                modifier = Modifier.padding(vertical = 4.dp),
+//                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
+//            )
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                AppText(
+//                    value = "Общая выручка: ",
+//                    appTextConfig = appTextConfig(
+//                        textStyle = MaterialTheme.typography.titleMedium
+//                    )
+//                )
+//                AppText(
+//                    value = "1,456,780 грн",
+//                    appTextConfig = appTextConfig(
+//                        textStyle = MaterialTheme.typography.titleMedium,
+//                        fontWeight = FontWeight.Bold
+//                    ),
+//                    color = MaterialTheme.colorScheme.primary
+//                )
+//            }
         }
     }
 }
