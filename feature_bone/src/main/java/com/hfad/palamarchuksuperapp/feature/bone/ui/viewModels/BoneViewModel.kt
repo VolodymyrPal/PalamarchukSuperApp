@@ -237,6 +237,24 @@ enum class OrderStatus {
     CREATED, CALCULATED, IN_PROGRESS, DONE
 }
 
+interface FinanceTransaction {
+    val id: Int
+}
+
+data class CreditFinanceTransaction( // + to balance
+    override val id: Int,
+    val amount: Int,
+    val currency: Currency,
+    val date: String,
+) : FinanceTransaction
+
+data class DebitFinanceTransaction( // - from balance
+    override val id: Int,
+    val amount: Int,
+    val currency: Currency,
+    val date: String,
+) : FinanceTransaction
+
 @Suppress("LongParameterList")
 class OrderService(
     /* PrimaryKey - ID */
