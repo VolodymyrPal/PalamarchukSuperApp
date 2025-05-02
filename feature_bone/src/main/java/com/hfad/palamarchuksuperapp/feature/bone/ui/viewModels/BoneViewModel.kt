@@ -71,9 +71,9 @@ data class EntityDetails(
     val name: String = "",
 )
 
-data class Order(
+data class Order (
     @PrimaryKey
-    val id: Int = 0,
+    override val id: Int = 0,
     val businessEntityNum: Int = Random.nextInt(2001, 8300),  //TODO change
     val num: Int = Random.nextInt(44000, 50000),              //TODO change
     val serviceList: List<OrderService> = listOf(),
@@ -90,7 +90,7 @@ data class Order(
     val departurePoint: String = "Тест: Гонконг",
     val cargo: String = "Тест: Мебель",
     val manager: String = "Тест: VP +3806338875",
-)
+) : FinanceTransaction
 
 data class OrderStatistic(
     val totalOrders: Int = 0,
@@ -177,7 +177,7 @@ data class AmountCurrency(
 )
 
 data class ProductSaleItem(
-    val id: Int,
+    override val id: Int,
     val productName: String,
     val cargoCategory: String,
     val quantity: Int, //Quantity of what?
@@ -192,7 +192,7 @@ data class ProductSaleItem(
     val commissionPercent: Double,
     val prepayment: Boolean,
     val order: Order? = null,
-)
+) : FinanceTransaction
 
 enum class SaleStatus {
     CREATED, IN_PROGRESS, DOCUMENT_PROCEED, COMPLETED, CANCELED
@@ -236,6 +236,24 @@ enum class StepperStatus {
 enum class OrderStatus {
     CREATED, CALCULATED, IN_PROGRESS, DONE
 }
+
+interface FinanceTransaction {
+    val id: Int
+}
+
+data class CreditFinanceTransaction( // + to balance
+    override val id: Int,
+    val amount: Int,
+    val currency: Currency,
+    val date: String,
+) : FinanceTransaction
+
+data class DebitFinanceTransaction( // - from balance
+    override val id: Int,
+    val amount: Int,
+    val currency: Currency,
+    val date: String,
+) : FinanceTransaction
 
 @Suppress("LongParameterList")
 class OrderService(
@@ -307,10 +325,11 @@ sealed interface ServiceScenario {
 
 
 data class Payment(
+    override val id: Int,
     val paymentNum: Int,
     val paymentSum: Float,
     val paymentDateCreatinon: Date,
-)
+) : FinanceTransaction
 
 
 val orderServiceList = listOf(
