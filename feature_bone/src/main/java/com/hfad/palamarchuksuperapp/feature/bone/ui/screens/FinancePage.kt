@@ -112,6 +112,67 @@ fun FinancePage(
 }
 
 @Composable
+fun FinanceStatisticCard(
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            AppText(
+                value = "Общие показатели",
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 4.dp),
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                FinanceStat(
+                    icon = Icons.Default.Build,
+                    value = "150,000 грн",
+                    label = "Доход",
+                    color = Color(0xFF2E7D32)
+                )
+
+                FinanceStat(
+                    icon = Icons.Default.ThumbUp,
+                    value = "75,000 грн",
+                    label = "Расходы",
+                    color = Color(0xFFD32F2F)
+                )
+
+                FinanceStat(
+                    icon = Icons.Default.Info,
+                    value = "75,000 грн",
+                    label = "Прибыль",
+                    color = Color(0xFF1565C0)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun FinanceStat(
     icon: ImageVector,
     value: String,
