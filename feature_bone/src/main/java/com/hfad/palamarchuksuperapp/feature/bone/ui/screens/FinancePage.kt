@@ -38,6 +38,7 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 @Composable
 fun FinancePage(
     modifier: Modifier = Modifier,
+    financeState : FinancePageState = FinancePageState(),
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -208,6 +209,11 @@ fun FinanceStat(
     }
 }
 
+data class FinancePageState(
+    val salesItems: List<FinanceTransaction> = emptyList(),
+    val salesStatistics: FinanceStatistic = FinanceStatistic(),
+)
+
 @Preview
 @Composable
 fun FinancePagePreview() {
@@ -215,3 +221,9 @@ fun FinancePagePreview() {
         FinancePage()
     }
 }
+
+data class FinanceStatistic(
+    val totalSales: Float = 0f,
+    val totalExpenses: Float = 0f,
+    val totalProfit: Float = 0f,
+)
