@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinanceTransaction
 
 @Composable
 fun FinancePage(
@@ -45,70 +46,17 @@ fun FinancePage(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Общие финансовые показатели
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 4.dp
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AppText(
-                    value = "Общие показатели",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    FinanceStat(
-                        icon = Icons.Default.Build,
-                        value = "150,000 грн",
-                        label = "Доход",
-                        color = Color(0xFF2E7D32)
-                    )
-
-                    FinanceStat(
-                        icon = Icons.Default.ThumbUp,
-                        value = "75,000 грн",
-                        label = "Расходы",
-                        color = Color(0xFFD32F2F)
-                    )
-
-                    FinanceStat(
-                        icon = Icons.Default.Info,
-                        value = "75,000 грн",
-                        label = "Прибыль",
-                        color = Color(0xFF1565C0)
-                    )
-                }
-            }
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            item {
+                FinanceStatisticCard(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+
+                    )
+            }
             items(8) { index ->
                 Card(
                     modifier = Modifier
