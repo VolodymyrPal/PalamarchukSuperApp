@@ -1,0 +1,8 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+Developer -> Architecture: Основные компоненты экрана (список, иконка, диаграмма)
+Architecture -> Developer: Возможные действия (удалить, добавить, изменить)
+@enduml
