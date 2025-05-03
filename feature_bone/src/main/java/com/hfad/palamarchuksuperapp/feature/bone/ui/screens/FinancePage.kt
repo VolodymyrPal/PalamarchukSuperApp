@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinanceTransaction
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
 
 @Composable
 fun FinancePage(
@@ -54,7 +56,7 @@ fun FinancePage(
             item {
                 FinanceStatisticCard(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-
+                    financeState.salesStatistics
                     )
             }
             items(8) { index ->
