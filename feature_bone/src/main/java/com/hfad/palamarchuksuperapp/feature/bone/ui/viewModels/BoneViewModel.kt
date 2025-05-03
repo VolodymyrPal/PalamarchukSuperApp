@@ -239,21 +239,48 @@ enum class OrderStatus {
 
 interface FinanceTransaction {
     val id: Int
+    val amount: Float      // Сумма операции
+    val date: Date         // Дата операции
+    val description: String // Описание операции
 }
 
-data class CreditFinanceTransaction( // + to balance
-    override val id: Int,
-    val amount: Int,
-    val currency: Currency,
-    val date: String,
-) : FinanceTransaction
+enum class TransactionType {
+    CREDIT, DEBIT
+}
 
-data class DebitFinanceTransaction( // - from balance
-    override val id: Int,
-    val amount: Int,
-    val currency: Currency,
-    val date: String,
-) : FinanceTransaction
+interface TypedTransaction {
+    val type: TransactionType
+    val transaction: FinanceTransaction
+}
+
+
+sealed class Transaction : TypedTransaction {
+    // Фабричные методы для создания транзакций
+    companion object {
+        fun createCredit(transaction: FinanceTransaction): Credit {
+            return Credit(transaction)
+        }
+
+        fun createDebit(transaction: FinanceTransaction): Debit {
+            return Debit(transaction)
+        }
+    }
+
+    // Кредитовая операция (приход)
+    data class Credit(
+        override val transaction: FinanceTransaction
+    ) : Transaction() {
+        override val type: TransactionType = TransactionType.CREDIT
+    }
+
+    // Дебетовая операция (расход)
+    data class Debit(
+        override val transaction: FinanceTransaction
+    ) : Transaction() {
+        override val type: TransactionType = TransactionType.DEBIT
+    }
+}
+
 
 @Suppress("LongParameterList")
 class OrderService(

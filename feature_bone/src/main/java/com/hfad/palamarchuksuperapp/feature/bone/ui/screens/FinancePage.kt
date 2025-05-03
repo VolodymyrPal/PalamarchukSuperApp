@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinanceTransaction
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
 
 @Composable
 fun FinancePage(
@@ -54,59 +56,74 @@ fun FinancePage(
             item {
                 FinanceStatisticCard(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-
+                    financeState.salesStatistics
                     )
             }
-            items(8) { index ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            AppText(
-                                value = "Транзакция #${1000 + index}",
-                                appTextConfig = appTextConfig(
-                                    textStyle = MaterialTheme.typography.titleSmall
-                                )
-                            )
-                            AppText(
-                                value = "${index * 1500 + 5000} грн",
-                                appTextConfig = appTextConfig(
-                                    textStyle = MaterialTheme.typography.titleSmall,
-                                ),
-                                color = if (index % 2 == 0) MaterialTheme.colorScheme.primary else
-                                    MaterialTheme.colorScheme.error
-                            )
-                        }
-
-                        AppText(
-                            value = "Тип: ${if (index % 2 == 0) "Доход" else "Расход"}",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodyMedium
-                            )
-                        )
-
-                        AppText(
-                            value = "Дата: 10.${index + 1}.2023",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall,
-                            ),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+            items(financeState.salesItems) { item ->
+                FinanceCard(
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                    financeTransaction = item
+                )
             }
+        }
+    }
+}
+
+@Composable
+fun FinanceCard(
+    modifier: Modifier = Modifier,
+    financeTransaction: FinanceTransaction
+) {
+    when (financeTransaction) {
+        is Order -> {}
+        else -> {}
+    }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                AppText(
+                    value = "Транзакция #${1000 + financeTransaction.id}",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.titleSmall
+                    )
+                )
+                AppText(
+                    value = "${financeTransaction.id * 1500 + 5000} грн",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.titleSmall,
+                    ),
+                    color = if (financeTransaction.id % 2 == 0) MaterialTheme.colorScheme.primary else
+                        MaterialTheme.colorScheme.error
+                )
+            }
+
+            AppText(
+                value = "Тип: ${if (financeTransaction.id % 2 == 0) "Доход" else "Расход"}",
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.bodyMedium
+                )
+            )
+
+            AppText(
+                value = "Дата: 10.${financeTransaction.id + 1}.2023",
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.bodySmall,
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -114,6 +131,7 @@ fun FinancePage(
 @Composable
 fun FinanceStatisticCard(
     modifier: Modifier = Modifier,
+    financeStatistic: FinanceStatistic,
 ) {
     Card(
         modifier = modifier,
@@ -219,7 +237,11 @@ fun FinanceStat(
 }
 
 data class FinancePageState(
-    val salesItems: List<FinanceTransaction> = emptyList(),
+    val salesItems: List<FinanceTransaction> = listOf(
+        Order(1),
+        Order(2),
+        Order(3),
+    ),
     val salesStatistics: FinanceStatistic = FinanceStatistic(),
 )
 
