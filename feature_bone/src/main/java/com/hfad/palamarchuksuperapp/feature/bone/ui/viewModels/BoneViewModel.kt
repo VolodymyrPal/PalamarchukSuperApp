@@ -239,6 +239,9 @@ enum class OrderStatus {
 
 interface FinanceTransaction {
     val id: Int
+    val amount: Float      // Сумма операции
+    val date: Date         // Дата операции
+    val description: String // Описание операции
 }
 
 data class CreditFinanceTransaction( // + to balance
