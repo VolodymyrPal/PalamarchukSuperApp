@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.feature.bone.ui
+package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -56,12 +56,10 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepProgressionBar
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatus
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceType
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.orderServiceList
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
 
 @Composable
 fun OrderCard(
@@ -201,7 +199,7 @@ fun OrderCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(86.dp),
-                    listOfSteps = orderServiceList.subList(0, 7),
+                    listOfSteps = serviceOrderLists.subList(0, 7),
                     currentStep = currentStepCount.value
                 )
             }

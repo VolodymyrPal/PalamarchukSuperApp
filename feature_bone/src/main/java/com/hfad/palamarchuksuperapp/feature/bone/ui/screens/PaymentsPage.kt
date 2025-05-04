@@ -52,11 +52,12 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmountCurrency
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentData
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatistic
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentPageState
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import kotlin.random.Random
 
 @Composable
@@ -284,7 +285,7 @@ fun StatItem(
 
 @Composable
 fun PaymentCard(
-    payment: PaymentData,
+    payment: PaymentOrder,
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (payment.status) {
@@ -451,8 +452,7 @@ fun PaymentCard(
     }
 }
 
-
-private fun generateSamplePayments(): List<PaymentData> {
+internal fun generateSamplePayments(): List<PaymentOrder> {
     val factories = listOf(
         "Guangzhou Metal Works", "Berlin Precision Manufacturing",
         "Shanghai Industrial Group", "Warsaw Production Facility",
@@ -484,7 +484,7 @@ private fun generateSamplePayments(): List<PaymentData> {
         val dueYear = if (month < 12) 2023 else 2024
         val dueDate = "$day.${dueMonth.toString().padStart(2, '0')}.$dueYear"
 
-        PaymentData(
+        PaymentOrder(
             id = Random.nextInt(100, 200),
             amountCurrency = AmountCurrency(
                 currency = Currency.entries.random(),
@@ -511,11 +511,6 @@ private fun generatePaymentSample(): PaymentPageState {
     )
 }
 
-data class PaymentPageState(
-    val payments: List<PaymentData> = generateSamplePayments(), //TODO for test only
-    val paymentStatistic: PaymentStatistic = PaymentStatistic(),
-)
-
 @Preview
 @Composable
 fun PaymentsPagePreview() {
@@ -531,7 +526,7 @@ fun PaymentCardPreview() {
         AppTheme {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
-                payment = PaymentData(
+                payment = PaymentOrder(
                     id = Random.nextInt(100, 200),
                     amountCurrency = AmountCurrency(
                         currency = Currency.entries.random(),
@@ -549,7 +544,7 @@ fun PaymentCardPreview() {
         AppTheme(useDarkTheme = true) {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
-                payment = PaymentData(
+                payment = PaymentOrder(
                     id = Random.nextInt(100, 200),
                     amountCurrency = AmountCurrency(
                         currency = Currency.entries.random(),

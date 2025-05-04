@@ -48,10 +48,11 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.AmountCurrency
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Currency
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ProductSaleItem
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SaleStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SalesPageState
 import kotlin.random.Random
 
 @Composable
@@ -236,7 +237,7 @@ fun SalesStat(
 
 @Composable
 fun ProductSaleCard(
-    saleItem: ProductSaleItem,
+    saleItem: SaleOrder,
     modifier: Modifier = Modifier,
 ) {
     val statusColor = when (saleItem.status) {
@@ -427,23 +428,6 @@ fun ProductSaleCard(
     }
 }
 
-data class SalesStatistics(
-    val totalSalesAmount: AmountCurrency = AmountCurrency(
-        currency = Currency.UAH,
-        amount = 495000f
-    ), //TODO test purpose
-    val totalSalesNdsAmount: AmountCurrency = AmountCurrency(
-        currency = Currency.UAH,
-        amount = totalSalesAmount.amount * (20f / (100 + 20f))
-    ), //TODO test purpose
-    val totalBuyers: Int = 12, //TODO test purpose
-)
-
-data class SalesPageState(
-    val salesItems: List<ProductSaleItem> = generateSampleProductSaleItems(),
-    val salesStatistics: SalesStatistics = SalesStatistics(),
-)
-
 @Preview
 @Composable
 fun SalesPagePreview() {
@@ -457,7 +441,7 @@ fun SalesPagePreview() {
 fun ProductSaleCardPreview() {
     AppTheme {
         ProductSaleCard(
-            saleItem = ProductSaleItem(
+            saleItem = SaleOrder(
                 id = Random.nextInt(10000, 99999),
                 productName = "Сталь листовая",
                 cargoCategory = "Металлопрокат",

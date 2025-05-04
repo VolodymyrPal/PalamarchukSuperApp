@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
+package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -38,7 +38,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,16 +57,15 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ProductSaleItem
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SaleStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import kotlin.random.Random
 
 @Composable
 fun SaleCard(
-    saleItem: ProductSaleItem,
-    modifier: Modifier = Modifier,
+    saleItem: SaleOrder,
+    modifier: Modifier = Modifier.Companion,
 ) {
     val statusColor = when (saleItem.status) {
         SaleStatus.COMPLETED -> statusColor(Status.DONE)
@@ -96,32 +94,32 @@ fun SaleCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.Companion.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.Companion.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Companion.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier = Modifier.Companion
                         .padding(8.dp)
                         .size(8.dp)
                         .clip(CircleShape)
                         .background(statusColor)
                 )
                 AppText(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.Companion.weight(1f),
                     value = stringResource(R.string.sale_card_title, saleItem.id),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Companion.SemiBold,
                     )
                 )
 
                 AppIconInfoField(
-                    modifier = Modifier
+                    modifier = Modifier.Companion
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     title = statusText,
                     cardColors = CardDefaults.cardColors(
@@ -138,20 +136,20 @@ fun SaleCard(
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.Companion.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.Companion.Top
             ) {
                 Column(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.Companion.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.Companion.CenterVertically) {
                         Icon(
                             imageVector = Icons.Outlined.AccountBox,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier
+                            modifier = Modifier.Companion
                                 .padding(4.dp)
                                 .size(20.dp)
                         )
@@ -159,7 +157,7 @@ fun SaleCard(
                             value = saleItem.companyName,
                             appTextConfig = appTextConfig(
                                 textStyle = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Companion.Bold
                             )
                         )
                     }
@@ -170,13 +168,13 @@ fun SaleCard(
                             appTextConfig = appTextConfig(
                                 textStyle = MaterialTheme.typography.bodyMedium
                             ),
-                            modifier = Modifier.padding(start = 22.dp)
+                            modifier = Modifier.Companion.padding(start = 22.dp)
                         )
                     }
                 }
 
                 AppIconInfoField(
-                    modifier = Modifier,
+                    modifier = Modifier.Companion,
                     description = "Сумма: ${saleItem.totalAmount.formatTrim()} грн",
                     title = "НДС: ${saleItem.vatAmount.formatTrim()} грн",
                     cardColors = CardDefaults.cardColors(
@@ -188,21 +186,21 @@ fun SaleCard(
             }
 
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.Companion.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
             ) {
                 Row(
-                    modifier = Modifier
+                    modifier = Modifier.Companion
                         .fillMaxWidth()
                         .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.Companion.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Column(
-                        modifier = Modifier,
+                        modifier = Modifier.Companion,
                         verticalArrangement = Arrangement.SpaceAround
                     ) {
                         DetailItem(
@@ -219,7 +217,7 @@ fun SaleCard(
                     }
 
                     Column(
-                        modifier = Modifier,
+                        modifier = Modifier.Companion,
                         verticalArrangement = Arrangement.SpaceAround
                     ) {
                         DetailItem(
@@ -257,14 +255,14 @@ private fun DetailItem(
     value: String,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.Companion.CenterVertically) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.Companion.size(16.dp)
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.Companion.width(4.dp))
         Column {
             AppText(
                 value = label,
@@ -277,7 +275,7 @@ private fun DetailItem(
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Companion.Medium
                 ),
                 color = valueColor
             )
@@ -287,29 +285,29 @@ private fun DetailItem(
 
 @Composable
 private fun OrderInfoSection(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.Companion,
     order: Order,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded = remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Row(
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .fillMaxWidth()
                 .clip(CircleShape)
-                .clickable { expanded = !expanded }
+                .clickable { expanded.value = !expanded.value }
                 .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Companion.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Default.Info,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .padding(start = 12.dp)
                     .size(20.dp)
             )
@@ -317,27 +315,27 @@ private fun OrderInfoSection(
                 value = "Информация о заказе №${order.num}",
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Companion.Medium
                 ),
                 color = MaterialTheme.colorScheme.secondary
             )
             Icon(
-                imageVector = if (expanded)
+                imageVector = if (expanded.value)
                     Icons.Outlined.KeyboardArrowUp else Icons.Outlined.ArrowDropDown,
-                contentDescription = if (expanded) "Скрыть детали" else "Показать детали",
+                contentDescription = if (expanded.value) "Скрыть детали" else "Показать детали",
                 tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.Companion.padding(end = 8.dp)
             )
         }
 
         // Раскрываемый контент
         AnimatedVisibility(
-            visible = expanded,
+            visible = expanded.value,
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
             OrderCard(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.Companion.fillMaxWidth(),
                 order = order,
                 initialExpanded = true
             )
@@ -346,10 +344,10 @@ private fun OrderInfoSection(
 }
 
 // Пример генерации данных для тестирования
-fun generateSampleProductSaleItems(): List<ProductSaleItem> {
+fun generateSampleProductSaleItems(): List<SaleOrder> {
     return listOf(
-        ProductSaleItem(
-            id = Random.nextInt(10000, 99999),
+        SaleOrder(
+            id = Random.Default.nextInt(10000, 99999),
             productName = "Офисная мебель",
             cargoCategory = "Мебель",
             companyName = "ООО «Офис Плюс»",
@@ -374,8 +372,8 @@ fun generateSampleProductSaleItems(): List<ProductSaleItem> {
                 manager = "Петров В.П. +380633887542"
             )
         ),
-        ProductSaleItem(
-            id = Random.nextInt(10000, 99999),
+        SaleOrder(
+            id = Random.Default.nextInt(10000, 99999),
             productName = "Электроника",
             cargoCategory = "Техника",
             companyName = "ТОВ «Техноимпорт»",
@@ -391,8 +389,8 @@ fun generateSampleProductSaleItems(): List<ProductSaleItem> {
             prepayment = false,
             order = null
         ),
-        ProductSaleItem(
-            id = Random.nextInt(10000, 99999),
+        SaleOrder(
+            id = Random.Default.nextInt(10000, 99999),
             productName = "Строительные материалы",
             cargoCategory = "Стройматериалы",
             companyName = "ООО «СтройМир»",
@@ -429,7 +427,7 @@ fun SalesPageExample() {
         val sampleItems = generateSampleProductSaleItems()
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.Companion.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.feature.bone.ui
+package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

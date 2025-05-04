@@ -35,8 +35,10 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinanceTransaction
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceTransaction
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 
 @Composable
 fun FinancePage(
@@ -236,15 +238,6 @@ fun FinanceStat(
     }
 }
 
-data class FinancePageState(
-    val salesItems: List<FinanceTransaction> = listOf(
-        Order(1),
-        Order(2),
-        Order(3),
-    ),
-    val salesStatistics: FinanceStatistic = FinanceStatistic(),
-)
-
 @Preview
 @Composable
 fun FinancePagePreview() {
@@ -252,9 +245,3 @@ fun FinancePagePreview() {
         FinancePage()
     }
 }
-
-data class FinanceStatistic(
-    val totalSales: Float = 0f,
-    val totalExpenses: Float = 0f,
-    val totalProfit: Float = 0f,
-)

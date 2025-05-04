@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,10 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.feature.bone.ui.painterServiceTypeMap
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Stepper
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.orderServiceList
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
 
 @Composable
 fun StepProgressionBar(
@@ -236,6 +235,18 @@ fun StepProgressionBar(
     }
 }
 
+enum class StepperStatus {
+    DONE, CANCELED, IN_PROGRESS, CREATED
+}
+
+interface Stepper {
+    val status: StepperStatus
+    val serviceType: ServiceType
+
+    @get:DrawableRes
+    val icon: Int
+}
+
 @Composable
 @Preview
 fun StepProgressionBarDarkPreview(
@@ -254,7 +265,7 @@ fun StepProgressionBarDarkPreview(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                listOfSteps = orderServiceList.subList(0, 6),
+                listOfSteps = serviceOrderLists.subList(0, 6),
                 currentStep = 2
             )
         }
@@ -277,7 +288,7 @@ fun StepProgressionBarLightPreview(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
-                listOfSteps = orderServiceList.subList(0, 12),
+                listOfSteps = serviceOrderLists.subList(0, 12),
                 currentStep = 2
             )
         }

@@ -1,29 +1,28 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
-import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
-import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ClientEntity
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.EntityDetails
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Payment
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.stateIn
-import java.util.Date
 import javax.inject.Inject
-import kotlin.random.Random
 
 class BoneViewModel @Inject constructor(
-
-
-) : GenericViewModel<BusinessEntity, BoneViewModel.Event, BoneViewModel.Effect>() {
+) : GenericViewModel<ClientEntity, BoneViewModel.Event, BoneViewModel.Effect>() {
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
@@ -49,264 +48,12 @@ class BoneViewModel @Inject constructor(
 
     @Stable
     data class StateBone(
-        val businessEntity: BusinessEntity = BusinessEntity(0, EntityDetails().toString()),
+        val clientEntity: ClientEntity = ClientEntity(0, EntityDetails().toString()),
         val orderList: List<Order> = listOf(),
         val paymentList: List<Payment> = listOf(),
-    ) : State<BusinessEntity>
+    ) : State<ClientEntity>
 }
 
-data class BusinessEntity(
-    @PrimaryKey
-    val code: Int = 1,
-    val name: String = " Base card ",
-    val type: EntityType = EntityType.OTHER,
-    val manager: String = "",
-)
-
-enum class EntityType {
-    HOLDING, RESIDENT, NONRESIDENT, FACTORY, OTHER
-}
-
-data class EntityDetails(
-    val name: String = "",
-)
-
-data class Order (
-    @PrimaryKey
-    override val id: Int = 0,
-    val businessEntityNum: Int = Random.nextInt(2001, 8300),  //TODO change
-    val num: Int = Random.nextInt(44000, 50000),              //TODO change
-    val serviceList: List<OrderService> = listOf(),
-    val status: OrderStatus = OrderStatus.CREATED,
-    val cargoType: CargoType = when {
-        serviceList.any { it.serviceType == ServiceType.AIR_FREIGHT } -> CargoType.AIR
-        serviceList.any { it.serviceType == ServiceType.FULL_FREIGHT } -> CargoType.CONTAINER
-        serviceList.any { it.serviceType == ServiceType.EUROPE_TRANSPORT } -> CargoType.TRUCK
-        else -> CargoType.ANY
-    },
-    val destinationPoint: String = "Тест: Киев",
-    val arrivalDate: String = "Тест: 20.05.2025",
-    val containerNumber: String = "Тест: 40HC-7865425",
-    val departurePoint: String = "Тест: Гонконг",
-    val cargo: String = "Тест: Мебель",
-    val manager: String = "Тест: VP +3806338875",
-) : FinanceTransaction
-
-data class OrderStatistic(
-    val totalOrders: Int = 0,
-    val completedOrders: Int = 0,
-    val inProgressOrders: Int = 0,
-    val totalOrderWeight: Float = 0f,
-)
-
-data class PaymentStatistic(
-    val totalPayment: Int = 0,
-    val totalReceiver: Int = 0,
-    val paymentsByCurrency: List<AmountCurrency> = listOf( //TODO test only
-        AmountCurrency(
-            currency = Currency.USD,
-            amount = 24445f
-        ),
-        AmountCurrency(
-            currency = Currency.EUR,
-            amount = 335000f
-        ),
-        AmountCurrency(
-            currency = Currency.BTC,
-            amount = 220544.45f
-        ),
-        AmountCurrency(
-            currency = Currency.UAH,
-            amount = 8650.5f
-        ),
-        AmountCurrency(
-            currency = Currency.CNY,
-            amount = 8650.5f
-        ),
-        AmountCurrency(
-            currency = Currency.PLN,
-            amount = 9500f
-        ),
-        AmountCurrency(
-            currency = Currency.OTHER,
-            amount = 8882f,
-        )
-    ),
-    val daysToSend: Int = 1,
-)
-
-data class AmountCurrency(
-    val currency: Currency,
-    val amount: Float,
-    val iconResource: Int = when (currency) {
-        Currency.USD -> R.drawable.usd_sign
-        Currency.EUR -> R.drawable.euro_sign
-        Currency.CNY -> R.drawable.cny_sign
-        Currency.UAH -> R.drawable.uah_sign
-        Currency.PLN -> R.drawable.zloty_sign
-        Currency.BTC -> R.drawable.btc_sign
-        Currency.OTHER -> R.drawable.shekel_sign
-    },
-    val iconChar: Char = when (currency) {
-        Currency.USD -> '$'
-        Currency.EUR -> '€'
-        Currency.CNY -> '¥'
-        Currency.UAH -> '₴'
-        Currency.PLN -> 'z'
-        Currency.BTC -> '₿'
-        Currency.OTHER -> '₪'
-    },
-    val color: Color = when (currency) {
-        Currency.USD -> Color(0xFF4CAF50)
-        Currency.EUR -> Color(0xFF2196F3)
-        Currency.CNY -> Color(0xFFF44336)
-        Currency.UAH -> Color(0xFF3F51B5)
-        Currency.PLN -> Color(0xFF9C27B0)
-        Currency.BTC -> Color(0xFFFF5722)
-        Currency.OTHER -> Color(0xFF9E9E9E)
-    },
-    val currencyTextRes: Int = when (currency) {
-        Currency.USD -> R.string.usd
-        Currency.EUR -> R.string.eur
-        Currency.CNY -> R.string.yuan
-        Currency.UAH -> R.string.uah
-        Currency.PLN -> R.string.zloty
-        Currency.BTC -> R.string.bitcoin
-        Currency.OTHER -> R.string.undefined_currency
-    },
-)
-
-data class ProductSaleItem(
-    override val id: Int,
-    val productName: String,
-    val cargoCategory: String,
-    val quantity: Int, //Quantity of what?
-    val price: Int,
-    val totalAmount: Int,
-    val vatAmount: Double,
-    val customerName: String,
-    val status: SaleStatus,
-    val requestDate: String,
-    val documentDate: String,
-    val companyName: String,
-    val commissionPercent: Double,
-    val prepayment: Boolean,
-    val order: Order? = null,
-) : FinanceTransaction
-
-enum class SaleStatus {
-    CREATED, IN_PROGRESS, DOCUMENT_PROCEED, COMPLETED, CANCELED
-}
-
-data class PaymentData(
-    val id: Int,
-    val amountCurrency: AmountCurrency,
-    val factory: String,
-    val productType: String,
-    val batchInfo: String,
-    val paymentDate: String,
-    val dueDate: String,
-    val status: PaymentStatus,
-)
-
-enum class PaymentStatus {
-    PAID, PENDING, OVERDUE
-}
-
-enum class Currency {
-    USD, EUR, CNY, UAH, PLN, BTC, OTHER
-}
-
-enum class CargoType {
-    ANY, CONTAINER, TRUCK, AIR
-}
-
-interface Stepper {
-    val status: StepperStatus
-    val serviceType: ServiceType
-
-    @get:DrawableRes
-    val icon: Int
-}
-
-enum class StepperStatus {
-    DONE, CANCELED, IN_PROGRESS, CREATED
-}
-
-enum class OrderStatus {
-    CREATED, CALCULATED, IN_PROGRESS, DONE
-}
-
-interface FinanceTransaction {
-    val id: Int
-    val amount: Float      // Сумма операции
-    val date: Date         // Дата операции
-    val description: String // Описание операции
-}
-
-enum class TransactionType {
-    CREDIT, DEBIT
-}
-
-interface TypedTransaction {
-    val type: TransactionType
-    val transaction: FinanceTransaction
-}
-
-
-sealed class Transaction : TypedTransaction {
-    // Фабричные методы для создания транзакций
-    companion object {
-        fun createCredit(transaction: FinanceTransaction): Credit {
-            return Credit(transaction)
-        }
-
-        fun createDebit(transaction: FinanceTransaction): Debit {
-            return Debit(transaction)
-        }
-    }
-
-    // Кредитовая операция (приход)
-    data class Credit(
-        override val transaction: FinanceTransaction
-    ) : Transaction() {
-        override val type: TransactionType = TransactionType.CREDIT
-    }
-
-    // Дебетовая операция (расход)
-    data class Debit(
-        override val transaction: FinanceTransaction
-    ) : Transaction() {
-        override val type: TransactionType = TransactionType.DEBIT
-    }
-}
-
-
-@Suppress("LongParameterList")
-class OrderService(
-    /* PrimaryKey - ID */
-    val id: Int = 0,
-    val orderId: Int? = null,
-    val fullTransport: Boolean = true,
-    override val serviceType: ServiceType = ServiceType.OTHER,
-    val price: Float = 0.0f,
-    val duration: Int = 0,
-    override val status: StepperStatus = StepperStatus.CREATED,
-    @DrawableRes override val icon: Int = R.drawable.lock_outlined,
-) : Stepper
-
-enum class ServiceType(val title: String) {
-    FULL_FREIGHT("Freight whole container"),
-    AIR_FREIGHT("Freight air"),
-    FORWARDING("Forwarding"),
-    STORAGE("Storage"),
-    PRR("PRR"),
-    CUSTOMS("Customs"),
-    TRANSPORT("Transport"),
-    EUROPE_TRANSPORT("Auto"),
-    UKRAINE_TRANSPORT("Auto"),
-    OTHER("Other")
-}
 
 sealed interface ServiceScenario {
     val scenario: List<ServiceType>
@@ -351,16 +98,8 @@ sealed interface ServiceScenario {
 }
 
 
-data class Payment(
-    override val id: Int,
-    val paymentNum: Int,
-    val paymentSum: Float,
-    val paymentDateCreatinon: Date,
-) : FinanceTransaction
-
-
-val orderServiceList = listOf(
-    OrderService(
+val serviceOrderLists = listOf(
+    ServiceOrder(
         id = 1,
         orderId = 101,
         price = 1500f,
@@ -368,7 +107,7 @@ val orderServiceList = listOf(
         status = StepperStatus.DONE,
         serviceType = ServiceType.FULL_FREIGHT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 2,
         orderId = 102,
         price = 1200f,
@@ -376,7 +115,7 @@ val orderServiceList = listOf(
         status = StepperStatus.IN_PROGRESS,
         serviceType = ServiceType.FORWARDING,
     ),
-    OrderService(
+    ServiceOrder(
         id = 3,
         orderId = 103,
         price = 500f,
@@ -384,7 +123,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CREATED,
         serviceType = ServiceType.STORAGE,
     ),
-    OrderService(
+    ServiceOrder(
         id = 4,
         orderId = 104,
         price = 800f,
@@ -392,7 +131,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.PRR,
     ),
-    OrderService(
+    ServiceOrder(
         id = 5,
         orderId = 105,
         price = 3000f,
@@ -400,7 +139,7 @@ val orderServiceList = listOf(
         status = StepperStatus.DONE,
         serviceType = ServiceType.CUSTOMS,
     ),
-    OrderService(
+    ServiceOrder(
         id = 6,
         orderId = 106,
         price = 1800f,
@@ -408,7 +147,7 @@ val orderServiceList = listOf(
         status = StepperStatus.IN_PROGRESS,
         serviceType = ServiceType.OTHER,
     ),
-    OrderService(
+    ServiceOrder(
         id = 7,
         orderId = 107,
         price = 2500f,
@@ -416,7 +155,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CREATED,
         serviceType = ServiceType.UKRAINE_TRANSPORT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 8,
         orderId = 108,
         price = 2200f,
@@ -424,7 +163,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.PRR,
     ),
-    OrderService(
+    ServiceOrder(
         id = 9,
         orderId = 109,
         price = 600f,
@@ -432,7 +171,7 @@ val orderServiceList = listOf(
         status = StepperStatus.DONE,
         serviceType = ServiceType.OTHER,
     ),
-    OrderService(
+    ServiceOrder(
         id = 10,
         orderId = 110,
         price = 1700f,
@@ -440,7 +179,7 @@ val orderServiceList = listOf(
         status = StepperStatus.IN_PROGRESS,
         serviceType = ServiceType.FULL_FREIGHT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 11,
         orderId = 111,
         price = 1100f,
@@ -448,7 +187,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CREATED,
         serviceType = ServiceType.FORWARDING,
     ),
-    OrderService(
+    ServiceOrder(
         id = 12,
         orderId = 112,
         price = 450f,
@@ -456,7 +195,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.STORAGE,
     ),
-    OrderService(
+    ServiceOrder(
         id = 13,
         orderId = 113,
         price = 850f,
@@ -464,7 +203,7 @@ val orderServiceList = listOf(
         status = StepperStatus.DONE,
         serviceType = ServiceType.PRR,
     ),
-    OrderService(
+    ServiceOrder(
         id = 14,
         orderId = 114,
         price = 3100f,
@@ -472,7 +211,7 @@ val orderServiceList = listOf(
         status = StepperStatus.IN_PROGRESS,
         serviceType = ServiceType.CUSTOMS,
     ),
-    OrderService(
+    ServiceOrder(
         id = 15,
         orderId = 115,
         price = 1750f,
@@ -480,7 +219,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CREATED,
         serviceType = ServiceType.TRANSPORT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 16,
         orderId = 116,
         price = 2550f,
@@ -488,7 +227,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.EUROPE_TRANSPORT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 17,
         orderId = 117,
         price = 2300f,
@@ -496,7 +235,7 @@ val orderServiceList = listOf(
         status = StepperStatus.DONE,
         serviceType = ServiceType.UKRAINE_TRANSPORT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 18,
         orderId = 118,
         price = 700f,
@@ -504,7 +243,7 @@ val orderServiceList = listOf(
         status = StepperStatus.IN_PROGRESS,
         serviceType = ServiceType.OTHER,
     ),
-    OrderService(
+    ServiceOrder(
         id = 19,
         orderId = 119,
         price = 1600f,
@@ -512,7 +251,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CREATED,
         serviceType = ServiceType.FULL_FREIGHT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 20,
         orderId = 120,
         price = 1300f,
@@ -520,7 +259,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.FORWARDING,
     ),
-    OrderService(
+    ServiceOrder(
         id = 21,
         orderId = 121,
         price = 1350f,
@@ -528,7 +267,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.FORWARDING,
     ),
-    OrderService(
+    ServiceOrder(
         id = 22,
         orderId = 122,
         price = 1250f,
@@ -536,7 +275,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.FORWARDING,
     ),
-    OrderService(
+    ServiceOrder(
         id = 23,
         orderId = 123,
         price = 950f,
@@ -544,7 +283,7 @@ val orderServiceList = listOf(
         status = StepperStatus.DONE,
         serviceType = ServiceType.STORAGE,
     ),
-    OrderService(
+    ServiceOrder(
         id = 24,
         orderId = 124,
         price = 750f,
@@ -552,7 +291,7 @@ val orderServiceList = listOf(
         status = StepperStatus.IN_PROGRESS,
         serviceType = ServiceType.PRR,
     ),
-    OrderService(
+    ServiceOrder(
         id = 25,
         orderId = 125,
         price = 2800f,
@@ -560,7 +299,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CREATED,
         serviceType = ServiceType.CUSTOMS,
     ),
-    OrderService(
+    ServiceOrder(
         id = 26,
         orderId = 126,
         price = 1900f,
@@ -568,7 +307,7 @@ val orderServiceList = listOf(
         status = StepperStatus.CANCELED,
         serviceType = ServiceType.OTHER,
     ),
-    OrderService(
+    ServiceOrder(
         id = 27,
         orderId = 127,
         price = 2600f,
@@ -576,7 +315,7 @@ val orderServiceList = listOf(
         status = StepperStatus.DONE,
         serviceType = ServiceType.EUROPE_TRANSPORT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 28,
         orderId = 128,
         price = 1000f,
@@ -584,14 +323,14 @@ val orderServiceList = listOf(
         status = StepperStatus.IN_PROGRESS,
         serviceType = ServiceType.FULL_FREIGHT,
     ),
-    OrderService(
+    ServiceOrder(
         id = 29,
         orderId = 129,
         price = 1400f,
         duration = 3,
         status = StepperStatus.CREATED,
         serviceType = ServiceType.FORWARDING,
-    ), OrderService(
+    ), ServiceOrder(
         id = 30,
         orderId = 130,
         price = 400f,

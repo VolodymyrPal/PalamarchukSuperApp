@@ -37,14 +37,14 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.OrderCard
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.Order
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderService
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatistic
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderStatus
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceType
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.StepperStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import kotlin.random.Random
 
 
@@ -254,8 +254,8 @@ private fun generateSampleOrders(): List<Order> {
 
     return List(10) { index ->
         val selectedScenario = serviceScenarios[index % serviceScenarios.size]
-        val orderServices = selectedScenario.mapIndexed { serviceIndex, serviceType ->
-            OrderService(
+        val serviceOrders = selectedScenario.mapIndexed { serviceIndex, serviceType ->
+            ServiceOrder(
                 id = index * 100 + serviceIndex,
                 orderId = index,
                 fullTransport = Random.nextBoolean(),
@@ -274,7 +274,7 @@ private fun generateSampleOrders(): List<Order> {
 
         Order(
             id = index,
-            serviceList = orderServices,
+            serviceList = serviceOrders,
             status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)],
             // cargoType будет определен автоматически на основе serviceList в data class
         )
