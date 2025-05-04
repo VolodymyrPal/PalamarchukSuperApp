@@ -1,24 +1,25 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
-import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
-import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ClientEntity
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.EntityDetails
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Payment
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.stateIn
-import java.util.Date
 import javax.inject.Inject
-import kotlin.random.Random
 
 class BoneViewModel @Inject constructor(
 

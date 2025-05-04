@@ -33,7 +33,7 @@ import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.BoneFeatureViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneFeatureViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
