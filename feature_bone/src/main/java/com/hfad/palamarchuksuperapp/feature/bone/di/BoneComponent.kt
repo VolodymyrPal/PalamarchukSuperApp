@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.BoneFeatureViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneFeatureViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.MapKey
