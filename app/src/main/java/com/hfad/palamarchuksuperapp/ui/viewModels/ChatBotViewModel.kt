@@ -40,15 +40,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Suppress("LongParameterList")
@@ -84,25 +83,27 @@ class ChatBotViewModel @Inject constructor(
     private val ioCoroutineDispatcher = ioDispatcher + handler
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val _dataFlow: StateFlow<MessageChat> = currentChatId
-        .flatMapLatest { chatId ->
-            val observedChat = withContext(ioDispatcher) {
-                observeChatAiUseCase.invoke(chatId)
+    override val _dataFlow: StateFlow<MessageChat> = currentChatId.flatMapLatest { chatId ->
+        val observedChat = observeChatAiUseCase.invoke(chatId)
+        if (observedChat is Result.Success) {
+            val chat = observedChat.data
+            if (chatId != currentChatId.value) {
+                dataStoreHandler.setCurrentChatId(chatId)
+                _loading.update { false }
             }
-            if (observedChat is Result.Success) {
-                val chat = observedChat.data
-                chat.take(1).collect { chat ->
-                    if (chat.id != currentChatId.value) {
-                        dataStoreHandler.setCurrentChatId(chat.id)
-                        _loading.update { false }
-                    }
-                }
-                observedChat.data
-            } else {
-                _errorFlow.emit(AppError.CustomError("Chat not found"))
-                emptyFlow()
-            }
+//            chat.take(1).collect { chat ->
+//                if (chat.id != currentChatId.value) {
+//                    dataStoreHandler.setCurrentChatId(chat.id)
+//                    _loading.update { false }
+//                }
+//            }
+            observedChat.data
+        } else {
+            _errorFlow.emit(AppError.CustomError("Chat not found"))
+            emptyFlow()
         }
+    }
+        .distinctUntilChanged()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
