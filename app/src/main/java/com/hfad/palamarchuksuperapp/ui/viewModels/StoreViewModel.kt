@@ -22,6 +22,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -42,6 +45,16 @@ class StoreViewModel @Inject constructor(
         val error: AppError? = null,
     ) : State<PersistentList<Product>>
 
+    private val productsFlow: Flow<PersistentList<Product>> = flow {
+        emitAll(repository.fetchProductsAsFlowFromDB)
+    }.onStart {
+        repository.softRefreshProducts()
+    }.distinctUntilChanged()
+
+
+//    override val _dataFlow: Flow<Result<PersistentList<Product>, AppError>> = productsFlow.map {
+//        Result.Success(it)
+//    }
     override val _dataFlow: Flow<Result<PersistentList<Product>, AppError>> =
         repository.fetchProductsAsFlowFromDB
             .map<PersistentList<Product>, Result<PersistentList<Product>, AppError>> {
