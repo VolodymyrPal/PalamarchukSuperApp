@@ -131,3 +131,25 @@ sealed interface FeatureBoneRoutes {
     object BoneScreen : FeatureBoneRoutes
 
 }
+
+class LoggerDataStoreHandler(
+    val context: Context,
+) {
+    private val minuteToLogout = 15.minutes
+
+    suspend fun setIsLogged() {
+        context.isLogged.edit {
+            it[IS_LOGGED_KEY] = true
+        }
+    }
+
+    suspend fun clearUser() {
+        context.isLogged.edit {
+            it.remove(IS_LOGGED_KEY)
+        }
+    }
+
+    val isLoggedFlow = context.isLogged.data.map {
+        it[IS_LOGGED_KEY] ?: false
+    }.distinctUntilChanged()
+}
