@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.di
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
@@ -17,6 +18,7 @@ import kotlin.reflect.KClass
 internal interface BoneComponent : BoneDeps  {
 
     val viewModelFactory : ViewModelProvider.Factory
+    override val context : Context
 
     @Component.Builder
     interface Builder {
@@ -40,7 +42,9 @@ abstract class ViewModelsModule {
 }
 
 
-interface BoneDeps {}
+interface BoneDeps {
+    val context: Context
+}
 
 
 @Retention(AnnotationRetention.RUNTIME)
