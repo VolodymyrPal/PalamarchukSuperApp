@@ -38,9 +38,14 @@ import kotlin.time.Duration.Companion.minutes
 class BoneFeature(
     featureDependencies: BoneDeps,
 ) : FeatureApi {
-    private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
+    init {
+        launch {
 
-    override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.BoneScreen
+        }
+    }
+    private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
+    private val controller = LoggerDataStoreHandler(component.context)
+    override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.AuthRouter
 
     @OptIn(ExperimentalSharedTransitionApi::class)
     override fun registerGraph(
@@ -49,7 +54,7 @@ class BoneFeature(
         modifier: Modifier,
         coreRoute: KClass<*>, //class name from inline feature API
         sharedTransitionScope: SharedTransitionScope?,
-        transitionKey: String
+        transitionKey: String,
     ) {
         navGraphBuilder.navigation(
             coreRoute = coreRoute,
@@ -65,12 +70,12 @@ class BoneFeature(
                 val modifier = if (transition != null) {
                     with(transition) {
                         modifier.sharedElement(
-                                rememberSharedContentState(key = transitionKey),
-                                anim
-                            )
+                            rememberSharedContentState(key = transitionKey),
+                            anim
+                        )
                     }
                 } else {
-                        modifier
+                    modifier
                 }
                 BoneScreenRoot(
                     modifier = modifier,
