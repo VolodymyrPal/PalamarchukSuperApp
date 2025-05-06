@@ -1,13 +1,23 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -18,15 +28,24 @@ import com.hfad.palamarchuksuperapp.core.ui.navigation.navigation
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
+import kotlin.time.Duration.Companion.minutes
 
 class BoneFeature(
     featureDependencies: BoneDeps,
 ) : FeatureApi {
-    private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
+    init {
+        launch {
 
-    override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.BoneScreen
+        }
+    }
+    private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
+    private val controller = LoggerDataStoreHandler(component.context)
+    override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.AuthRouter
 
     @OptIn(ExperimentalSharedTransitionApi::class)
     override fun registerGraph(
@@ -35,7 +54,7 @@ class BoneFeature(
         modifier: Modifier,
         coreRoute: KClass<*>, //class name from inline feature API
         sharedTransitionScope: SharedTransitionScope?,
-        transitionKey: String
+        transitionKey: String,
     ) {
         navGraphBuilder.navigation(
             coreRoute = coreRoute,
@@ -51,17 +70,49 @@ class BoneFeature(
                 val modifier = if (transition != null) {
                     with(transition) {
                         modifier.sharedElement(
-                                rememberSharedContentState(key = transitionKey),
-                                anim
-                            )
+                            rememberSharedContentState(key = transitionKey),
+                            anim
+                        )
                     }
                 } else {
-                        modifier
+                    modifier
                 }
                 BoneScreenRoot(
                     modifier = modifier,
                     viewModel = daggerViewModel(component.viewModelFactory)
                 )
+            }
+
+            featureComposable<FeatureBoneRoutes.LoginScreen>(
+                component = component,
+                navController = navController,
+                sharedTransitionScope = sharedTransitionScope
+            ) {
+                val coroutineScope = rememberCoroutineScope()
+                val transition = LocalSharedTransitionScope.current
+                val anim = LocalNavAnimatedVisibilityScope.current
+                val modifier = if (transition != null) {
+                    with(transition) {
+                        modifier.sharedElement(
+                            rememberSharedContentState(key = transitionKey),
+                            anim
+                        )
+                    }
+                } else {
+                    modifier
+                }
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize(),
+                    onClick = {
+                        coroutineScope.launch {
+                            Log.d("Click", "CLicked")
+                            controller.setIsLogged()
+                        }
+                    }
+                ) {
+
+                }
             }
         }
     }
@@ -109,6 +160,9 @@ internal val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController not provided")
 }
 
+private val IS_LOGGED_KEY = booleanPreferencesKey("is_logged")
+private val Context.isLogged: DataStore<Preferences> by preferencesDataStore(name = "is_logged")
+
 
 @Serializable
 sealed interface FeatureBoneRoutes {
@@ -116,4 +170,29 @@ sealed interface FeatureBoneRoutes {
     @Serializable
     object BoneScreen : FeatureBoneRoutes
 
+    @Serializable
+    object LoginScreen : FeatureBoneRoutes
+
+}
+
+class LoggerDataStoreHandler(
+    val context: Context,
+) {
+    private val minuteToLogout = 15.minutes
+
+    suspend fun setIsLogged() {
+        context.isLogged.edit {
+            it[IS_LOGGED_KEY] = true
+        }
+    }
+
+    suspend fun clearUser() {
+        context.isLogged.edit {
+            it.remove(IS_LOGGED_KEY)
+        }
+    }
+
+    val isLoggedFlow = context.isLogged.data.map {
+        it[IS_LOGGED_KEY] ?: false
+    }.distinctUntilChanged()
 }
