@@ -130,6 +130,9 @@ sealed interface FeatureBoneRoutes {
     @Serializable
     object BoneScreen : FeatureBoneRoutes
 
+    @Serializable
+    object LoginScreen : FeatureBoneRoutes
+
 }
 
 class LoggerDataStoreHandler(
