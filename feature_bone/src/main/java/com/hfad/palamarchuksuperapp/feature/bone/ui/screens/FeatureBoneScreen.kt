@@ -123,6 +123,9 @@ internal val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController not provided")
 }
 
+private val IS_LOGGED_KEY = booleanPreferencesKey("is_logged")
+private val Context.isLogged: DataStore<Preferences> by preferencesDataStore(name = "is_logged")
+
 
 @Serializable
 sealed interface FeatureBoneRoutes {
