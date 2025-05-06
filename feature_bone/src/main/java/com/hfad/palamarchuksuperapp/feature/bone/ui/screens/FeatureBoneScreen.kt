@@ -77,6 +77,38 @@ class BoneFeature(
                     viewModel = daggerViewModel(component.viewModelFactory)
                 )
             }
+
+            featureComposable<FeatureBoneRoutes.LoginScreen>(
+                component = component,
+                navController = navController,
+                sharedTransitionScope = sharedTransitionScope
+            ) {
+                val coroutineScope = rememberCoroutineScope()
+                val transition = LocalSharedTransitionScope.current
+                val anim = LocalNavAnimatedVisibilityScope.current
+                val modifier = if (transition != null) {
+                    with(transition) {
+                        modifier.sharedElement(
+                            rememberSharedContentState(key = transitionKey),
+                            anim
+                        )
+                    }
+                } else {
+                    modifier
+                }
+                Surface(
+                    modifier = modifier
+                        .fillMaxSize(),
+                    onClick = {
+                        coroutineScope.launch {
+                            Log.d("Click", "CLicked")
+                            controller.setIsLogged()
+                        }
+                    }
+                ) {
+
+                }
+            }
         }
     }
 }
