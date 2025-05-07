@@ -157,13 +157,20 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         }
                     }
 
-                    featureRegister<Routes.BoneFeature>(
-                        featureApi = BoneFeature(context.appComponent),
-                        navController = navController,
-                        modifier = Modifier,
-                        sharedTransitionScope = this@SharedTransitionLayout,
-                        transitionKey = Routes.BoneFeature.TRANS_KEY
-                    )
+                    composable<Routes.BoneFeature> {
+                        BoneFeature(context.appComponent).BoneScreenRooted(
+                            parentNavController = LocalNavController.current,
+                            modifier = Modifier
+                        )
+                    }
+
+//                    featureRegister<Routes.BoneFeature>(
+//                        featureApi = BoneFeature(context.appComponent),
+//                        navController = navController,
+//                        modifier = Modifier,
+//                        sharedTransitionScope = this@SharedTransitionLayout,
+//                        transitionKey = Routes.BoneFeature.TRANS_KEY,
+//                    )
                 }
             }
         }
