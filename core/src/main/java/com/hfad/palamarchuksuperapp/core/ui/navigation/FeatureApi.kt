@@ -26,6 +26,12 @@ interface FeatureApi {
 
     val homeRoute: Any
 
+    @Composable
+    fun BoneScreenRooted (
+        parentNavController: NavController,
+        modifier: Modifier
+    )
+
     /**
      * Describe feature navigation graph.
      * Directly not used, only with function [featureRegister] from [NavGraphBuilder] of app module.
