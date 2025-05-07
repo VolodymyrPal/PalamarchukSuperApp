@@ -196,6 +196,9 @@ private val Context.isLogged: DataStore<Preferences> by preferencesDataStore(nam
 sealed interface FeatureBoneRoutes {
 
     @Serializable
+    object RouteRoot : FeatureBoneRoutes
+
+    @Serializable
     object BoneScreen : FeatureBoneRoutes
 
     @Serializable
