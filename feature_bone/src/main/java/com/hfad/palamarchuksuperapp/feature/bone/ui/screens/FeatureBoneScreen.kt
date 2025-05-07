@@ -85,65 +85,63 @@ class BoneFeature(
         sharedTransitionScope: SharedTransitionScope?,
         transitionKey: String,
     ) {
-        navGraphBuilder.navigation(
-            coreRoute = coreRoute,
-            startDestination = homeRoute
-        ) {
-            featureComposable<FeatureBoneRoutes.BoneScreen>(
-                component = component,
-                navController = navController,
-                sharedTransitionScope = sharedTransitionScope
-            ) {
-                val transition = LocalSharedTransitionScope.current
-                val anim = LocalNavAnimatedVisibilityScope.current
-                val modifier = if (transition != null) {
-                    with(transition) {
-                        modifier.sharedElement(
-                            rememberSharedContentState(key = transitionKey),
-                            anim
-                        )
-                    }
-                } else {
-                    modifier
-                }
-                BoneScreenRoot(
-                    modifier = modifier,
-                    viewModel = daggerViewModel(component.viewModelFactory)
-                )
-            }
-
-            featureComposable<FeatureBoneRoutes.LoginScreen>(
-                component = component,
-                navController = navController,
-                sharedTransitionScope = sharedTransitionScope
-            ) {
-                val coroutineScope = rememberCoroutineScope()
-                val transition = LocalSharedTransitionScope.current
-                val anim = LocalNavAnimatedVisibilityScope.current
-                val modifier = if (transition != null) {
-                    with(transition) {
-                        modifier.sharedElement(
-                            rememberSharedContentState(key = transitionKey),
-                            anim
-                        )
-                    }
-                } else {
-                    modifier
-                }
-                Surface(
-                    modifier = modifier
-                        .fillMaxSize(),
-                    onClick = {
-                        coroutineScope.launch {
-                            Log.d("Click", "CLicked")
-                            controller.setIsLogged()
-                        }
-                    }
-                ) {
-
-                }
-            }
-        }
+//        navGraphBuilder.navigation(
+//            coreRoute = coreRoute,
+//            startDestination = FeatureBoneRoutes.BoneScreen//homeRoute
+//        ) {
+//            featureComposable<FeatureBoneRoutes.BoneScreen>(
+//                component = component,
+//                navController = navController,
+//                sharedTransitionScope = sharedTransitionScope
+//            ) {
+//                val transition = LocalSharedTransitionScope.current
+//                val anim = LocalNavAnimatedVisibilityScope.current
+//                val modifier = if (transition != null) {
+//                    with(transition) {
+//                        modifier.sharedElement(
+//                            rememberSharedContentState(key = transitionKey),
+//                            anim
+//                        )
+//                    }
+//                } else {
+//                    modifier
+//                }
+//                BoneScreenRoot(
+//                    modifier = modifier,
+//                    viewModel = daggerViewModel(component.viewModelFactory)
+//                )
+//            }
+//
+//            featureComposable<FeatureBoneRoutes.LoginScreen>(
+//                component = component,
+//                navController = navController,
+//                sharedTransitionScope = sharedTransitionScope
+//            ) {
+//                val coroutineScope = rememberCoroutineScope()
+//                val transition = LocalSharedTransitionScope.current
+//                val anim = LocalNavAnimatedVisibilityScope.current
+//                val modifier = if (transition != null) {
+//                    with(transition) {
+//                        modifier.sharedElement(
+//                            rememberSharedContentState(key = transitionKey),
+//                            anim
+//                        )
+//                    }
+//                } else {
+//                    modifier
+//                }
+//                Surface(
+//                    modifier = modifier
+//                        .fillMaxSize(),
+//                    onClick = {
+//                        coroutineScope.launch {
+//                            Log.d("Click", "CLicked")
+//                            controller.setIsLogged()
+//                        }
+//                    }
+//                ) {}
+//            }
+//        }
     }
 }
 
@@ -179,7 +177,8 @@ internal val LocalNavAnimatedVisibilityScope =
     compositionLocalOf<AnimatedVisibilityScope> { error("Animated visibility scope not provided") }
 
 @OptIn(ExperimentalSharedTransitionApi::class) //TODO
-val LocalSharedTransitionScope = staticCompositionLocalOf<SharedTransitionScope?> { null } //TODO
+val LocalSharedTransitionScope =
+    staticCompositionLocalOf<SharedTransitionScope?> { null } //TODO
 
 
 internal val LocalBoneDependencies = compositionLocalOf<BoneComponent> {
