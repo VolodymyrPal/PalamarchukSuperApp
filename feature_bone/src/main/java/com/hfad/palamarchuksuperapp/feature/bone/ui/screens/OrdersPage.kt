@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -64,6 +65,16 @@ internal fun OrdersPage(
         contentPadding = PaddingValues(vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        item {
+            IconButton(
+                onClick =
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Back"
+                )
+            }
+        }
 
         item {
             OrderStatisticCard(
