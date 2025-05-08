@@ -68,7 +68,7 @@ internal fun OrdersPage(
     ) {
         item {
             IconButton(
-                onClick =
+                onClick = { navController.navigate(FeatureBoneRoutes.LoginScreen) }
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
