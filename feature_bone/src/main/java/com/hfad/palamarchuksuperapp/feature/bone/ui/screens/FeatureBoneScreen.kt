@@ -49,6 +49,13 @@ class BoneFeature(
             LocalNavController provides navController
         ) {
 
+            LaunchedEffect(navController) {
+                navController.currentBackStack.collect { backStackEntries ->
+                    if (backStackEntries.isEmpty()) {
+                        parentNavController.popBackStack()
+                    }
+                }
+            }
 
             NavHost(
                 startDestination = homeRoute,
