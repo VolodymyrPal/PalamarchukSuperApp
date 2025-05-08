@@ -1,13 +1,12 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -38,7 +37,6 @@ class BoneFeature(
     featureDependencies: BoneDeps,
 ) : FeatureApi {
     private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
-    private val controller = LoggerDataStoreHandler(component.context)
     override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.BoneScreen
 
     @Composable
@@ -48,11 +46,8 @@ class BoneFeature(
     ) {
         val navController = rememberNavController()
         CompositionLocalProvider(
-            LocalNavController provides parentNavController
+            LocalNavController provides navController
         ) {
-            val a = navController.currentBackStack.collectAsState()
-            Log.d("Child nav", a.value.size.toString())
-            Log.d("Parent nav", parentNavController.currentDestination?.route.toString())
 
 
             NavHost(
