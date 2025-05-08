@@ -58,6 +58,7 @@ internal fun OrdersPage(
         orders = generateSampleOrders(), //TODO for testing
         orderMetrics = generateOrderStatistic() //TODO for testing
     )
+    val navController = LocalNavController.current
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -67,7 +68,7 @@ internal fun OrdersPage(
     ) {
         item {
             IconButton(
-                onClick =
+                onClick = { navController.navigate(FeatureBoneRoutes.LoginScreen) }
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
