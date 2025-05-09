@@ -98,14 +98,16 @@ fun FinancePage(
 @Composable
 fun FinanceCard(
     modifier: Modifier = Modifier,
-    financeTransaction: FinanceTransaction
+    financeTransaction: TypedTransaction
 ) {
     when (financeTransaction) {
         is Order -> {}
-        else -> {}
+        is Payment -> {}
+        is SaleOrder -> {}
+        is PaymentOrder -> {}
     }
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         colors = CardDefaults.cardColors(
@@ -192,6 +194,7 @@ fun FinanceStatisticCard(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 FinanceStat(
+                    modifier = Modifier.weight(0.33f),
                     icon = Icons.Default.Build,
                     value = "150,000 грн",
                     label = "Доход",
@@ -199,6 +202,7 @@ fun FinanceStatisticCard(
                 )
 
                 FinanceStat(
+                    modifier = Modifier.weight(0.33f),
                     icon = Icons.Default.ThumbUp,
                     value = "75,000 грн",
                     label = "Расходы",
@@ -206,6 +210,7 @@ fun FinanceStatisticCard(
                 )
 
                 FinanceStat(
+                    modifier = Modifier.weight(0.33f),
                     icon = Icons.Default.Info,
                     value = "75,000 грн",
                     label = "Прибыль",
@@ -248,7 +253,8 @@ fun FinanceStat(
             value = value,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
         )
 
