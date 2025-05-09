@@ -238,7 +238,7 @@ fun SaleCard(
                 }
             }
 
-            if (saleItem.prepayment && saleItem.order != null) {
+            if (saleItem.order != null) {
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                 )

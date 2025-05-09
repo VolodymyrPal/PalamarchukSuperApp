@@ -25,7 +25,8 @@ data class Order (
     val manager: String = "Тест: VP +3806338875",
     override val amount: Float = Random.Default.nextFloat() * 1000,
     override val billingDate: Date = Date(),
-) : FinanceTransaction
+    override val type: TransactionType = TransactionType.CREDIT,
+) : TypedTransaction
 
 enum class OrderStatus {
     CREATED, CALCULATED, IN_PROGRESS, DONE

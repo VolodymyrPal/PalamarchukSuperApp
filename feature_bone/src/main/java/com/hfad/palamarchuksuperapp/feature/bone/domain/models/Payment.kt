@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceTransaction
 import java.util.Date
 
 data class Payment(
@@ -10,4 +9,5 @@ data class Payment(
     val paymentDateCreation: Date,
     override val amount: Float = 0f,
     override val billingDate: Date = Date(),
-) : FinanceTransaction
+    override val type: TransactionType = TransactionType.CREDIT,
+) : TypedTransaction

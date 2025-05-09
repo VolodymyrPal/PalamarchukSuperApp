@@ -20,7 +20,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,18 +33,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
 import kotlin.random.Random
 
 
@@ -53,12 +53,12 @@ import kotlin.random.Random
 internal fun OrdersPage(
     modifier: Modifier = Modifier,
     orderPageState: OrderPageState = OrderPageState(),
-) {
+    navController: NavController? = LocalNavController.current,
+    ) {
     val orderPageState = OrderPageState(
         orders = generateSampleOrders(), //TODO for testing
         orderMetrics = generateOrderStatistic() //TODO for testing
     )
-    val navController = LocalNavController.current
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -66,16 +66,21 @@ internal fun OrdersPage(
         contentPadding = PaddingValues(vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            IconButton(
-                onClick = { navController.navigate(FeatureBoneRoutes.LoginScreen) }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Back"
-                )
-            }
-        }
+//        item {
+//            IconButton(
+//                onClick = {
+//                    navController?.navigate(FeatureBoneRoutes.LoginScreen) {
+//                        popUpTo(FeatureBoneRoutes.BaseFeautreNavRoute::class) {}
+//                        launchSingleTop = true
+//                    }
+//                }
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Check,
+//                    contentDescription = "Back"
+//                )
+//            }
+//        }
 
         item {
             OrderStatisticCard(
@@ -313,7 +318,8 @@ private fun OrderCardListPreview() {
                 orderMetrics = OrderStatistic(
                     53, 40, 5, 534.25f
                 )
-            )
+            ),
+            navController = null
         )
     }
 }
@@ -357,6 +363,7 @@ private fun OrdersPagePreview() {
                     53, 40, 5, 534.25f
                 )
             ),
+            navController = null
         )
     }
 }

@@ -1,7 +1,9 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
+import java.util.Date
+
 data class PaymentOrder(
-    val id: Int,
+    override val id: Int,
     val amountCurrency: AmountCurrency,
     val factory: String,
     val productType: String,
@@ -9,7 +11,10 @@ data class PaymentOrder(
     val paymentDate: String,
     val dueDate: String,
     val status: PaymentStatus,
-)
+    override val type: TransactionType = TransactionType.CREDIT,
+    override val amount: Float = amountCurrency.amount,
+    override val billingDate: Date = Date(),
+) : TypedTransaction
 
 enum class PaymentStatus {
     PAID, PENDING, OVERDUE

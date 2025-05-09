@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,10 +48,11 @@ fun AppIconInfoField(
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
     elevation: Dp = 2.dp,
     onClick: (() -> Unit)? = null,
-    cardColors : CardColors = CardDefaults.cardColors(
+    cardColors: CardColors = CardDefaults.cardColors(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-    )
+    ),
+    appIconInfoFieldWidth: Float = 100 + (50*LocalDensity.current.fontScale),
 ) {
     val boxModifier = if (onClick != null) {
         modifier
@@ -129,8 +131,6 @@ fun AppIconInfoField(
         }
     }
 }
-
-const val appIconInfoFieldWidth = 150
 
 @Preview
 @Composable
