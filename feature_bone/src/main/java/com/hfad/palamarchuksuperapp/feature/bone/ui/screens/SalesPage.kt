@@ -134,6 +134,7 @@ fun SalesStatisticsCard(
                 val totalAmount = salesStatistics.totalSalesAmount.amount.formatTrim(0)
                 val totalAmountStr = totalAmount + " " + salesStatistics.totalSalesAmount.iconChar
                 SalesStat(
+                    modifier = Modifier.weight(0.33f),
                     icon = painterResource(R.drawable.money_pack),
                     value = totalAmountStr,
                     label = stringResource(R.string.summ_sales),
@@ -145,6 +146,7 @@ fun SalesStatisticsCard(
                     totalSalesNds + " " + salesStatistics.totalSalesNdsAmount.iconChar
 
                 SalesStat(
+                    modifier = Modifier.weight(0.33f),
                     icon = rememberVectorPainter(Icons.Default.Search),
                     value = totalSalesNdsStr,
                     label = stringResource(R.string.total_nds),
@@ -152,6 +154,7 @@ fun SalesStatisticsCard(
                 )
 
                 SalesStat(
+                    modifier = Modifier.weight(0.33f),
                     icon = rememberVectorPainter(Icons.Default.Info),
                     value = salesStatistics.totalBuyers.toString(),
                     label = stringResource(R.string.total_sale_buyer),
@@ -221,6 +224,7 @@ fun SalesStat(
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
         )
 
