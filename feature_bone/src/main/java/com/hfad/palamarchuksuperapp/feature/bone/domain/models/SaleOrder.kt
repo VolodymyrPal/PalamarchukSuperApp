@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceTransaction
 import java.util.Date
 
 data class SaleOrder(
@@ -21,7 +20,8 @@ data class SaleOrder(
     val order: Order? = null,
     override val amount: Float = 0f,
     override val billingDate: Date = Date(),
-) : FinanceTransaction
+    override val type: TransactionType = TransactionType.CREDIT,
+) : TypedTransaction
 
 enum class SaleStatus {
     CREATED, IN_PROGRESS, DOCUMENT_PROCEED, COMPLETED, CANCELED
