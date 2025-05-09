@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -50,8 +51,9 @@ class BoneFeature(
         ) {
 
             LaunchedEffect(navController) {
-                navController.currentBackStack.collect { backStackEntries ->
-                    if (backStackEntries.isEmpty()) {
+                navController.currentBackStack.collect { backStackList ->
+                    Log.d("backStackList", "backStackList $backStackList")
+                    if (backStackList.isEmpty()) {
                         parentNavController.popBackStack()
                     }
                 }
@@ -60,7 +62,7 @@ class BoneFeature(
             NavHost(
                 startDestination = homeRoute,
                 navController = navController,
-                route = FeatureBoneRoutes.RouteRoot::class
+                route = FeatureBoneRoutes.BaseFeautreNavRoute::class
             ) {
                 composable<FeatureBoneRoutes.BoneScreen> {
                     BoneScreenRoot(
@@ -198,7 +200,7 @@ private val Context.isLogged: DataStore<Preferences> by preferencesDataStore(nam
 sealed interface FeatureBoneRoutes {
 
     @Serializable
-    object RouteRoot : FeatureBoneRoutes
+    object BaseFeautreNavRoute : FeatureBoneRoutes
 
     @Serializable
     object BoneScreen : FeatureBoneRoutes
