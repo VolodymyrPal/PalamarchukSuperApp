@@ -11,7 +11,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ClientEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.EntityDetails
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Payment
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPayment
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import kotlinx.coroutines.flow.Flow
@@ -50,7 +50,7 @@ class BoneViewModel @Inject constructor(
     data class StateBone(
         val clientEntity: ClientEntity = ClientEntity(0, EntityDetails().toString()),
         val orderList: List<Order> = listOf(),
-        val paymentList: List<Payment> = listOf(),
+        val cashPaymentList: List<CashPayment> = listOf(),
     ) : State<ClientEntity>
 }
 

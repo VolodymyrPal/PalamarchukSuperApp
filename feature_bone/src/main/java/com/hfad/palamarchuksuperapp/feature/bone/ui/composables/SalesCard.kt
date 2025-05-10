@@ -40,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,7 +59,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
-import kotlin.random.Random
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrderItems
 
 @Composable
 fun SaleCard(
@@ -343,88 +342,12 @@ private fun OrderInfoSection(
     }
 }
 
-// Пример генерации данных для тестирования
-fun generateSampleProductSaleItems(): List<SaleOrder> {
-    return listOf(
-        SaleOrder(
-            id = Random.Default.nextInt(10000, 99999),
-            productName = "Офисная мебель",
-            cargoCategory = "Мебель",
-            companyName = "ООО «Офис Плюс»",
-            quantity = 10,
-            price = 2500,
-            totalAmount = 2500,
-            vatAmount = 5000.0,
-            customerName = "Иванов И.И.",
-            status = SaleStatus.COMPLETED,
-            requestDate = "10.03.2024",
-            documentDate = "15.03.2024",
-            commissionPercent = 5.0,
-            prepayment = true,
-            order = Order(
-                id = 1,
-                businessEntityNum = 4321,
-                num = 48756,
-                destinationPoint = "Киев",
-                arrivalDate = "20.04.2024",
-                departurePoint = "Шанхай",
-                cargo = "Офисная мебель",
-                manager = "Петров В.П. +380633887542"
-            )
-        ),
-        SaleOrder(
-            id = Random.Default.nextInt(10000, 99999),
-            productName = "Электроника",
-            cargoCategory = "Техника",
-            companyName = "ТОВ «Техноимпорт»",
-            quantity = 50,
-            price = 1200,
-            totalAmount = 60000,
-            vatAmount = 12000.0,
-            customerName = "Смирнов А.В.",
-            status = SaleStatus.IN_PROGRESS,
-            requestDate = "05.04.2024",
-            documentDate = "10.04.2024",
-            commissionPercent = 3.5,
-            prepayment = false,
-            order = null
-        ),
-        SaleOrder(
-            id = Random.Default.nextInt(10000, 99999),
-            productName = "Строительные материалы",
-            cargoCategory = "Стройматериалы",
-            companyName = "ООО «СтройМир»",
-            quantity = 200,
-            price = 450,
-            totalAmount = 90000,
-            vatAmount = 18000.0,
-            customerName = "Ковалев Д.И.",
-            status = SaleStatus.CREATED,
-            requestDate = "15.04.2024",
-            documentDate = "20.04.2024",
-            commissionPercent = 2.0,
-            prepayment = true,
-            order = Order(
-                id = 2,
-                businessEntityNum = 6245,
-                num = 46123,
-                destinationPoint = "Одесса",
-                arrivalDate = "12.05.2024",
-                containerNumber = "40HC-9876543",
-                departurePoint = "Гуанчжоу",
-                cargo = "Строительные материалы",
-                manager = "Сидорова Е.М. +380671234567"
-            )
-        )
-    )
-}
-
 // Пример использования
 @Composable
 @Preview
 fun SalesPageExample() {
     MaterialTheme {
-        val sampleItems = generateSampleProductSaleItems()
+        val sampleItems = generateSaleOrderItems()
 
         LazyColumn(
             modifier = Modifier.Companion.fillMaxSize(),

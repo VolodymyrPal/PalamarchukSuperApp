@@ -58,6 +58,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentPageState
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentOrderItems
 import kotlin.random.Random
 
 @Composable
@@ -452,57 +454,9 @@ fun PaymentCard(
     }
 }
 
-internal fun generateSamplePayments(): List<PaymentOrder> {
-    val factories = listOf(
-        "Guangzhou Metal Works", "Berlin Precision Manufacturing",
-        "Shanghai Industrial Group", "Warsaw Production Facility",
-        "Tokyo Electronics Ltd", "Mumbai Steel Plant", "Detroit Auto Parts"
-    )
-
-    val productTypes = listOf(
-        "Металлопрокат", "Электроника", "Полупроводники",
-        "Автозапчасти", "Сталь", "Микрочипы", "Сырье"
-    )
-
-
-    return List(15) { index ->
-
-        val isPaid = Random.nextInt(10) > 3
-        val isOverdue = !isPaid && Random.nextInt(10) > 5
-
-        val status = when {
-            isPaid -> PaymentStatus.PAID
-            isOverdue -> PaymentStatus.OVERDUE
-            else -> PaymentStatus.PENDING
-        }
-
-        val month = Random.nextInt(1, 13)
-        val day = Random.nextInt(1, 29)
-        val paymentDate = "$day.${month.toString().padStart(2, '0')}.2023"
-
-        val dueMonth = if (month < 12) month + 1 else 1
-        val dueYear = if (month < 12) 2023 else 2024
-        val dueDate = "$day.${dueMonth.toString().padStart(2, '0')}.$dueYear"
-
-        PaymentOrder(
-            id = Random.nextInt(100, 200),
-            amountCurrency = AmountCurrency(
-                currency = Currency.entries.random(),
-                amount = Random.nextDouble(1000.0, 100000.0).toFloat()
-            ),
-            factory = factories[Random.nextInt(factories.size)],
-            productType = productTypes[Random.nextInt(productTypes.size)],
-            batchInfo = "B-${Random.nextInt(1000, 9999)}-${Random.nextInt(10, 100)}",
-            paymentDate = paymentDate,
-            dueDate = dueDate,
-            status = status
-        )
-    }
-}
-
 private fun generatePaymentSample(): PaymentPageState {
     return PaymentPageState(
-        payments = generateSamplePayments(),
+        payments = generatePaymentOrderItems(),
         paymentStatistic = PaymentStatistic(
             totalPayment = Random.nextInt(10, 20),
             totalReceiver = Random.nextInt(1, 4),
@@ -534,10 +488,10 @@ fun PaymentCardPreview() {
                     ),
                     factory = "Guangzhou Metal Works",
                     productType = "Металлопрокат",
-                    batchInfo = "B-2354-42",
                     paymentDate = "15.09.2023",
                     dueDate = "15.10.2023",
-                    status = PaymentStatus.PAID
+                    status = PaymentStatus.PAID,
+                    type = TransactionType.CREDIT
                 )
             )
         }
@@ -552,10 +506,10 @@ fun PaymentCardPreview() {
                     ),
                     factory = "Guangzhou Metal Works",
                     productType = "Металлопрокат",
-                    batchInfo = "B-2354-42",
                     paymentDate = "15.09.2023",
                     dueDate = "15.10.2023",
-                    status = PaymentStatus.PAID
+                    status = PaymentStatus.PAID,
+                    type = TransactionType.CREDIT
                 )
             )
         }
