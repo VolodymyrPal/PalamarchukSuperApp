@@ -4,7 +4,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 import kotlin.random.Random
 
-data class Order (
+data class Order(
     @PrimaryKey
     override val id: Int = 0,
     val businessEntityNum: Int = Random.Default.nextInt(2001, 8300),  //TODO change
@@ -23,7 +23,10 @@ data class Order (
     val departurePoint: String = "Тест: Гонконг",
     val cargo: String = "Тест: Мебель",
     val manager: String = "Тест: VP +3806338875",
-    override val amount: Float = Random.Default.nextFloat() * 1000,
+    override val amountCurrency: AmountCurrency = AmountCurrency(
+        currency = Currency.USD,
+        amount = 12200f
+    ),
     override val billingDate: Date = Date(),
     override val type: TransactionType = TransactionType.CREDIT,
 ) : TypedTransaction
