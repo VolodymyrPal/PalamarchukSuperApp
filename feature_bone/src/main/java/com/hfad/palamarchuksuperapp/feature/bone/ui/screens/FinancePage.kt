@@ -13,19 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
@@ -41,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,14 +47,17 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
+import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPayment
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Payment
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -67,7 +65,7 @@ import java.util.Locale
 @Composable
 fun FinancePage(
     modifier: Modifier = Modifier,
-    financeState : FinancePageState = FinancePageState(),
+    financeState: FinancePageState = FinancePageState(),
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -83,7 +81,7 @@ fun FinancePage(
                 FinanceStatisticCard(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
                     financeState.salesStatistics
-                    )
+                )
             }
             items(financeState.salesItems) { item ->
                 FinanceCard(
@@ -98,11 +96,11 @@ fun FinancePage(
 @Composable
 fun FinanceCard(
     modifier: Modifier = Modifier,
-    financeTransaction: TypedTransaction
+    financeTransaction: TypedTransaction,
 ) {
     when (financeTransaction) {
         is Order -> {}
-        is Payment -> {}
+        is CashPayment -> {}
         is SaleOrder -> {}
         is PaymentOrder -> {}
     }
@@ -288,28 +286,36 @@ fun FinanceTransactionCardPreview() {
 fun FinanceTransactionCard(
     modifier: Modifier = Modifier,
     transaction: TypedTransaction,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
+
+    val icon = when (transaction) {
+        is Order -> painterResource(R.drawable.product_icon)
+        is CashPayment -> painterResource(R.drawable.money_pack)
+        is SaleOrder -> painterResource(R.drawable.freight)
+        is PaymentOrder -> painterResource(R.drawable.money_pack)
+    }
 
     // Определяем цвет и иконку в зависимости от типа транзакции
     val (transactionColor, transactionIcon, transactionLabel) = when (transaction.type) {
         TransactionType.CREDIT -> Triple(
             statusColor(Status.DONE),
-            Icons.Default.Build,
+            icon,
             "Доход"
         )
+
         TransactionType.DEBIT -> Triple(
-            statusColor(Status.CANCELED),
-            Icons.Default.ThumbUp,
+            statusColor(Status.CREATED),
+            icon,
             "Расход"
         )
     }
 
     // Форматирование суммы с правильным знаком
     val amountText = when (transaction.type) {
-        TransactionType.CREDIT -> "+${transaction.amount.formatTrim()} грн"
-        TransactionType.DEBIT -> "-${transaction.amount.formatTrim()} грн"
+        TransactionType.CREDIT -> "+${transaction.amountCurrency.amount.formatTrim()} ${transaction.amountCurrency.currency}"
+        TransactionType.DEBIT -> "-${transaction.amountCurrency.amount.formatTrim()} ${transaction.amountCurrency.currency}"
     }
 
     // Форматирование даты
@@ -365,9 +371,9 @@ fun FinanceTransactionCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = transactionIcon,
+                            painter = transactionIcon,
                             contentDescription = transactionLabel,
-                            tint = transactionColor,
+                            tint = colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -426,193 +432,10 @@ fun FinanceTransactionCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Категория (если доступна для подтипа)
-                if (transaction is Payment) {
-                    TransactionDetailRow(
-                        icon = Icons.Default.Check,
-                        label = "Категория",
-                        value = "Company name"
-                    )
-                } else if (transaction is SaleOrder) {
-                    TransactionDetailRow(
-                        icon = Icons.Default.Edit,
-                        label = "Компания",
-                        value = transaction.companyName
-                    )
-                }
-
-                // Дата транзакции
-                TransactionDetailRow(
-                    icon = Icons.Default.DateRange,
-                    label = "Дата",
-                    value = formattedDate
+                OrderCard(
+                    order = generateOrder()
                 )
-
-                // Дополнительная информация в зависимости от типа
-                when (transaction) {
-                    is Order -> {
-                    }
-                    is Payment -> {
-                        TransactionDetailRow(
-                            icon = Icons.Default.Add,
-                            label = "Срок оплаты",
-                            value = "Data opl"
-                        )
-                    }
-                    is SaleOrder -> {
-                        if (transaction.prepayment) {
-                            TransactionDetailRow(
-                                icon = Icons.Default.Check,
-                                label = "Предоплата",
-                                value = "Да",
-                                valueColor = colorScheme.tertiary
-                            )
-                        }
-                    }
-
-                    is PaymentOrder -> {}
-                }
-            }
-
-            // Если есть дополнительная информация для подтипов
-            when (transaction) {
-                is Order -> {}
-                is Payment -> {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        color = colorScheme.onSurface.copy(alpha = 0.1f)
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(16.dp))
-                                .padding(horizontal = 12.dp, vertical = 4.dp)
-                        ) {
-                            AppText(
-                                value = "Kakayta info",
-                                appTextConfig = appTextConfig(
-                                    textStyle = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                            )
-                        }
-                    }
-                }
-                is SaleOrder -> {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        color = colorScheme.onSurface.copy(alpha = 0.1f)
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AppText(
-                            value = "НДС: ${transaction.vatAmount.formatTrim()} грн",
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
-                            ),
-                            color = colorScheme.primary
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(
-                                    when (transaction.status) {
-                                        SaleStatus.COMPLETED -> statusColor(Status.DONE)
-                                        SaleStatus.IN_PROGRESS -> statusColor(Status.IN_PROGRESS)
-                                        SaleStatus.CREATED -> statusColor(Status.CREATED)
-                                        SaleStatus.DOCUMENT_PROCEED -> statusColor(Status.PROCEED)
-                                        SaleStatus.CANCELED -> statusColor(Status.CANCELED)
-                                    }.copy(alpha = 0.1f)
-                                )
-                                .padding(horizontal = 12.dp, vertical = 4.dp)
-                        ) {
-                            AppText(
-                                value = when (transaction.status) {
-                                    SaleStatus.COMPLETED -> "Завершено"
-                                    SaleStatus.IN_PROGRESS -> "В процессе"
-                                    SaleStatus.CREATED -> "Создано"
-                                    SaleStatus.DOCUMENT_PROCEED -> "Документы обработаны"
-                                    SaleStatus.CANCELED -> "Отменено"
-                                },
-                                appTextConfig = appTextConfig(
-                                    textStyle = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                color = when (transaction.status) {
-                                    SaleStatus.COMPLETED -> statusColor(Status.DONE)
-                                    SaleStatus.IN_PROGRESS -> statusColor(Status.IN_PROGRESS)
-                                    SaleStatus.CREATED -> statusColor(Status.CREATED)
-                                    SaleStatus.DOCUMENT_PROCEED -> statusColor(Status.PROCEED)
-                                    SaleStatus.CANCELED -> statusColor(Status.CANCELED)
-                                }
-                            )
-                        }
-                    }
-                }
-
-                is PaymentOrder -> {}
             }
         }
-    }
-}
-
-@Composable
-@Preview
-private fun  TransactionDetailRowPreview() {
-    TransactionDetailRow(
-        icon = Icons.Default.Face,
-        label = "Some label",
-        value = "Value"
-    )
-}
-
-
-@Composable
-private fun TransactionDetailRow(
-    icon: ImageVector,
-    label: String,
-    value: String,
-    valueColor: Color = MaterialTheme.colorScheme.onSurface
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp)
-        )
-
-        AppText(
-            value = "$label:",
-            appTextConfig = appTextConfig(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(80.dp)
-        )
-
-        AppText(
-            value = value,
-            appTextConfig = appTextConfig(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal
-            ),
-            color = valueColor
-        )
     }
 }
