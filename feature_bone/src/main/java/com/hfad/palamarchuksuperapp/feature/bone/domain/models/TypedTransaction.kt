@@ -5,7 +5,7 @@ import java.util.Date
 sealed interface TypedTransaction {
     val type: TransactionType
     val id: Int
-    val amount: Float
+    val amountCurrency: AmountCurrency
     val billingDate: Date
 }
 

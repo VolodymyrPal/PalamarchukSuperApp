@@ -18,7 +18,7 @@ data class SaleOrder(
     val commissionPercent: Double,
     val prepayment: Boolean,
     val order: Order? = null,
-    override val amount: Float = 0f,
+    override val amountCurrency: AmountCurrency,
     override val billingDate: Date = Date(),
     override val type: TransactionType = TransactionType.CREDIT,
 ) : TypedTransaction
