@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
 import java.util.Date
+import kotlin.random.Random
 
 data class PaymentOrder(
     override val id: Int,
@@ -16,4 +17,95 @@ data class PaymentOrder(
 
 enum class PaymentStatus {
     PAID, PENDING, OVERDUE
+}
+
+internal fun generatePaymentOrderSample() : PaymentOrder {
+    val factories = listOf(
+        "Guangzhou Metal Works", "Berlin Precision Manufacturing",
+        "Shanghai Industrial Group", "Warsaw Production Facility",
+        "Tokyo Electronics Ltd", "Mumbai Steel Plant", "Detroit Auto Parts"
+    )
+
+    val productTypes = listOf(
+        "Металлопрокат", "Электроника", "Полупроводники",
+        "Автозапчасти", "Сталь", "Микрочипы", "Сырье"
+    )
+    val isPaid = Random.nextInt(10) > 3
+    val isOverdue = !isPaid && Random.nextInt(10) > 5
+
+    val status = when {
+        isPaid -> PaymentStatus.PAID
+        isOverdue -> PaymentStatus.OVERDUE
+        else -> PaymentStatus.PENDING
+    }
+
+    val month = Random.nextInt(1, 13)
+    val day = Random.nextInt(1, 29)
+    val paymentDate = "$day.${month.toString().padStart(2, '0')}.2023"
+
+    val dueMonth = if (month < 12) month + 1 else 1
+    val dueYear = if (month < 12) 2023 else 2024
+    val dueDate = "$day.${dueMonth.toString().padStart(2, '0')}.$dueYear"
+
+    return PaymentOrder(
+        id = Random.nextInt(100, 200),
+        amountCurrency = AmountCurrency(
+            currency = Currency.entries.random(),
+            amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+        ),
+        factory = factories[Random.nextInt(factories.size)],
+        productType = productTypes[Random.nextInt(productTypes.size)],
+        paymentDate = paymentDate,
+        dueDate = dueDate,
+        status = status,
+        type = TransactionType.CREDIT
+    )
+}
+
+
+internal fun generatePaymentOrderItems(): List<PaymentOrder> {
+    val factories = listOf(
+        "Guangzhou Metal Works", "Berlin Precision Manufacturing",
+        "Shanghai Industrial Group", "Warsaw Production Facility",
+        "Tokyo Electronics Ltd", "Mumbai Steel Plant", "Detroit Auto Parts"
+    )
+
+    val productTypes = listOf(
+        "Металлопрокат", "Электроника", "Полупроводники",
+        "Автозапчасти", "Сталь", "Микрочипы", "Сырье"
+    )
+
+    return List(15) { index ->
+
+        val isPaid = Random.nextInt(10) > 3
+        val isOverdue = !isPaid && Random.nextInt(10) > 5
+
+        val status = when {
+            isPaid -> PaymentStatus.PAID
+            isOverdue -> PaymentStatus.OVERDUE
+            else -> PaymentStatus.PENDING
+        }
+
+        val month = Random.nextInt(1, 13)
+        val day = Random.nextInt(1, 29)
+        val paymentDate = "$day.${month.toString().padStart(2, '0')}.2023"
+
+        val dueMonth = if (month < 12) month + 1 else 1
+        val dueYear = if (month < 12) 2023 else 2024
+        val dueDate = "$day.${dueMonth.toString().padStart(2, '0')}.$dueYear"
+
+        PaymentOrder(
+            id = Random.nextInt(100, 200),
+            amountCurrency = AmountCurrency(
+                currency = Currency.entries.random(),
+                amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+            ),
+            factory = factories[Random.nextInt(factories.size)],
+            productType = productTypes[Random.nextInt(productTypes.size)],
+            paymentDate = paymentDate,
+            dueDate = dueDate,
+            status = status,
+            type = TransactionType.CREDIT
+        )
+    }
 }

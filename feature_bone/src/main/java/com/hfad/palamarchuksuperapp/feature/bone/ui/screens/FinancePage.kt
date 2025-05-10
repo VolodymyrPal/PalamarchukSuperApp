@@ -280,7 +280,7 @@ fun FinancePagePreview() {
 @Preview
 fun FinanceTransactionCardPreview() {
     FinanceTransactionCard(
-        transaction = Order(1, type = TransactionType.DEBIT ),
+        transaction = generateSaleOrder()
     )
 }
 
