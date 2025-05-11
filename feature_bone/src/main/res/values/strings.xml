@@ -41,5 +41,9 @@
     <string name="sale_status_document_proceed">Docs proceed</string>
     <string name="sale_status_canceled">Canceled</string>
     <string name="sale_card_title">Request: %1$s</string>
+    <string name="order">Order</string>
+    <string name="cashPayment">F2</string>
+    <string name="sale">Sale</string>
+    <string name="payment">Payment</string>
 
 </resources>
