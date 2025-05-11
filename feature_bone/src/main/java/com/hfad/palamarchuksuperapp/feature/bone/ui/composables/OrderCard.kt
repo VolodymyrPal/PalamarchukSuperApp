@@ -59,6 +59,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrder
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
 
 @Composable
@@ -301,7 +302,7 @@ fun OrderCardPreview() {
                 modifier = Modifier
                     .padding(5.dp)
                     .height(450.dp),
-                order = Order(),
+                order = generateOrder(),
                 initialExpanded = true
             )
         }
@@ -310,7 +311,7 @@ fun OrderCardPreview() {
                 modifier = Modifier
                     .padding(5.dp)
                     .height(450.dp),
-                order = Order(),
+                order = generateOrder(),
                 initialExpanded = true
             )
         }

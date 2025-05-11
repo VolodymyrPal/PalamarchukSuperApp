@@ -1,6 +1,13 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
+import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,21 +28,26 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -98,12 +110,6 @@ fun FinanceCard(
     modifier: Modifier = Modifier,
     financeTransaction: TypedTransaction,
 ) {
-    when (financeTransaction) {
-        is Order -> {}
-        is CashPayment -> {}
-        is SaleOrder -> {}
-        is PaymentOrder -> {}
-    }
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -289,38 +295,12 @@ fun FinanceTransactionCard(
     onClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
-
-    val icon = when (transaction) {
-        is Order -> painterResource(R.drawable.product_icon)
-        is CashPayment -> painterResource(R.drawable.money_pack)
-        is SaleOrder -> painterResource(R.drawable.freight)
-        is PaymentOrder -> painterResource(R.drawable.money_pack)
-    }
-
-    // Определяем цвет и иконку в зависимости от типа транзакции
-    val (transactionColor, transactionIcon, transactionLabel) = when (transaction.type) {
-        TransactionType.CREDIT -> Triple(
-            statusColor(Status.DONE),
-            icon,
-            "Доход"
-        )
-
-        TransactionType.DEBIT -> Triple(
-            statusColor(Status.CREATED),
-            icon,
-            "Расход"
-        )
-    }
-
-    // Форматирование суммы с правильным знаком
-    val amountText = when (transaction.type) {
-        TransactionType.CREDIT -> "+${transaction.amountCurrency.amount.formatTrim()} ${transaction.amountCurrency.currency}"
-        TransactionType.DEBIT -> "-${transaction.amountCurrency.amount.formatTrim()} ${transaction.amountCurrency.currency}"
-    }
-
-    // Форматирование даты
-    val dateFormatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-    val formattedDate = dateFormatter.format(transaction.billingDate)
+    val transaction = transaction.toUiModel()
+    val isExpanded = remember { mutableStateOf(false) }
+    val arrowRotationDegree by animateFloatAsState(
+        targetValue = if (isExpanded.value) 180f else 0f,
+        label = "arrowRotation"
+    )
 
     val elevation by animateDpAsState(
         targetValue = 2.dp,
@@ -350,92 +330,170 @@ fun FinanceTransactionCard(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Верхняя часть с ID и суммой
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
+                    modifier = Modifier.weight(0.8f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Круглая иконка типа транзакции
                     Box(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(transactionColor.copy(alpha = 0.15f)),
+                            .background(transaction.color.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = transactionIcon,
-                            contentDescription = transactionLabel,
+                            painter = painterResource(transaction.iconRes),
+                            contentDescription = transaction.transactionName,
                             tint = colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
-
-                    Column {
-                        AppText(
-                            value = "Транзакция №${transaction.id}",
-                            appTextConfig = appTextConfig(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                    AppText(
+                        value = "${transaction.transactionName} №${transaction.id}",
+                        appTextConfig = appTextConfig(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
-
-                        // Тип транзакции с цветным индикатором
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(transactionColor)
-                            )
-                            AppText(
-                                value = transactionLabel,
-                                appTextConfig = appTextConfig(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                color = transactionColor
-                            )
-                        }
-                    }
+                    )
                 }
 
-                // Сумма транзакции
                 SelectionContainer {
                     AppText(
-                        value = amountText,
+                        value = transaction.amountText,
                         appTextConfig = appTextConfig(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = transactionColor
+                        color = transaction.color
                     )
                 }
             }
 
-            HorizontalDivider(
-                color = colorScheme.onSurface.copy(alpha = 0.1f)
-            )
-
-            // Детали транзакции
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            IconButton(
+                onClick = { isExpanded.value = !isExpanded.value },
+                modifier = Modifier,
             ) {
-                OrderCard(
-                    order = generateOrder()
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
+                    modifier = Modifier.rotate(arrowRotationDegree)
                 )
             }
+
+            AnimatedVisibility(
+                visible = isExpanded.value,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    HorizontalDivider(
+                        color = colorScheme.onSurface.copy(alpha = 0.1f),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OrderCard(
+                            order = generateOrder()
+                        )
+                    }
+                }
+            }
         }
+    }
+}
+
+data class TransactionUiModel(
+    @DrawableRes val iconRes: Int,
+    val transactionName: String,
+    val color: Color,
+//    val label: String,
+    val amountText: String,
+    val date: String,
+    val id: String,
+)
+
+@Composable
+fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
+    is Order -> {
+        TransactionUiModel(
+            iconRes = R.drawable.product_icon,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.order)
+        )
+    }
+
+    is CashPayment -> {
+        TransactionUiModel(
+            iconRes = R.drawable.money_pack,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.type.name,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.cashPayment)
+        )
+    }
+
+    is SaleOrder -> {
+        TransactionUiModel(
+            iconRes = R.drawable.freight,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.type.name,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.sale)
+        )
+    }
+
+    is PaymentOrder -> {
+        TransactionUiModel(
+            iconRes = R.drawable.factory_icon,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.type.name,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.payment)
+        )
     }
 }

@@ -6,23 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -49,11 +43,8 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SalesPageState
-import kotlin.random.Random
 
 @Composable
 fun SalesPage(
@@ -239,199 +230,6 @@ fun SalesStat(
     }
 }
 
-@Composable
-fun ProductSaleCard(
-    saleItem: SaleOrder,
-    modifier: Modifier = Modifier,
-) {
-    val statusColor = when (saleItem.status) {
-        else -> MaterialTheme.colorScheme.primary
-//        SaleStatus.IN_PROGRESS -> MaterialTheme.colorScheme.tertiary
-//        SaleStatus.DOCUMENT_PROCEED -> MaterialTheme.colorScheme.error
-    }
-
-    val statusText = when (saleItem.status) {
-        else -> "Завершено"
-//        SaleStatus.IN_PROGRESS -> "Доставляется"
-//        SaleStatus.DOCUMENT_PROCEED -> "В обработке"
-    }
-
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AppText(
-                    value = saleItem.id.toString(),
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall
-                    )
-                )
-
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(statusColor.copy(alpha = 0.1f))
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                ) {
-                    AppText(
-                        value = statusText,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium
-                        ),
-                        color = statusColor
-                    )
-                }
-            }
-
-            // Название товара и категория
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier.padding(end = 8.dp)
-                )
-
-                Column {
-                    AppText(
-                        value = saleItem.productName,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Call,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        AppText(
-                            value = saleItem.cargoCategory,
-                            appTextConfig = appTextConfig(
-                                textStyle = MaterialTheme.typography.bodySmall
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                        )
-                    }
-                }
-            }
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-            )
-
-            // Детали продажи
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    AppText(
-                        value = "Количество: ${saleItem.quantity} шт.",
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
-                        )
-                    )
-                    AppText(
-                        value = "Цена: ${saleItem.price} грн/шт.",
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
-                        )
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
-                ) {
-                    AppText(
-                        value = "${saleItem.totalAmount} грн",
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-            )
-
-            // Клиент и дата
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                    AppText(
-                        value = saleItem.customerName,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
-                        )
-                    )
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                    AppText(
-                        value = saleItem.documentDate,
-                        appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodySmall
-                        ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-    }
-}
-
 @Preview
 @Composable
 fun SalesPagePreview() {
@@ -440,27 +238,206 @@ fun SalesPagePreview() {
     }
 }
 
-@Preview
-@Composable
-fun ProductSaleCardPreview() {
-    AppTheme {
-        ProductSaleCard(
-            saleItem = SaleOrder(
-                id = Random.nextInt(10000, 99999),
-                productName = "Сталь листовая",
-                cargoCategory = "Металлопрокат",
-                quantity = 25,
-                price = 3500,
-                totalAmount = 87500,
-                customerName = "ООО Стройинвест",
-                documentDate = "10.${Random.nextInt(1, 12)}.2023",
-                status = SaleStatus.entries.random(),
-                vatAmount = 999.0,
-                requestDate = "12.04.1996",
-                companyName = "Some company name",
-                commissionPercent = 10.0,
-                prepayment = false
-            )
-        )
-    }
-} 
+//@Composable
+//fun ProductSaleCard(
+//    saleItem: SaleOrder,
+//    modifier: Modifier = Modifier,
+//) {
+//    val statusColor = when (saleItem.status) {
+//        else -> MaterialTheme.colorScheme.primary
+////        SaleStatus.IN_PROGRESS -> MaterialTheme.colorScheme.tertiary
+////        SaleStatus.DOCUMENT_PROCEED -> MaterialTheme.colorScheme.error
+//    }
+//
+//    val statusText = when (saleItem.status) {
+//        else -> "Завершено"
+////        SaleStatus.IN_PROGRESS -> "Доставляется"
+////        SaleStatus.DOCUMENT_PROCEED -> "В обработке"
+//    }
+//
+//    Card(
+//        modifier = modifier.fillMaxWidth(),
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surface
+//        ),
+//        shape = RoundedCornerShape(12.dp),
+//        elevation = CardDefaults.cardElevation(
+//            defaultElevation = 2.dp
+//        )
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                AppText(
+//                    value = saleItem.id.toString(),
+//                    appTextConfig = appTextConfig(
+//                        textStyle = MaterialTheme.typography.titleSmall
+//                    )
+//                )
+//
+//                Box(
+//                    modifier = Modifier
+//                        .clip(RoundedCornerShape(16.dp))
+//                        .background(statusColor.copy(alpha = 0.1f))
+//                        .padding(horizontal = 12.dp, vertical = 4.dp)
+//                ) {
+//                    AppText(
+//                        value = statusText,
+//                        appTextConfig = appTextConfig(
+//                            textStyle = MaterialTheme.typography.bodySmall,
+//                            fontWeight = FontWeight.Medium
+//                        ),
+//                        color = statusColor
+//                    )
+//                }
+//            }
+//
+//            // Название товара и категория
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.ThumbUp,
+//                    contentDescription = null,
+//                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+//                    modifier = Modifier.padding(end = 8.dp)
+//                )
+//
+//                Column {
+//                    AppText(
+//                        value = saleItem.productName,
+//                        appTextConfig = appTextConfig(
+//                            textStyle = MaterialTheme.typography.bodyLarge,
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    )
+//
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Call,
+//                            contentDescription = null,
+//                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+//                            modifier = Modifier.size(16.dp)
+//                        )
+//                        Spacer(modifier = Modifier.width(4.dp))
+//                        AppText(
+//                            value = saleItem.cargoCategory,
+//                            appTextConfig = appTextConfig(
+//                                textStyle = MaterialTheme.typography.bodySmall
+//                            ),
+//                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+//                        )
+//                    }
+//                }
+//            }
+//
+//            HorizontalDivider(
+//                modifier = Modifier.padding(vertical = 4.dp),
+//                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+//            )
+//
+//            // Детали продажи
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                Column {
+//                    AppText(
+//                        value = "Количество: ${saleItem.quantity} шт.",
+//                        appTextConfig = appTextConfig(
+//                            textStyle = MaterialTheme.typography.bodyMedium
+//                        )
+//                    )
+//                    AppText(
+//                        value = "Цена: ${saleItem.price} грн/шт.",
+//                        appTextConfig = appTextConfig(
+//                            textStyle = MaterialTheme.typography.bodyMedium
+//                        )
+//                    )
+//                }
+//
+//                Box(
+//                    modifier = Modifier
+//                        .clip(RoundedCornerShape(8.dp))
+//                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+//                        .padding(horizontal = 12.dp, vertical = 8.dp)
+//                ) {
+//                    AppText(
+//                        value = "${saleItem.totalAmount} грн",
+//                        appTextConfig = appTextConfig(
+//                            textStyle = MaterialTheme.typography.titleMedium,
+//                            fontWeight = FontWeight.Bold
+//                        ),
+//                        color = MaterialTheme.colorScheme.primary
+//                    )
+//                }
+//            }
+//
+//            HorizontalDivider(
+//                modifier = Modifier.padding(vertical = 4.dp),
+//                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+//            )
+//
+//            // Клиент и дата
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Person,
+//                        contentDescription = null,
+//                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+//                        modifier = Modifier.padding(end = 4.dp)
+//                    )
+//                    AppText(
+//                        value = saleItem.customerName,
+//                        appTextConfig = appTextConfig(
+//                            textStyle = MaterialTheme.typography.bodyMedium
+//                        )
+//                    )
+//                }
+//
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.DateRange,
+//                        contentDescription = null,
+//                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+//                        modifier = Modifier.padding(end = 4.dp)
+//                    )
+//                    AppText(
+//                        value = saleItem.documentDate,
+//                        appTextConfig = appTextConfig(
+//                            textStyle = MaterialTheme.typography.bodySmall
+//                        ),
+//                        color = MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//
+//@Preview
+//@Composable
+//fun ProductSaleCardPreview() {
+//    AppTheme {
+//        ProductSaleCard(
+//            saleItem = generateSaleOrder()
+//        )
+//    }
+//}
