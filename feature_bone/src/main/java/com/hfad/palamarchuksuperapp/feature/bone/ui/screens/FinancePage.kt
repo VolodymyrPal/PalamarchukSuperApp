@@ -1,6 +1,13 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
+import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,21 +28,26 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -98,12 +110,6 @@ fun FinanceCard(
     modifier: Modifier = Modifier,
     financeTransaction: TypedTransaction,
 ) {
-    when (financeTransaction) {
-        is Order -> {}
-        is CashPayment -> {}
-        is SaleOrder -> {}
-        is PaymentOrder -> {}
-    }
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -289,38 +295,12 @@ fun FinanceTransactionCard(
     onClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
-
-    val icon = when (transaction) {
-        is Order -> painterResource(R.drawable.product_icon)
-        is CashPayment -> painterResource(R.drawable.money_pack)
-        is SaleOrder -> painterResource(R.drawable.freight)
-        is PaymentOrder -> painterResource(R.drawable.money_pack)
-    }
-
-    // Определяем цвет и иконку в зависимости от типа транзакции
-    val (transactionColor, transactionIcon, transactionLabel) = when (transaction.type) {
-        TransactionType.CREDIT -> Triple(
-            statusColor(Status.DONE),
-            icon,
-            "Доход"
-        )
-
-        TransactionType.DEBIT -> Triple(
-            statusColor(Status.CREATED),
-            icon,
-            "Расход"
-        )
-    }
-
-    // Форматирование суммы с правильным знаком
-    val amountText = when (transaction.type) {
-        TransactionType.CREDIT -> "+${transaction.amountCurrency.amount.formatTrim()} ${transaction.amountCurrency.currency}"
-        TransactionType.DEBIT -> "-${transaction.amountCurrency.amount.formatTrim()} ${transaction.amountCurrency.currency}"
-    }
-
-    // Форматирование даты
-    val dateFormatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-    val formattedDate = dateFormatter.format(transaction.billingDate)
+    val transaction = transaction.toUiModel()
+    val isExpanded = remember { mutableStateOf(false) }
+    val arrowRotationDegree by animateFloatAsState(
+        targetValue = if (isExpanded.value) 180f else 0f,
+        label = "arrowRotation"
+    )
 
     val elevation by animateDpAsState(
         targetValue = 2.dp,
