@@ -377,18 +377,37 @@ fun FinanceTransactionCard(
                 }
             }
 
-            HorizontalDivider(
-                color = colorScheme.onSurface.copy(alpha = 0.1f)
-            )
-
-            // Детали транзакции
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            IconButton(
+                onClick = { isExpanded.value = !isExpanded.value },
+                modifier = Modifier,
             ) {
-                OrderCard(
-                    order = generateOrder()
+                Icon(
+                    Icons.Filled.KeyboardArrowDown,
+                    contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
+                    modifier = Modifier.rotate(arrowRotationDegree)
                 )
+            }
+
+            AnimatedVisibility(
+                visible = isExpanded.value,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    HorizontalDivider(
+                        color = colorScheme.onSurface.copy(alpha = 0.1f),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OrderCard(
+                            order = generateOrder()
+                        )
+                    }
+                }
             }
         }
     }
