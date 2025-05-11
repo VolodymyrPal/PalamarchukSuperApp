@@ -330,75 +330,49 @@ fun FinanceTransactionCard(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Верхняя часть с ID и суммой
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
+                    modifier = Modifier.weight(0.8f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Круглая иконка типа транзакции
                     Box(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(transactionColor.copy(alpha = 0.15f)),
+                            .background(transaction.color.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = transactionIcon,
-                            contentDescription = transactionLabel,
+                            painter = painterResource(transaction.iconRes),
+                            contentDescription = transaction.transactionName,
                             tint = colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
-
-                    Column {
-                        AppText(
-                            value = "Транзакция №${transaction.id}",
-                            appTextConfig = appTextConfig(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                    AppText(
+                        value = "${transaction.transactionName} №${transaction.id}",
+                        appTextConfig = appTextConfig(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
-
-                        // Тип транзакции с цветным индикатором
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .clip(CircleShape)
-                                    .background(transactionColor)
-                            )
-                            AppText(
-                                value = transactionLabel,
-                                appTextConfig = appTextConfig(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                color = transactionColor
-                            )
-                        }
-                    }
+                    )
                 }
 
-                // Сумма транзакции
                 SelectionContainer {
                     AppText(
-                        value = amountText,
+                        value = transaction.amountText,
                         appTextConfig = appTextConfig(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = transactionColor
+                        color = transaction.color
                     )
                 }
             }
