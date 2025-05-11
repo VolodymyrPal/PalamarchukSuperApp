@@ -419,3 +419,88 @@ fun FinanceTransactionCard(
         }
     }
 }
+
+data class TransactionUiModel(
+    @DrawableRes val iconRes: Int,
+    val transactionName: String,
+    val color: Color,
+//    val label: String,
+    val amountText: String,
+    val date: String,
+    val id: String,
+)
+
+@Composable
+fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
+    is Order -> {
+        TransactionUiModel(
+            iconRes = R.drawable.product_icon,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.order)
+        )
+    }
+
+    is CashPayment -> {
+        TransactionUiModel(
+            iconRes = R.drawable.money_pack,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.type.name,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.cashPayment)
+        )
+    }
+
+    is SaleOrder -> {
+        TransactionUiModel(
+            iconRes = R.drawable.freight,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.type.name,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.sale)
+        )
+    }
+
+    is PaymentOrder -> {
+        TransactionUiModel(
+            iconRes = R.drawable.factory_icon,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+//            label = this.type.name,
+            amountText = when (this.type) {
+                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
+            },
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.payment)
+        )
+    }
+}
