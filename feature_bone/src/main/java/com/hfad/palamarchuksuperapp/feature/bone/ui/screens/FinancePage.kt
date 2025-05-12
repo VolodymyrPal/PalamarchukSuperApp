@@ -105,61 +105,6 @@ fun FinancePage(
 }
 
 @Composable
-fun FinanceCard(
-    modifier: Modifier = Modifier,
-    financeTransaction: TypedTransaction,
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                AppText(
-                    value = "Транзакция #${1000 + financeTransaction.id}",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall
-                    )
-                )
-                AppText(
-                    value = "${financeTransaction.id * 1500 + 5000} грн",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall,
-                    ),
-                    color = if (financeTransaction.id % 2 == 0) MaterialTheme.colorScheme.primary else
-                        MaterialTheme.colorScheme.error
-                )
-            }
-
-            AppText(
-                value = "Тип: ${if (financeTransaction.id % 2 == 0) "Доход" else "Расход"}",
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodyMedium
-                )
-            )
-
-            AppText(
-                value = "Дата: 10.${financeTransaction.id + 1}.2023",
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodySmall,
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
 fun FinanceStatisticCard(
     modifier: Modifier = Modifier,
     financeStatistic: FinanceStatistic,
@@ -500,3 +445,59 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
         )
     }
 }
+
+
+//@Composable
+//fun FinanceCard(
+//    modifier: Modifier = Modifier,
+//    financeTransaction: TypedTransaction,
+//) {
+//    Card(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 16.dp),
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surface
+//        )
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(4.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                AppText(
+//                    value = "Транзакция #${1000 + financeTransaction.id}",
+//                    appTextConfig = appTextConfig(
+//                        textStyle = MaterialTheme.typography.titleSmall
+//                    )
+//                )
+//                AppText(
+//                    value = "${financeTransaction.id * 1500 + 5000} грн",
+//                    appTextConfig = appTextConfig(
+//                        textStyle = MaterialTheme.typography.titleSmall,
+//                    ),
+//                    color = if (financeTransaction.id % 2 == 0) MaterialTheme.colorScheme.primary else
+//                        MaterialTheme.colorScheme.error
+//                )
+//            }
+//
+//            AppText(
+//                value = "Тип: ${if (financeTransaction.id % 2 == 0) "Доход" else "Расход"}",
+//                appTextConfig = appTextConfig(
+//                    textStyle = MaterialTheme.typography.bodyMedium
+//                )
+//            )
+//
+//            AppText(
+//                value = "Дата: 10.${financeTransaction.id + 1}.2023",
+//                appTextConfig = appTextConfig(
+//                    textStyle = MaterialTheme.typography.bodySmall,
+//                ),
+//                color = MaterialTheme.colorScheme.onSurfaceVariant
+//            )
+//        }
+//    }
+//}
