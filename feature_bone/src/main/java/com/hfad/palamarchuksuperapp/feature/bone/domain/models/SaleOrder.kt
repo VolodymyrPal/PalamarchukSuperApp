@@ -21,7 +21,7 @@ data class SaleOrder(
     val order: Order? = null,
     override val amountCurrency: AmountCurrency,
     override val billingDate: Date = Date(),
-    override val type: TransactionType = TransactionType.CREDIT,
+    override val type: TransactionType = TransactionType.DEBIT,
 ) : TypedTransaction
 
 enum class SaleStatus {
@@ -82,7 +82,7 @@ fun generateSaleOrderItems(): List<SaleOrder> {
             prepayment = true,
             order = generateOrder(),
             amountCurrency = AmountCurrency(
-                currency = Currency.USD,
+                currency = Currency.UAH,
                 amount = 12200f
             )
         ),
@@ -103,7 +103,7 @@ fun generateSaleOrderItems(): List<SaleOrder> {
             prepayment = false,
             order = null,
             amountCurrency = AmountCurrency(
-                currency = Currency.USD,
+                currency = Currency.UAH,
                 amount = 12200f
             )
         ),
@@ -124,7 +124,7 @@ fun generateSaleOrderItems(): List<SaleOrder> {
             prepayment = true,
             order = generateOrder(),
             amountCurrency = AmountCurrency(
-                currency = Currency.USD,
+                currency = Currency.UAH,
                 amount = 12200f
             )
         )
