@@ -329,10 +329,30 @@ fun FinanceTransactionCard(
                         onClick = { isExpanded.value = !isExpanded.value },
                     ),
             ) {
+                AppText(
+                    value = uiTransaction.date,
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = colorScheme.onSurface.copy(alpha = 0.7f),
+                    modifier = Modifier
+                )
                 Icon(
                     Icons.Filled.KeyboardArrowDown,
                     contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
-                    modifier = Modifier.rotate(arrowRotationDegree)
+                    modifier = Modifier
+                        .size(16.dp)
+                        .rotate(arrowRotationDegree)
+                )
+                AppText(
+                    value = uiTransaction.date,
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = colorScheme.onSurface.copy(alpha = 0.7f),
+                    modifier = Modifier
                 )
             }
 
@@ -351,9 +371,31 @@ fun FinanceTransactionCard(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OrderCard(
-                            order = generateOrder()
-                        )
+                        when (transaction) {
+                            is Order -> {
+                                OrderCard(
+                                    order = transaction
+                                )
+                            }
+
+                            is CashPayment -> {
+//                                CashPaymentCard(
+//                                    payment = transaction
+//                                )
+                            }
+
+                            is SaleOrder -> {
+                                SaleCard(
+                                    saleItem = transaction
+                                )
+                            }
+
+                            is PaymentOrder -> {
+                                PaymentCard(
+                                    payment = transaction
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -365,7 +407,6 @@ data class TransactionUiModel(
     @DrawableRes val iconRes: Int,
     val transactionName: String,
     val color: Color,
-//    val label: String,
     val amountText: String,
     val date: String,
     val id: String,
@@ -378,7 +419,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.product_icon,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -387,7 +427,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.order)
+            transactionName = stringResource(R.string.order),
         )
     }
 
@@ -396,7 +436,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.money_pack,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.type.name,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -405,7 +444,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.cashPayment)
+            transactionName = stringResource(R.string.cashPayment),
         )
     }
 
@@ -414,7 +453,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.freight,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.type.name,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -423,7 +461,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.sale)
+            transactionName = stringResource(R.string.sale),
         )
     }
 
@@ -432,7 +470,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.factory_icon,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.type.name,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -441,7 +478,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.payment)
+            transactionName = stringResource(R.string.payment),
         )
     }
 }
