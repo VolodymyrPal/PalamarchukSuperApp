@@ -28,7 +28,7 @@ data class Order(
     val manager: String = "Тест: VP +3806338875",
     override val amountCurrency: AmountCurrency,
     override val billingDate: Date = Date(),
-    override val type: TransactionType = TransactionType.CREDIT,
+    override val type: TransactionType = TransactionType.DEBIT,
 ) : TypedTransaction
 
 enum class OrderStatus {

@@ -58,7 +58,7 @@ internal fun generatePaymentOrderSample() : PaymentOrder {
         paymentDate = paymentDate,
         dueDate = dueDate,
         status = status,
-        type = TransactionType.CREDIT
+        type = TransactionType.DEBIT
     )
 }
 
@@ -75,7 +75,7 @@ internal fun generatePaymentOrderItems(): List<PaymentOrder> {
         "Автозапчасти", "Сталь", "Микрочипы", "Сырье"
     )
 
-    return List(15) { index ->
+    return List(6) { index ->
 
         val isPaid = Random.nextInt(10) > 3
         val isOverdue = !isPaid && Random.nextInt(10) > 5
@@ -86,16 +86,16 @@ internal fun generatePaymentOrderItems(): List<PaymentOrder> {
             else -> PaymentStatus.PENDING
         }
 
-        val month = Random.nextInt(1, 13)
+        val month = Random.nextInt(1, 7)
         val day = Random.nextInt(1, 29)
-        val paymentDate = "$day.${month.toString().padStart(2, '0')}.2023"
+        val paymentDate = "$day.${month.toString().padStart(2, '0')}.2025"
 
         val dueMonth = if (month < 12) month + 1 else 1
-        val dueYear = if (month < 12) 2023 else 2024
+        val dueYear = if (month < 12) 2025 else 2026
         val dueDate = "$day.${dueMonth.toString().padStart(2, '0')}.$dueYear"
 
         PaymentOrder(
-            id = Random.nextInt(100, 200),
+            id = Random.nextInt(2000, 4000),
             amountCurrency = AmountCurrency(
                 currency = Currency.entries.random(),
                 amount = Random.nextDouble(1000.0, 100000.0).toFloat()
@@ -105,7 +105,7 @@ internal fun generatePaymentOrderItems(): List<PaymentOrder> {
             paymentDate = paymentDate,
             dueDate = dueDate,
             status = status,
-            type = TransactionType.CREDIT
+            type = TransactionType.DEBIT
         )
     }
 }

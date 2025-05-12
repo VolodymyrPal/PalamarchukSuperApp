@@ -34,7 +34,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,9 +66,9 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -96,66 +95,11 @@ fun FinancePage(
                 )
             }
             items(financeState.salesItems) { item ->
-                FinanceCard(
+                FinanceTransactionCard(
+                    transaction = item,
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                    financeTransaction = item
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun FinanceCard(
-    modifier: Modifier = Modifier,
-    financeTransaction: TypedTransaction,
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                AppText(
-                    value = "Транзакция #${1000 + financeTransaction.id}",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall
-                    )
-                )
-                AppText(
-                    value = "${financeTransaction.id * 1500 + 5000} грн",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall,
-                    ),
-                    color = if (financeTransaction.id % 2 == 0) MaterialTheme.colorScheme.primary else
-                        MaterialTheme.colorScheme.error
-                )
-            }
-
-            AppText(
-                value = "Тип: ${if (financeTransaction.id % 2 == 0) "Доход" else "Расход"}",
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodyMedium
-                )
-            )
-
-            AppText(
-                value = "Дата: 10.${financeTransaction.id + 1}.2023",
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodySmall,
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }
@@ -295,7 +239,7 @@ fun FinanceTransactionCard(
     onClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val transaction = transaction.toUiModel()
+    val uiTransaction = transaction.toUiModel()
     val isExpanded = remember { mutableStateOf(false) }
     val arrowRotationDegree by animateFloatAsState(
         targetValue = if (isExpanded.value) 180f else 0f,
@@ -312,7 +256,6 @@ fun FinanceTransactionCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(
                 onClick = onClick,
                 indication = null,
@@ -346,18 +289,18 @@ fun FinanceTransactionCard(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(transaction.color.copy(alpha = 0.15f)),
+                            .background(uiTransaction.color.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(transaction.iconRes),
-                            contentDescription = transaction.transactionName,
+                            painter = painterResource(uiTransaction.iconRes),
+                            contentDescription = uiTransaction.transactionName,
                             tint = colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                     AppText(
-                        value = "${transaction.transactionName} №${transaction.id}",
+                        value = "${uiTransaction.transactionName} №${uiTransaction.id}",
                         appTextConfig = appTextConfig(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
@@ -367,24 +310,49 @@ fun FinanceTransactionCard(
 
                 SelectionContainer {
                     AppText(
-                        value = transaction.amountText,
+                        value = uiTransaction.amountText,
                         appTextConfig = appTextConfig(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = transaction.color
+                        color = uiTransaction.color
                     )
                 }
             }
 
-            IconButton(
-                onClick = { isExpanded.value = !isExpanded.value },
-                modifier = Modifier,
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = { isExpanded.value = !isExpanded.value },
+                    ),
             ) {
+                AppText(
+                    value = uiTransaction.date,
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = colorScheme.onSurface.copy(alpha = 0.7f),
+                    modifier = Modifier
+                )
                 Icon(
                     Icons.Filled.KeyboardArrowDown,
                     contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
-                    modifier = Modifier.rotate(arrowRotationDegree)
+                    modifier = Modifier
+                        .size(16.dp)
+                        .rotate(arrowRotationDegree)
+                )
+                AppText(
+                    value = uiTransaction.date,
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = colorScheme.onSurface.copy(alpha = 0.7f),
+                    modifier = Modifier
                 )
             }
 
@@ -403,9 +371,31 @@ fun FinanceTransactionCard(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OrderCard(
-                            order = generateOrder()
-                        )
+                        when (transaction) {
+                            is Order -> {
+                                OrderCard(
+                                    order = transaction
+                                )
+                            }
+
+                            is CashPayment -> {
+//                                CashPaymentCard(
+//                                    payment = transaction
+//                                )
+                            }
+
+                            is SaleOrder -> {
+                                SaleCard(
+                                    saleItem = transaction
+                                )
+                            }
+
+                            is PaymentOrder -> {
+                                PaymentCard(
+                                    payment = transaction
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -417,7 +407,6 @@ data class TransactionUiModel(
     @DrawableRes val iconRes: Int,
     val transactionName: String,
     val color: Color,
-//    val label: String,
     val amountText: String,
     val date: String,
     val id: String,
@@ -430,7 +419,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.product_icon,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -439,7 +427,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.order)
+            transactionName = stringResource(R.string.order),
         )
     }
 
@@ -448,7 +436,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.money_pack,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.type.name,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -457,7 +444,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.cashPayment)
+            transactionName = stringResource(R.string.cashPayment),
         )
     }
 
@@ -466,7 +453,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.freight,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.type.name,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -475,7 +461,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.sale)
+            transactionName = stringResource(R.string.sale),
         )
     }
 
@@ -484,7 +470,6 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.factory_icon,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-//            label = this.type.name,
             amountText = when (this.type) {
                 TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
                 TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
@@ -493,7 +478,63 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
                 this.billingDate
             ),
             id = this.id.toString(),
-            transactionName = stringResource(R.string.payment)
+            transactionName = stringResource(R.string.payment),
         )
     }
 }
+
+
+//@Composable
+//fun FinanceCard(
+//    modifier: Modifier = Modifier,
+//    financeTransaction: TypedTransaction,
+//) {
+//    Card(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 16.dp),
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surface
+//        )
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(4.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                AppText(
+//                    value = "Транзакция #${1000 + financeTransaction.id}",
+//                    appTextConfig = appTextConfig(
+//                        textStyle = MaterialTheme.typography.titleSmall
+//                    )
+//                )
+//                AppText(
+//                    value = "${financeTransaction.id * 1500 + 5000} грн",
+//                    appTextConfig = appTextConfig(
+//                        textStyle = MaterialTheme.typography.titleSmall,
+//                    ),
+//                    color = if (financeTransaction.id % 2 == 0) MaterialTheme.colorScheme.primary else
+//                        MaterialTheme.colorScheme.error
+//                )
+//            }
+//
+//            AppText(
+//                value = "Тип: ${if (financeTransaction.id % 2 == 0) "Доход" else "Расход"}",
+//                appTextConfig = appTextConfig(
+//                    textStyle = MaterialTheme.typography.bodyMedium
+//                )
+//            )
+//
+//            AppText(
+//                value = "Дата: 10.${financeTransaction.id + 1}.2023",
+//                appTextConfig = appTextConfig(
+//                    textStyle = MaterialTheme.typography.bodySmall,
+//                ),
+//                color = MaterialTheme.colorScheme.onSurfaceVariant
+//            )
+//        }
+//    }
+//}
