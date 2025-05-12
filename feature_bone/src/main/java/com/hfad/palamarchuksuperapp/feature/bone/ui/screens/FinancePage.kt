@@ -34,7 +34,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,9 +66,9 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -96,9 +95,9 @@ fun FinancePage(
                 )
             }
             items(financeState.salesItems) { item ->
-                FinanceCard(
+                FinanceTransactionCard(
+                    transaction = item,
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                    financeTransaction = item
                 )
             }
         }
