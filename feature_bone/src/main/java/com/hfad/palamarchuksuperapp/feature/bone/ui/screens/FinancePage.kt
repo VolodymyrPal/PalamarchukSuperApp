@@ -294,7 +294,7 @@ fun FinanceTransactionCard(
     onClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val transaction = transaction.toUiModel()
+    val uiTransaction = transaction.toUiModel()
     val isExpanded = remember { mutableStateOf(false) }
     val arrowRotationDegree by animateFloatAsState(
         targetValue = if (isExpanded.value) 180f else 0f,
@@ -311,7 +311,6 @@ fun FinanceTransactionCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(
                 onClick = onClick,
                 indication = null,
@@ -345,18 +344,18 @@ fun FinanceTransactionCard(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(transaction.color.copy(alpha = 0.15f)),
+                            .background(uiTransaction.color.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            painter = painterResource(transaction.iconRes),
-                            contentDescription = transaction.transactionName,
+                            painter = painterResource(uiTransaction.iconRes),
+                            contentDescription = uiTransaction.transactionName,
                             tint = colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                     AppText(
-                        value = "${transaction.transactionName} №${transaction.id}",
+                        value = "${uiTransaction.transactionName} №${uiTransaction.id}",
                         appTextConfig = appTextConfig(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
@@ -366,19 +365,24 @@ fun FinanceTransactionCard(
 
                 SelectionContainer {
                     AppText(
-                        value = transaction.amountText,
+                        value = uiTransaction.amountText,
                         appTextConfig = appTextConfig(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         ),
-                        color = transaction.color
+                        color = uiTransaction.color
                     )
                 }
             }
 
-            IconButton(
-                onClick = { isExpanded.value = !isExpanded.value },
-                modifier = Modifier,
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = { isExpanded.value = !isExpanded.value },
+                    ),
             ) {
                 Icon(
                     Icons.Filled.KeyboardArrowDown,
