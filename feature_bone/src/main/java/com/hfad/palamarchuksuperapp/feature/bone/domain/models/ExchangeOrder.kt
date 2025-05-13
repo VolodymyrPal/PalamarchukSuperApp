@@ -1,0 +1,34 @@
+package com.hfad.palamarchuksuperapp.feature.bone.domain.models
+
+import java.util.Date
+import kotlin.random.Random
+
+data class ExchangeOrder(
+    val amountToExchange: AmountCurrency,
+    val date: Date,
+    override val type: TransactionType = TransactionType.CREDIT,
+    override val amountCurrency: AmountCurrency,
+    override val billingDate: Date,
+    override val id: Int,
+) : TypedTransaction
+
+fun generateExchangeOrderItems(): List<ExchangeOrder> {
+    return listOf(
+        ExchangeOrder(
+            amountToExchange = AmountCurrency(amount = 41000f, currency = Currency.UAH),
+            date = Date(),
+            amountCurrency = AmountCurrency(amount = 1000f, currency = Currency.USD),
+            billingDate = Date(),
+            id = Random.nextInt(),
+            type = TransactionType.DEBIT,
+        ),
+        ExchangeOrder(
+            amountToExchange = AmountCurrency(amount = 1f, currency = Currency.BTC),
+            date = Date(),
+            amountCurrency = AmountCurrency(amount = 80000f, currency = Currency.USD),
+            billingDate = Date(),
+            id = Random.nextInt(),
+            type = TransactionType.DEBIT,
+        ),
+    )
+}

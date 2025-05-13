@@ -45,5 +45,6 @@
     <string name="cashPayment">F2</string>
     <string name="sale">Sale</string>
     <string name="payment">Payment</string>
+    <string name="exchange">Exchange</string>
 
 </resources>
