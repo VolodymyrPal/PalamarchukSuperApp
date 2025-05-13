@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
 import java.util.Date
 
-data class CashPayment(
+data class CashPaymentOrder(
     override val id: Int,
     val paymentNum: Int,
     val paymentSum: Float,
