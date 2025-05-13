@@ -407,7 +407,10 @@ data class TransactionUiModel(
     @DrawableRes val iconRes: Int,
     val transactionName: String,
     val color: Color,
-    val amountText: String,
+    val transactionType: TransactionType = TransactionType.DEBIT,
+    val amountText: AmountCurrency,
+    val additionalAmount: AmountCurrency? = null,
+    val additionalColor: Color = Color.Transparent,
     val date: String,
     val id: String,
 )
@@ -419,10 +422,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.product_icon,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-            amountText = when (this.type) {
-                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-            },
+            transactionType = this.type,
+            amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
             ),
@@ -431,15 +432,30 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
         )
     }
 
-    is CashPayment -> {
+    is ExchangeOrder -> {
+        TransactionUiModel(
+            iconRes = R.drawable.exchange_icon,
+            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
+            transactionType = this.type,
+            amountText = this.amountCurrency,
+            date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                this.billingDate
+            ),
+            additionalAmount = this.amountToExchange,
+            additionalColor = statusColor(Status.DONE),
+            id = this.id.toString(),
+            transactionName = stringResource(R.string.exchange),
+        )
+    }
+
+    is CashPaymentOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.money_pack,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-            amountText = when (this.type) {
-                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-            },
+            transactionType = this.type,
+            amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
             ),
@@ -453,10 +469,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.freight,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-            amountText = when (this.type) {
-                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-            },
+            transactionType = this.type,
+            amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
             ),
@@ -470,10 +484,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             iconRes = R.drawable.factory_icon,
             color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
             else statusColor(Status.CREATED),
-            amountText = when (this.type) {
-                TransactionType.CREDIT -> "+${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-                TransactionType.DEBIT -> "-${this.amountCurrency.amount.formatTrim()} ${this.amountCurrency.currency}"
-            },
+            transactionType = this.type,
+            amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
             ),
