@@ -59,7 +59,9 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPayment
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
@@ -239,7 +241,7 @@ fun FinanceTransactionCard(
     onClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val uiTransaction = transaction.toUiModel()
+    val uiTransaction: TransactionUiModel = transaction.toUiModel()
     val isExpanded = remember { mutableStateOf(false) }
     val arrowRotationDegree by animateFloatAsState(
         targetValue = if (isExpanded.value) 180f else 0f,
@@ -272,7 +274,7 @@ fun FinanceTransactionCard(
         ),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -285,20 +287,22 @@ fun FinanceTransactionCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Box(
+//                    Box(
+//                        modifier = Modifier
+//                            .size(40.dp)
+//                            .clip(CircleShape)
+//                            .background(uiTransaction.color.copy(alpha = 0.15f)),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+                    Icon(
+                        painter = painterResource(uiTransaction.iconRes),
+                        contentDescription = uiTransaction.transactionName,
+                        tint = colorScheme.primary,
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(uiTransaction.color.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(uiTransaction.iconRes),
-                            contentDescription = uiTransaction.transactionName,
-                            tint = colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                            .padding(8.dp)
+                            .size(24.dp)
+                    )
+//                    }
                     AppText(
                         value = "${uiTransaction.transactionName} №${uiTransaction.id}",
                         appTextConfig = appTextConfig(
@@ -309,14 +313,110 @@ fun FinanceTransactionCard(
                 }
 
                 SelectionContainer {
-                    AppText(
-                        value = uiTransaction.amountText,
-                        appTextConfig = appTextConfig(
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = uiTransaction.color
-                    )
+                    when (uiTransaction.transactionType) {
+                        TransactionType.CREDIT -> {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(uiTransaction.color.copy(alpha = 0.2f))
+                                    .padding(4.dp)
+                            ) {
+                                AppText(
+                                    value = "+ ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}",
+                                    appTextConfig = appTextConfig(
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                )
+                            }
+                        }
+
+                        TransactionType.DEBIT -> {
+                            if (transaction is ExchangeOrder) {
+                                Column(
+                                    modifier = Modifier,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    if (uiTransaction.additionalAmount != null) {
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(
+                                                    uiTransaction.color.copy(
+                                                        alpha = 0.2f
+                                                    )
+                                                )
+                                                .padding(4.dp)
+                                        ) {
+                                            Row {
+                                                AppText(
+                                                    value = "- ${uiTransaction.additionalAmount.amount.formatTrim()} ",
+                                                    appTextConfig = appTextConfig(
+                                                        fontSize = 15.sp,
+                                                    ),
+                                                )
+
+                                                AppText(
+                                                    value = "${uiTransaction.additionalAmount.currency}",
+                                                    appTextConfig = appTextConfig(
+                                                        fontSize = 15.sp,
+                                                    ),
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                uiTransaction.additionalColor.copy(
+                                                    alpha = 0.2f
+                                                )
+                                            )
+                                            .padding(4.dp)
+                                    ) {
+                                        Row(
+
+                                        ) {
+                                            AppText(
+                                                value = "+ ${uiTransaction.amountText.amount.formatTrim()} ",
+                                                appTextConfig = appTextConfig(
+                                                    fontSize = 15.sp,
+                                                ),
+                                            )
+
+                                            AppText(
+                                                value = "${uiTransaction.amountText.currency}",
+                                                appTextConfig = appTextConfig(
+                                                    fontSize = 15.sp,
+                                                ),
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(
+                                            uiTransaction.color.copy(
+                                                alpha = 0.2f
+                                            )
+                                        )
+                                        .padding(4.dp)
+                                ) {
+                                    AppText(
+                                        value = "- ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}",
+                                        appTextConfig = appTextConfig(
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -324,6 +424,7 @@ fun FinanceTransactionCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 6.dp)
                     .clip(CircleShape)
                     .clickable(
                         onClick = { isExpanded.value = !isExpanded.value },
@@ -378,7 +479,7 @@ fun FinanceTransactionCard(
                                 )
                             }
 
-                            is CashPayment -> {
+                            is CashPaymentOrder -> {
 //                                CashPaymentCard(
 //                                    payment = transaction
 //                                )
@@ -395,6 +496,8 @@ fun FinanceTransactionCard(
                                     payment = transaction
                                 )
                             }
+
+                            is ExchangeOrder -> {}
                         }
                     }
                 }
