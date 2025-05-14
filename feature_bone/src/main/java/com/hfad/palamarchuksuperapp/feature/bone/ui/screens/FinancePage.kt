@@ -308,112 +308,9 @@ fun FinanceTransactionCard(
                     )
                 }
 
-                SelectionContainer {
-                    when (uiTransaction.transactionType) {
-                        TransactionType.CREDIT -> {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(uiTransaction.color.copy(alpha = 0.2f))
-                                    .padding(4.dp)
-                            ) {
-                                AppText(
-                                    value = "+ ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}",
-                                    appTextConfig = appTextConfig(
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                )
-                            }
-                        }
-
-                        TransactionType.DEBIT -> {
-                            if (transaction is ExchangeOrder) {
-                                Column(
-                                    modifier = Modifier,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    if (uiTransaction.additionalAmount != null) {
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(8.dp))
-                                                .background(
-                                                    uiTransaction.color.copy(
-                                                        alpha = 0.2f
-                                                    )
-                                                )
-                                                .padding(4.dp)
-                                        ) {
-                                            Row {
-                                                AppText(
-                                                    value = "- ${uiTransaction.additionalAmount.amount.formatTrim()} ",
-                                                    appTextConfig = appTextConfig(
-                                                        fontSize = 15.sp,
-                                                    ),
-                                                )
-
-                                                AppText(
-                                                    value = "${uiTransaction.additionalAmount.currency}",
-                                                    appTextConfig = appTextConfig(
-                                                        fontSize = 15.sp,
-                                                    ),
-                                                )
-                                            }
-                                        }
-                                    }
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(
-                                                uiTransaction.additionalColor.copy(
-                                                    alpha = 0.2f
-                                                )
-                                            )
-                                            .padding(4.dp)
-                                    ) {
-                                        Row(
-
-                                        ) {
-                                            AppText(
-                                                value = "+ ${uiTransaction.amountText.amount.formatTrim()} ",
-                                                appTextConfig = appTextConfig(
-                                                    fontSize = 15.sp,
-                                                ),
-                                            )
-
-                                            AppText(
-                                                value = "${uiTransaction.amountText.currency}",
-                                                appTextConfig = appTextConfig(
-                                                    fontSize = 15.sp,
-                                                ),
-                                            )
-                                        }
-                                    }
-                                }
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(
-                                            uiTransaction.color.copy(
-                                                alpha = 0.2f
-                                            )
-                                        )
-                                        .padding(4.dp)
-                                ) {
-                                    AppText(
-                                        value = "- ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}",
-                                        appTextConfig = appTextConfig(
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                BaseDescription(
+                    uiTransaction = uiTransaction
+                )
             }
 
             Row(
@@ -497,6 +394,117 @@ fun FinanceTransactionCard(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+@Composable
+fun ToggleableArrow(
+    modifier: Modifier = Modifier,
+    isOpen: Boolean,
+    onToggle: () -> Unit
+) {
+    val progress by animateFloatAsState(
+        targetValue = if (isOpen) 1f else 0f,
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    Box(
+        modifier = modifier
+            .size(24.dp)
+            .clickable(onClick = onToggle),
+        contentAlignment = Alignment.Center
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val w = size.width
+            val h = size.height
+
+            val centerX = w / 2f
+            val topY = h * (0.3f + 0.4f * progress)  // двигаем вершину
+            val baseY = h * 0.7f
+
+            val wingOffsetX = w * 0.2f
+            val wingY = baseY - h * 0.15f
+
+            // Левая линия
+            drawLine(
+                color = Color.Blue,
+                start = Offset(centerX, topY),
+                end = Offset(centerX - wingOffsetX, wingY),
+                strokeWidth = 8f,
+                cap = StrokeCap.Round
+            )
+            // Правая линия
+            drawLine(
+                color = Color.Blue,
+                start = Offset(centerX, topY),
+                end = Offset(centerX + wingOffsetX, wingY),
+                strokeWidth = 8f,
+                cap = StrokeCap.Round
+            )
+        }
+    }
+}
+
+@Composable
+fun BaseDescription(
+    modifier: Modifier = Modifier,
+    uiTransaction: TransactionUiModel,
+) {
+    SelectionContainer {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            if (uiTransaction.additionalAmount != null) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            uiTransaction.additionalColor.copy(
+                                alpha = 0.2f
+                            )
+                        )
+                        .padding(4.dp)
+                ) {
+                    val additionalValue =
+                        if (uiTransaction.additionalType == TransactionType.CREDIT) {
+                            "+ ${uiTransaction.additionalAmount.amount.formatTrim()} ${uiTransaction.additionalAmount.currency}"
+                        } else {
+                            "- ${uiTransaction.additionalAmount.amount.formatTrim()} ${uiTransaction.additionalAmount.currency}"
+                        }
+                    AppText(
+                        value = additionalValue,
+                        appTextConfig = appTextConfig(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        uiTransaction.color.copy(
+                            alpha = 0.2f
+                        )
+                    )
+                    .padding(4.dp)
+            ) {
+                val value = if (uiTransaction.transactionType == TransactionType.CREDIT) {
+                    "+ ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}"
+                } else {
+                    "- ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}"
+                }
+                AppText(
+                    value = value,
+                    appTextConfig = appTextConfig(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                )
             }
         }
     }
