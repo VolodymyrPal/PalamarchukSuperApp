@@ -5,6 +5,7 @@ import kotlin.random.Random
 
 data class ExchangeOrder(
     val amountToExchange: AmountCurrency,
+    val typeToChange: TransactionType = TransactionType.DEBIT,
     val date: Date,
     override val type: TransactionType = TransactionType.CREDIT,
     override val amountCurrency: AmountCurrency,
@@ -20,7 +21,8 @@ fun generateExchangeOrderItems(): List<ExchangeOrder> {
             amountCurrency = AmountCurrency(amount = 1000f, currency = Currency.USD),
             billingDate = Date(),
             id = Random.nextInt(),
-            type = TransactionType.DEBIT,
+            type = TransactionType.CREDIT,
+            typeToChange = TransactionType.DEBIT
         ),
         ExchangeOrder(
             amountToExchange = AmountCurrency(amount = 1f, currency = Currency.BTC),
@@ -28,7 +30,8 @@ fun generateExchangeOrderItems(): List<ExchangeOrder> {
             amountCurrency = AmountCurrency(amount = 80000f, currency = Currency.USD),
             billingDate = Date(),
             id = Random.nextInt(),
-            type = TransactionType.DEBIT,
+            type = TransactionType.CREDIT,
+            typeToChange = TransactionType.DEBIT
         ),
     )
 }
