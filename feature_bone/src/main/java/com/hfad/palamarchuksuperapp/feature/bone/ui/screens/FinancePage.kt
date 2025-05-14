@@ -4,11 +4,13 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -43,7 +45,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -259,7 +263,7 @@ fun FinanceTransactionCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(
-                onClick = onClick,
+                onClick = { isExpanded.value = !isExpanded.value },
                 indication = null,
                 interactionSource = interactionSource
             ),
@@ -287,13 +291,6 @@ fun FinanceTransactionCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .size(40.dp)
-//                            .clip(CircleShape)
-//                            .background(uiTransaction.color.copy(alpha = 0.15f)),
-//                        contentAlignment = Alignment.Center
-//                    ) {
                     Icon(
                         painter = painterResource(uiTransaction.iconRes),
                         contentDescription = uiTransaction.transactionName,
@@ -302,7 +299,6 @@ fun FinanceTransactionCard(
                             .padding(8.dp)
                             .size(24.dp)
                     )
-//                    }
                     AppText(
                         value = "${uiTransaction.transactionName} №${uiTransaction.id}",
                         appTextConfig = appTextConfig(
