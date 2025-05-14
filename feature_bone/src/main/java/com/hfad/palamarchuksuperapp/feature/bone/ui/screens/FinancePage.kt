@@ -339,6 +339,10 @@ fun FinanceTransactionCard(
                         .size(16.dp)
                         .rotate(arrowRotationDegree)
                 )
+                ToggleableArrow(
+                    isOpen = isExpanded.value,
+                    onToggle = { isExpanded.value = !isExpanded.value },
+                )
                 AppText(
                     value = uiTransaction.date,
                     appTextConfig = appTextConfig(
