@@ -521,6 +521,7 @@ data class TransactionUiModel(
     val transactionType: TransactionType = TransactionType.DEBIT,
     val amountText: AmountCurrency,
     val additionalAmount: AmountCurrency? = null,
+    val additionalType: TransactionType = TransactionType.DEBIT,
     val additionalColor: Color = Color.Transparent,
     val date: String,
     val id: String,
@@ -553,8 +554,10 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
             ),
+            additionalType = this.typeToChange,
             additionalAmount = this.amountToExchange,
-            additionalColor = statusColor(Status.DONE),
+            additionalColor = if (this.typeToChange == TransactionType.CREDIT) statusColor(Status.DONE)
+            else statusColor(Status.CREATED),
             id = this.id.toString(),
             transactionName = stringResource(R.string.exchange),
         )
