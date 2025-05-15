@@ -344,14 +344,26 @@ fun FinanceTransactionCard(
                                 )
                             }
 
+                            is PaymentOrder -> {
+                                PaymentCard(
+                                    payment = transaction
+                                )
+                            }
+
+                            is ExchangeOrder -> {}
+                        }
+                    }
+                }
+            }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 6.dp)
                     .clip(CircleShape)
                     .clickable(
                         onClick = { isExpanded.value = !isExpanded.value },
+                        indication = null,
+                        interactionSource = interactionSource
                     ),
             ) {
                 AppText(
@@ -363,14 +375,17 @@ fun FinanceTransactionCard(
                     color = colorScheme.onSurface.copy(alpha = 0.7f),
                     modifier = Modifier
                 )
-                Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
-                    modifier = Modifier
-                        .size(16.dp)
-                        .rotate(arrowRotationDegree)
-                )
+//                Icon(
+//                    Icons.Filled.KeyboardArrowDown,
+//                    contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
+//                    modifier = Modifier
+//                        .size(16.dp)
+//                        .rotate(arrowRotationDegree)
+//                )
                 ToggleableArrow(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape),
                     isOpen = isExpanded.value,
                     onToggle = { isExpanded.value = !isExpanded.value },
                 )
