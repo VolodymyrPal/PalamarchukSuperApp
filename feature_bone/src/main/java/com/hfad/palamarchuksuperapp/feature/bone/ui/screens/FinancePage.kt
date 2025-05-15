@@ -4,13 +4,11 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -30,7 +28,6 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,10 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,6 +69,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ToggleableArrow
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -309,57 +304,18 @@ fun FinanceTransactionCard(
                 }
 
                 BaseDescription(
+                    modifier = Modifier.padding(bottom = 4.dp),
                     uiTransaction = uiTransaction
                 )
             }
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp)
-                    .clip(CircleShape)
-                    .clickable(
-                        onClick = { isExpanded.value = !isExpanded.value },
-                    ),
-            ) {
-                AppText(
-                    value = uiTransaction.date,
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center
-                    ),
-                    color = colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier
-                )
-                Icon(
-                    Icons.Filled.KeyboardArrowDown,
-                    contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
-                    modifier = Modifier
-                        .size(16.dp)
-                        .rotate(arrowRotationDegree)
-                )
-                ToggleableArrow(
-                    isOpen = isExpanded.value,
-                    onToggle = { isExpanded.value = !isExpanded.value },
-                )
-                AppText(
-                    value = uiTransaction.date,
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center
-                    ),
-                    color = colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier
-                )
-            }
-
             AnimatedVisibility(
                 visible = isExpanded.value,
                 enter = expandVertically() + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
-                Column {
+                Column(
+                    modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
+                ) {
                     HorizontalDivider(
                         color = colorScheme.onSurface.copy(alpha = 0.1f),
                         modifier = Modifier.padding(vertical = 8.dp)
@@ -399,53 +355,50 @@ fun FinanceTransactionCard(
                     }
                 }
             }
-        }
-    }
-}
-@Composable
-fun ToggleableArrow(
-    modifier: Modifier = Modifier,
-    isOpen: Boolean,
-    onToggle: () -> Unit
-) {
-    val progress by animateFloatAsState(
-        targetValue = if (isOpen) 1f else 0f,
-        animationSpec = tween(durationMillis = 300)
-    )
-
-    Box(
-        modifier = modifier
-            .size(24.dp)
-            .clickable(onClick = onToggle),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-
-            val centerX = w / 2f
-            val topY = h * (0.3f + 0.4f * progress)  // двигаем вершину
-            val baseY = h * 0.7f
-
-            val wingOffsetX = w * 0.2f
-            val wingY = baseY - h * 0.15f
-
-            // Левая линия
-            drawLine(
-                color = Color.Blue,
-                start = Offset(centerX, topY),
-                end = Offset(centerX - wingOffsetX, wingY),
-                strokeWidth = 8f,
-                cap = StrokeCap.Round
-            )
-            // Правая линия
-            drawLine(
-                color = Color.Blue,
-                start = Offset(centerX, topY),
-                end = Offset(centerX + wingOffsetX, wingY),
-                strokeWidth = 8f,
-                cap = StrokeCap.Round
-            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = { isExpanded.value = !isExpanded.value },
+                        indication = null,
+                        interactionSource = interactionSource
+                    ),
+            ) {
+                AppText(
+                    value = uiTransaction.date,
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = colorScheme.onSurface.copy(alpha = 0.7f),
+                    modifier = Modifier
+                )
+//                Icon(
+//                    Icons.Filled.KeyboardArrowDown,
+//                    contentDescription = if (isExpanded.value) "Свернуть" else "Развернуть",
+//                    modifier = Modifier
+//                        .size(16.dp)
+//                        .rotate(arrowRotationDegree)
+//                )
+                ToggleableArrow(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape),
+                    isOpen = isExpanded.value,
+                    onToggle = { isExpanded.value = !isExpanded.value },
+                )
+                AppText(
+                    value = uiTransaction.date,
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = colorScheme.onSurface.copy(alpha = 0.7f),
+                    modifier = Modifier
+                )
+            }
         }
     }
 }
