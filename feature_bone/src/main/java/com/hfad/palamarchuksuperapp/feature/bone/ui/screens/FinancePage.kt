@@ -308,6 +308,41 @@ fun FinanceTransactionCard(
                     uiTransaction = uiTransaction
                 )
             }
+            AnimatedVisibility(
+                visible = isExpanded.value,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column(
+                    modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
+                ) {
+                    HorizontalDivider(
+                        color = colorScheme.onSurface.copy(alpha = 0.1f),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        when (transaction) {
+                            is Order -> {
+                                OrderCard(
+                                    order = transaction
+                                )
+                            }
+
+                            is CashPaymentOrder -> {
+//                                CashPaymentCard(
+//                                    payment = transaction
+//                                )
+                            }
+
+                            is SaleOrder -> {
+                                SaleCard(
+                                    saleItem = transaction
+                                )
+                            }
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -349,99 +384,6 @@ fun FinanceTransactionCard(
                     modifier = Modifier
                 )
             }
-
-            AnimatedVisibility(
-                visible = isExpanded.value,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                Column {
-                    HorizontalDivider(
-                        color = colorScheme.onSurface.copy(alpha = 0.1f),
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        when (transaction) {
-                            is Order -> {
-                                OrderCard(
-                                    order = transaction
-                                )
-                            }
-
-                            is CashPaymentOrder -> {
-//                                CashPaymentCard(
-//                                    payment = transaction
-//                                )
-                            }
-
-                            is SaleOrder -> {
-                                SaleCard(
-                                    saleItem = transaction
-                                )
-                            }
-
-                            is PaymentOrder -> {
-                                PaymentCard(
-                                    payment = transaction
-                                )
-                            }
-
-                            is ExchangeOrder -> {}
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-@Composable
-fun ToggleableArrow(
-    modifier: Modifier = Modifier,
-    isOpen: Boolean,
-    onToggle: () -> Unit
-) {
-    val progress by animateFloatAsState(
-        targetValue = if (isOpen) 1f else 0f,
-        animationSpec = tween(durationMillis = 300)
-    )
-
-    Box(
-        modifier = modifier
-            .size(24.dp)
-            .clickable(onClick = onToggle),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-
-            val centerX = w / 2f
-            val topY = h * (0.3f + 0.4f * progress)  // двигаем вершину
-            val baseY = h * 0.7f
-
-            val wingOffsetX = w * 0.2f
-            val wingY = baseY - h * 0.15f
-
-            // Левая линия
-            drawLine(
-                color = Color.Blue,
-                start = Offset(centerX, topY),
-                end = Offset(centerX - wingOffsetX, wingY),
-                strokeWidth = 8f,
-                cap = StrokeCap.Round
-            )
-            // Правая линия
-            drawLine(
-                color = Color.Blue,
-                start = Offset(centerX, topY),
-                end = Offset(centerX + wingOffsetX, wingY),
-                strokeWidth = 8f,
-                cap = StrokeCap.Round
-            )
         }
     }
 }
