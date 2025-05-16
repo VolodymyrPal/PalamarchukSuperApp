@@ -46,5 +46,10 @@
     <string name="sale">Sale</string>
     <string name="payment">Payment</string>
     <string name="exchange">Exchange</string>
+    <string name="exchange_card_title">Exchange #%1$d</string>
+    <string name="exchange_request_date">Request date:</string>
+    <string name="exchange_billing_date">Exchange date:</string>
+    <string name="exchange_rate">Rate: %1$d %2$c = %3$s %4$c</string>
+
 
 </resources>
