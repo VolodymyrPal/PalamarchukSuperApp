@@ -1,7 +1,8 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,12 +24,15 @@ import androidx.compose.ui.unit.dp
 fun ToggleableArrow(
     modifier: Modifier = Modifier,
     isOpen: Boolean,
-    onToggle: () -> Unit
+    onToggle: () -> Unit,
 ) {
 
     val progress by animateFloatAsState(
-        targetValue = if (isOpen) 0f else 1f,
-        animationSpec = tween(durationMillis = 300)
+        targetValue = if (isOpen) 0.05f else 0.95f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        )
     )
 
     Box(
@@ -38,12 +42,12 @@ fun ToggleableArrow(
         contentAlignment = Alignment.Center
     ) {
         val colorScheme = MaterialTheme.colorScheme
-        Canvas(modifier = Modifier.fillMaxSize()) {
+        Canvas(modifier = Modifier.fillMaxSize(0.85f)) {
             val width = size.width
             val height = size.height
 
             val centerX = width / 2f
-            val topY = height * progress.coerceIn(0.2f, 0.9f)   // slide top
+            val topY = height * progress   // slide top
             val baseY = height * 0.7f
 
             val wingOffsetX = width * 0.4f
@@ -78,7 +82,7 @@ fun ToggleableArrow(
 @Preview
 @Composable
 fun ToggleableArrowPreview() {
-    val isOpen = remember {mutableStateOf(false) }
+    val isOpen = remember { mutableStateOf(false) }
     ToggleableArrow(
         modifier = Modifier.size(86.dp),
         isOpen = isOpen.value,
