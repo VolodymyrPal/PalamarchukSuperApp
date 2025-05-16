@@ -67,6 +67,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ExchangeOrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ToggleableArrow
@@ -350,7 +351,11 @@ fun FinanceTransactionCard(
                                 )
                             }
 
-                            is ExchangeOrder -> {}
+                            is ExchangeOrder -> {
+                                ExchangeOrderCard(
+                                    exchangeOrder = transaction
+                                )
+                            }
                         }
                     }
                 }
