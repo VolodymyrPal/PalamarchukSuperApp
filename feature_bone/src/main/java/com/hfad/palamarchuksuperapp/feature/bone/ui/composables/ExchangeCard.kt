@@ -173,7 +173,13 @@ fun Date.formatLegacy(locale: Locale = Locale.getDefault()): String {
 @Preview
 @Composable
 fun ExchangeOrderCardPreview() {
-    ExchangeOrderCard(
-        exchangeOrder = generateExchangeOrderItems().get(0),
-    )
+    AppTheme {
+        Column {
+            generateExchangeOrderItems().forEach {
+                ExchangeOrderCard(
+                    exchangeOrder = it,
+                )
+            }
+        }
+    }
 }
