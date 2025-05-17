@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateExchangeOrderItems
@@ -112,11 +113,10 @@ fun ExchangeOrderCard(
             ) {
                 AppText(
                     value = stringResource(
-                        R.string.exchange_rate,
-                        1,
-                        exchangeOrder.amountToExchange.iconChar,
-                        exchangeOrder.exchangeRate.formatTrim(),
-                        exchangeOrder.amountCurrency.iconChar
+                        R.string.exchange_rate_detailed,
+                        exchangeOrder.amountToExchange.currency.name, // код первой валюты
+                        exchangeOrder.amountCurrency.currency.name, // код второй валюты
+                        (1 / exchangeOrder.exchangeRate).formatTrim(3), // единица второй валюты
                     ),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.bodySmall,
@@ -173,7 +173,13 @@ fun Date.formatLegacy(locale: Locale = Locale.getDefault()): String {
 @Preview
 @Composable
 fun ExchangeOrderCardPreview() {
-    ExchangeOrderCard(
-        exchangeOrder = generateExchangeOrderItems().get(0),
-    )
+    AppTheme {
+        Column {
+            generateExchangeOrderItems().forEach {
+                ExchangeOrderCard(
+                    exchangeOrder = it,
+                )
+            }
+        }
+    }
 }
