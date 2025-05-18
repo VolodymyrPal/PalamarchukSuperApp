@@ -3,7 +3,6 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -126,7 +125,7 @@ fun FinanceStatisticCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AppText(
-                value = "Общие показатели",
+                value = stringResource(R.string.currency_balance),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
@@ -238,15 +237,10 @@ fun FinanceTransactionCardPreview() {
 fun FinanceTransactionCard(
     modifier: Modifier = Modifier,
     transaction: TypedTransaction,
-    onClick: () -> Unit = {},
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val uiTransaction: TransactionUiModel = transaction.toUiModel()
     val isExpanded = remember { mutableStateOf(false) }
-    val arrowRotationDegree by animateFloatAsState(
-        targetValue = if (isExpanded.value) 180f else 0f,
-        label = "arrowRotation"
-    )
 
     val elevation by animateDpAsState(
         targetValue = 2.dp,
@@ -362,6 +356,7 @@ fun FinanceTransactionCard(
             }
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(CircleShape)

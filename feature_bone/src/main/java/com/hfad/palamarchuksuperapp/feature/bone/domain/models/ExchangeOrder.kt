@@ -21,7 +21,7 @@ fun generateExchangeOrderItems(): List<ExchangeOrder> {
             date = Date(),
             amountCurrency = AmountCurrency(amount = 1000f, currency = Currency.USD),
             billingDate = Date(),
-            id = Random.nextInt(),
+            id = Random.nextInt(1, 100000),
             type = TransactionType.CREDIT,
             typeToChange = TransactionType.DEBIT
         ),
@@ -30,7 +30,7 @@ fun generateExchangeOrderItems(): List<ExchangeOrder> {
             date = Date(),
             amountCurrency = AmountCurrency(amount = 80000f, currency = Currency.USD),
             billingDate = Date(),
-            id = Random.nextInt(),
+            id = Random.nextInt(1, 100000),
             type = TransactionType.CREDIT,
             typeToChange = TransactionType.DEBIT
         ),
@@ -39,7 +39,7 @@ fun generateExchangeOrderItems(): List<ExchangeOrder> {
             date = Date(),
             amountCurrency = AmountCurrency(amount = 24500f, currency = Currency.EUR),
             billingDate = Date(),
-            id = Random.nextInt(),
+            id = Random.nextInt(1, 100000),
             type = TransactionType.CREDIT,
             typeToChange = TransactionType.DEBIT
         ),
@@ -48,7 +48,7 @@ fun generateExchangeOrderItems(): List<ExchangeOrder> {
             date = Date(),
             amountCurrency = AmountCurrency(amount = 14500f, currency = Currency.PLN),
             billingDate = Date(),
-            id = Random.nextInt(),
+            id = Random.nextInt(1, 100000),
             type = TransactionType.CREDIT,
             typeToChange = TransactionType.DEBIT
         ),
