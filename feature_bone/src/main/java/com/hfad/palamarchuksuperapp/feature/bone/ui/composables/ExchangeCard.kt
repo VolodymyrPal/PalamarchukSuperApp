@@ -27,6 +27,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateExchangeOrderItems
 import java.text.SimpleDateFormat
@@ -51,8 +52,6 @@ fun ExchangeOrderCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
-            // Заголовок
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -73,7 +72,6 @@ fun ExchangeOrderCard(
                 )
             }
 
-            // Сумма обмена
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -104,19 +102,33 @@ fun ExchangeOrderCard(
                 )
             }
 
-            // Курс обмена
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp),
-                horizontalArrangement = Arrangement.Center
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                val baseNumOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountCurrency.currency)
                 AppText(
                     value = stringResource(
                         R.string.exchange_rate_detailed,
                         exchangeOrder.amountToExchange.currency.name, // код первой валюты
                         exchangeOrder.amountCurrency.currency.name, // код второй валюты
-                        (1 / exchangeOrder.exchangeRate).formatTrim(3), // единица второй валюты
+                        (1 / exchangeOrder.exchangeRate).formatTrim(baseNumOfDigit), // единица второй валюты
+                    ),
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                val numOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountToExchange.currency)
+                AppText(
+                    value = stringResource(
+                        R.string.exchange_rate_detailed,
+                        exchangeOrder.amountCurrency.currency.name, // код первой валюты
+                        exchangeOrder.amountToExchange.currency.name, // код второй валюты
+                        exchangeOrder.exchangeRate.formatTrim(numOfDigit), // единица второй валюты
                     ),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.bodySmall,
@@ -126,13 +138,11 @@ fun ExchangeOrderCard(
                 )
             }
 
-            // Горизонтальная линия
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
-            // Даты
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -162,6 +172,17 @@ fun ExchangeOrderCard(
                 }
             }
         }
+    }
+}
+
+private fun getNumberOfDecimalDigits(
+    currency: Currency,
+    btcDigits: Int = 10,
+    baseDigits: Int = 4,
+): Int {
+    return when (currency) {
+        Currency.BTC -> btcDigits
+        else -> baseDigits
     }
 }
 
