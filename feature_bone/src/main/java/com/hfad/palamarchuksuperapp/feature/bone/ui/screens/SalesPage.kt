@@ -77,7 +77,6 @@ fun SalesPage(
                     saleItem = item,
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp)
                 )
-//                ProductSaleCard(saleItem = item)
             }
         }
     }
@@ -103,7 +102,7 @@ fun SalesStatisticsCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AppText(
-                value = "Статистика продаж",
+                value = stringResource(R.string.sales_statistics),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
@@ -117,7 +116,6 @@ fun SalesStatisticsCard(
                 color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
             )
 
-            // Основные показатели в виде иконок с числами
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
