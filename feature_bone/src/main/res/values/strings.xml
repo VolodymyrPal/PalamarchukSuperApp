@@ -53,6 +53,7 @@
     <string name="exchange_rate_detailed">%1$s/%2$s = %3$s</string>
     <string name="exchange_rate_detailed_full">Exchange rate: %1$s/%2$s = %3$s | %4$s/%5$s = %6$s</string>
     <string name="currency_balance">Currency balance</string>
+    <string name="sales_statistics">Sales statistics</string>
 
 
 </resources>
