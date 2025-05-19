@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,11 +55,10 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
-import com.hfad.palamarchuksuperapp.core.ui.theme.Status
-import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
@@ -70,6 +71,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ExchangeOrderCar
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ToggleableArrow
+import com.hfad.palamarchuksuperapp.feature.bone.ui.theme.financeStatusColor
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -146,6 +148,10 @@ fun FinanceStatisticCard(
                     modifier = Modifier.weight(0.33f),
                     icon = Icons.Default.Build,
                     value = "150,000 грн",
+                    amountCurrency = AmountCurrency(
+                        currency = Currency.UAH,
+                        amount = 150000f,
+                    ),
                     label = "Доход",
                     color = Color(0xFF2E7D32)
                 )
@@ -153,6 +159,10 @@ fun FinanceStatisticCard(
                 FinanceStat(
                     modifier = Modifier.weight(0.33f),
                     icon = Icons.Default.ThumbUp,
+                    amountCurrency = AmountCurrency(
+                        currency = Currency.USD,
+                        amount = -12000f,
+                    ),
                     value = "75,000 грн",
                     label = "Расходы",
                     color = Color(0xFFD32F2F)
@@ -161,6 +171,22 @@ fun FinanceStatisticCard(
                 FinanceStat(
                     modifier = Modifier.weight(0.33f),
                     icon = Icons.Default.Info,
+                    amountCurrency = AmountCurrency(
+                        currency = Currency.EUR,
+                        amount = 200f,
+                    ),
+                    value = "75,000 грн",
+                    label = "Прибыль",
+                    color = Color(0xFF1565C0)
+                )
+
+                FinanceStat(
+                    modifier = Modifier.weight(0.33f),
+                    icon = Icons.Default.Info,
+                    amountCurrency = AmountCurrency(
+                        currency = Currency.BTC,
+                        amount = 200f,
+                    ),
                     value = "75,000 грн",
                     label = "Прибыль",
                     color = Color(0xFF1565C0)
@@ -176,6 +202,7 @@ fun FinanceStat(
     value: String,
     label: String,
     color: Color,
+    amountCurrency: AmountCurrency,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -185,34 +212,25 @@ fun FinanceStat(
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(color.copy(alpha = 0.1f)),
+                .size(36.dp)
+                .clip(CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = icon,
+            val painter = painterResource(amountCurrency.currencyCountry)
+            Image(
+                painter,
                 contentDescription = null,
-                tint = color,
-                modifier = Modifier.size(24.dp)
+                contentScale = ContentScale.FillHeight,
+                modifier = Modifier.matchParentSize()
             )
         }
 
         AppText(
-            value = value,
+            value = amountCurrency.amount.formatTrim() + " " + amountCurrency.iconChar,
             appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textStyle = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold
             )
-        )
-
-        AppText(
-            value = label,
-            appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.bodySmall
-            ),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
     }
 }
