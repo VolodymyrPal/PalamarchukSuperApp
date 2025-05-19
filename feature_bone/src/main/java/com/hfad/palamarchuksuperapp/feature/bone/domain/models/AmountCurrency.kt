@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import com.hfad.palamarchuksuperapp.feature.bone.R
 
@@ -45,6 +46,15 @@ data class AmountCurrency(
         Currency.BTC -> R.string.bitcoin
         Currency.OTHER -> R.string.undefined_currency
     },
+    @DrawableRes val  currencyCountry :  Int = when (currency) {
+        Currency.USD -> R.drawable.usa
+        Currency.EUR -> R.drawable.europe
+        Currency.CNY -> R.drawable.china
+        Currency.UAH -> R.drawable.ukraine
+        Currency.PLN -> R.drawable.poland
+        Currency.BTC -> R.drawable.bitcoin
+        Currency.OTHER -> R.drawable.world
+    }
 )
 
 enum class Currency {
