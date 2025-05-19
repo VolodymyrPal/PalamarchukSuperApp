@@ -438,7 +438,7 @@ fun BaseDescription(
                         .clip(RoundedCornerShape(8.dp))
                         .background(
                             uiTransaction.additionalColor.copy(
-                                alpha = 0.2f
+                                alpha = 0.4f
                             )
                         )
                         .padding(4.dp)
@@ -463,7 +463,7 @@ fun BaseDescription(
                     .clip(RoundedCornerShape(8.dp))
                     .background(
                         uiTransaction.color.copy(
-                            alpha = 0.2f
+                            alpha = 0.4f
                         )
                     )
                     .padding(4.dp)
@@ -503,8 +503,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is Order -> {
         TransactionUiModel(
             iconRes = R.drawable.product_icon,
-            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
-            else statusColor(Status.CREATED),
+            color = financeStatusColor(this.type),
             transactionType = this.type,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
@@ -518,8 +517,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is ExchangeOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.exchange_icon,
-            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
-            else statusColor(Status.CREATED),
+            color = financeStatusColor(this.type),
             transactionType = this.type,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
@@ -527,8 +525,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             ),
             additionalType = this.typeToChange,
             additionalAmount = this.amountToExchange,
-            additionalColor = if (this.typeToChange == TransactionType.CREDIT) statusColor(Status.DONE)
-            else statusColor(Status.CREATED),
+            additionalColor = financeStatusColor(this.typeToChange),
             id = this.id.toString(),
             transactionName = stringResource(R.string.exchange),
         )
@@ -537,8 +534,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is CashPaymentOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.money_pack,
-            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
-            else statusColor(Status.CREATED),
+            color = financeStatusColor(this.type),
             transactionType = this.type,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
@@ -552,8 +548,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is SaleOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.freight,
-            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
-            else statusColor(Status.CREATED),
+            color = financeStatusColor(this.type),
             transactionType = this.type,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
@@ -567,8 +562,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is PaymentOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.factory_icon,
-            color = if (this.type == TransactionType.CREDIT) statusColor(Status.DONE)
-            else statusColor(Status.CREATED),
+            color = financeStatusColor(this.type),
             transactionType = this.type,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
