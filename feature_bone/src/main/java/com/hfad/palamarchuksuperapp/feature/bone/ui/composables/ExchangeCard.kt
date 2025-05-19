@@ -50,10 +50,13 @@ fun ExchangeOrderCard(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -73,7 +76,9 @@ fun ExchangeOrderCard(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -102,52 +107,48 @@ fun ExchangeOrderCard(
                 )
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                val baseNumOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountCurrency.currency)
-                AppText(
-                    value = stringResource(
-                        R.string.exchange_rate_detailed,
-                        exchangeOrder.amountToExchange.currency.name, // код первой валюты
-                        exchangeOrder.amountCurrency.currency.name, // код второй валюты
-                        (1 / exchangeOrder.exchangeRate).formatTrim(baseNumOfDigit), // единица второй валюты
-                    ),
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                val numOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountToExchange.currency)
-                AppText(
-                    value = stringResource(
-                        R.string.exchange_rate_detailed,
-                        exchangeOrder.amountCurrency.currency.name, // код первой валюты
-                        exchangeOrder.amountToExchange.currency.name, // код второй валюты
-                        exchangeOrder.exchangeRate.formatTrim(numOfDigit), // единица второй валюты
-                    ),
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            val baseNumOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountCurrency.currency)
+            AppText(
+                value = stringResource(
+                    R.string.exchange_rate_detailed,
+                    exchangeOrder.amountToExchange.currency.name, // код первой валюты
+                    exchangeOrder.amountCurrency.currency.name, // код второй валюты
+                    (1 / exchangeOrder.exchangeRate).formatTrim(baseNumOfDigit), // единица второй валюты
+                ),
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            val numOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountToExchange.currency)
+            AppText(
+                value = stringResource(
+                    R.string.exchange_rate_detailed,
+                    exchangeOrder.amountCurrency.currency.name, // код первой валюты
+                    exchangeOrder.amountToExchange.currency.name, // код второй валюты
+                    exchangeOrder.exchangeRate.formatTrim(numOfDigit), // единица второй валюты
+                ),
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Medium
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
+                modifier = Modifier.padding(vertical = 8.dp),
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(
+                    verticalArrangement = Arrangement.SpaceAround,
+                ) {
                     AppText(
                         value = stringResource(R.string.exchange_request_date),
                         appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodySmall),
@@ -159,7 +160,10 @@ fun ExchangeOrderCard(
                     )
                 }
 
-                Column(horizontalAlignment = Alignment.End) {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.SpaceAround
+                ) {
                     AppText(
                         value = stringResource(R.string.exchange_billing_date),
                         appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodySmall),
@@ -193,8 +197,24 @@ fun Date.formatLegacy(locale: Locale = Locale.getDefault()): String {
 
 @Preview
 @Composable
-fun ExchangeOrderCardPreview() {
+fun ExchangeOrdersCardPreview() {
     AppTheme {
+        Column {
+            generateExchangeOrderItems().forEach {
+                ExchangeOrderCard(
+                    exchangeOrder = it,
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ExchangeOrdersCardNightPreview() {
+    AppTheme (
+        useDarkTheme = true
+    ) {
         Column {
             generateExchangeOrderItems().forEach {
                 ExchangeOrderCard(
