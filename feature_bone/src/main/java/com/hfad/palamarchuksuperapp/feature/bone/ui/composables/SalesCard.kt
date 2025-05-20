@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.ArrowDropDown
@@ -53,6 +52,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
+import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -60,11 +60,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.times
 
 @Composable
 fun SaleCard(
     saleItem: SaleOrder,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) {
     val statusColor = when (saleItem.status) {
         SaleStatus.COMPLETED -> statusColor(Status.DONE)
@@ -93,32 +94,32 @@ fun SaleCard(
         )
     ) {
         Column(
-            modifier = Modifier.Companion.padding(8.dp),
+            modifier = Modifier.padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(8.dp)
                         .size(8.dp)
                         .clip(CircleShape)
                         .background(statusColor)
                 )
                 AppText(
-                    modifier = Modifier.Companion.weight(1f),
+                    modifier = Modifier.weight(1f),
                     value = stringResource(R.string.sale_card_title, saleItem.id),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Companion.SemiBold,
+                        fontWeight = FontWeight.SemiBold,
                     )
                 )
 
                 AppIconInfoField(
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                     title = statusText,
                     cardColors = CardDefaults.cardColors(
@@ -135,20 +136,20 @@ fun SaleCard(
             )
 
             Row(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Companion.Top
+                verticalAlignment = Alignment.Top
             ) {
                 Column(
-                    modifier = Modifier.Companion.weight(1f),
+                    modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.Companion.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Outlined.AccountBox,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier.Companion
+                            modifier = Modifier
                                 .padding(4.dp)
                                 .size(20.dp)
                         )
@@ -156,7 +157,7 @@ fun SaleCard(
                             value = saleItem.companyName,
                             appTextConfig = appTextConfig(
                                 textStyle = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Companion.Bold
+                                fontWeight = FontWeight.Bold
                             )
                         )
                     }
@@ -167,15 +168,25 @@ fun SaleCard(
                             appTextConfig = appTextConfig(
                                 textStyle = MaterialTheme.typography.bodyMedium
                             ),
-                            modifier = Modifier.Companion.padding(start = 22.dp)
+                            modifier = Modifier.padding(start = 22.dp)
                         )
                     }
                 }
 
+                val vat = saleItem.amountCurrency * saleItem.vat
+
                 AppIconInfoField(
-                    modifier = Modifier.Companion,
-                    description = "Сумма: ${saleItem.totalAmount.formatTrim()} грн",
-                    title = "НДС: ${saleItem.vatAmount.formatTrim()} грн",
+                    modifier = Modifier,
+                    description = stringResource(
+                        R.string.sale_sum_currency,
+                        saleItem.amountCurrency.amount.formatTrim(),
+                        saleItem.amountCurrency.currency.name.lowercase()
+                    ),
+                    title = stringResource(
+                        R.string.vat_amount_currency,
+                        vat.amount.formatTrim(),
+                        " ${vat.currency.name.lowercase()}"
+                    ),
                     cardColors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                         contentColor = MaterialTheme.colorScheme.primary
@@ -185,50 +196,52 @@ fun SaleCard(
             }
 
             Card(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                 ),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Row(
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.Companion.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Column(
-                        modifier = Modifier.Companion,
-                        verticalArrangement = Arrangement.SpaceAround
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         DetailItem(
                             icon = Icons.Default.DateRange,
-                            label = "Дата заявки",
+                            label = stringResource(R.string.order_sale_date),
                             value = saleItem.requestDate
                         )
 
                         DetailItem(
-                            icon = Icons.Default.Settings,
-                            label = "Дата документов",
-                            value = saleItem.documentDate
+                            icon = Icons.Default.Share,
+                            label = stringResource(R.string.order_sale_commission),
+                            value = "${saleItem.commissionPercent}%"
                         )
                     }
 
                     Column(
-                        modifier = Modifier.Companion,
-                        verticalArrangement = Arrangement.SpaceAround
+                        modifier = Modifier,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         DetailItem(
-                            icon = Icons.Default.Share,
-                            label = "Комиссия",
-                            value = "${saleItem.commissionPercent}%"
+                            icon = Icons.Default.DateRange,
+                            label = stringResource(R.string.order_sale_doc_date),
+                            value = saleItem.documentDate
                         )
 
                         DetailItem(
                             icon = if (saleItem.prepayment) Icons.Default.Check else Icons.Default.Close,
-                            label = "Предоплата",
-                            value = if (saleItem.prepayment) "Да" else "Нет",
+                            label = stringResource(R.string.order_sale_prepayment),
+                            value = if (saleItem.prepayment) stringResource(R.string.yes) else stringResource(
+                                R.string.no
+                            ),
                             valueColor = if (saleItem.prepayment)
                                 MaterialTheme.colorScheme.tertiary else
                                 MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
@@ -254,14 +267,14 @@ private fun DetailItem(
     value: String,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
-    Row(verticalAlignment = Alignment.Companion.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.Companion.size(16.dp)
+            modifier = Modifier.size(16.dp)
         )
-        Spacer(modifier = Modifier.Companion.width(4.dp))
+        Spacer(modifier = Modifier.width(4.dp))
         Column {
             AppText(
                 value = label,
@@ -274,7 +287,7 @@ private fun DetailItem(
                 value = value,
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Companion.Medium
+                    fontWeight = FontWeight.Medium
                 ),
                 color = valueColor
             )
@@ -284,29 +297,29 @@ private fun DetailItem(
 
 @Composable
 private fun OrderInfoSection(
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
     order: Order,
 ) {
-    var expanded = remember { mutableStateOf(false) }
+    val expanded = remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Row(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
                 .clip(CircleShape)
                 .clickable { expanded.value = !expanded.value }
                 .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Companion.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Default.Info,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .padding(start = 12.dp)
                     .size(20.dp)
             )
@@ -314,7 +327,7 @@ private fun OrderInfoSection(
                 value = "Информация о заказе №${order.num}",
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Companion.Medium
+                    fontWeight = FontWeight.Medium
                 ),
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -323,18 +336,17 @@ private fun OrderInfoSection(
                     Icons.Outlined.KeyboardArrowUp else Icons.Outlined.ArrowDropDown,
                 contentDescription = if (expanded.value) "Скрыть детали" else "Показать детали",
                 tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.Companion.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp)
             )
         }
 
-        // Раскрываемый контент
         AnimatedVisibility(
             visible = expanded.value,
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut()
         ) {
             OrderCard(
-                modifier = Modifier.Companion.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 order = order,
                 initialExpanded = true
             )
@@ -342,7 +354,6 @@ private fun OrderInfoSection(
     }
 }
 
-// Пример использования
 @Composable
 @Preview
 fun SalesPageExample() {
@@ -350,7 +361,27 @@ fun SalesPageExample() {
         val sampleItems = generateSaleOrderItems()
 
         LazyColumn(
-            modifier = Modifier.Companion.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(sampleItems) { item ->
+                SaleCard(saleItem = item)
+            }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun SalesPageNightExample() {
+    AppTheme(
+        useDarkTheme = true
+    ) {
+        val sampleItems = generateSaleOrderItems()
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
