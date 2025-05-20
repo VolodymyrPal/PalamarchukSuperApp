@@ -50,10 +50,18 @@
     <string name="exchange_request_date">Request date:</string>
     <string name="exchange_billing_date">Exchange date:</string>
     <string name="exchange_rate">%1$s%2$s = %3$s%4$s</string>
-    <string name="exchange_rate_detailed">%1$s/%2$s = %3$s</string>
+    <string name="exchange_rate_detailed">%1$s/%2$s</string>
     <string name="exchange_rate_detailed_full">Exchange rate: %1$s/%2$s = %3$s | %4$s/%5$s = %6$s</string>
     <string name="currency_balance">Currency balance</string>
     <string name="sales_statistics">Sales statistics</string>
+    <string name="sale_sum_currency">Sum: %1$s %2$s</string>
+    <string name="vat_amount_currency">VAT: %1$s %2$s</string>
+    <string name="order_sale_date">Order date</string>
+    <string name="order_sale_commission">Сommission</string>
+    <string name="order_sale_doc_date">Doc date</string>
+    <string name="order_sale_prepayment">Prepayment</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 
 </resources>
