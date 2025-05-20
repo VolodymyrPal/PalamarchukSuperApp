@@ -287,7 +287,8 @@ fun FinanceTransactionCard(
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

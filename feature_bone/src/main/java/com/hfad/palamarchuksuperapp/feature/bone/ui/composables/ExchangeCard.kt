@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
@@ -86,9 +87,11 @@ fun ExchangeOrderCard(
                     value = "${exchangeOrder.amountToExchange.amount.formatTrim()} ${exchangeOrder.amountToExchange.iconChar}",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End
                     ),
-                    color = exchangeOrder.amountToExchange.color
+                    color = exchangeOrder.amountToExchange.color,
+                    modifier = Modifier.weight(0.4f)
                 )
 
                 Icon(
@@ -103,38 +106,48 @@ fun ExchangeOrderCard(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     ),
-                    color = exchangeOrder.amountCurrency.color
+                    color = exchangeOrder.amountCurrency.color,
+                    modifier = Modifier.weight(0.4f)
                 )
             }
 
-            val baseNumOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountCurrency.currency)
-            AppText(
-                value = stringResource(
-                    R.string.exchange_rate_detailed,
-                    exchangeOrder.amountToExchange.currency.name, // код первой валюты
-                    exchangeOrder.amountCurrency.currency.name, // код второй валюты
-                    (1 / exchangeOrder.exchangeRate).formatTrim(baseNumOfDigit), // единица второй валюты
-                ),
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            val numOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountToExchange.currency)
-            AppText(
-                value = stringResource(
-                    R.string.exchange_rate_detailed,
-                    exchangeOrder.amountCurrency.currency.name, // код первой валюты
-                    exchangeOrder.amountToExchange.currency.name, // код второй валюты
-                    exchangeOrder.exchangeRate.formatTrim(numOfDigit), // единица второй валюты
-                ),
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            val baseNumOfDigit = getNumberOfDecimalDigits(exchangeOrder.amountToExchange.currency)
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(
+                    modifier = Modifier.weight(0.4f),
+                    value = stringResource(
+                        R.string.exchange_rate_detailed,
+                        exchangeOrder.amountToExchange.currency.name,
+                        exchangeOrder.amountCurrency.currency.name,
+                    ),
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                AppText(
+                    value = " = ",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                AppText(
+                    modifier = Modifier.weight(0.4f),
+                    value = exchangeOrder.exchangeRate.formatTrim(baseNumOfDigit),
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    ),
+                )
+            }
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),

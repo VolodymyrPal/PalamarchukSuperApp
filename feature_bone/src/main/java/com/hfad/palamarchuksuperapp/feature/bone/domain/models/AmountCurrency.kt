@@ -60,3 +60,77 @@ data class AmountCurrency(
 enum class Currency {
     USD, EUR, CNY, UAH, PLN, BTC, OTHER
 }
+
+operator fun AmountCurrency.plus(other: AmountCurrency): AmountCurrency {
+    require(this.currency == other.currency) { "Currencies must match for arithmetic operations" }
+    return this.copy(amount = this.amount + other.amount)
+}
+
+operator fun AmountCurrency.minus(other: AmountCurrency): AmountCurrency {
+    require(this.currency == other.currency) { "Currencies must match for arithmetic operations" }
+    return this.copy(amount = this.amount - other.amount)
+}
+
+operator fun AmountCurrency.times(other: AmountCurrency): AmountCurrency {
+    require(this.currency == other.currency) { "Currencies must match for arithmetic operations" }
+    return this.copy(amount = this.amount * other.amount)
+}
+
+operator fun AmountCurrency.div(other: AmountCurrency): AmountCurrency {
+    require(this.currency == other.currency) { "Currencies must match for arithmetic operations" }
+    require(other.amount != 0f) { "Cannot divide by zero" }
+    return this.copy(amount = this.amount / other.amount)
+}
+
+operator fun AmountCurrency.plus(value: Number): AmountCurrency {
+    return this.copy(amount = this.amount + value.toFloat())
+}
+
+operator fun AmountCurrency.minus(value: Number): AmountCurrency {
+    return this.copy(amount = this.amount - value.toFloat())
+}
+
+operator fun AmountCurrency.times(value: Number): AmountCurrency {
+    return this.copy(amount = this.amount * value.toFloat())
+}
+
+operator fun AmountCurrency.div(value: Number): AmountCurrency {
+    require(value.toFloat() != 0f) { "Cannot divide by zero" }
+    return this.copy(amount = this.amount / value.toFloat())
+}
+
+operator fun Number.plus(amountCurrency: AmountCurrency): AmountCurrency {
+    return amountCurrency.copy(amount = this.toFloat() + amountCurrency.amount)
+}
+
+operator fun Number.minus(amountCurrency: AmountCurrency): AmountCurrency {
+    return AmountCurrency(
+        currency = amountCurrency.currency,
+        amount = this.toFloat() - amountCurrency.amount
+    )
+}
+
+operator fun Number.times(amountCurrency: AmountCurrency): AmountCurrency {
+    return amountCurrency.copy(amount = this.toFloat() * amountCurrency.amount)
+}
+
+operator fun Number.div(amountCurrency: AmountCurrency): AmountCurrency {
+    require(amountCurrency.amount != 0f) { "Cannot divide by zero" }
+    return AmountCurrency(
+        currency = amountCurrency.currency,
+        amount = this.toFloat() / amountCurrency.amount
+    )
+}
+
+operator fun AmountCurrency.unaryMinus(): AmountCurrency {
+    return this.copy(amount = -this.amount)
+}
+
+operator fun AmountCurrency.unaryPlus(): AmountCurrency {
+    return this
+}
+
+operator fun AmountCurrency.compareTo(other: AmountCurrency): Int {
+    require(this.currency == other.currency) { "Currencies must match for comparison" }
+    return this.amount.compareTo(other.amount)
+}
