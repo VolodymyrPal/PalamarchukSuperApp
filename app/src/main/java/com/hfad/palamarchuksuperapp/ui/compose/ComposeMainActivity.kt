@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -26,7 +27,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hfad.palamarchuksuperapp.appComponent
-import com.hfad.palamarchuksuperapp.core.ui.navigation.featureRegister
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.BoneFeature
 import kotlinx.serialization.Serializable
@@ -34,6 +34,7 @@ import kotlinx.serialization.Serializable
 class ComposeMainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         val startDestination = intent.getStringExtra("startDestination")?.let {
