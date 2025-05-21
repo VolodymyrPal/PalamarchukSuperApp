@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.ui.screens
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import com.hfad.palamarchuksuperapp.R
 import com.hfad.palamarchuksuperapp.appComponent
 import com.hfad.palamarchuksuperapp.databinding.ActivityMainBinding
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.bnav_home -> {
                     vibe.standardClickVibration()
-                    Navigation.findNavController(this, R.id.fragment_container_view)
+                    findNavController(R.id.fragment_container_view)
                         .navigate(R.id.mainScreenFragment)
                     true
                 }
