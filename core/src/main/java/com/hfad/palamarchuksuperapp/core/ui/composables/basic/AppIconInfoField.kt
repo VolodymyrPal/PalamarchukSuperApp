@@ -52,7 +52,7 @@ fun AppIconInfoField(
         containerColor = MaterialTheme.colorScheme.surfaceVariant,
         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     ),
-    appIconInfoFieldWidth: Float = 100 + (50*LocalDensity.current.fontScale),
+    appIconInfoFieldWidth: Float = 100 + (50 * LocalDensity.current.fontScale),
 ) {
     val boxModifier = if (onClick != null) {
         modifier
@@ -88,7 +88,7 @@ fun AppIconInfoField(
                         contentDescription = null,
                         modifier = Modifier
                             .size(iconSize),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
