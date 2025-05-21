@@ -22,6 +22,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
 import com.hfad.palamarchuksuperapp.core.ui.navigation.composable
@@ -49,32 +50,33 @@ class BoneFeature(
         CompositionLocalProvider(
             LocalNavController provides navController
         ) {
-
-            LaunchedEffect(navController) {
-                navController.currentBackStack.collect { backStackList ->
-                    Log.d("backStackList", "backStackList $backStackList")
-                    if (backStackList.isEmpty()) {
-                        parentNavController.popBackStack()
+            FeatureTheme {
+                LaunchedEffect(navController) {
+                    navController.currentBackStack.collect { backStackList ->
+                        Log.d("backStackList", "backStackList $backStackList")
+                        if (backStackList.isEmpty()) {
+                            parentNavController.popBackStack()
+                        }
                     }
                 }
-            }
 
-            NavHost(
-                startDestination = homeRoute,
-                navController = navController,
-                route = FeatureBoneRoutes.BaseFeautreNavRoute::class
-            ) {
-                composable<FeatureBoneRoutes.BoneScreen> {
-                    BoneScreenRoot(
-                        modifier = modifier,
-                        viewModel = daggerViewModel(component.viewModelFactory),
-                    )
-                }
-                composable<FeatureBoneRoutes.LoginScreen> {
-                    BoneScreenRoot(
-                        modifier = modifier,
-                        viewModel = daggerViewModel(component.viewModelFactory)
-                    )
+                NavHost(
+                    startDestination = homeRoute,
+                    navController = navController,
+                    route = FeatureBoneRoutes.BaseFeautreNavRoute::class
+                ) {
+                    composable<FeatureBoneRoutes.BoneScreen> {
+                        BoneScreenRoot(
+                            modifier = modifier,
+                            viewModel = daggerViewModel(component.viewModelFactory),
+                        )
+                    }
+                    composable<FeatureBoneRoutes.LoginScreen> {
+                        BoneScreenRoot(
+                            modifier = modifier,
+                            viewModel = daggerViewModel(component.viewModelFactory)
+                        )
+                    }
                 }
             }
         }
