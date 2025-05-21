@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -88,6 +89,7 @@ fun BoneScreen(
             .fillMaxSize(),
         topBar = {
             PrimaryTabRow(
+                modifier = Modifier.statusBarsPadding(),
                 selectedTabIndex = pagerState.currentPage,
                 containerColor = tabColorBackground,
                 indicator = {
@@ -156,9 +158,7 @@ fun BoneScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                )
+                .padding(paddingValues)
         ) {
             HorizontalPager(
                 state = pagerState,

@@ -49,7 +49,7 @@ fun StepProgressionBar(
     val colorScheme = MaterialTheme.colorScheme
     val primaryColor = colorScheme.primary
     val primaryContainerColor = colorScheme.primaryContainer
-    val onPrimaryContainerColor = colorScheme.onPrimaryContainer
+    val onSurface = colorScheme.onSurface
     val surfaceColor = colorScheme.surface
 
     // Кэш иконок
@@ -71,7 +71,7 @@ fun StepProgressionBar(
         val textStyle = MaterialTheme.typography.bodySmall.copy(
             fontSize = 8.sp,
             letterSpacing = (-0.8).sp,
-            color = onPrimaryContainerColor,
+            color = onSurface,
             fontWeight = FontWeight.Medium
         )
 
@@ -187,8 +187,8 @@ fun StepProgressionBar(
 
                 // **Рисуем иконку сервиса**
                 val iconTint = when {
-                    index <= currentStep -> onPrimaryContainerColor
-                    else -> onPrimaryContainerColor.copy(alpha = 0.75f)
+                    index <= currentStep -> onSurface
+                    else -> onSurface.copy(alpha = 0.75f)
                 }
 
                 drawIntoCanvas { canvas ->
@@ -212,14 +212,14 @@ fun StepProgressionBar(
                 val adaptiveTextStyle = textStyle.copy(
                     fontSize = fontSize.toSp(),
                     fontWeight = Bold,
-                    color = if (index < currentStep) onPrimaryContainerColor else
-                        onPrimaryContainerColor.copy(alpha = 0.7f)
+                    color = if (index < currentStep) onSurface else
+                        onSurface.copy(alpha = 0.7f)
 
                 )
 
                 val textLayoutInfo = textMeasurer.measure(text, adaptiveTextStyle)
 
-                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width  < stepSpacing) {
+                if (heightPx > 40.dp.toPx() && textLayoutInfo.size.width < stepSpacing) {
                     drawText(
                         textMeasurer = textMeasurer,
                         text = text,

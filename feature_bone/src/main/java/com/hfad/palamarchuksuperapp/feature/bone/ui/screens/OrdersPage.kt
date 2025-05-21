@@ -51,7 +51,7 @@ internal fun OrdersPage(
     modifier: Modifier = Modifier,
     orderPageState: OrderPageState = OrderPageState(),
     navController: NavController? = LocalNavController.current,
-    ) {
+) {
     val orderPageState = OrderPageState(
         orders = generateOrderItems(), //TODO for testing
         orderMetrics = generateOrderStatistic() //TODO for testing
@@ -60,8 +60,8 @@ internal fun OrdersPage(
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(vertical = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentPadding = PaddingValues(bottom = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 //        item {
 //            IconButton(

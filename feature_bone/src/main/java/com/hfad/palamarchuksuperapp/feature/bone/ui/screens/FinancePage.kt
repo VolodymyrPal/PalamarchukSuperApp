@@ -15,6 +15,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -81,28 +82,23 @@ fun FinancePage(
     modifier: Modifier = Modifier,
     financeState: FinancePageState = FinancePageState(),
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item {
-                FinanceStatisticCard(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-                    financeState.salesStatistics
-                )
-            }
-            items(financeState.salesItems) { item ->
-                FinanceTransactionCard(
-                    transaction = item,
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                )
-            }
+        item {
+            FinanceStatisticCard(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                financeState.salesStatistics
+            )
+        }
+        items(financeState.salesItems) { item ->
+            FinanceTransactionCard(
+                transaction = item,
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+            )
         }
     }
 }

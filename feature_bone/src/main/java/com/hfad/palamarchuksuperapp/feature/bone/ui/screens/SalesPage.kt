@@ -51,33 +51,24 @@ fun SalesPage(
     modifier: Modifier = Modifier,
     state: SalesPageState = SalesPageState(),
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(
-                vertical = 12.dp
+        item {
+            SalesStatisticsCard(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                salesStatistics = state.salesStatistics
             )
-        ) {
-            item {
-                SalesStatisticsCard(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                    salesStatistics = state.salesStatistics
-                )
-            }
-            items(state.salesItems) { item ->
-                SaleCard(
-                    saleItem = item,
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp)
-                )
-            }
+        }
+        items(state.salesItems) { item ->
+            SaleCard(
+                saleItem = item,
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+            )
         }
     }
 }

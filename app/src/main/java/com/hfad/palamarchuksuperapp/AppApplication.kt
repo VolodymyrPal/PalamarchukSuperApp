@@ -20,6 +20,7 @@ class AppApplication : Application()
 
     override fun onCreate() {
         super.onCreate()
+//        DynamicColors.applyToActivitiesIfAvailable(this)
 
         File(this.filesDir, "app_images").mkdir()  // Create app_images folder here for compose preview
         coreComponent = DaggerCoreComponent.builder().build()

@@ -136,7 +136,7 @@ fun OrderCard(
                     Icon(
                         painter = painterResource(R.drawable.container_svgrepo_com),
                         contentDescription = "Container Icon",
-                        tint = colorScheme.onPrimaryContainer,
+                        tint = colorScheme.onSurface,
                         modifier = Modifier.size(24.dp)
                     )
 
