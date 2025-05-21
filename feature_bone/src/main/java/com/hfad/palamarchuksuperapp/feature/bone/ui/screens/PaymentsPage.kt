@@ -55,11 +55,11 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentPageState
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentPageState
 import kotlin.random.Random
 
 @Composable
@@ -72,7 +72,7 @@ fun PaymentsPage(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(vertical = 12.dp)
+        contentPadding = PaddingValues(bottom = 24.dp),
     ) {
         item {
             PaymentsStatisticsCard(
@@ -293,7 +293,7 @@ fun PaymentCard(
     val statusColor = when (payment.status) {
         PaymentStatus.PAID -> statusColor(Status.DONE)
         PaymentStatus.PENDING -> statusColor(Status.IN_PROGRESS)
-        PaymentStatus.OVERDUE ->statusColor(Status.OVERDUE)
+        PaymentStatus.OVERDUE -> statusColor(Status.OVERDUE)
     }
 
     val statusText = when (payment.status) {

@@ -156,9 +156,7 @@ fun BoneScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                )
+                .padding(paddingValues)
         ) {
             HorizontalPager(
                 state = pagerState,
