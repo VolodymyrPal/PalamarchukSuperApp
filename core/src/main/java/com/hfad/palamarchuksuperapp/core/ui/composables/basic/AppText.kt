@@ -37,7 +37,7 @@ fun AppText(
     Text(
         text = stringResource(value),
         modifier = modifier,
-        color = Color.Unspecified,
+        color = color,
         fontSize = appTextConfig.fontSize,
         fontStyle = appTextConfig.fontStyle,
         fontWeight = appTextConfig.fontWeight,
@@ -56,7 +56,7 @@ fun AppText(
 }
 
 @Composable
-fun defaultAppTextColor() = MaterialTheme.colorScheme.onPrimaryContainer
+fun defaultAppTextColor() = MaterialTheme.colorScheme.onSurface
 
 @Composable
 @Suppress("LongParameterList", "FunctionNaming")
@@ -75,6 +75,7 @@ fun AppText(
     Text(
         text = value,
         modifier = modifier,
+        color = color,
         style = mergedStyle,
         overflow = appTextConfig.overflow,
         softWrap = appTextConfig.softWrap,
