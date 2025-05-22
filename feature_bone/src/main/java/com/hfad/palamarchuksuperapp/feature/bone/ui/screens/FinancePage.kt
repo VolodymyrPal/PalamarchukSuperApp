@@ -52,10 +52,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.compose.FeatureTheme
+import com.example.compose.financeStatusColor
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
@@ -72,7 +73,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ExchangeOrderCar
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ToggleableArrow
-import com.hfad.palamarchuksuperapp.feature.bone.ui.theme.financeStatusColor
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -113,10 +113,8 @@ fun FinanceStatisticCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+        shape = RoundedCornerShape(1.dp),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -234,7 +232,7 @@ fun FinanceStat(
 @Preview
 @Composable
 fun FinancePagePreview() {
-    AppTheme {
+    FeatureTheme {
         FinancePage()
     }
 }
@@ -242,9 +240,11 @@ fun FinancePagePreview() {
 @Composable
 @Preview
 fun FinanceTransactionCardPreview() {
-    FinanceTransactionCard(
-        transaction = generateSaleOrder()
-    )
+    FeatureTheme {
+        FinanceTransactionCard(
+            transaction = generateSaleOrder()
+        )
+    }
 }
 
 @Composable
@@ -271,15 +271,13 @@ fun FinanceTransactionCard(
                 indication = null,
                 interactionSource = interactionSource
             ),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(2.dp),
         border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.3f)),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface,
             contentColor = colorScheme.onSurface
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = elevation
-        ),
+//        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
@@ -432,7 +430,7 @@ fun BaseDescription(
             if (uiTransaction.additionalAmount != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(4.dp))
                         .background(
                             uiTransaction.additionalColor.copy(
                                 alpha = 0.4f
@@ -452,12 +450,13 @@ fun BaseDescription(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold
                         ),
+                        modifier = Modifier.padding(4.dp)
                     )
                 }
             }
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(4.dp))
                     .background(
                         uiTransaction.color.copy(
                             alpha = 0.4f
@@ -476,6 +475,7 @@ fun BaseDescription(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     ),
+                    modifier = Modifier.padding(4.dp)
                 )
             }
         }

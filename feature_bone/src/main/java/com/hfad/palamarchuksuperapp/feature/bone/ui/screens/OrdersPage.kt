@@ -34,9 +34,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
@@ -106,10 +106,8 @@ private fun OrderStatisticCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+        shape = RoundedCornerShape(1.dp),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -172,7 +170,7 @@ private fun OrderStatisticCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
-            val sumOrderTitle = stringResource(R.string.summ_orders)
+            val sumOrderTitle = stringResource(R.string.sum_orders)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -213,7 +211,7 @@ private fun OrderStat(
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(60.dp)
                 .clip(CircleShape)
                 .background(color.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
@@ -222,7 +220,7 @@ private fun OrderStat(
                 imageVector = icon,
                 contentDescription = null,
                 tint = color,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
 
@@ -263,8 +261,8 @@ private fun generateOrderStatistic(): OrderStatistic {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun OrderCardListPreview() {
-    AppTheme(
-        useDarkTheme = false
+    FeatureTheme (
+        darkTheme = false
     ) {
         OrdersPage(
             orderPageState = OrderPageState(
@@ -281,8 +279,8 @@ private fun OrderCardListPreview() {
 @Composable
 private fun OrderStatPreview() {
     Column {
-        AppTheme(
-            useDarkTheme = false
+        FeatureTheme (
+            darkTheme = false
         ) {
             OrderStatisticCard(
                 OrderStatistic(
@@ -291,8 +289,8 @@ private fun OrderStatPreview() {
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
         }
-        AppTheme(
-            useDarkTheme = true
+        FeatureTheme (
+            darkTheme = true
         ) {
             OrderStatisticCard(
                 OrderStatistic(
@@ -307,8 +305,8 @@ private fun OrderStatPreview() {
 @Preview
 @Composable
 private fun OrdersPagePreview() {
-    AppTheme(
-        useDarkTheme = true
+    FeatureTheme (
+        darkTheme = true
     ) {
         OrdersPage(
             orderPageState = OrderPageState(

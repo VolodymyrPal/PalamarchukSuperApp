@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
@@ -83,10 +84,8 @@ fun SalesStatisticsCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+        shape = RoundedCornerShape(1.dp),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -185,7 +184,7 @@ fun SalesStat(
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(60.dp)
                 .clip(CircleShape)
                 .background(color.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
@@ -194,7 +193,7 @@ fun SalesStat(
                 painter = icon,
                 contentDescription = null,
                 tint = color,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(30.dp)
             )
         }
 
@@ -222,7 +221,7 @@ fun SalesStat(
 @Preview
 @Composable
 fun SalesPagePreview() {
-    AppTheme {
+    FeatureTheme {
         SalesPage()
     }
 }
