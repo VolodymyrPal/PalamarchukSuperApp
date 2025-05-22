@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
@@ -60,6 +61,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrder
+import com.hfad.palamarchuksuperapp.feature.bone.ui.theme.appRippleEffect
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
 
 @Composable
@@ -110,15 +112,13 @@ fun OrderCard(
                 indication = null,
                 interactionSource = interactionSource
             ),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(1.dp),
         border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.3f)),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface,
             contentColor = colorScheme.onSurface
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = elevation
-        ),
+//        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
         Column {
             Row(
@@ -177,7 +177,10 @@ fun OrderCard(
                         .size(36.dp)
                         .clip(CircleShape)
                         .background(colorScheme.primaryContainer.copy(alpha = 0.5f))
-                        .clickable {
+                        .clickable (
+                            interactionSource = null,
+                            indication = appRippleEffect()
+                        ) {
                             expanded.value = !expanded.value
                         },
                     contentAlignment = Alignment.Center
@@ -201,7 +204,8 @@ fun OrderCard(
                         .fillMaxWidth()
                         .height(86.dp),
                     listOfSteps = serviceOrderLists.subList(0, 7),
-                    currentStep = currentStepCount.value
+                    currentStep = currentStepCount.value,
+                    roundCorner = 0.3f
                 )
             }
 
@@ -297,7 +301,7 @@ fun painterServiceTypeMap() = ServiceType.entries.associateWith {
 @Composable
 fun OrderCardPreview() {
     Column {
-        AppTheme {
+        FeatureTheme {
             OrderCard(
                 modifier = Modifier
                     .padding(5.dp)
@@ -306,7 +310,7 @@ fun OrderCardPreview() {
                 initialExpanded = true
             )
         }
-        AppTheme(useDarkTheme = true) {
+        FeatureTheme (darkTheme = true) {
             OrderCard(
                 modifier = Modifier
                     .padding(5.dp)
