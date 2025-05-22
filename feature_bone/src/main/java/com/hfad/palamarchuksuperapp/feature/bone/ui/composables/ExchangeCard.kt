@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
@@ -46,7 +48,8 @@ fun ExchangeOrderCard(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(4.dp),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
     ) {
         Column(
@@ -211,8 +214,10 @@ fun Date.formatLegacy(locale: Locale = Locale.getDefault()): String {
 @Preview
 @Composable
 fun ExchangeOrdersCardPreview() {
-    AppTheme {
-        Column {
+    FeatureTheme {
+        Column (
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             generateExchangeOrderItems().forEach {
                 ExchangeOrderCard(
                     exchangeOrder = it,
@@ -225,10 +230,12 @@ fun ExchangeOrdersCardPreview() {
 @Preview
 @Composable
 fun ExchangeOrdersCardNightPreview() {
-    AppTheme (
-        useDarkTheme = true
+    FeatureTheme (
+        darkTheme = true
     ) {
-        Column {
+        Column (
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             generateExchangeOrderItems().forEach {
                 ExchangeOrderCard(
                     exchangeOrder = it,

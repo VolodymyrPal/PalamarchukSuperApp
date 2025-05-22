@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ColorFilter
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
@@ -42,6 +44,7 @@ fun StepProgressionBar(
     listOfSteps: List<Stepper>,
     currentStep: Int = 0,
     circleScale: Float = 0.6f,
+    roundCorner: Float = 1f // from 0 to 1
 ) {
 
     var componentSize by remember { mutableStateOf(Size.Zero) }
@@ -56,6 +59,7 @@ fun StepProgressionBar(
     val painterServiceTypeMap = painterServiceTypeMap()
     val painterStatusDone = rememberVectorPainter(image = Icons.Default.Check)
 
+    val roundCorner = roundCorner.coerceIn(0f, 1f)
 
     Box(
         modifier = modifier
@@ -128,20 +132,60 @@ fun StepProgressionBar(
                 val iconOffset =
                     Offset(stepX - checkIconSize / 2, circleSectionY - checkIconSize / 2)
 
-                // Рисуем внешний круг
-                drawCircle(
-                    color = outerColor,
-                    radius = circleRadius,
-                    center = Offset(stepX, circleSectionY),
-                    style = Stroke(width = strokeWidth)
-                )
+                // outer circle
+//                drawCircle(
+//                    color = outerColor,
+//                    radius = circleRadius,
+//                    center = Offset(stepX, circleSectionY),
+//                    style = Stroke(width = strokeWidth)
+//                )
+//
+//                // Inner circle
+//                drawCircle(
+//                    color = innerColor,
+//                    radius = circleRadius - strokeWidth / 2 + 0.5f,
+//                    center = Offset(stepX, circleSectionY),
+//                )
 
-                // Рисуем внутренний круг
-                drawCircle(
-                    color = innerColor,
-                    radius = circleRadius - strokeWidth / 2 + 0.5f,
-                    center = Offset(stepX, circleSectionY),
-                )
+                val cornerRadius = (circleRadius * roundCorner)
+
+                if (roundCorner >= 1f) {
+                    // Рисуем внешний круг (обводка)
+                    drawCircle(
+                        color = outerColor,
+                        radius = circleRadius,
+                        center = Offset(stepX, circleSectionY),
+                        style = Stroke(width = strokeWidth)
+                    )
+
+                    // Рисуем внутренний круг
+                    drawCircle(
+                        color = innerColor,
+                        radius = circleRadius - strokeWidth / 2 + 0.5f,
+                        center = Offset(stepX, circleSectionY),
+                    )
+                } else {
+                    // Рисуем внешний скругленный прямоугольник (обводка)
+                    drawRoundRect(
+                        color = outerColor,
+                        topLeft = Offset(stepX - circleRadius, circleSectionY - circleRadius),
+                        size = Size(circleRadius * 2, circleRadius * 2),
+                        cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+                        style = Stroke(width = strokeWidth)
+                    )
+
+                    // Рисуем внутренний скругленный прямоугольник
+                    val innerSize = circleRadius * 2 - strokeWidth + 1f
+                    val innerOffset = strokeWidth / 2 - 0.5f
+                    drawRoundRect(
+                        color = innerColor,
+                        topLeft = Offset(stepX - circleRadius + innerOffset, circleSectionY - circleRadius + innerOffset),
+                        size = Size(innerSize, innerSize),
+                        cornerRadius = CornerRadius(cornerRadius - innerOffset, cornerRadius - innerOffset)
+                    )
+                }
+
+
 
                 // Соединительная линия между шагами
                 if (index < listOfSteps.size - 1) {
@@ -252,8 +296,8 @@ interface Stepper {
 fun StepProgressionBarDarkPreview(
 
 ) {
-    AppTheme(
-        useDarkTheme = true
+    FeatureTheme (
+        darkTheme = true
     ) {
         Box(
             modifier = Modifier
@@ -266,7 +310,8 @@ fun StepProgressionBarDarkPreview(
                     .fillMaxWidth()
                     .height(120.dp),
                 listOfSteps = serviceOrderLists.subList(0, 6),
-                currentStep = 2
+                currentStep = 2,
+                roundCorner = 0.1f
             )
         }
     }
@@ -277,7 +322,7 @@ fun StepProgressionBarDarkPreview(
 fun StepProgressionBarLightPreview(
 
 ) {
-    AppTheme(useDarkTheme = false) {
+    FeatureTheme (darkTheme = false) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -289,7 +334,8 @@ fun StepProgressionBarLightPreview(
                     .fillMaxWidth()
                     .height(120.dp),
                 listOfSteps = serviceOrderLists.subList(0, 12),
-                currentStep = 2
+                currentStep = 2,
+                roundCorner = 0.7f
             )
         }
     }

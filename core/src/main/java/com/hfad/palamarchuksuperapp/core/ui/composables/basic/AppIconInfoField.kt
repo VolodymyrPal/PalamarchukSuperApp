@@ -45,12 +45,12 @@ fun AppIconInfoField(
     description: String = "",
     iconSize: Dp = 24.dp,
     iconPadding: Dp = 6.dp,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
     elevation: Dp = 2.dp,
     onClick: (() -> Unit)? = null,
     cardColors: CardColors = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = MaterialTheme.colorScheme.onSurface
     ),
     appIconInfoFieldWidth: Float = 100 + (50 * LocalDensity.current.fontScale),
 ) {
@@ -73,7 +73,7 @@ fun AppIconInfoField(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = elevation),
             colors = cardColors,
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(2.dp),
         ) {
             Row(
                 modifier = Modifier

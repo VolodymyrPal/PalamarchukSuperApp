@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
@@ -100,11 +101,8 @@ fun PaymentsStatisticsCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
-
+        shape = RoundedCornerShape(1.dp),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -205,7 +203,7 @@ fun CurrencyStat(
     ) {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(4.dp))
                 .background(amountCurrency.color.copy(alpha = 0.1f))
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
@@ -215,7 +213,8 @@ fun CurrencyStat(
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 ),
-                color = amountCurrency.color
+                color = amountCurrency.color,
+                modifier = Modifier.padding(4.dp)
             )
         }
 
@@ -308,9 +307,8 @@ fun PaymentCard(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        ),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(1.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
     ) {
         Column(
@@ -333,11 +331,12 @@ fun PaymentCard(
 
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(4.dp))
                         .background(statusColor.copy(alpha = 0.1f))
                         .padding(horizontal = 12.dp, vertical = 4.dp)
                 ) {
                     AppText(
+                        modifier = Modifier.padding(8.dp),
                         value = statusText,
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodySmall,
@@ -468,7 +467,7 @@ private fun generatePaymentSample(): PaymentPageState {
 @Preview
 @Composable
 fun PaymentsPagePreview() {
-    AppTheme {
+    FeatureTheme {
         PaymentsPage()
     }
 }
@@ -477,7 +476,7 @@ fun PaymentsPagePreview() {
 @Composable
 fun PaymentCardPreview() {
     Column {
-        AppTheme {
+        FeatureTheme {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentOrder(
@@ -495,7 +494,7 @@ fun PaymentCardPreview() {
                 )
             )
         }
-        AppTheme(useDarkTheme = true) {
+        FeatureTheme(darkTheme = true) {
             PaymentCard(
                 modifier = Modifier.padding(8.dp),
                 payment = PaymentOrder(

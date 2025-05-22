@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +36,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,11 +51,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -61,6 +64,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.times
+import com.hfad.palamarchuksuperapp.feature.bone.ui.theme.appRippleEffect
 
 @Composable
 fun SaleCard(
@@ -88,10 +92,9 @@ fun SaleCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
-        )
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.3f)),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
@@ -309,8 +312,13 @@ private fun OrderInfoSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(CircleShape)
-                .clickable { expanded.value = !expanded.value }
+                .clip(RoundedCornerShape(4.dp))
+                .clickable(
+                    interactionSource = null,
+                    indication = appRippleEffect(),
+                ) {
+                    expanded.value = !expanded.value
+                }
                 .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -321,7 +329,7 @@ private fun OrderInfoSection(
                 tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .padding(start = 12.dp)
-                    .size(20.dp)
+                    .size(30.dp)
             )
             AppText(
                 value = "Информация о заказе №${order.num}",
@@ -357,7 +365,7 @@ private fun OrderInfoSection(
 @Composable
 @Preview
 fun SalesPageExample() {
-    MaterialTheme {
+    FeatureTheme {
         val sampleItems = generateSaleOrderItems()
 
         LazyColumn(
@@ -375,8 +383,8 @@ fun SalesPageExample() {
 @Composable
 @Preview
 fun SalesPageNightExample() {
-    AppTheme(
-        useDarkTheme = true
+    FeatureTheme(
+        darkTheme = true
     ) {
         val sampleItems = generateSaleOrderItems()
 
