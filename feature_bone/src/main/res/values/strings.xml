@@ -3,7 +3,7 @@
     <string name="in_work">In work</string>
     <string name="completed">Completed</string>
     <string name="finish_full">Delivered Amount</string>
-    <string name="summ_orders">Total orders:  </string>
+    <string name="sum_orders">Total orders:  </string>
     <string name="order_statistic_title">Orders</string>
     <string name="departure_point">Departure</string>
     <string name="destination_point">Destination</string>
@@ -42,9 +42,12 @@
     <string name="sale_status_canceled">Canceled</string>
     <string name="sale_card_title">Request: %1$s</string>
     <string name="order">Order</string>
+    <string name="orders">Orders</string>
     <string name="cashPayment">F2</string>
     <string name="sale">Sale</string>
+    <string name="sales">Sales</string>
     <string name="payment">Payment</string>
+    <string name="payments">Payments</string>
     <string name="exchange">Exchange</string>
     <string name="exchange_card_title">Exchange: %1$d</string>
     <string name="exchange_request_date">Request date:</string>
@@ -57,11 +60,12 @@
     <string name="sale_sum_currency">Sum: %1$s %2$s</string>
     <string name="vat_amount_currency">VAT: %1$s %2$s</string>
     <string name="order_sale_date">Order date</string>
-    <string name="order_sale_commission">Сommission</string>
+    <string name="order_sale_commission">Commission</string>
     <string name="order_sale_doc_date">Doc date</string>
     <string name="order_sale_prepayment">Prepayment</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="balance">Balance</string>
 
 
 </resources>
