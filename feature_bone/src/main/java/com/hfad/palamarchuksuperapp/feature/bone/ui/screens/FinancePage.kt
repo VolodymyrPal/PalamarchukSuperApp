@@ -90,14 +90,14 @@ fun FinancePage(
     ) {
         item {
             FinanceStatisticCard(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
                 financeState.salesStatistics
             )
         }
         items(financeState.salesItems) { item ->
             FinanceTransactionCard(
                 transaction = item,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
             )
         }
     }
@@ -280,7 +280,7 @@ fun FinanceTransactionCard(
 //        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
