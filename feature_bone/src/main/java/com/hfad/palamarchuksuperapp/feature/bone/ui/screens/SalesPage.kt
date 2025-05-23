@@ -61,14 +61,14 @@ fun SalesPage(
         item {
             SalesStatisticsCard(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
                 salesStatistics = state.salesStatistics
             )
         }
         items(state.salesItems) { item ->
             SaleCard(
                 saleItem = item,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
             )
         }
     }

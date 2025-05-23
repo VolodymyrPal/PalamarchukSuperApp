@@ -81,14 +81,14 @@ internal fun OrdersPage(
 
         item {
             OrderStatisticCard(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
                 orderMetrics = orderPageState.orderMetrics
             )
         }
 
         items(items = orderPageState.orders) {
             OrderCard(
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
                 order = it,
                 initialStatus = StepperStatus.entries.random()
             )
