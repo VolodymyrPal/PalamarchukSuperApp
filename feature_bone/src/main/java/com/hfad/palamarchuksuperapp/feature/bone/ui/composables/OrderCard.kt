@@ -120,7 +120,9 @@ fun OrderCard(
         ),
 //        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
-        Column {
+        Column (
+            modifier = Modifier.padding(20.dp)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

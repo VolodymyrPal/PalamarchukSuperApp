@@ -77,12 +77,15 @@ fun PaymentsPage(
     ) {
         item {
             PaymentsStatisticsCard(
-                paymentPageState.paymentStatistic
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                paymentStatistic = paymentPageState.paymentStatistic
             )
         }
         items(paymentPageState.payments) { payment ->
             PaymentCard(
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
                 payment = payment
             )
         }
@@ -95,9 +98,7 @@ fun PaymentsStatisticsCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+        modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -312,7 +313,7 @@ fun PaymentCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
