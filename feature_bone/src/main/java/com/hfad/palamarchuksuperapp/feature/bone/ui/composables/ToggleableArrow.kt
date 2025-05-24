@@ -62,7 +62,7 @@ fun ToggleableArrow(
 
             // Левая линия
             drawLine(
-                color = colorScheme.primary,
+                color = colorScheme.onSurfaceVariant,
                 start = Offset(centerX, topY),
                 end = Offset(
                     centerX - wingOffsetX,
@@ -73,7 +73,7 @@ fun ToggleableArrow(
             )
             // Правая линия
             drawLine(
-                color = colorScheme.primary,
+                color = colorScheme.onSurfaceVariant,
                 start = Offset(centerX, topY),
                 end = Offset(
                     centerX + wingOffsetX,

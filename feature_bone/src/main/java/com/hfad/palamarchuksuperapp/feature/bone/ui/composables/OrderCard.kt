@@ -15,6 +15,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Search
@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -71,6 +70,7 @@ fun OrderCard(
     initialStatus: StepperStatus = StepperStatus.IN_PROGRESS,
     currentStep: Int = 2,
     initialExpanded: Boolean = false,
+    internalPaddingValues: PaddingValues = PaddingValues(),
 ) {
     val expanded = remember { mutableStateOf(initialExpanded) }
     val orderStatus = remember { mutableStateOf(initialStatus) }
@@ -112,16 +112,16 @@ fun OrderCard(
                 indication = null,
                 interactionSource = interactionSource
             ),
-        shape = RoundedCornerShape(1.dp),
-        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.3f)),
+        shape = MaterialTheme.shapes.extraSmall,
+        border = BorderStroke(1.dp, colorScheme.outline),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface,
             contentColor = colorScheme.onSurface
         ),
 //        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
-        Column (
-            modifier = Modifier.padding(20.dp)
+        Column(
+            modifier = Modifier.padding(internalPaddingValues)
         ) {
             Row(
                 modifier = Modifier
@@ -138,7 +138,6 @@ fun OrderCard(
                     Icon(
                         painter = painterResource(R.drawable.container_svgrepo_com),
                         contentDescription = "Container Icon",
-                        tint = colorScheme.onSurface,
                         modifier = Modifier.size(24.dp)
                     )
 
@@ -177,9 +176,9 @@ fun OrderCard(
                 Box(
                     modifier = Modifier
                         .size(36.dp)
-                        .clip(CircleShape)
+                        .clip(MaterialTheme.shapes.small)
                         .background(colorScheme.primaryContainer.copy(alpha = 0.5f))
-                        .clickable (
+                        .clickable(
                             interactionSource = null,
                             indication = appRippleEffect()
                         ) {
@@ -312,7 +311,7 @@ fun OrderCardPreview() {
                 initialExpanded = true
             )
         }
-        FeatureTheme (darkTheme = true) {
+        FeatureTheme(darkTheme = true) {
             OrderCard(
                 modifier = Modifier
                     .padding(5.dp)

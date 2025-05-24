@@ -92,12 +92,12 @@ fun SaleCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(4.dp),
-        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.3f)),
+        shape = MaterialTheme.shapes.extraSmall,
+        border = BorderStroke(1.dp, colorScheme.outline),
 //        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(vertical = 25.dp, horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
@@ -135,7 +135,9 @@ fun SaleCard(
 
 
             HorizontalDivider(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                modifier = Modifier.padding(vertical = 4.dp),
+                thickness = 2.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
             Row(
@@ -246,8 +248,8 @@ fun SaleCard(
                                 R.string.no
                             ),
                             valueColor = if (saleItem.prepayment)
-                                MaterialTheme.colorScheme.tertiary else
-                                MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
+                                colorScheme.tertiary else
+                                colorScheme.error.copy(alpha = 0.8f)
                         )
                     }
                 }
@@ -255,7 +257,9 @@ fun SaleCard(
 
             if (saleItem.order != null) {
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    thickness = 2.dp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
                 )
                 OrderInfoSection(order = saleItem.order)
             }
@@ -292,7 +296,6 @@ private fun DetailItem(
                     textStyle = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 ),
-                color = valueColor
             )
         }
     }
@@ -326,7 +329,6 @@ private fun OrderInfoSection(
             Icon(
                 imageVector = Icons.Default.Info,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .padding(start = 12.dp)
                     .size(30.dp)
@@ -337,13 +339,11 @@ private fun OrderInfoSection(
                     textStyle = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium
                 ),
-                color = MaterialTheme.colorScheme.secondary
             )
             Icon(
                 imageVector = if (expanded.value)
                     Icons.Outlined.KeyboardArrowUp else Icons.Outlined.ArrowDropDown,
                 contentDescription = if (expanded.value) "Скрыть детали" else "Показать детали",
-                tint = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.padding(end = 8.dp)
             )
         }

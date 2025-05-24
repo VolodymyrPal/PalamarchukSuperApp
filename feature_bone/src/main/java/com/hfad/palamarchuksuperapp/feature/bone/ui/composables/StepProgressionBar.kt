@@ -50,7 +50,7 @@ fun StepProgressionBar(
     var componentSize by remember { mutableStateOf(Size.Zero) }
 
     val colorScheme = MaterialTheme.colorScheme
-    val primaryColor = colorScheme.primary
+    val primaryColor = colorScheme.onSurfaceVariant // or colorScheme.primary
     val primaryContainerColor = colorScheme.primaryContainer
     val onSurface = colorScheme.onSurface
     val surfaceColor = colorScheme.surface
@@ -250,14 +250,14 @@ fun StepProgressionBar(
                 }
 
                 val day = String.format("%02d", index + 1) //TODO Test only
-                val text = "${day}.02.25"
+                val text = "${day}.06.25"
 
                 val fontSize = (stepRadius / 2f).coerceIn(10.sp.toPx(), 18.sp.toPx())
                 val adaptiveTextStyle = textStyle.copy(
                     fontSize = fontSize.toSp(),
                     fontWeight = Bold,
                     color = if (index < currentStep) onSurface else
-                        onSurface.copy(alpha = 0.7f)
+                        onSurface.copy(alpha = 0.4f)
 
                 )
 

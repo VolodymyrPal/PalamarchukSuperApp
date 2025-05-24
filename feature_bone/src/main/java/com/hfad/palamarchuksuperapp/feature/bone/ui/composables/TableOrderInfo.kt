@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +38,7 @@ fun TableOrderInfo(
     ) {
         val density = LocalDensity.current
         val maxGridWidth = remember { mutableStateOf(20) }
+        val maxGridHeight = remember { mutableStateOf(10) }
         val numberOfGrid = remember(maxGridWidth.value) {
             max(1, (this.maxWidth / with(density) { maxGridWidth.value.toDp() }).toInt())
         }
@@ -54,25 +55,42 @@ fun TableOrderInfo(
                 }.map { it.measure(constraints) }
             }.flatten()
             maxGridWidth.value = placeable.maxOfOrNull { it.width } ?: 0
+            maxGridHeight.value = placeable.maxOfOrNull { it.height } ?: 10
             layout(0, 0) {}
         }
 
-        LazyVerticalStaggeredGrid(
-            modifier = Modifier,
-            columns = StaggeredGridCells.Fixed(numberOfGrid),
-            verticalItemSpacing = 14.dp,
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxWidth(),
+            columns = GridCells.Fixed(numberOfGrid),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(bottom = 12.dp)
+            contentPadding = PaddingValues(bottom = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             items(orderInfoList.size) { index ->
                 AppIconInfoField(
-                    modifier = Modifier,
+                    modifier = Modifier.height(with(density) { maxGridHeight.value.toDp() }),
                     icon = orderInfoList[index].icon,
                     title = orderInfoList[index].title,
                     description = orderInfoList[index].description
                 )
             }
         }
+//        LazyVerticalStaggeredGrid(
+//            modifier = Modifier,
+//            columns = StaggeredGridCells.Fixed(numberOfGrid),
+//            verticalItemSpacing = 14.dp,
+//            horizontalArrangement = Arrangement.spacedBy(8.dp),
+//            contentPadding = PaddingValues(bottom = 12.dp)
+//        ) {
+//            items(orderInfoList.size) { index ->
+//                AppIconInfoField(
+//                    modifier = Modifier,
+//                    icon = orderInfoList[index].icon,
+//                    title = orderInfoList[index].title,
+//                    description = orderInfoList[index].description
+//                )
+//            }
+//        }
     }
 }
 

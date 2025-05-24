@@ -46,7 +46,7 @@ fun FeatureTheme(
 }
 
 val shapes = Shapes(
-    extraSmall = RoundedCornerShape(1.dp), // For card
+    extraSmall = RoundedCornerShape(0.dp), // For card
     small = RoundedCornerShape(2.dp), // For button
     medium = RoundedCornerShape(4.dp), //
     large = RoundedCornerShape(24.dp),
@@ -59,8 +59,8 @@ fun financeStatusColor(
 ): Color {
     val isDark = isSystemInDarkTheme()
     return when (status) {
-        TransactionType.CREDIT -> if (!isDark) Color(0xFF43A047) else Color(0xFF66BB6A)
-        TransactionType.DEBIT -> if (!isDark) Color(0xFF90CAF9) else Color(0xFF90CAF9)
+        TransactionType.CREDIT -> if (!isDark) Color(0xFFE6FFEC) else Color(0xFFC8E6C9)
+        TransactionType.DEBIT -> if (!isDark) Color(0xFFFBE6E7) else Color(0xFFFFCDD2)
     }
 }
 

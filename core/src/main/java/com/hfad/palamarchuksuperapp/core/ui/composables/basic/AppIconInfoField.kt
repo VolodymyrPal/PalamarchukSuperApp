@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,7 +47,7 @@ fun AppIconInfoField(
     iconSize: Dp = 24.dp,
     iconPadding: Dp = 6.dp,
     contentPadding: PaddingValues = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-    elevation: Dp = 2.dp,
+    elevation: Dp = 0.dp,
     onClick: (() -> Unit)? = null,
     cardColors: CardColors = CardDefaults.cardColors(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -70,13 +71,14 @@ fun AppIconInfoField(
         modifier = boxModifier
     ) {
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             elevation = CardDefaults.cardElevation(defaultElevation = elevation),
             colors = cardColors,
-            shape = RoundedCornerShape(2.dp),
+            shape = MaterialTheme.shapes.extraSmall
         ) {
             Row(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(contentPadding)
                     .align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
@@ -107,7 +109,7 @@ fun AppIconInfoField(
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Medium,
-                            overflow = TextOverflow.Ellipsis,
+//                            overflow = TextOverflow.Ellipsis,
                             maxLines = 2,
                             textAlign = TextAlign.Unspecified,
                         ),
@@ -122,7 +124,7 @@ fun AppIconInfoField(
                             textStyle = MaterialTheme.typography.labelLarge,
                             fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
+//                            overflow = TextOverflow.Ellipsis,
                             textAlign = TextAlign.Unspecified,
                         ),
                     )

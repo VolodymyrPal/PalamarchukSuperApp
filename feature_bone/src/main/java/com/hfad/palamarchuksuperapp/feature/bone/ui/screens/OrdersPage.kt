@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
@@ -63,21 +61,6 @@ internal fun OrdersPage(
         contentPadding = PaddingValues(bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-//        item {
-//            IconButton(
-//                onClick = {
-//                    navController?.navigate(FeatureBoneRoutes.LoginScreen) {
-//                        popUpTo(FeatureBoneRoutes.BaseFeautreNavRoute::class) {}
-//                        launchSingleTop = true
-//                    }
-//                }
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Check,
-//                    contentDescription = "Back"
-//                )
-//            }
-//        }
 
         item {
             OrderStatisticCard(
@@ -90,7 +73,8 @@ internal fun OrdersPage(
             OrderCard(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp),
                 order = it,
-                initialStatus = StepperStatus.entries.random()
+                initialStatus = StepperStatus.entries.random(),
+                internalPaddingValues = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             )
         }
     }
@@ -106,11 +90,10 @@ private fun OrderStatisticCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(1.dp),
-//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = MaterialTheme.shapes.extraSmall
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val title = stringResource(R.string.order_statistic_title)
@@ -141,7 +124,7 @@ private fun OrderStatisticCard(
                     icon = inProgress,
                     value = "${orderMetrics.inProgressOrders}",
                     label = inWork,
-                    color = MaterialTheme.colorScheme.error
+                    color = Color.Red
                 )
 
                 val completed = stringResource(R.string.completed)
@@ -160,7 +143,7 @@ private fun OrderStatisticCard(
                     icon = weightPainter,
                     value = "${(orderMetrics.totalOrderWeight * 100).toInt() / 100.0} т",
                     label = finishFull,
-                    color = MaterialTheme.colorScheme.primary
+                    color = Color.Blue
                 )
             }
 
@@ -181,7 +164,6 @@ private fun OrderStatisticCard(
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium
                     ),
-                    color = MaterialTheme.colorScheme.primary
                 )
                 AppText(
                     value = "${orderMetrics.totalOrders}",
@@ -189,7 +171,6 @@ private fun OrderStatisticCard(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     ),
-                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -212,7 +193,7 @@ private fun OrderStat(
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .clip(CircleShape)
+                .clip(shape = MaterialTheme.shapes.extraSmall)
                 .background(color.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
         ) {

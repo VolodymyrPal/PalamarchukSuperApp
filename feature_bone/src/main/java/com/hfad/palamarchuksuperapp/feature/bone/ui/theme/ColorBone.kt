@@ -35,48 +35,49 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-val primaryLight = Color(0xFF000000)
+val primaryLight = Color(0xFF1A1A1A)
 val onPrimaryLight = Color(0xFFFFFFFF)
-val primaryContainerLight = Color(0xFFD0D0D0)
-val onPrimaryContainerLight = Color(0xFF000000)
+val primaryContainerLight = Color(0xFFE8E8E8)  // Чуть темнее для контраста
+val onPrimaryContainerLight = Color(0xFF1A1A1A)
 
-val secondaryLight = Color(0xFF1A1A1A)
+val secondaryLight = Color(0xFF0055FF)
 val onSecondaryLight = Color(0xFFFFFFFF)
-val secondaryContainerLight = Color(0xFFF0F0F0)
-val onSecondaryContainerLight = Color(0xFF000000)
+val secondaryContainerLight = Color(0xFFE0EBFF) // Чуть более насыщенный
+val onSecondaryContainerLight = Color(0xFF003399)
 
-val tertiaryLight = Color(0xFF333333)
+val tertiaryLight = Color(0xFF666666)
 val onTertiaryLight = Color(0xFFFFFFFF)
-val tertiaryContainerLight = Color(0xFFE8E8E8)
-val onTertiaryContainerLight = Color(0xFF000000)
+val tertiaryContainerLight = Color(0xFFE0E0E0)  // Более заметный серый
+val onTertiaryContainerLight = Color(0xFF1A1A1A)
 
-val errorLight = Color(0xFF000000)
+val errorLight = Color(0xFFDC3545)
 val onErrorLight = Color(0xFFFFFFFF)
-val errorContainerLight = Color(0xFFD0D0D0)
-val onErrorContainerLight = Color(0xFF000000)
+val errorContainerLight = Color(0xFFFFE0E0)     // Чуть более заметный
+val onErrorContainerLight = Color(0xFF7A1C1C)
 
-val backgroundLight = Color(0xFFFFFFFF)
-val onBackgroundLight = Color(0xFF000000)
-val surfaceLight = Color(0xFFFFFFFF)
-val onSurfaceLight = Color(0xFF000000)
+val backgroundLight = Color(0xFFFAFAFA)         // Слегка серый вместо чисто белого
+val onBackgroundLight = Color(0xFF1A1A1A)
+val surfaceLight = Color(0xFFF0F0F0)            // Более заметный серый
+val onSurfaceLight = Color(0xFF1A1A1A)
 
-val surfaceVariantLight = Color(0xFFF5F5F5)
-val onSurfaceVariantLight = Color(0xFF000000)
-val outlineLight = Color(0xFF808080)
-val outlineVariantLight = Color(0xFFD0D0D0)
+val surfaceVariantLight = Color(0xFFE0E0E0)     // Более контрастный
+val onSurfaceVariantLight = Color(0xFF1A1A1A)
+val outlineLight = Color(0xFFC0C0C0)            // Чуть темнее для видимости
+val outlineVariantLight = Color(0xFFE8E8E8)     // Более заметный
 
 val scrimLight = Color(0xFF000000)
-val inverseSurfaceLight = Color(0xFF000000)
+val inverseSurfaceLight = Color(0xFF1A1A1A)
 val inverseOnSurfaceLight = Color(0xFFFFFFFF)
-val inversePrimaryLight = Color(0xFFD0D0D0)
+val inversePrimaryLight = Color(0xFF0055FF)
 
-val surfaceDimLight = Color(0xFFF0F0F0)
-val surfaceBrightLight = Color(0xFFFFFFFF)
-val surfaceContainerLowestLight = Color(0xFFFFFFFF)
-val surfaceContainerLowLight = Color(0xFFF8F8F8)
-val surfaceContainerLight = Color(0xFFF0F0F0)
-val surfaceContainerHighLight = Color(0xFFE8E8E8)
-val surfaceContainerHighestLight = Color(0xFFD0D0D0)
+// Улучшенная иерархия поверхностей для лучшего контраста
+val surfaceDimLight = Color(0xFFE8E8E8)              // Темнее
+val surfaceBrightLight = Color(0xFFFAFAFA)           // Слегка серый
+val surfaceContainerLowestLight = Color(0xFFFAFAFA)  // Слегка серый
+val surfaceContainerLowLight = Color(0xFFF0F0F0)     // Более заметный
+val surfaceContainerLight = Color(0xFFE8E8E8)        // Хороший контраст
+val surfaceContainerHighLight = Color(0xFFE0E0E0)    // Четкое разделение
+val surfaceContainerHighestLight = Color(0xFFD5D5D5) // Самый темный уровень
 
 // Обновленная Dark theme
 val primaryDark = Color(0xFFFFFFFF)
@@ -123,16 +124,6 @@ val scrimDark = Color(0xFF000000)
 val inverseSurfaceDark = Color(0xFFFFFFFF)
 val inverseOnSurfaceDark = Color(0xFF000000)
 val inversePrimaryDark = Color(0xFF000000)
-
-val accentLight = Color(0xFF000000)
-val onAccentLight = Color(0xFFFFFFFF)
-val accentContainerLight = Color(0xFFE0E0E0)
-val onAccentContainerLight = Color(0xFF000000)
-
-val accentDark = Color(0xFFFFFFFF)
-val onAccentDark = Color(0xFF000000)
-val accentContainerDark = Color(0xFF333333)
-val onAccentContainerDark = Color(0xFFFFFFFF)
 
 @Composable
 fun ComprehensiveColorPreview() {
