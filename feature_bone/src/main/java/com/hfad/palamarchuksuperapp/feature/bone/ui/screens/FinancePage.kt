@@ -113,11 +113,11 @@ fun FinanceStatisticCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(1.dp),
+        shape = MaterialTheme.shapes.extraSmall,
 //        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AppText(
@@ -131,7 +131,8 @@ fun FinanceStatisticCard(
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f)
+                thickness = 2.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
             Row(
@@ -206,8 +207,8 @@ fun FinanceStat(
     ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape),
+                .size(48.dp, 36.dp)
+                .clip(shape = MaterialTheme.shapes.extraSmall),
             contentAlignment = Alignment.Center
         ) {
             val painter = painterResource(amountCurrency.currencyCountry)
@@ -272,7 +273,7 @@ fun FinanceTransactionCard(
                 interactionSource = interactionSource
             ),
         shape = RoundedCornerShape(2.dp),
-        border = BorderStroke(1.dp, colorScheme.outline.copy(alpha = 0.3f)),
+        border = BorderStroke(1.dp, colorScheme.outline),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface,
             contentColor = colorScheme.onSurface
@@ -297,7 +298,6 @@ fun FinanceTransactionCard(
                     Icon(
                         painter = painterResource(uiTransaction.iconRes),
                         contentDescription = uiTransaction.transactionName,
-                        tint = colorScheme.primary,
                         modifier = Modifier
                             .padding(8.dp)
                             .size(24.dp)
@@ -398,7 +398,7 @@ fun FinanceTransactionCard(
                 ToggleableArrow(
                     modifier = Modifier
                         .size(10.dp)
-                        .clip(CircleShape),
+                        .clip(shape = MaterialTheme.shapes.extraSmall,),
                     isOpen = isExpanded.value,
                     onToggle = { isExpanded.value = !isExpanded.value },
                 )
@@ -430,7 +430,7 @@ fun BaseDescription(
             if (uiTransaction.additionalAmount != null) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
+                        .clip(MaterialTheme.shapes.extraSmall)
                         .background(
                             uiTransaction.additionalColor.copy(
                                 alpha = 0.4f
@@ -456,7 +456,7 @@ fun BaseDescription(
             }
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(
                         uiTransaction.color.copy(
                             alpha = 0.4f
