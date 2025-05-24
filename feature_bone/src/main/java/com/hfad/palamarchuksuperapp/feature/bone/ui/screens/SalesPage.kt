@@ -84,11 +84,11 @@ fun SalesStatisticsCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(1.dp),
+        shape = MaterialTheme.shapes.extraSmall,
 //        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(vertical = 25.dp, horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AppText(
@@ -103,7 +103,7 @@ fun SalesStatisticsCard(
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.2f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
             Row(
@@ -185,7 +185,7 @@ fun SalesStat(
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .clip(CircleShape)
+                .clip(shape = MaterialTheme.shapes.small,) //  .clip(CircleShape)
                 .background(color.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center
         ) {
