@@ -113,15 +113,15 @@ fun StepProgressionBar(
                 val isCurrent = index == currentStep
 
                 val outerColor = when {
-                    isCurrent -> primaryColor.copy(alpha = 0.75f)
+                    isCurrent -> primaryColor
                     isCompleted && index < currentStep -> primaryColor
-                    isCompleted -> primaryColor.copy(alpha = 0.7f)
+                    isCompleted -> primaryColor
                     index < currentStep -> primaryColor
                     else -> colorScheme.outline.copy(alpha = 0.5f)
                 }
 
                 val innerColor = when {
-                    isCompleted && index < currentStep -> primaryColor.copy(alpha = 0.7f)
+                    isCompleted && index < currentStep -> primaryColor.copy(alpha = 0.8f)
                     isCompleted && index > currentStep -> primaryColor.copy(alpha = 0.6f)
                     isCurrent -> primaryContainerColor.copy(alpha = 0.5f)
                     else -> surfaceColor
@@ -232,7 +232,7 @@ fun StepProgressionBar(
                 // **Рисуем иконку сервиса**
                 val iconTint = when {
                     index <= currentStep -> onSurface
-                    else -> onSurface.copy(alpha = 0.75f)
+                    else -> onSurface
                 }
 
                 drawIntoCanvas { canvas ->
