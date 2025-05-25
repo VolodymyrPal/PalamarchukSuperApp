@@ -176,8 +176,8 @@ fun OrderCard(
                 Box(
                     modifier = Modifier
                         .size(36.dp)
-                        .clip(MaterialTheme.shapes.small)
-                        .background(colorScheme.primaryContainer.copy(alpha = 0.5f))
+                        .clip(MaterialTheme.shapes.extraLarge)
+                        .background(colorScheme.primaryContainer)
                         .clickable(
                             interactionSource = null,
                             indication = appRippleEffect()
