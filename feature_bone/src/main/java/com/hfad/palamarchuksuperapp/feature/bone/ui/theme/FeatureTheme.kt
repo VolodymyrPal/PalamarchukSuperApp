@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
@@ -25,12 +26,62 @@ fun FeatureTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
+    customTheme: Int = 1,
     content: @Composable() () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        customTheme != 0 -> when (customTheme) {
+            else -> {
+                ColorScheme(
+                    primary = Color(0xFF00D4AA),
+                    onPrimary = Color(0xFF000000),
+                    primaryContainer = Color(0xFF005B4F),
+                    onPrimaryContainer = Color(0xFFFFFFFF),
+                    inversePrimary = Color(0xFF7FFFD4),
+
+                    secondary = Color(0xFF3A3D47),
+                    onSecondary = Color(0xFFFFFFFF),
+                    secondaryContainer = Color(0xFF2A2D35),
+                    onSecondaryContainer = Color(0xFFE0E0E0),
+
+                    tertiary = Color(0xFFFF6B6B),
+                    onTertiary = Color(0xFFFFFFFF),
+                    tertiaryContainer = Color(0xFF4A2C2C),
+                    onTertiaryContainer = Color(0xFFFFDADA),
+
+                    error = Color(0xFFFF4757),
+                    onError = Color(0xFFFFFFFF),
+                    errorContainer = Color(0xFF5D2A2A),
+                    onErrorContainer = Color(0xFFFFDADA),
+
+                    background = Color(0xFF1A1D29),
+                    onBackground = Color(0xFFE8E8E8),
+                    surface = Color(0xFF282F3D),
+                    onSurface = Color(0xFFE8E8E8),
+                    surfaceVariant = Color(0xFF313B4D),
+                    onSurfaceVariant = Color(0xFFB0B0B0),
+                    surfaceTint = Color(0xFF00D4AA),
+                    inverseSurface = Color(0xFFE8E8E8),
+                    inverseOnSurface = Color(0xFF1A1D29),
+
+                    outline = Color(0xFF404354),
+                    outlineVariant = Color(0xFF4A4D5F),
+                    scrim = Color(0x99000000),
+
+                    surfaceContainerLowest = Color(0xFF1A1D29),  // Совпадает с background - самый темный
+                    surfaceContainerLow = Color(0xFF1F2634),     // Чуть светлее фона с легким бирюзовым
+                    surfaceContainer = Color(0xFF282F3D),        // Базовый уровень карточек с бирюзовым, совпадает с surface
+                    surfaceContainerHigh = Color(0xFF313B4D),    // Выше базового с бирюзовым подтоном
+                    surfaceContainerHighest = Color(0xFF3A4759), // Самый "поднятый" элемент с бирюзовым
+                    surfaceDim = Color(0xFF151822),              // Для затемненных эффектов - темнее фона
+                    surfaceBright = Color(0xFF435466),
+                )
+            }
         }
 
         darkTheme -> darkScheme
