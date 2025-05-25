@@ -162,25 +162,19 @@ fun BoneScreen(
             }
         },
     ) { paddingValues ->
-        Surface(
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorScheme.primaryContainer),
-                userScrollEnabled = true,
-                beyondViewportPageCount = 4,
-            ) { page ->
-                when (page) {
-                    0 -> OrdersPage()
-                    1 -> PaymentsPage()
-                    2 -> SalesPage()
-                    3 -> FinancePage()
-                }
+                .padding(paddingValues),
+            userScrollEnabled = true,
+            beyondViewportPageCount = 4,
+        ) { page ->
+            when (page) {
+                0 -> OrdersPage()
+                1 -> PaymentsPage()
+                2 -> SalesPage()
+                3 -> FinancePage()
             }
         }
     }
