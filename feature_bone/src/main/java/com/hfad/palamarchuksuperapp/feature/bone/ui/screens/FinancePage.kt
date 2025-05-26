@@ -336,7 +336,8 @@ fun FinanceTransactionCard(
                         when (transaction) {
                             is Order -> {
                                 OrderCard(
-                                    order = transaction
+                                    order = transaction,
+                                    internalPadding = PaddingValues(8.dp)
                                 )
                             }
 

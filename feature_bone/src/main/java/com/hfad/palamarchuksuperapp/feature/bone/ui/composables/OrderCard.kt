@@ -35,6 +35,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,16 +72,12 @@ fun OrderCard(
     initialStatus: StepperStatus = StepperStatus.IN_PROGRESS,
     currentStep: Int = 2,
     initialExpanded: Boolean = false,
-    internalPaddingValues: PaddingValues = PaddingValues(),
+    internalPadding: PaddingValues = PaddingValues(),
 ) {
     val expanded = remember { mutableStateOf(initialExpanded) }
     val orderStatus = remember { mutableStateOf(initialStatus) }
     val currentStepCount = remember { mutableStateOf(currentStep) }
 
-    val rotationState by animateFloatAsState(
-        targetValue = if (expanded.value) 180f else 0f,
-        label = "rotationAnimation"
-    )
 
     val elevation by animateDpAsState(
         targetValue = if (expanded.value) 6.dp else 2.dp,
@@ -121,13 +119,13 @@ fun OrderCard(
 //        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
         Column(
-            modifier = Modifier.padding(internalPaddingValues)
+            modifier = Modifier.padding(internalPadding)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
