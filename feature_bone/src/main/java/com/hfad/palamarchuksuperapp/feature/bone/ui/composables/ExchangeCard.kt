@@ -3,11 +3,11 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
@@ -28,7 +28,6 @@ import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
