@@ -86,7 +86,8 @@ fun PaymentsPage(
         items(paymentPageState.payments) { payment ->
             PaymentCard(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp),
-                payment = payment
+                payment = payment,
+                internalPadding = PaddingValues(horizontal = 20.dp, vertical = 25.dp)
             )
         }
     }
@@ -292,6 +293,7 @@ fun StatItem(
 fun PaymentCard(
     payment: PaymentOrder,
     modifier: Modifier = Modifier,
+    internalPadding: PaddingValues = PaddingValues(),
 ) {
     val statusColor = when (payment.status) {
         PaymentStatus.PAID -> statusColor(Status.DONE)
@@ -316,11 +318,10 @@ fun PaymentCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
+            modifier = Modifier.padding(internalPadding),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
