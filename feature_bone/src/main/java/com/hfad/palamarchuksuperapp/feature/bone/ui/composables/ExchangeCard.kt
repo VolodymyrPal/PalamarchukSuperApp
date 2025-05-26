@@ -40,6 +40,7 @@ import java.util.Locale
 fun ExchangeOrderCard(
     exchangeOrder: ExchangeOrder,
     modifier: Modifier = Modifier,
+    internalPadding: PaddingValues = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -52,7 +53,7 @@ fun ExchangeOrderCard(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
+            modifier = Modifier.padding(internalPadding),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

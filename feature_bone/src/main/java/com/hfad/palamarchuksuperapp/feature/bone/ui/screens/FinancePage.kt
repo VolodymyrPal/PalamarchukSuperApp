@@ -361,7 +361,8 @@ fun FinanceTransactionCard(
 
                             is ExchangeOrder -> {
                                 ExchangeOrderCard(
-                                    exchangeOrder = transaction
+                                    exchangeOrder = transaction,
+                                    internalPadding = PaddingValues(8.dp)
                                 )
                             }
                         }
