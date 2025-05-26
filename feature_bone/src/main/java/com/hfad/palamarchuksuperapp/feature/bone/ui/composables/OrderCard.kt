@@ -171,26 +171,13 @@ fun OrderCard(
                 }
 
                 // Arrow
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .background(colorScheme.primaryContainer)
-                        .clickable(
-                            interactionSource = null,
-                            indication = appRippleEffect()
-                        ) {
-                            expanded.value = !expanded.value
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Expand",
-                        modifier = Modifier.rotate(rotationState),
-                        tint = colorScheme.onPrimaryContainer
-                    )
-                }
+                RotateArrow(
+                    modifier = Modifier,
+                    expanded = expanded.value,
+                    onClick = {
+                        expanded.value = !expanded.value
+                    }
+                )
             }
 
             Box(
@@ -230,6 +217,48 @@ fun OrderCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun RotateArrow(
+    modifier: Modifier = Modifier,
+    expanded: Boolean, // Передавайте Boolean вместо MutableState
+    onClick: () -> Unit,
+) {
+    // Запомните colorScheme
+
+    // Или используйте LocalContentColor для более стабильной работы
+    val containerColor = colorScheme.primaryContainer
+    val contentColor = colorScheme.onPrimaryContainer
+
+    val rotationState by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(300),
+        label = "rotationAnimation"
+    )
+
+    Box(
+        modifier = modifier
+            .size(36.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(containerColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() }, // Запомните interactionSource
+                indication = appRippleEffect()
+            ) {
+                onClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = "Expand",
+            modifier = Modifier.graphicsLayer {
+                rotationZ = rotationState
+            },
+            tint = contentColor
+        )
     }
 }
 
