@@ -348,7 +348,8 @@ fun FinanceTransactionCard(
 
                             is SaleOrder -> {
                                 SaleCard(
-                                    saleItem = transaction
+                                    saleItem = transaction,
+                                    internalPadding = PaddingValues(8.dp)
                                 )
                             }
 
