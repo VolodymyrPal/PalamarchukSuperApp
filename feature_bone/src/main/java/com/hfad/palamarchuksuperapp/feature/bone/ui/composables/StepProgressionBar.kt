@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
 
@@ -283,6 +283,7 @@ enum class StepperStatus {
     DONE, CANCELED, IN_PROGRESS, CREATED
 }
 
+@Stable
 interface Stepper {
     val status: StepperStatus
     val serviceType: ServiceType
