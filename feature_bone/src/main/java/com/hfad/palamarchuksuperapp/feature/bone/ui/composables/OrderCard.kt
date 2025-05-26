@@ -35,6 +35,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,16 +72,12 @@ fun OrderCard(
     initialStatus: StepperStatus = StepperStatus.IN_PROGRESS,
     currentStep: Int = 2,
     initialExpanded: Boolean = false,
-    internalPaddingValues: PaddingValues = PaddingValues(),
+    internalPadding: PaddingValues = PaddingValues(),
 ) {
     val expanded = remember { mutableStateOf(initialExpanded) }
     val orderStatus = remember { mutableStateOf(initialStatus) }
     val currentStepCount = remember { mutableStateOf(currentStep) }
 
-    val rotationState by animateFloatAsState(
-        targetValue = if (expanded.value) 180f else 0f,
-        label = "rotationAnimation"
-    )
 
     val elevation by animateDpAsState(
         targetValue = if (expanded.value) 6.dp else 2.dp,
@@ -121,13 +119,13 @@ fun OrderCard(
 //        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
         Column(
-            modifier = Modifier.padding(internalPaddingValues)
+            modifier = Modifier.padding(internalPadding)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -173,26 +171,13 @@ fun OrderCard(
                 }
 
                 // Arrow
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .background(colorScheme.primaryContainer)
-                        .clickable(
-                            interactionSource = null,
-                            indication = appRippleEffect()
-                        ) {
-                            expanded.value = !expanded.value
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Expand",
-                        modifier = Modifier.rotate(rotationState),
-                        tint = colorScheme.onPrimaryContainer
-                    )
-                }
+                RotateArrow(
+                    modifier = Modifier,
+                    expanded = expanded.value,
+                    onClick = {
+                        expanded.value = !expanded.value
+                    }
+                )
             }
 
             Box(
@@ -232,6 +217,48 @@ fun OrderCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun RotateArrow(
+    modifier: Modifier = Modifier,
+    expanded: Boolean, // Передавайте Boolean вместо MutableState
+    onClick: () -> Unit,
+) {
+    // Запомните colorScheme
+
+    // Или используйте LocalContentColor для более стабильной работы
+    val containerColor = colorScheme.primaryContainer
+    val contentColor = colorScheme.onPrimaryContainer
+
+    val rotationState by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = tween(300),
+        label = "rotationAnimation"
+    )
+
+    Box(
+        modifier = modifier
+            .size(36.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+            .background(containerColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() }, // Запомните interactionSource
+                indication = appRippleEffect()
+            ) {
+                onClick()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = "Expand",
+            modifier = Modifier.graphicsLayer {
+                rotationZ = rotationState
+            },
+            tint = contentColor
+        )
     }
 }
 

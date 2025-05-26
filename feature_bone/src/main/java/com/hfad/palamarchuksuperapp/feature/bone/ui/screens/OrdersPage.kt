@@ -74,7 +74,7 @@ internal fun OrdersPage(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp),
                 order = it,
                 initialStatus = StepperStatus.entries.random(),
-                internalPaddingValues = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
+                internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             )
         }
     }

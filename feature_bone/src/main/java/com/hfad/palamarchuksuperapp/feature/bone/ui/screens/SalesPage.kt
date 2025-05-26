@@ -68,7 +68,8 @@ fun SalesPage(
         items(state.salesItems) { item ->
             SaleCard(
                 saleItem = item,
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
+                internalPadding = PaddingValues(horizontal = 20.dp, vertical = 25.dp)
             )
         }
     }

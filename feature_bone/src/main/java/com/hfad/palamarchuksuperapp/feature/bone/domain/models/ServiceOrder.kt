@@ -1,11 +1,13 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Stable
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.Stepper
 
 @Suppress("LongParameterList")
+@Stable
 class ServiceOrder(
     /* PrimaryKey - ID */
     val id: Int = 0,

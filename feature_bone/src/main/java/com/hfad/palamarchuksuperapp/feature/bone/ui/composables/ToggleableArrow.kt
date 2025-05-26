@@ -28,7 +28,7 @@ fun ToggleableArrow(
     onToggle: () -> Unit,
 ) {
 
-    val progress by animateFloatAsState(
+    val progress = animateFloatAsState(
         targetValue = if (isOpen) 0.05f else 0.95f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -54,7 +54,7 @@ fun ToggleableArrow(
             val height = size.height
 
             val centerX = width / 2f
-            val topY = height * progress   // slide top
+            val topY = height * progress.value   // slide top
             val baseY = height * 0.7f
 
             val wingOffsetX = width * 0.4f

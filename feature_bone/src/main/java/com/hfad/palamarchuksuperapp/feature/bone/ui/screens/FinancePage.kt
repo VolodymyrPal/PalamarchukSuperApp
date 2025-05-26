@@ -336,7 +336,8 @@ fun FinanceTransactionCard(
                         when (transaction) {
                             is Order -> {
                                 OrderCard(
-                                    order = transaction
+                                    order = transaction,
+                                    internalPadding = PaddingValues(8.dp)
                                 )
                             }
 
@@ -348,19 +349,22 @@ fun FinanceTransactionCard(
 
                             is SaleOrder -> {
                                 SaleCard(
-                                    saleItem = transaction
+                                    saleItem = transaction,
+                                    internalPadding = PaddingValues(8.dp)
                                 )
                             }
 
                             is PaymentOrder -> {
                                 PaymentCard(
-                                    payment = transaction
+                                    payment = transaction,
+                                    internalPadding = PaddingValues(8.dp)
                                 )
                             }
 
                             is ExchangeOrder -> {
                                 ExchangeOrderCard(
-                                    exchangeOrder = transaction
+                                    exchangeOrder = transaction,
+                                    internalPadding = PaddingValues(8.dp)
                                 )
                             }
                         }

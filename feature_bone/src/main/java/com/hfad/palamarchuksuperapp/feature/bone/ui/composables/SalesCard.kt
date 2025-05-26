@@ -70,6 +70,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.theme.appRippleEffect
 fun SaleCard(
     saleItem: SaleOrder,
     modifier: Modifier = Modifier,
+    internalPadding : PaddingValues = PaddingValues()
 ) {
     val statusColor = when (saleItem.status) {
         SaleStatus.COMPLETED -> statusColor(Status.DONE)
@@ -97,7 +98,7 @@ fun SaleCard(
 //        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 25.dp, horizontal = 20.dp),
+            modifier = Modifier.padding(internalPadding),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
