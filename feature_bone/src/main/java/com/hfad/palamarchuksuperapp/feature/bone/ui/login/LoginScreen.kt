@@ -232,22 +232,23 @@ fun LoginScreen(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = DonePartnersTheme.BorderGray
+                    thickness = DividerDefaults.Thickness,
                 )
                 Text(
                     text = "или",
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    color = DonePartnersTheme.DarkGray.copy(alpha = 0.6f),
                     fontSize = 14.sp
                 )
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = DonePartnersTheme.BorderGray
+                    thickness = DividerDefaults.Thickness,
                 )
             }
 
@@ -257,15 +258,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            DonePartnersTheme.SecondaryBlue,
-                            DonePartnersTheme.PrimaryBlue
-                        )
-                    )
-                ),
-                shape = RoundedCornerShape(12.dp)
+                shape = MaterialTheme.shapes.medium
             ) {
                 AppText(
                     value = "Create an account",
@@ -278,6 +271,7 @@ fun LoginScreen(
 
             // Информация о компании
             Column(
+                modifier = Modifier.padding(top = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AppText(
