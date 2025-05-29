@@ -201,9 +201,6 @@ fun LoginScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Кнопка входа
                     Button(
                         onClick = {
                             isLoading = true
@@ -212,10 +209,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = DonePartnersTheme.PrimaryBlue
-                        ),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                         enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
                     ) {
                         if (isLoading) {
@@ -237,9 +231,6 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Разделитель
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -260,9 +251,7 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
 
-            // Кнопка регистрации
             OutlinedButton(
                 onClick = onSignUpClick,
                 modifier = Modifier
@@ -286,8 +275,6 @@ fun LoginScreen(
                     ),
                 )
             }
-
-            Spacer(modifier = Modifier.height(40.dp))
 
             // Информация о компании
             Column(
