@@ -57,7 +57,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onForgotPasswordClick: () -> Unit = {},
-    onSignUpClick: () -> Unit = {}
+    onSignUpClick: () -> Unit = {},
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -65,34 +65,22 @@ fun LoginScreen(
     var isLoading by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
 
-    Box(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        DonePartnersTheme.LightGray,
-                        Color.White
-                    )
-                )
-            )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(60.dp))
-
-            // Логотип и заголовок
             Card(
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(RoundedCornerShape(16.dp)),
+                    .clip(MaterialTheme.shapes.small),
                 colors = CardDefaults.cardColors(
-                    containerColor = DonePartnersTheme.PrimaryBlue
+                    containerColor = colorScheme.onSurfaceVariant
                 )
             ) {
                 Box(
@@ -208,16 +196,10 @@ fun LoginScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = rememberMe,
-                                onCheckedChange = { rememberMe = it },
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = DonePartnersTheme.SecondaryBlue
-                                )
-                            )
+
+                        Checkbox(
+                            checked = rememberMe,
+                            onCheckedChange = { rememberMe = it },
                         )
                         AppText(
                             value = "Remember me",
