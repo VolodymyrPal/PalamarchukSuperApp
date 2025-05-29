@@ -144,42 +144,36 @@ fun LoginScreen(
                         shape = MaterialTheme.shapes.medium
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Password поле
-                    OutlinedTextField(
+                    AppOutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
                         label = { Text("Пароль") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Lock,
-                                contentDescription = null,
-                                tint = DonePartnersTheme.SecondaryBlue
-                            )
-                        },
-                        trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        outlinedTextConfig = appEditOutlinedTextConfig(
+                            leadingIcon = {
                                 Icon(
-                                    if (passwordVisible) Icons.Default.Info else Icons.Default.Lock,
-                                    contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
-                                    tint = DonePartnersTheme.DarkGray.copy(alpha = 0.6f)
+                                    Icons.Default.Lock,
+                                    contentDescription = null,
+//                                tint = DonePartnersTheme.SecondaryBlue
                                 )
-                            }
-                        },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = DonePartnersTheme.SecondaryBlue,
-                            focusedLabelColor = DonePartnersTheme.SecondaryBlue
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        if (passwordVisible) Icons.Default.Info else Icons.Default.Lock,
+                                        contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
+//                                    tint = DonePartnersTheme.DarkGray.copy(alpha = 0.6f)
+                                    )
+                                }
+                            },
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 24.dp),
+                        shape = MaterialTheme.shapes.medium
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Запомнить меня и забыли пароль
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
