@@ -119,40 +119,29 @@ fun LoginScreen(
                 modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Форма входа
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    .clip(MaterialTheme.shapes.small),
             ) {
                 Column(
                     modifier = Modifier.padding(24.dp)
                 ) {
-                    // Email поле
-                    OutlinedTextField(
+                    AppOutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
                         label = { Text("Email") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Email,
-                                contentDescription = null,
-                                tint = DonePartnersTheme.SecondaryBlue
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = DonePartnersTheme.SecondaryBlue,
-                            focusedLabelColor = DonePartnersTheme.SecondaryBlue
+                        outlinedTextConfig = appEditOutlinedTextConfig(
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Email,
+                                    contentDescription = null,
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
