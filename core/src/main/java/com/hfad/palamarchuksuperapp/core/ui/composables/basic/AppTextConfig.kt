@@ -169,64 +169,81 @@ fun appEditOutlinedTextConfig(
  * @return [androidx.compose.material3.TextFieldColors] с настройками цветов для [androidx.compose.material3.OutlinedTextField].
  */
 @Composable
-fun OutlinedTextFieldDefaults.appColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    errorTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-
-    focusedContainerColor = Color.Unspecified,
-    unfocusedContainerColor = Color.Unspecified,
-    disabledContainerColor = Color.Unspecified,
-    errorContainerColor = Color.Unspecified,
-
-    cursorColor = MaterialTheme.colorScheme.primary,
-    errorCursorColor = MaterialTheme.colorScheme.error,
-
-    selectionColors = TextSelectionColors(
+fun OutlinedTextFieldDefaults.appColors(
+    focusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    unfocusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    disabledTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    errorTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    focusedContainerColor: Color = Color.Unspecified,
+    unfocusedContainerColor: Color = Color.Unspecified,
+    disabledContainerColor: Color = Color.Unspecified,
+    errorContainerColor: Color = Color.Unspecified,
+    cursorColor: Color = MaterialTheme.colorScheme.primary,
+    errorCursorColor: Color = MaterialTheme.colorScheme.error,
+    selectionColors: TextSelectionColors = TextSelectionColors(
         handleColor = MaterialTheme.colorScheme.primary,
         backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
     ),
+    focusedBorderColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor: Color = MaterialTheme.colorScheme.outline,
+    disabledBorderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    errorBorderColor: Color = MaterialTheme.colorScheme.error,
+    focusedLeadingIconColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedLeadingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledLeadingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorLeadingIconColor: Color = MaterialTheme.colorScheme.error,
+    focusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorTrailingIconColor: Color = MaterialTheme.colorScheme.error,
+    focusedPrefixColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedPrefixColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledPrefixColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorPrefixColor: Color = MaterialTheme.colorScheme.error,
+    focusedSuffixColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedSuffixColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledSuffixColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorSuffixColor: Color = MaterialTheme.colorScheme.error
+) = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = focusedTextColor,
+    unfocusedTextColor = unfocusedTextColor,
+    disabledTextColor = disabledTextColor,
+    errorTextColor = errorTextColor,
 
-    focusedBorderColor = MaterialTheme.colorScheme.primary,
-    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-    disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
-    errorBorderColor = MaterialTheme.colorScheme.error,
+    focusedContainerColor = focusedContainerColor,
+    unfocusedContainerColor = unfocusedContainerColor,
+    disabledContainerColor = disabledContainerColor,
+    errorContainerColor = errorContainerColor,
 
-    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorLeadingIconColor = MaterialTheme.colorScheme.error,
+    cursorColor = cursorColor,
+    errorCursorColor = errorCursorColor,
 
-    focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-    unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorTrailingIconColor = MaterialTheme.colorScheme.error,
+    selectionColors = selectionColors,
 
-    focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorLabelColor = MaterialTheme.colorScheme.error,
+    focusedBorderColor = focusedBorderColor,
+    unfocusedBorderColor = unfocusedBorderColor,
+    disabledBorderColor = disabledBorderColor,
+    errorBorderColor = errorBorderColor,
 
-    focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorPlaceholderColor = MaterialTheme.colorScheme.error,
+    focusedLeadingIconColor = focusedLeadingIconColor,
+    unfocusedLeadingIconColor = unfocusedLeadingIconColor,
+    disabledLeadingIconColor = disabledLeadingIconColor,
+    errorLeadingIconColor = errorLeadingIconColor,
 
-    focusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    unfocusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorSupportingTextColor = MaterialTheme.colorScheme.error,
+    focusedTrailingIconColor = focusedTrailingIconColor,
+    unfocusedTrailingIconColor = unfocusedTrailingIconColor,
+    disabledTrailingIconColor = disabledTrailingIconColor,
+    errorTrailingIconColor = errorTrailingIconColor,
 
-    focusedPrefixColor = MaterialTheme.colorScheme.primary,
-    unfocusedPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorPrefixColor = MaterialTheme.colorScheme.error,
+    focusedPrefixColor = focusedPrefixColor,
+    unfocusedPrefixColor = unfocusedPrefixColor,
+    disabledPrefixColor = disabledPrefixColor,
+    errorPrefixColor = errorPrefixColor,
 
-    focusedSuffixColor = MaterialTheme.colorScheme.primary,
-    unfocusedSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorSuffixColor = MaterialTheme.colorScheme.error,
+    focusedSuffixColor = focusedSuffixColor,
+    unfocusedSuffixColor = unfocusedSuffixColor,
+    disabledSuffixColor = disabledSuffixColor,
+    errorSuffixColor = errorSuffixColor
 )
 
 /**
@@ -235,64 +252,54 @@ fun OutlinedTextFieldDefaults.appColors() = OutlinedTextFieldDefaults.colors(
  * @return [androidx.compose.material3.TextFieldColors] с настройками цветов для [androidx.compose.material3.TextField].
  */
 @Composable
-fun TextFieldDefaults.appColors() = TextFieldDefaults.colors(
-    focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    errorTextColor = MaterialTheme.colorScheme.error,
-
-    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f),
-    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
-    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-    errorContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.4f),
-
-    cursorColor = MaterialTheme.colorScheme.primary,
-    errorCursorColor = MaterialTheme.colorScheme.error,
-
-    selectionColors = TextSelectionColors(
+fun TextFieldDefaults.appColors(
+    focusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    unfocusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    disabledTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    errorTextColor: Color = MaterialTheme.colorScheme.error,
+    focusedContainerColor: Color = Color.Unspecified,
+    unfocusedContainerColor: Color = Color.Unspecified,
+    disabledContainerColor: Color = Color.Unspecified,
+    errorContainerColor: Color = Color.Unspecified,
+    cursorColor: Color = MaterialTheme.colorScheme.primary,
+    errorCursorColor: Color = MaterialTheme.colorScheme.error,
+    selectionColors: TextSelectionColors = TextSelectionColors(
         handleColor = MaterialTheme.colorScheme.primary,
         backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
     ),
+    focusedLeadingIconColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedLeadingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledLeadingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorLeadingIconColor: Color = MaterialTheme.colorScheme.error,
+    focusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorTrailingIconColor: Color = MaterialTheme.colorScheme.error
+) = TextFieldDefaults.colors(
+    focusedTextColor = focusedTextColor,
+    unfocusedTextColor = unfocusedTextColor,
+    disabledTextColor = disabledTextColor,
+    errorTextColor = errorTextColor,
 
-    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-    unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
-    disabledIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
-    errorIndicatorColor = MaterialTheme.colorScheme.error,
+    focusedContainerColor = focusedContainerColor,
+    unfocusedContainerColor = unfocusedContainerColor,
+    disabledContainerColor = disabledContainerColor,
+    errorContainerColor = errorContainerColor,
 
-    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorLeadingIconColor = MaterialTheme.colorScheme.error,
+    cursorColor = cursorColor,
+    errorCursorColor = errorCursorColor,
 
-    focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-    unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorTrailingIconColor = MaterialTheme.colorScheme.error,
+    selectionColors = selectionColors,
 
-    focusedLabelColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorLabelColor = MaterialTheme.colorScheme.error,
+    focusedLeadingIconColor = focusedLeadingIconColor,
+    unfocusedLeadingIconColor = unfocusedLeadingIconColor,
+    disabledLeadingIconColor = disabledLeadingIconColor,
+    errorLeadingIconColor = errorLeadingIconColor,
 
-    focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorPlaceholderColor = MaterialTheme.colorScheme.error,
-
-    focusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    unfocusedSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorSupportingTextColor = MaterialTheme.colorScheme.error,
-
-    focusedPrefixColor = MaterialTheme.colorScheme.primary,
-    unfocusedPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorPrefixColor = MaterialTheme.colorScheme.error,
-
-    focusedSuffixColor = MaterialTheme.colorScheme.primary,
-    unfocusedSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorSuffixColor = MaterialTheme.colorScheme.error,
+    focusedTrailingIconColor = focusedTrailingIconColor,
+    unfocusedTrailingIconColor = unfocusedTrailingIconColor,
+    disabledTrailingIconColor = disabledTrailingIconColor,
+    errorTrailingIconColor = errorTrailingIconColor
 )
 
 @Composable

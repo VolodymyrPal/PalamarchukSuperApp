@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
@@ -27,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,30 +65,28 @@ fun LoginScreen(
 
     Surface(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
+        color = colorScheme.background,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Card(
                 modifier = Modifier
-                    .size(80.dp)
+                    .wrapContentSize()
                     .clip(MaterialTheme.shapes.small),
-                colors = CardDefaults.cardColors(
-                    containerColor = colorScheme.onSurfaceVariant
-                )
             ) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier,
                     contentAlignment = Alignment.Center
                 ) {
                     AppText(
                         modifier = Modifier,
-                        value = "B",
-                        color = colorScheme.surface,
+                        value = "Bone",
                         appTextConfig = appTextConfig(
                             fontSize = 60.sp,
                             fontWeight = FontWeight.Bold
@@ -99,12 +95,9 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             AppText(
                 value = "Welcome",
                 appTextConfig = appTextConfig(
-                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
@@ -116,7 +109,7 @@ fun LoginScreen(
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                 ),
-                modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
+                modifier = Modifier
             )
 
             Card(
@@ -171,7 +164,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 24.dp),
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.medium,
                     )
 
                     Row(
@@ -209,8 +202,8 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
+                        shape = MaterialTheme.shapes.extraLarge,
+                        enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(
@@ -253,12 +246,12 @@ fun LoginScreen(
             }
 
 
-            OutlinedButton(
+            Button(
                 onClick = onSignUpClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.extraLarge
             ) {
                 AppText(
                     value = "Create an account",
@@ -297,7 +290,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    FeatureTheme(darkTheme = false) {
+    FeatureTheme(darkTheme = true) {
         LoginScreen()
     }
 }

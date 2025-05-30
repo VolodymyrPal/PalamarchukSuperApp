@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,7 +57,7 @@ fun AppText(
 }
 
 @Composable
-fun defaultAppTextColor() = MaterialTheme.colorScheme.onSurface
+fun defaultAppTextColor() = LocalContentColor.current ?: MaterialTheme.colorScheme.onSurface
 
 @Composable
 @Suppress("LongParameterList", "FunctionNaming")
