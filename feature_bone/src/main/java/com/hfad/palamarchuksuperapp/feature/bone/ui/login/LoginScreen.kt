@@ -164,7 +164,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 24.dp),
-                        shape = MaterialTheme.shapes.medium
+                        shape = MaterialTheme.shapes.medium,
                     )
 
                     Row(
@@ -202,8 +202,8 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        enabled = !isLoading && email.isNotBlank() && password.isNotBlank()
+                        shape = MaterialTheme.shapes.extraLarge,
+                        enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(
@@ -246,12 +246,12 @@ fun LoginScreen(
             }
 
 
-            OutlinedButton(
+            Button(
                 onClick = onSignUpClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.extraLarge
             ) {
                 AppText(
                     value = "Create an account",
