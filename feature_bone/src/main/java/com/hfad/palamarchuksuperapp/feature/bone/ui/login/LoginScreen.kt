@@ -72,24 +72,21 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Card(
                 modifier = Modifier
-                    .size(80.dp)
+                    .wrapContentSize()
                     .clip(MaterialTheme.shapes.small),
-                colors = CardDefaults.cardColors(
-                    containerColor = colorScheme.onSurfaceVariant
-                )
             ) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier,
                     contentAlignment = Alignment.Center
                 ) {
                     AppText(
                         modifier = Modifier,
-                        value = "B",
-                        color = colorScheme.surface,
+                        value = "Bone",
                         appTextConfig = appTextConfig(
                             fontSize = 60.sp,
                             fontWeight = FontWeight.Bold
@@ -98,12 +95,9 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             AppText(
                 value = "Welcome",
                 appTextConfig = appTextConfig(
-                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
@@ -115,7 +109,7 @@ fun LoginScreen(
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                 ),
-                modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)
+                modifier = Modifier
             )
 
             Card(
