@@ -290,7 +290,7 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    FeatureTheme(darkTheme = false) {
+    FeatureTheme(darkTheme = true) {
         LoginScreen()
     }
 }
