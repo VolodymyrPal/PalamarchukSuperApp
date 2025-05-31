@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
@@ -24,6 +25,7 @@ import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
@@ -37,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -50,12 +53,14 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppOutlinedTextFie
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appEditOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.feature.bone.R
 
 @Composable
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onForgotPasswordClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
+    state: LoginScreenState = LoginScreenState(),
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -95,22 +100,30 @@ fun LoginScreen(
                 }
             }
 
-            AppText(
-                value = "Welcome",
-                appTextConfig = appTextConfig(
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-            )
-
-            AppText(
-                value = "Log to your account to continue",
-                appTextConfig = appTextConfig(
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                ),
+            Column(
                 modifier = Modifier
-            )
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AppText(
+                    value = "Welcome",
+                    appTextConfig = appTextConfig(
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                )
+
+                AppText(
+                    value = "Log to your account to continue",
+                    appTextConfig = appTextConfig(
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                    ),
+                    modifier = Modifier
+                )
+            }
 
             Card(
                 modifier = Modifier
@@ -152,9 +165,9 @@ fun LoginScreen(
                             trailingIcon = {
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Icon(
-                                        if (passwordVisible) Icons.Default.Info else Icons.Default.Lock,
+                                        if (passwordVisible) Icons.Default.Info else Icons.Default.Face,
                                         contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
-//                                    tint = DonePartnersTheme.DarkGray.copy(alpha = 0.6f)
+                                        tint = LocalContentColor.current.copy(alpha = 0.4f)
                                     )
                                 }
                             },
@@ -169,7 +182,7 @@ fun LoginScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -188,78 +201,100 @@ fun LoginScreen(
                             value = "Password recovery",
                             appTextConfig = appTextConfig(
                                 fontSize = 14.sp,
+                                textAlign = TextAlign.End,
+                            ),
+                            modifier = Modifier
+                                .clickable { onForgotPasswordClick() }
+                                .weight(1f),
 
-                                ),
-                            modifier = Modifier.clickable { onForgotPasswordClick() }
-                        )
+                            )
                     }
-
-                    Button(
-                        onClick = {
-                            isLoading = true
-                            onLoginClick(email, password)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = MaterialTheme.shapes.extraLarge,
-                        enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
-                    ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            AppText(
-                                value = "Log in",
-                                appTextConfig = appTextConfig(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                            )
+                    Row {
+                        Button(
+                            onClick = {
+                                isLoading = true
+                                onLoginClick(email, password)
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            shape = MaterialTheme.shapes.extraLarge,
+                            enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
+                        ) {
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                AppText(
+                                    value = "Log in",
+                                    appTextConfig = appTextConfig(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                )
+                            }
                         }
+                        IconButton(
+                            onClick = { /* Handle user's fingerprints to log in */ },
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(48.dp),
+                            content = {
+                                Icon(
+                                    painter = painterResource(R.drawable.fingerprint),
+                                    contentDescription = "Info",
+                                    tint = LocalContentColor.current.copy(alpha = 0.6f),
+                                    modifier = Modifier
+                                        .size(36.dp),
+                                )
+                            }
+                        )
                     }
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    thickness = DividerDefaults.Thickness,
-                )
-                Text(
-                    text = "или",
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    fontSize = 14.sp
-                )
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    thickness = DividerDefaults.Thickness,
-                )
-            }
+            if (state.isCreatingPossible) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        thickness = DividerDefaults.Thickness,
+                    )
+                    Text(
+                        text = "или",
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        fontSize = 14.sp
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        thickness = DividerDefaults.Thickness,
+                    )
+                }
 
 
-            Button(
-                onClick = onSignUpClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = MaterialTheme.shapes.extraLarge
-            ) {
-                AppText(
-                    value = "Create an account",
-                    appTextConfig = appTextConfig(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                )
+                Button(
+                    onClick = onSignUpClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = MaterialTheme.shapes.extraLarge
+                ) {
+                    AppText(
+                        value = "Create an account",
+                        appTextConfig = appTextConfig(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                    )
+                }
             }
 
             // Информация о компании
@@ -286,6 +321,14 @@ fun LoginScreen(
         }
     }
 }
+
+data class LoginScreenState(
+    val email: String = "",
+    val password: String = "",
+    val rememberMe: Boolean = false,
+    val isLoading: Boolean = false,
+    val isCreatingPossible: Boolean = false,
+)
 
 @Preview(showBackground = true)
 @Composable
