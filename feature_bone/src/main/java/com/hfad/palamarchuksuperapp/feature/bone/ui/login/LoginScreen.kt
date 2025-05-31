@@ -100,22 +100,30 @@ fun LoginScreen(
                 }
             }
 
-            AppText(
-                value = "Welcome",
-                appTextConfig = appTextConfig(
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-            )
-
-            AppText(
-                value = "Log to your account to continue",
-                appTextConfig = appTextConfig(
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                ),
+            Column(
                 modifier = Modifier
-            )
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AppText(
+                    value = "Welcome",
+                    appTextConfig = appTextConfig(
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                )
+
+                AppText(
+                    value = "Log to your account to continue",
+                    appTextConfig = appTextConfig(
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                    ),
+                    modifier = Modifier
+                )
+            }
 
             Card(
                 modifier = Modifier
