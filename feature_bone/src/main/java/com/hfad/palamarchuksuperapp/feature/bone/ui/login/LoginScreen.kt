@@ -165,9 +165,9 @@ fun LoginScreen(
                             trailingIcon = {
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Icon(
-                                        if (passwordVisible) Icons.Default.Info else Icons.Default.Lock,
+                                        if (passwordVisible) Icons.Default.Info else Icons.Default.Face,
                                         contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
-//                                    tint = DonePartnersTheme.DarkGray.copy(alpha = 0.6f)
+                                        tint = LocalContentColor.current.copy(alpha = 0.4f)
                                     )
                                 }
                             },
@@ -182,7 +182,7 @@ fun LoginScreen(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -201,37 +201,41 @@ fun LoginScreen(
                             value = "Password recovery",
                             appTextConfig = appTextConfig(
                                 fontSize = 14.sp,
+                                textAlign = TextAlign.End,
+                            ),
+                            modifier = Modifier
+                                .clickable { onForgotPasswordClick() }
+                                .weight(1f),
 
-                                ),
-                            modifier = Modifier.clickable { onForgotPasswordClick() }
-                        )
+                            )
                     }
-
-                    Button(
-                        onClick = {
-                            isLoading = true
-                            onLoginClick(email, password)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = MaterialTheme.shapes.extraLarge,
-                        enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
-                    ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            AppText(
-                                value = "Log in",
-                                appTextConfig = appTextConfig(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                            )
+                    Row {
+                        Button(
+                            onClick = {
+                                isLoading = true
+                                onLoginClick(email, password)
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp),
+                            shape = MaterialTheme.shapes.extraLarge,
+                            enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
+                        ) {
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                AppText(
+                                    value = "Log in",
+                                    appTextConfig = appTextConfig(
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
