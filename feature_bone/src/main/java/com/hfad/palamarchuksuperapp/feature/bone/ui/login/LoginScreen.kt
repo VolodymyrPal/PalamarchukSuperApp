@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
@@ -24,6 +25,7 @@ import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
@@ -37,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -50,12 +53,14 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppOutlinedTextFie
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appEditOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.feature.bone.R
 
 @Composable
 fun LoginScreen(
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onForgotPasswordClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
+    state: LoginScreenState = LoginScreenState(),
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -286,6 +291,14 @@ fun LoginScreen(
         }
     }
 }
+
+data class LoginScreenState(
+    val email: String = "",
+    val password: String = "",
+    val rememberMe: Boolean = false,
+    val isLoading: Boolean = false,
+    val isCreatingPossible: Boolean = false,
+)
 
 @Preview(showBackground = true)
 @Composable
