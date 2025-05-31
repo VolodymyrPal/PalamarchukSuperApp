@@ -237,6 +237,21 @@ fun LoginScreen(
                                 )
                             }
                         }
+                        IconButton(
+                            onClick = { /* Handle user's fingerprints to log in */ },
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .size(48.dp),
+                            content = {
+                                Icon(
+                                    painter = painterResource(R.drawable.fingerprint),
+                                    contentDescription = "Info",
+                                    tint = LocalContentColor.current.copy(alpha = 0.6f),
+                                    modifier = Modifier
+                                        .size(36.dp),
+                                )
+                            }
+                        )
                     }
                 }
             }
