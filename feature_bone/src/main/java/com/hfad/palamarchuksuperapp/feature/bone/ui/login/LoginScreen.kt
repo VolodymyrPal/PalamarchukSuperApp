@@ -347,7 +347,7 @@ data class LoginScreenState(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    FeatureTheme(darkTheme = true) {
+    FeatureTheme(darkTheme = false) {
         LoginScreen()
     }
 }
