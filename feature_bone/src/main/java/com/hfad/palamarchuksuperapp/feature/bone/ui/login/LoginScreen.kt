@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appColors
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appEditOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -134,6 +136,12 @@ fun LoginScreen(
                     modifier = Modifier.padding(24.dp)
                 ) {
                     AppOutlinedTextField(
+                        colors = OutlinedTextFieldDefaults.appColors(
+                            focusedBorderColor = colorScheme.scrim,
+                            unfocusedBorderColor = colorScheme.scrim.copy(alpha = 0.7f),
+                            disabledBorderColor = colorScheme.outlineVariant,
+                            errorBorderColor = colorScheme.error,
+                        ),
                         value = email,
                         onValueChange = { email = it },
                         label = { Text("Email") },
@@ -154,6 +162,12 @@ fun LoginScreen(
                         value = password,
                         onValueChange = { password = it },
                         label = { Text("Пароль") },
+                        colors = OutlinedTextFieldDefaults.appColors(
+                            focusedBorderColor = colorScheme.scrim,
+                            unfocusedBorderColor = colorScheme.scrim.copy(alpha = 0.7f),
+                            disabledBorderColor = colorScheme.outlineVariant,
+                            errorBorderColor = colorScheme.error,
+                        ),
                         outlinedTextConfig = appEditOutlinedTextConfig(
                             leadingIcon = {
                                 Icon(
@@ -333,7 +347,7 @@ data class LoginScreenState(
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    FeatureTheme(darkTheme = true) {
+    FeatureTheme(darkTheme = false) {
         LoginScreen()
     }
 }
