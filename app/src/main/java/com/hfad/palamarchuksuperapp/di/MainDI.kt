@@ -61,11 +61,11 @@ import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment
 import com.hfad.palamarchuksuperapp.ui.screens.StoreFragment
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.ChatBotViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.SkillsViewModel
 import com.hfad.palamarchuksuperapp.ui.viewModels.StoreViewModel
@@ -79,7 +79,6 @@ import dagger.multibindings.IntoMap
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import javax.inject.Provider
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlin.reflect.KClass
@@ -95,9 +94,9 @@ interface AppComponent : BoneDeps {
     fun inject(fragmentActivity: SkillsFragment)
     fun inject(mainScreenFragment: MainScreenFragment)
     fun appVibrator(): AppVibrator
+    override fun getFeatureHttpClient(): HttpClient
     fun viewModelFactory(): ViewModelProvider.Factory
     fun inject(storeFragment: StoreFragment)
-    val httpClient: HttpClient
     fun getAiHandlerDispatcher(): AiHandlerRepositoryImpl
     fun provideDataStoreHandler(): DataStoreHandler
 
