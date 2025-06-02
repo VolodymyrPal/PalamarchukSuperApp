@@ -248,7 +248,7 @@ object DatabaseModule {
             context = context.applicationContext,
             klass = MessageChatDatabase::class.java,
             name = DATABASE_MESSAGE_CHAT
-        ).fallbackToDestructiveMigration() //TODO Don't forget to remove this in production
+        ).fallbackToDestructiveMigration(true) //TODO Don't forget to remove this in production
             .build()
     }
 
