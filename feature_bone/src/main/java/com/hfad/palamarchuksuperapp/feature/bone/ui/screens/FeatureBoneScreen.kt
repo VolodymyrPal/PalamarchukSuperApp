@@ -46,6 +46,7 @@ class BoneFeature(
         parentNavController: NavController,
         modifier: Modifier,
     ) {
+        Log.d("BoneFeature", "BoneScreenRooted: ${component.httpClient}") //For some reason was created 3 times
         val navController = rememberNavController()
         CompositionLocalProvider(
             LocalNavController provides navController
