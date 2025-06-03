@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.login
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,13 +57,45 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appColors
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appEditOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavAnimatedVisibilityScope
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitionScope
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun LoginScreen(
+fun LoginScreenRoot(
+    modifier: Modifier = Modifier,
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onForgotPasswordClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
-    state: LoginScreenState = LoginScreenState(),
+) {
+    val localTransitionScope = LocalSharedTransitionScope.current
+        ?: error(IllegalStateException("No SharedElementScope found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+        ?: error(IllegalStateException("No AnimatedVisibility found"))
+
+    with(localTransitionScope) {
+        val modifierToTransition = Modifier.sharedBounds(
+            this.rememberSharedContentState("bone"),
+            animatedContentScope,
+        )
+        LoginScreen(
+            modifier = modifier,
+            onLoginClick = onLoginClick,
+            onForgotPasswordClick = onForgotPasswordClick,
+            onSignUpClick = onSignUpClick,
+            modifierToTransition = modifierToTransition
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    onLoginClick: (String, String) -> Unit = { _, _ -> },
+    onForgotPasswordClick: () -> Unit = {},
+    onSignUpClick: () -> Unit = {},
+    modifierToTransition: Modifier = Modifier,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -71,7 +104,7 @@ fun LoginScreen(
     var rememberMe by remember { mutableStateOf(false) }
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         color = colorScheme.background,
     ) {
@@ -231,7 +264,10 @@ fun LoginScreen(
                             },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(48.dp),
+                                .height(48.dp)
+                                .then(
+                                    modifierToTransition
+                                ),
                             shape = MaterialTheme.shapes.extraLarge,
                             enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
                         ) {
