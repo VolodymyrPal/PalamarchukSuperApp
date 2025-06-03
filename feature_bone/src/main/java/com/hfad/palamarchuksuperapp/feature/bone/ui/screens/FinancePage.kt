@@ -111,7 +111,7 @@ fun FinanceStatisticCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         shape = MaterialTheme.shapes.extraSmall,
 //        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -402,7 +402,7 @@ fun FinanceTransactionCard(
                 ToggleableArrow(
                     modifier = Modifier
                         .size(10.dp)
-                        .clip(shape = MaterialTheme.shapes.extraSmall,),
+                        .clip(shape = MaterialTheme.shapes.extraSmall),
                     isOpen = isExpanded.value,
                     onToggle = { isExpanded.value = !isExpanded.value },
                 )
