@@ -97,9 +97,9 @@ fun LoginScreen(
     onSignUpClick: () -> Unit = {},
     modifierToTransition: Modifier = Modifier,
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    var state: LoginScreenState = LoginScreenState()
+
+    var passwordVisible by remember { mutableStateOf(true) } //TODO TEST ONLY
     var isLoading by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
 
@@ -175,8 +175,10 @@ fun LoginScreen(
                             disabledBorderColor = colorScheme.outlineVariant,
                             errorBorderColor = colorScheme.error,
                         ),
-                        value = email,
-                        onValueChange = { email = it },
+                        value = state.email,
+                        onValueChange = {
+                            state = state.copy(email = it)
+                        },
                         label = { Text("Email") },
                         outlinedTextConfig = appEditOutlinedTextConfig(
                             leadingIcon = {
@@ -192,8 +194,8 @@ fun LoginScreen(
                     )
 
                     AppOutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
+                        value = state.password,
+                        onValueChange = { state = state.copy(password = it) },
                         label = { Text("Пароль") },
                         colors = OutlinedTextFieldDefaults.appColors(
                             focusedBorderColor = colorScheme.scrim,
@@ -259,8 +261,8 @@ fun LoginScreen(
                     Row {
                         Button(
                             onClick = {
-                                isLoading = true
-                                onLoginClick(email, password)
+//                                isLoading = true
+                                onLoginClick(state.email, state.password)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -269,7 +271,7 @@ fun LoginScreen(
                                     modifierToTransition
                                 ),
                             shape = MaterialTheme.shapes.extraLarge,
-                            enabled = !isLoading && email.isNotBlank() && password.isNotBlank(),
+                            enabled = !isLoading && state.email.isNotBlank() && state.password.isNotBlank(),
                         ) {
                             if (isLoading) {
                                 CircularProgressIndicator(
@@ -373,8 +375,8 @@ fun LoginScreen(
 }
 
 data class LoginScreenState(
-    val email: String = "",
-    val password: String = "",
+    var email: String = "Test", //TODO remove test var / data
+    var password: String = "Test", //TODO remove test var / data
     val rememberMe: Boolean = false,
     val isLoading: Boolean = false,
     val isCreatingPossible: Boolean = false,
