@@ -432,56 +432,36 @@ fun BaseDescription(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             if (uiTransaction.additionalAmount != null) {
-                Box(
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .background(
-                            uiTransaction.additionalColor.copy(
-                                alpha = 0.4f
-                            )
-                        )
-                        .padding(4.dp)
-                ) {
-                    val additionalValue =
-                        if (uiTransaction.additionalType == TransactionType.CREDIT) {
-                            "+ ${uiTransaction.additionalAmount.amount.formatTrim()} ${uiTransaction.additionalAmount.currency}"
-                        } else {
-                            "- ${uiTransaction.additionalAmount.amount.formatTrim()} ${uiTransaction.additionalAmount.currency}"
-                        }
-                    AppText(
-                        value = additionalValue,
-                        appTextConfig = appTextConfig(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .clip(MaterialTheme.shapes.extraSmall)
-                    .background(
-                        uiTransaction.color.copy(
-                            alpha = 0.4f
-                        )
-                    )
-                    .padding(4.dp)
-            ) {
-                val value = if (uiTransaction.transactionType == TransactionType.CREDIT) {
-                    "+ ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}"
-                } else {
-                    "- ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}"
-                }
+                val additionalValue =
+                    if (uiTransaction.additionalType == TransactionType.CREDIT) {
+                        "+ ${uiTransaction.additionalAmount.amount.formatTrim()} ${uiTransaction.additionalAmount.currency}"
+                    } else {
+                        "- ${uiTransaction.additionalAmount.amount.formatTrim()} ${uiTransaction.additionalAmount.currency}"
+                    }
                 AppText(
-                    value = value,
+                    value = additionalValue,
                     appTextConfig = appTextConfig(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     ),
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier.padding(4.dp),
+                    color = uiTransaction.additionalColor
                 )
             }
+            val value = if (uiTransaction.transactionType == TransactionType.CREDIT) {
+                "+ ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}"
+            } else {
+                "- ${uiTransaction.amountText.amount.formatTrim()} ${uiTransaction.amountText.currency}"
+            }
+            AppText(
+                value = value,
+                appTextConfig = appTextConfig(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(4.dp),
+                color = uiTransaction.color
+            )
         }
     }
 }
