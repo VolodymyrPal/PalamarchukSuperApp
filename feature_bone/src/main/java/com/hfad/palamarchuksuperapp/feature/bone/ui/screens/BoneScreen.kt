@@ -46,11 +46,22 @@ fun BoneScreenRoot(
     val a = viewModel
     val navController = LocalNavController.current
 
-//    HideShowSystemBar()
-    BoneScreen(
-        modifier = modifier,
-        navController = navController
-    )
+    //    HideShowSystemBar()
+
+    val localTransitionScope = LocalSharedTransitionScope.current
+        ?: error(IllegalStateException("No SharedElementScope found"))
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.current
+        ?: error(IllegalStateException("No AnimatedVisibility found"))
+
+    with(localTransitionScope) { //TODO
+        BoneScreen(
+            modifier = modifier.sharedElement(
+                this.rememberSharedContentState("bone"),
+                animatedContentScope,
+            ),
+            navController = navController
+        )
+    }
 }
 
 @OptIn(

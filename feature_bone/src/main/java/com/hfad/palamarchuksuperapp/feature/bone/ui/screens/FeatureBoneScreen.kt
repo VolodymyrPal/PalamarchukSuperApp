@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -29,6 +30,7 @@ import com.hfad.palamarchuksuperapp.core.ui.navigation.composable
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
+import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenRoot
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
@@ -39,44 +41,52 @@ class BoneFeature(
     featureDependencies: BoneDeps,
 ) : FeatureApi {
     private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
-    override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.BoneScreen
+    override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.LoginScreen
 
+    @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
     override fun BoneScreenRooted(
         parentNavController: NavController,
         modifier: Modifier,
     ) {
-        Log.d("BoneFeature", "BoneScreenRooted: ${component.httpClient}") //For some reason was created 3 times
         val navController = rememberNavController()
-        CompositionLocalProvider(
-            LocalNavController provides navController
-        ) {
-            FeatureTheme {
-                LaunchedEffect(navController) {
-                    navController.currentBackStack.collect { backStackList ->
-                        Log.d("backStackList", "backStackList $backStackList")
-                        if (backStackList.isEmpty()) {
-                            parentNavController.popBackStack()
+        SharedTransitionLayout { //TODO
+            CompositionLocalProvider(
+                LocalNavController provides navController,
+                LocalSharedTransitionScope provides this //TODO
+            ) {
+                FeatureTheme {
+                    LaunchedEffect(navController) {
+                        navController.currentBackStack.collect { backStackList ->
+                            Log.d("backStackList", "backStackList $backStackList")
+                            if (backStackList.isEmpty()) {
+                                parentNavController.popBackStack()
+                            }
                         }
                     }
-                }
 
-                NavHost(
-                    startDestination = homeRoute,
-                    navController = navController,
-                    route = FeatureBoneRoutes.BaseFeautreNavRoute::class
-                ) {
-                    composable<FeatureBoneRoutes.BoneScreen> {
-                        BoneScreenRoot(
-                            modifier = modifier,
-                            viewModel = daggerViewModel(component.viewModelFactory),
-                        )
-                    }
-                    composable<FeatureBoneRoutes.LoginScreen> {
-                        BoneScreenRoot(
-                            modifier = modifier,
-                            viewModel = daggerViewModel(component.viewModelFactory)
-                        )
+                    NavHost(
+                        startDestination = homeRoute,
+                        navController = navController,
+                        route = FeatureBoneRoutes.BaseFeatureNavarrete::class
+                    ) {
+                        composable<FeatureBoneRoutes.BoneScreen> {
+                            CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                                BoneScreenRoot(
+                                    modifier = modifier,
+                                    viewModel = daggerViewModel(component.viewModelFactory),
+                                )
+                            }
+                        }
+                        composable<FeatureBoneRoutes.LoginScreen> {
+                            CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                                LoginScreenRoot(
+                                    onLoginClick = { _, _ ->
+                                        navController.navigate(FeatureBoneRoutes.BoneScreen)
+                                    },
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -203,7 +213,7 @@ private val Context.isLogged: DataStore<Preferences> by preferencesDataStore(nam
 sealed interface FeatureBoneRoutes {
 
     @Serializable
-    object BaseFeautreNavRoute : FeatureBoneRoutes
+    object BaseFeatureNavarrete : FeatureBoneRoutes
 
     @Serializable
     object BoneScreen : FeatureBoneRoutes
