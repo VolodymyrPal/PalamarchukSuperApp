@@ -170,12 +170,23 @@ fun appEditOutlinedTextConfig(
  */
 @Composable
 fun OutlinedTextFieldDefaults.appColors(
-    focusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    unfocusedTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    disabledTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    errorTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+
+    focusedTextColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedTextColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
     focusedContainerColor: Color = Color.Unspecified,
     unfocusedContainerColor: Color = Color.Unspecified,
+    focusedBorderColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+    focusedLeadingIconColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedLeadingIconColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+    disabledLeadingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    errorLeadingIconColor: Color = MaterialTheme.colorScheme.error,
+    focusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
+    unfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+
+
+    disabledTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    errorTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     disabledContainerColor: Color = Color.Unspecified,
     errorContainerColor: Color = Color.Unspecified,
     cursorColor: Color = MaterialTheme.colorScheme.primary,
@@ -184,16 +195,8 @@ fun OutlinedTextFieldDefaults.appColors(
         handleColor = MaterialTheme.colorScheme.primary,
         backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
     ),
-    focusedBorderColor: Color = MaterialTheme.colorScheme.primary,
-    unfocusedBorderColor: Color = MaterialTheme.colorScheme.outline,
     disabledBorderColor: Color = MaterialTheme.colorScheme.outlineVariant,
     errorBorderColor: Color = MaterialTheme.colorScheme.error,
-    focusedLeadingIconColor: Color = MaterialTheme.colorScheme.primary,
-    unfocusedLeadingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    disabledLeadingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorLeadingIconColor: Color = MaterialTheme.colorScheme.error,
-    focusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
-    unfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     disabledTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     errorTrailingIconColor: Color = MaterialTheme.colorScheme.error,
     focusedPrefixColor: Color = MaterialTheme.colorScheme.primary,
@@ -203,7 +206,7 @@ fun OutlinedTextFieldDefaults.appColors(
     focusedSuffixColor: Color = MaterialTheme.colorScheme.primary,
     unfocusedSuffixColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     disabledSuffixColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorSuffixColor: Color = MaterialTheme.colorScheme.error
+    errorSuffixColor: Color = MaterialTheme.colorScheme.error,
 ) = OutlinedTextFieldDefaults.colors(
     focusedTextColor = focusedTextColor,
     unfocusedTextColor = unfocusedTextColor,
@@ -274,7 +277,7 @@ fun TextFieldDefaults.appColors(
     focusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
     unfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     disabledTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    errorTrailingIconColor: Color = MaterialTheme.colorScheme.error
+    errorTrailingIconColor: Color = MaterialTheme.colorScheme.error,
 ) = TextFieldDefaults.colors(
     focusedTextColor = focusedTextColor,
     unfocusedTextColor = unfocusedTextColor,
