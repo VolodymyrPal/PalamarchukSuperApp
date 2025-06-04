@@ -358,10 +358,172 @@ data class LoginScreenState(
     val isCreatingPossible: Boolean = false,
 )
 
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
 fun LoginScreenPreview() {
-    FeatureTheme(darkTheme = false) {
-        LoginScreen()
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        item {
+            FeatureTheme(
+                darkTheme = false
+            ) {
+                val colors = OutlinedTextFieldDefaults.appColors()
+                Surface(
+                    modifier = Modifier.size(width = 200.dp, height = 75.dp),
+                    color = colorScheme.background,
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.small),
+                    ) {
+                        val text1 = remember { mutableStateOf("Test") }
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            value = text1.value,
+                            onValueChange = { text1.value = it },
+                            labelRes = R.string.avg_payment_due_date,
+                            outlinedTextConfig = appEditOutlinedTextConfig(
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Email,
+                                        contentDescription = null,
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            ),
+                            shape = MaterialTheme.shapes.medium,
+                            colors = colors
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            FeatureTheme(
+                darkTheme = true
+            ) {
+                val colors = OutlinedTextFieldDefaults.appColors()
+                Surface(
+                    modifier = Modifier.size(width = 200.dp, height = 75.dp),
+                    color = colorScheme.background,
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.small),
+                    ) {
+                        val text2 = remember { mutableStateOf("Test") }
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            value = text2.value,
+                            onValueChange = { text2.value = it },
+                            colors = colors,
+                            labelRes = R.string.avg_payment_due_date,
+                            outlinedTextConfig = appEditOutlinedTextConfig(
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Email,
+                                        contentDescription = null,
+                                        tint = colors.focusedTextColor
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            ),
+                            shape = MaterialTheme.shapes.medium,
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            FeatureTheme(
+                customTheme = 1
+            ) {
+                val colors = OutlinedTextFieldDefaults.appColors()
+                Surface(
+                    modifier = Modifier.size(width = 200.dp, height = 75.dp),
+                    color = colorScheme.background,
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.small),
+                    ) {
+                        val text3 = remember { mutableStateOf("Test") }
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            value = text3.value,
+                            onValueChange = { text3.value = it },
+                            labelRes = R.string.avg_payment_due_date,
+                            outlinedTextConfig = appEditOutlinedTextConfig(
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Email,
+                                        contentDescription = null,
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            ),
+                            shape = MaterialTheme.shapes.medium,
+                            colors = colors
+
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            FeatureTheme(
+                dynamicColor = true
+            ) {
+                val colors = OutlinedTextFieldDefaults.appColors()
+                Surface(
+                    modifier = Modifier.size(width = 200.dp, height = 75.dp),
+                    color = colorScheme.background,
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(MaterialTheme.shapes.small),
+                    ) {
+                        val text4 = remember { mutableStateOf("Test") }
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            value = text4.value,
+                            onValueChange = { text4.value = it },
+                            labelRes = R.string.avg_payment_due_date,
+                            outlinedTextConfig = appEditOutlinedTextConfig(
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Email,
+                                        contentDescription = null,
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            ),
+                            shape = MaterialTheme.shapes.medium,
+                            colors = colors
+
+                        )
+                    }
+                }
+            }
+        }
     }
 }
+//    FeatureTheme(darkTheme = false) {
+//        LoginScreen()
+//    }
