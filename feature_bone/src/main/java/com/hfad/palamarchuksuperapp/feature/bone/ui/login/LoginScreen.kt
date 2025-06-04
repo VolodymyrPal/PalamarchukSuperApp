@@ -3,7 +3,6 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.login
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -115,25 +114,16 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Card(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(MaterialTheme.shapes.small),
-            ) {
-                Box(
-                    modifier = Modifier,
-                    contentAlignment = Alignment.Center
-                ) {
-                    AppText(
-                        modifier = Modifier,
-                        value = "Bone",
-                        appTextConfig = appTextConfig(
-                            fontSize = 60.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-            }
+
+            AppText(
+                modifier = Modifier,
+                value = "Bone",
+                appTextConfig = appTextConfig(
+                    fontSize = 60.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
 
             Column(
                 modifier = Modifier
@@ -169,17 +159,11 @@ fun LoginScreen(
                     modifier = Modifier.padding(24.dp)
                 ) {
                     AppOutlinedTextField(
-                        colors = OutlinedTextFieldDefaults.appColors(
-                            focusedBorderColor = colorScheme.scrim,
-                            unfocusedBorderColor = colorScheme.scrim.copy(alpha = 0.7f),
-                            disabledBorderColor = colorScheme.outlineVariant,
-                            errorBorderColor = colorScheme.error,
-                        ),
                         value = state.email,
                         onValueChange = {
                             state = state.copy(email = it)
                         },
-                        label = { Text("Email") },
+                        labelRes = R.string.email,
                         outlinedTextConfig = appEditOutlinedTextConfig(
                             leadingIcon = {
                                 Icon(
@@ -196,19 +180,12 @@ fun LoginScreen(
                     AppOutlinedTextField(
                         value = state.password,
                         onValueChange = { state = state.copy(password = it) },
-                        label = { Text("Пароль") },
-                        colors = OutlinedTextFieldDefaults.appColors(
-                            focusedBorderColor = colorScheme.scrim,
-                            unfocusedBorderColor = colorScheme.scrim.copy(alpha = 0.7f),
-                            disabledBorderColor = colorScheme.outlineVariant,
-                            errorBorderColor = colorScheme.error,
-                        ),
+                        labelRes = R.string.password,
                         outlinedTextConfig = appEditOutlinedTextConfig(
                             leadingIcon = {
                                 Icon(
                                     Icons.Default.Lock,
                                     contentDescription = null,
-//                                tint = DonePartnersTheme.SecondaryBlue
                                 )
                             },
                             trailingIcon = {
@@ -216,7 +193,6 @@ fun LoginScreen(
                                     Icon(
                                         if (passwordVisible) Icons.Default.Info else Icons.Default.Face,
                                         contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
-                                        tint = LocalContentColor.current.copy(alpha = 0.4f)
                                     )
                                 }
                             },
