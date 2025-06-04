@@ -46,14 +46,22 @@ fun AppOutlinedTextField(
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     @StringRes labelRes: Int? = null,
     @StringRes placeholderRes: Int? = null,
-    label: @Composable (() -> Unit)? = labelRes?.let { { AppText(it, appTextConfig = appTextConfig(
-        textStyle = MaterialTheme.typography.bodySmall
-    )) } },
+    colors: TextFieldColors = OutlinedTextFieldDefaults.appColors(),
+    label: @Composable (() -> Unit)? = labelRes?.let {
+        {
+            AppText(
+                it,
+                color = colors.focusedTextColor,
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.bodySmall,
+                )
+            )
+        }
+    },
     placeholder: @Composable (() -> Unit)? = placeholderRes?.let {
         { AppText(it, Modifier.alpha(0.33f)) }
     },
-    shape: Shape = OutlinedTextFieldDefaults. shape,
-    colors: TextFieldColors = OutlinedTextFieldDefaults.appColors(),
+    shape: Shape = OutlinedTextFieldDefaults.shape,
     outlinedTextConfig: AppEditOutlinedTextConfig = appEditOutlinedTextConfig(),
 ) {
     OutlinedTextField(
