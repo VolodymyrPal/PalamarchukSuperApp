@@ -66,6 +66,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="balance">Balance</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
 
 
 </resources>

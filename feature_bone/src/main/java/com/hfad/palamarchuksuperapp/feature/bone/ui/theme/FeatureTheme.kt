@@ -110,8 +110,8 @@ fun financeStatusColor(
 ): Color {
     val isDark = isSystemInDarkTheme()
     return when (status) {
-        TransactionType.CREDIT -> if (!isDark) Color(0xFFE6FFEC) else Color(0xFFC8E6C9)
-        TransactionType.DEBIT -> if (!isDark) Color(0xFFFBE6E7) else Color(0xFFFFCDD2)
+        TransactionType.CREDIT -> Color(0xFF81C784)//if (!isDark) Color(0xFFE6FFEC) else Color(0xFFC8E6C9)
+        TransactionType.DEBIT -> Color(0xFF90A4AE) //if (!isDark) Color(0xFFFBE6E7) else Color(0xFFFFCDD2)
     }
 }
 
