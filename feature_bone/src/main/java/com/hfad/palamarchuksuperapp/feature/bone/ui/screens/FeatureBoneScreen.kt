@@ -6,6 +6,11 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.material.ripple.RippleAlpha
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +48,7 @@ class BoneFeature(
     private val component = DaggerBoneComponent.builder().deps(featureDependencies).build()
     override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.LoginScreen
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
+    @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
     @Composable
     override fun BoneScreenRooted(
         parentNavController: NavController,
@@ -53,7 +58,16 @@ class BoneFeature(
         SharedTransitionLayout { //TODO
             CompositionLocalProvider(
                 LocalNavController provides navController,
-                LocalSharedTransitionScope provides this //TODO
+                LocalSharedTransitionScope provides this, //TODO
+                LocalRippleConfiguration provides RippleConfiguration(
+                    color = LocalContentColor.current,
+                    rippleAlpha = RippleAlpha(
+                        pressedAlpha = 0.7f,
+                        focusedAlpha = 0.4f,
+                        hoveredAlpha = 0.2f,
+                        draggedAlpha = 0.3f
+                    )
+                )
             ) {
                 FeatureTheme {
                     LaunchedEffect(navController) {

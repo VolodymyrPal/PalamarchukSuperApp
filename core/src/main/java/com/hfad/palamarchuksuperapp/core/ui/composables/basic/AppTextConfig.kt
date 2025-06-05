@@ -183,18 +183,18 @@ fun OutlinedTextFieldDefaults.appColors(
     errorLeadingIconColor: Color = MaterialTheme.colorScheme.error,
     focusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary,
     unfocusedTrailingIconColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+    cursorColor: Color = MaterialTheme.colorScheme.primary,
+    selectionColors: TextSelectionColors = TextSelectionColors(
+        handleColor = MaterialTheme.colorScheme.primary,
+        backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+    ),
 
 
     disabledTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     errorTextColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
     disabledContainerColor: Color = Color.Unspecified,
     errorContainerColor: Color = Color.Unspecified,
-    cursorColor: Color = MaterialTheme.colorScheme.primary,
     errorCursorColor: Color = MaterialTheme.colorScheme.error,
-    selectionColors: TextSelectionColors = TextSelectionColors(
-        handleColor = MaterialTheme.colorScheme.primary,
-        backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-    ),
     disabledBorderColor: Color = MaterialTheme.colorScheme.outlineVariant,
     errorBorderColor: Color = MaterialTheme.colorScheme.error,
     disabledTrailingIconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,

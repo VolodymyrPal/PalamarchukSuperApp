@@ -26,7 +26,7 @@ fun FeatureTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
-    customTheme: Int = 1,
+    customTheme: Int = 0,
     content: @Composable() () -> Unit,
 ) {
     val colorScheme = when {
