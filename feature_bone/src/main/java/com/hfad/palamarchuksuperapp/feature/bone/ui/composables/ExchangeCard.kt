@@ -195,7 +195,7 @@ fun ExchangeOrderCard(
     }
 }
 
-private fun getNumberOfDecimalDigits(
+internal fun getNumberOfDecimalDigits(
     currency: Currency,
     btcDigits: Int = 10,
     baseDigits: Int = 4,
