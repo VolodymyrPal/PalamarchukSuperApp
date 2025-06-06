@@ -185,13 +185,10 @@ fun FinanceStatisticCard(
 
 @Composable
 fun FinanceStat(
-    icon: ImageVector,
-    value: String,
-    label: String,
-    color: Color,
     amountCurrency: AmountCurrency,
     modifier: Modifier = Modifier,
 ) {
+    val numOfDigit = getNumberOfDecimalDigits(amountCurrency.currency)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -213,10 +210,11 @@ fun FinanceStat(
         }
 
         AppText(
-            value = amountCurrency.amount.formatTrim() + " " + amountCurrency.iconChar,
+            value = amountCurrency.amount.formatTrim(numOfDigit) + " " + amountCurrency.iconChar,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
             )
         )
     }
