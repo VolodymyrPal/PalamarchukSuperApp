@@ -21,7 +21,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
@@ -73,6 +78,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ExchangeOrderCar
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ToggleableArrow
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.getNumberOfDecimalDigits
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -135,57 +141,43 @@ fun FinanceStatisticCard(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            val gridItems = listOf(
+                AmountCurrency(Currency.UAH, 500f),
+                AmountCurrency(Currency.USD, 200000f),
+                AmountCurrency(Currency.EUR, 99999999f),
+                AmountCurrency(Currency.BTC, 0.00005f),
+            )
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .sizeIn(maxHeight = 800.dp)
+                    .fillMaxWidth(),
+                columns = object : GridCells {
+                    override fun Density.calculateCrossAxisCellSizes(
+                        availableSize: Int,
+                        spacing: Int,
+                    ): List<Int> {
+                        val maxCount = minOf(
+                            (availableSize + spacing) / (100.dp.roundToPx() + spacing),
+                            gridItems.size
+                        )
+                        val count = maxOf(maxCount, 1)
+                        val cellSize = (availableSize - spacing * (count - 1)) / count
+                        return List(count) { cellSize }
+                    }
+                },
+                contentPadding = PaddingValues(
+                    horizontal = 4.dp,
+                    vertical = 4.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
-                FinanceStat(
-                    modifier = Modifier.weight(0.33f),
-                    icon = Icons.Default.Build,
-                    value = "150,000 грн",
-                    amountCurrency = AmountCurrency(
-                        currency = Currency.UAH,
-                        amount = 150000f,
-                    ),
-                    label = "Доход",
-                    color = Color(0xFF2E7D32)
-                )
-
-                FinanceStat(
-                    modifier = Modifier.weight(0.33f),
-                    icon = Icons.Default.ThumbUp,
-                    amountCurrency = AmountCurrency(
-                        currency = Currency.USD,
-                        amount = -12000f,
-                    ),
-                    value = "75,000 грн",
-                    label = "Расходы",
-                    color = Color(0xFFD32F2F)
-                )
-
-                FinanceStat(
-                    modifier = Modifier.weight(0.33f),
-                    icon = Icons.Default.Info,
-                    amountCurrency = AmountCurrency(
-                        currency = Currency.EUR,
-                        amount = 200f,
-                    ),
-                    value = "75,000 грн",
-                    label = "Прибыль",
-                    color = Color(0xFF1565C0)
-                )
-
-                FinanceStat(
-                    modifier = Modifier.weight(0.33f),
-                    icon = Icons.Default.Info,
-                    amountCurrency = AmountCurrency(
-                        currency = Currency.BTC,
-                        amount = 200f,
-                    ),
-                    value = "75,000 грн",
-                    label = "Прибыль",
-                    color = Color(0xFF1565C0)
-                )
+                itemsIndexed(gridItems) { index, currencyAmount ->
+                    FinanceStat(
+                        modifier = Modifier.weight(0.33f),
+                        amountCurrency = currencyAmount,
+                    )
+                }
             }
         }
     }
