@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -179,26 +180,36 @@ fun LoginScreen(
                         ),
                         modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium,
-//                        colors = OutlinedTextFieldDefaults.appColors(
-//                            focusedTextColor = colorScheme.onSurfaceVariant,
-//                            unfocusedTextColor = colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-//                            focusedContainerColor = Color.Unspecified,
-//                            unfocusedContainerColor = Color.Unspecified,
-//                            focusedBorderColor = colorScheme.onSurfaceVariant,
-//                            unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-//                            focusedLeadingIconColor = colorScheme.onSurfaceVariant,
-//                            unfocusedLeadingIconColor = colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-//                            disabledLeadingIconColor = colorScheme.onSurfaceVariant,
-//                            focusedTrailingIconColor = colorScheme.onSurfaceVariant,
-//                            unfocusedTrailingIconColor = colorScheme.onSurfaceVariant.copy(
-//                                alpha = 0.7f
-//                            ),
-//                            cursorColor = colorScheme.onSurfaceVariant,
-//                            selectionColors = TextSelectionColors(
-//                                handleColor = colorScheme.onSurfaceVariant,
-//                                backgroundColor = colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-//                            ),
-//                        ),
+                        colors = OutlinedTextFieldDefaults.appColors(
+                            focusedTextColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedTextColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha =
+                                    0.7f
+                            ),
+                            focusedContainerColor = Color.Unspecified,
+                            unfocusedContainerColor = Color.Unspecified,
+                            focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.7f
+                            ),
+                            focusedLeadingIconColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.7f
+                            ),
+                            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+                            focusedTrailingIconColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedTrailingIconColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.7f
+                            ),
+                            cursorColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectionColors = TextSelectionColors(
+                                handleColor = MaterialTheme.colorScheme.primaryContainer,
+                                backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                    alpha = 0.25f
+                                )
+                            ),
+                        )
                     )
 
                     AppOutlinedTextField(
@@ -227,27 +238,36 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .padding(bottom = 24.dp),
                         shape = MaterialTheme.shapes.medium,
-//                        colors = OutlinedTextFieldDefaults.appColors(
-//                            focusedTextColor = colorScheme.onSurfaceVariant,
-//                            unfocusedTextColor = colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-//                            focusedContainerColor = Color.Unspecified,
-//                            unfocusedContainerColor = Color.Unspecified,
-//                            focusedBorderColor = colorScheme.onSurfaceVariant,
-//                            unfocusedBorderColor = colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-//                            focusedLeadingIconColor = colorScheme.onSurfaceVariant,
-//                            unfocusedLeadingIconColor = colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-//                            disabledLeadingIconColor = colorScheme.onSurfaceVariant,
-//                            errorLeadingIconColor = colorScheme.error,
-//                            focusedTrailingIconColor = colorScheme.onSurfaceVariant,
-//                            unfocusedTrailingIconColor = colorScheme.onSurfaceVariant.copy(
-//                                alpha = 0.7f
-//                            ),
-//                            cursorColor = colorScheme.onSurfaceVariant,
-//                            selectionColors = TextSelectionColors(
-//                                handleColor = colorScheme.onSurfaceVariant,
-//                                backgroundColor = colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-//                            ),
-//                        ),
+                        colors = OutlinedTextFieldDefaults.appColors(
+                            focusedTextColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedTextColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha =
+                                    0.7f
+                            ),
+                            focusedContainerColor = Color.Unspecified,
+                            unfocusedContainerColor = Color.Unspecified,
+                            focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.7f
+                            ),
+                            focusedLeadingIconColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedLeadingIconColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.7f
+                            ),
+                            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+                            focusedTrailingIconColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedTrailingIconColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                alpha = 0.7f
+                            ),
+                            cursorColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectionColors = TextSelectionColors(
+                                handleColor = MaterialTheme.colorScheme.primaryContainer,
+                                backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(
+                                    alpha = 0.25f
+                                )
+                            ),
+                        )
                     )
 
                     Row(
@@ -287,6 +307,10 @@ fun LoginScreen(
 //                            ),
                             shape = MaterialTheme.shapes.extraLarge,
                             enabled = !isLoading && state.email.isNotBlank() && state.password.isNotBlank(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorScheme.primaryContainer,
+                                contentColor = colorScheme.onPrimaryContainer
+                            ),
                         ) {
                             if (isLoading) {
                                 CircularProgressIndicator(
@@ -390,8 +414,8 @@ fun LoginScreen(
 }
 
 data class LoginScreenState(
-    var email: String = "Test", //TODO remove test var / data
-    var password: String = "Test", //TODO remove test var / data
+    var email: String = "Login Screen State - email test", //TODO remove test var / data
+    var password: String = "Login Screen State - password test", //TODO remove test var / data
     val rememberMe: Boolean = false,
     val isLoading: Boolean = false,
     val isCreatingPossible: Boolean = false,
