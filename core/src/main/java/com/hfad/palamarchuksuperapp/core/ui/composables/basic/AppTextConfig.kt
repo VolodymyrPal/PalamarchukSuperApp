@@ -186,7 +186,7 @@ fun OutlinedTextFieldDefaults.appColors(
     cursorColor: Color = MaterialTheme.colorScheme.primary,
     selectionColors: TextSelectionColors = TextSelectionColors(
         handleColor = MaterialTheme.colorScheme.primary,
-        backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+        backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
     ),
 
 
