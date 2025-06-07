@@ -28,6 +28,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
@@ -84,19 +85,30 @@ class BoneFeature(
                         navController = navController,
                         route = FeatureBoneRoutes.BaseFeatureNavarrete::class
                     ) {
-                        composable<FeatureBoneRoutes.BoneScreen> {
+                        composable<FeatureBoneRoutes.BoneScreen> { backStackEntry ->
                             CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                                val loginName =
+                                    backStackEntry.toRoute<FeatureBoneRoutes.BoneScreen>()
                                 BoneScreenRoot(
                                     modifier = modifier,
                                     viewModel = daggerViewModel(component.viewModelFactory),
+                                    loginName = loginName.loginName
                                 )
                             }
                         }
                         composable<FeatureBoneRoutes.LoginScreen> {
                             CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
                                 LoginScreenRoot(
-                                    onLoginClick = { _, _ ->
-                                        navController.navigate(FeatureBoneRoutes.BoneScreen)
+                                    onLoginClick = { loginName, _ ->
+                                        navController.navigate(
+                                            FeatureBoneRoutes.BoneScreen(
+                                                loginName
+                                            )
+                                        ) {
+                                            popUpTo(FeatureBoneRoutes.LoginScreen) {
+                                                inclusive = true
+                                            }
+                                        }
                                     },
                                 )
                             }
