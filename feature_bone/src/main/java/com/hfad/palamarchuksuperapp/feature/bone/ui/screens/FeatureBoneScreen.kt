@@ -242,7 +242,7 @@ sealed interface FeatureBoneRoutes {
     object BaseFeatureNavarrete : FeatureBoneRoutes
 
     @Serializable
-    object BoneScreen : FeatureBoneRoutes
+    class BoneScreen(val loginName: String = "bone") : FeatureBoneRoutes
 
     @Serializable
     object LoginScreen : FeatureBoneRoutes
