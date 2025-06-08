@@ -12,12 +12,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -42,14 +38,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppIconInfoField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -60,6 +54,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.EqualWidthFlowRow
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentPageState
 import kotlin.random.Random
 
@@ -127,35 +122,16 @@ fun PaymentsStatisticsCard(
             )
 
             val gridItems = remember { paymentStatistic.paymentsByCurrency }
-            LazyVerticalGrid(
+
+            EqualWidthFlowRow(
                 modifier = Modifier
-                    .sizeIn(maxHeight = 800.dp)
-                    .fillMaxWidth(),
-                columns = object : GridCells {
-                    override fun Density.calculateCrossAxisCellSizes(
-                        availableSize: Int,
-                        spacing: Int,
-                    ): List<Int> {
-                        val maxCount = minOf(
-                            (availableSize + spacing) / (100.dp.roundToPx() + spacing),
-                            gridItems.size
-                        )
-                        val count = maxOf(maxCount, 1)
-                        val cellSize = (availableSize - spacing * (count - 1)) / count
-                        return List(count) { cellSize }
-                    }
-                },
-                contentPadding = PaddingValues(
-                    horizontal = 4.dp,
-                    vertical = 4.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
             ) {
-                itemsIndexed(gridItems) { index, currencyAmount ->
+                gridItems.forEach { currencyAmount ->
                     CurrencyStat(
                         modifier = Modifier,
-                        amountCurrency = currencyAmount,
+                        amountCurrency = currencyAmount
                     )
                 }
             }

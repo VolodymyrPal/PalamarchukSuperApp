@@ -43,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
@@ -78,12 +77,6 @@ fun OrderCard(
     val orderStatus = remember { mutableStateOf(initialStatus) }
     val currentStepCount = remember { mutableStateOf(currentStep) }
 
-
-    val elevation by animateDpAsState(
-        targetValue = if (expanded.value) 6.dp else 2.dp,
-        label = "elevationAnimation"
-    )
-
     val colorScheme = MaterialTheme.colorScheme
 
     val statusColor = when (orderStatus.value) {
@@ -111,12 +104,11 @@ fun OrderCard(
                 interactionSource = interactionSource
             ),
         shape = MaterialTheme.shapes.extraSmall,
-        border = BorderStroke(1.dp, colorScheme.outline),
+        border = BorderStroke(1.dp, colorScheme.secondary),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface,
             contentColor = colorScheme.onSurface
         ),
-//        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
         Column(
             modifier = Modifier.padding(internalPadding)

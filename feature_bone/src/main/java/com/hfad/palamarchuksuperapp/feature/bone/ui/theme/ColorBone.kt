@@ -80,8 +80,8 @@ val surfaceContainerHighLight = Color(0xFFE0E0E0)    // Четкое разде�
 val surfaceContainerHighestLight = Color(0xFFD5D5D5) // Самый темный уровень
 
 // Обновленная Dark theme
-val primaryDark = Color(0xFFFFFFFF)
-val onPrimaryDark = Color(0xFF000000)
+val primaryDark = Color(0xFF000000)
+val onPrimaryDark = Color(0xFFFFFFFF)
 val primaryContainerDark = Color(0xFF000000)
 val onPrimaryContainerDark = Color(0xFFFFFFFF)
 
