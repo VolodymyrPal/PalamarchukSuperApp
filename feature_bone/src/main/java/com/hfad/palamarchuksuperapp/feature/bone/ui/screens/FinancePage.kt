@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -21,19 +20,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -47,14 +39,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
@@ -74,6 +64,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.EqualWidthFlowRow
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ExchangeOrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
@@ -144,38 +135,18 @@ fun FinanceStatisticCard(
             val gridItems = listOf(
                 AmountCurrency(Currency.UAH, 500f),
                 AmountCurrency(Currency.USD, 200000f),
-                AmountCurrency(Currency.EUR, 99999999f),
+                AmountCurrency(Currency.EUR, 99_999_999_999f),
                 AmountCurrency(Currency.BTC, 0.00005f),
             )
-            LazyVerticalGrid(
+            EqualWidthFlowRow(
                 modifier = Modifier
-                    .sizeIn(maxHeight = 800.dp)
-                    .fillMaxWidth(),
-                columns = object : GridCells {
-                    override fun Density.calculateCrossAxisCellSizes(
-                        availableSize: Int,
-                        spacing: Int,
-                    ): List<Int> {
-                        val maxCount = minOf(
-                            (availableSize + spacing) / (100.dp.roundToPx() + spacing),
-                            gridItems.size
-                        )
-                        val count = maxOf(maxCount, 1)
-                        val cellSize = (availableSize - spacing * (count - 1)) / count
-                        return List(count) { cellSize }
-                    }
-                },
-                contentPadding = PaddingValues(
-                    horizontal = 4.dp,
-                    vertical = 4.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-                horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
             ) {
-                itemsIndexed(gridItems) { index, currencyAmount ->
+                gridItems.forEachIndexed { index, currencyAmount ->
                     FinanceStat(
-                        modifier = Modifier.weight(0.33f),
                         amountCurrency = currencyAmount,
+                        modifier = Modifier.wrapContentSize()
                     )
                 }
             }
@@ -247,11 +218,6 @@ fun FinanceTransactionCard(
     val uiTransaction: TransactionUiModel = transaction.toUiModel()
     val isExpanded = remember { mutableStateOf(false) }
 
-    val elevation by animateDpAsState(
-        targetValue = 2.dp,
-        label = "cardElevation"
-    )
-
     val interactionSource = remember { MutableInteractionSource() }
 
     Card(
@@ -263,7 +229,7 @@ fun FinanceTransactionCard(
                 interactionSource = interactionSource
             ),
         shape = RoundedCornerShape(2.dp),
-        border = BorderStroke(1.dp, colorScheme.outline),
+        border = BorderStroke(1.dp, colorScheme.secondary),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface,
             contentColor = colorScheme.onSurface
