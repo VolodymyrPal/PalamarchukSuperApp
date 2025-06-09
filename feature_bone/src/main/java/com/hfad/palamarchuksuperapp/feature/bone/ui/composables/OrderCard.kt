@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -38,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -75,9 +75,9 @@ fun OrderCard(
 ) {
     val expanded = remember { mutableStateOf(initialExpanded) }
     val orderStatus = remember { mutableStateOf(initialStatus) }
-    val currentStepCount = remember { mutableStateOf(currentStep) }
+    val currentStepCount = remember { mutableIntStateOf(currentStep) }
 
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme = colorScheme
 
     val statusColor = when (orderStatus.value) {
         StepperStatus.DONE -> statusColor(Status.DONE)
@@ -87,10 +87,10 @@ fun OrderCard(
     }
 
     val statusText = when (orderStatus.value) {
-        StepperStatus.DONE -> "Завершен"
-        StepperStatus.IN_PROGRESS -> "В процессе"
-        StepperStatus.CREATED -> "Создан"
-        StepperStatus.CANCELED -> "Отменен"
+        StepperStatus.DONE -> R.string.order_status_done
+        StepperStatus.IN_PROGRESS -> R.string.order_status_in_progress
+        StepperStatus.CREATED -> R.string.order_status_created
+        StepperStatus.CANCELED -> R.string.order_status_canceled
     }
     val interactionSource = remember { MutableInteractionSource() }
     Card(
@@ -128,16 +128,18 @@ fun OrderCard(
                     Icon(
                         painter = painterResource(R.drawable.container_svgrepo_com),
                         contentDescription = "Container Icon",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
+                        tint = colorScheme.primary
                     )
 
                     Column {
                         AppText(
-                            value = "Заказ № ${order.num}",
+                            value = stringResource(R.string.order_num, order.num),
                             appTextConfig = appTextConfig(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
-                            )
+                            ),
+                            color = colorScheme.primary
                         )
 
                         Row(
@@ -200,13 +202,10 @@ fun OrderCard(
                         ),
                 visible = expanded.value
             ) {
-                Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-
-                    TableOrderInfo(
-                        modifier = Modifier.fillMaxWidth(),
-                        orderInfoList = order.mapForOrderInfo()
-                    )
-                }
+                TableOrderInfo(
+                    modifier = Modifier.fillMaxWidth(),
+                    orderInfoList = order.mapForOrderInfo()
+                )
             }
         }
     }
@@ -321,7 +320,9 @@ fun painterServiceTypeMap() = ServiceType.entries.associateWith {
 @Composable
 fun OrderCardPreview() {
     Column {
-        FeatureTheme {
+        FeatureTheme(
+            dynamicColor = true
+        ) {
             OrderCard(
                 modifier = Modifier
                     .padding(5.dp)
