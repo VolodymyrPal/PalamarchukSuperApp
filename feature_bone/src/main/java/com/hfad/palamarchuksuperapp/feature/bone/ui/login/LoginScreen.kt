@@ -156,7 +156,9 @@ fun LoginScreen(
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp)
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     AppOutlinedTextField(
                         value = state.email,
@@ -174,7 +176,7 @@ fun LoginScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         ),
                         modifier = Modifier.fillMaxWidth(),
-                        shape = MaterialTheme.shapes.medium,
+                        shape = MaterialTheme.shapes.small,
                     )
 
                     AppOutlinedTextField(
@@ -200,9 +202,8 @@ fun LoginScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                         ),
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 24.dp),
-                        shape = MaterialTheme.shapes.medium,
+                            .fillMaxWidth(),
+                        shape = MaterialTheme.shapes.small,
                     )
 
                     Row(
@@ -349,7 +350,7 @@ data class LoginScreenState(
 @Preview(showBackground = false)
 @Composable
 fun LoginScreenPreview() {
-    FeatureTheme(darkTheme = false) {
+    FeatureTheme(darkTheme = true) {
         LoginScreen()
     }
 }
