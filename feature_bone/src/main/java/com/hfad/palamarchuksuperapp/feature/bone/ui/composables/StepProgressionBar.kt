@@ -50,7 +50,7 @@ fun StepProgressionBar(
     var componentSize by remember { mutableStateOf(Size.Zero) }
 
     val colorScheme = MaterialTheme.colorScheme
-    val primaryColor = colorScheme.onSurfaceVariant // or colorScheme.primary
+    val primaryColor = colorScheme.primary
     val primaryContainerColor = colorScheme.primaryContainer
     val onSurface = colorScheme.onSurface
     val surfaceColor = colorScheme.surface
@@ -231,8 +231,8 @@ fun StepProgressionBar(
 
                 // **Рисуем иконку сервиса**
                 val iconTint = when {
-                    index <= currentStep -> onSurface
-                    else -> onSurface
+                    index <= currentStep -> primaryColor
+                    else -> primaryColor.copy(alpha = 0.8f)
                 }
 
                 drawIntoCanvas { canvas ->
