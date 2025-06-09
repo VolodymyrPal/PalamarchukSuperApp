@@ -1,13 +1,22 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.example.compose.FeatureTheme
+import kotlin.random.Random
 
 /**
  * A custom layout that arranges items in a horizontal flow using equal widths per row.
@@ -49,7 +58,8 @@ fun EqualWidthFlowRow(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.Companion.Top,
     maxItemsInRow: Int = Int.MAX_VALUE,
-    content: @Composable () -> Unit
+    equalHeight: Boolean = true,
+    content: @Composable () -> Unit,
 ) {
     Layout(
         modifier = modifier,
@@ -63,7 +73,9 @@ fun EqualWidthFlowRow(
         val maxRowWidth = constraints.maxWidth.coerceAtLeast(constraints.minWidth)
 
         // We determine the minimum and maximum intrinsic widths to find a balance between compactness and uniformity
-        val itemWidths = measurables.map { it.minIntrinsicWidth(constraints.maxHeight) }
+        val itemWidths = measurables.map {
+            it.minIntrinsicWidth(constraints.maxHeight)
+        }
         val minItemWidth = itemWidths.minOrNull() ?: 0
         val maxIntrinsicWidth = itemWidths.maxOrNull() ?: 0
 
@@ -96,14 +108,46 @@ fun EqualWidthFlowRow(
             }
         }
 
-        // Force every item to have equal width for visual consistency
-        val itemConstraints = constraints.copy(
-            minWidth = actualItemWidth.coerceAtMost(constraints.maxWidth),
-            maxWidth = actualItemWidth.coerceAtMost(constraints.maxWidth)
-        )
+        // Group measurables into rows to determine height requirements
+        val measurableRows = measurables.chunked(itemsPerRow)
 
-        // Measure children using equal width constraints
-        val placeables = measurables.map { it.measure(itemConstraints) }
+        // If equal height is needed, calculate the maximum height for each row using intrinsic measurements
+        val rowHeightConstraints = if (equalHeight) {
+            measurableRows.map { rowMeasurables ->
+                // Get intrinsic heights for items in this row with the target width
+                val rowHeights = rowMeasurables.map { measurable ->
+                    measurable.minIntrinsicHeight(actualItemWidth)
+                }
+                val maxRowHeight = rowHeights.maxOrNull() ?: 0
+                maxRowHeight
+            }
+        } else {
+            emptyList()
+        }
+
+        // Measure all children with appropriate constraints
+        val placeables = measurables.mapIndexed { index, measurable ->
+            val rowIndex = index / itemsPerRow
+
+            val itemConstraints = if (equalHeight && rowIndex < rowHeightConstraints.size) {
+                // Force equal width and height within the row
+                val targetHeight = rowHeightConstraints[rowIndex]
+                constraints.copy(
+                    minWidth = actualItemWidth.coerceAtMost(constraints.maxWidth),
+                    maxWidth = actualItemWidth.coerceAtMost(constraints.maxWidth),
+                    minHeight = targetHeight.coerceAtMost(constraints.maxHeight),
+                    maxHeight = targetHeight.coerceAtMost(constraints.maxHeight)
+                )
+            } else {
+                // Force equal width for visual consistency
+                constraints.copy(
+                    minWidth = actualItemWidth.coerceAtMost(constraints.maxWidth),
+                    maxWidth = actualItemWidth.coerceAtMost(constraints.maxWidth)
+                )
+            }
+
+            measurable.measure(itemConstraints)
+        }
 
         // Group measured items into rows, based on max items per row
         val rows = placeables.chunked(itemsPerRow)
@@ -146,6 +190,29 @@ fun EqualWidthFlowRow(
 
                 // Move to next row vertically
                 yPos += rowHeight + verticalSpacingPx
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun EqualWidthFlowRowPreview() {
+    FeatureTheme {
+        val items = List(10) { "Item ${it * Random.nextInt(200000)}" }
+        EqualWidthFlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            equalHeight = true,
+        ) {
+            items.forEach { item ->
+                Text(
+                    text = item,
+                    modifier = Modifier
+                        .width(IntrinsicSize.Max)
+                        .background(Color.Green)
+                )
             }
         }
     }
