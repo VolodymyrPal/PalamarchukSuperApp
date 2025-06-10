@@ -127,9 +127,9 @@ fun FinanceStatisticCard(
             )
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.primary
             )
 
             val gridItems = listOf(
@@ -256,14 +256,16 @@ fun FinanceTransactionCard(
                         contentDescription = uiTransaction.transactionName,
                         modifier = Modifier
                             .padding(8.dp)
-                            .size(24.dp)
+                            .size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
                     AppText(
                         value = "${uiTransaction.transactionName} №${uiTransaction.id}",
                         appTextConfig = appTextConfig(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
-                        )
+                        ),
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 

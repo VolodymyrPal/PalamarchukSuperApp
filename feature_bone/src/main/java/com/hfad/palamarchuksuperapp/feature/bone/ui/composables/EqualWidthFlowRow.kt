@@ -59,6 +59,7 @@ fun EqualWidthFlowRow(
     verticalAlignment: Alignment.Vertical = Alignment.Companion.Top,
     maxItemsInRow: Int = Int.MAX_VALUE,
     equalHeight: Boolean = true,
+    lastRowArrangement: Arrangement.Horizontal = horizontalArrangement,
     content: @Composable () -> Unit,
 ) {
     Layout(
@@ -70,7 +71,9 @@ fun EqualWidthFlowRow(
         // Converts spacing from dp to pixels for layout math
         val horizontalSpacingPx = horizontalSpacing.roundToPx()
         val verticalSpacingPx = verticalSpacing.roundToPx()
-        val maxRowWidth = constraints.maxWidth.coerceAtLeast(constraints.minWidth)
+
+        // Just in case constraints are degenerate, we ensure we have a valid width
+        val maxRowWidth =  constraints.maxWidth.coerceAtLeast(constraints.minWidth)
 
         // We determine the minimum and maximum intrinsic widths to find a balance between compactness and uniformity
         val itemWidths = measurables.map {
@@ -168,7 +171,11 @@ fun EqualWidthFlowRow(
                 // Determine horizontal alignment start position
                 val totalRowWidth =
                     row.size * actualItemWidth + (row.size - 1) * horizontalSpacingPx
-                val startX = when (horizontalArrangement) {
+                val isLastRow = rowIndex == rows.lastIndex
+                val rowArrangement = if (isLastRow) lastRowArrangement else horizontalArrangement
+
+
+                val startX = when (rowArrangement) {
                     Arrangement.Start -> if (layoutDirection == LayoutDirection.Ltr) 0 else constraints.maxWidth - totalRowWidth
                     Arrangement.End -> if (layoutDirection == LayoutDirection.Ltr) constraints.maxWidth - totalRowWidth else 0
                     else -> (constraints.maxWidth - totalRowWidth) / 2

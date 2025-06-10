@@ -94,7 +94,7 @@ fun SaleCard(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         shape = MaterialTheme.shapes.extraSmall,
-        border = BorderStroke(1.dp, colorScheme.outline),
+        border = BorderStroke(1.dp, colorScheme.secondary),
 //        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(
@@ -119,7 +119,8 @@ fun SaleCard(
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
-                    )
+                    ),
+                    color = colorScheme.primary
                 )
 
                 AppIconInfoField(
@@ -136,9 +137,9 @@ fun SaleCard(
 
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
+                thickness = 1.dp,
+                color = colorScheme.secondary
             )
 
             Row(
@@ -258,9 +259,9 @@ fun SaleCard(
 
             if (saleItem.order != null) {
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    thickness = 2.dp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
+                    thickness = 1.dp,
+                    color = colorScheme.secondary
                 )
                 OrderInfoSection(order = saleItem.order)
             }
@@ -332,7 +333,8 @@ private fun OrderInfoSection(
                 contentDescription = null,
                 modifier = Modifier
                     .padding(start = 12.dp)
-                    .size(30.dp)
+                    .size(30.dp),
+                tint = colorScheme.primary
             )
             AppText(
                 value = "Информация о заказе №${order.num}",
@@ -340,12 +342,14 @@ private fun OrderInfoSection(
                     textStyle = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium
                 ),
+                color = colorScheme.primary
             )
             Icon(
                 imageVector = if (expanded.value)
                     Icons.Outlined.KeyboardArrowUp else Icons.Outlined.ArrowDropDown,
                 contentDescription = if (expanded.value) "Скрыть детали" else "Показать детали",
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = 8.dp),
+                tint = colorScheme.primary
             )
         }
 

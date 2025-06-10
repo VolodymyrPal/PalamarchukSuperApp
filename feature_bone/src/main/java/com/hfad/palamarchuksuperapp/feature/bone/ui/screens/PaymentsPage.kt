@@ -112,13 +112,14 @@ fun PaymentsStatisticsCard(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary
             )
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary
             )
 
             val gridItems = remember { paymentStatistic.paymentsByCurrency }
@@ -130,16 +131,16 @@ fun PaymentsStatisticsCard(
             ) {
                 gridItems.forEach { currencyAmount ->
                     CurrencyStat(
-                        modifier = Modifier,
+                        modifier = Modifier.width(IntrinsicSize.Max),
                         amountCurrency = currencyAmount
                     )
                 }
             }
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary
             )
 
             Row(
@@ -202,7 +203,7 @@ fun CurrencyStat(
         AppText(
             value = amountCurrency.amount.formatTrim() + " " + amountCurrency.iconChar,
             appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.bodyLarge,
+                textStyle = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold
             )
         )
@@ -245,7 +246,6 @@ fun StatItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 ),
-                color = MaterialTheme.colorScheme.onSurface,
             )
 
             AppText(
@@ -259,7 +259,7 @@ fun StatItem(
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
                 ),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
             )
         }
     }
@@ -291,7 +291,7 @@ fun PaymentCard(
         ),
 //        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = MaterialTheme.shapes.extraSmall,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
     ) {
         Column(
             modifier = Modifier.padding(internalPadding),
@@ -307,7 +307,8 @@ fun PaymentCard(
                     value = stringResource(R.string.payment_payment_card_title, payment.id),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleSmall
-                    )
+                    ),
+                    color = MaterialTheme.colorScheme.primary
                 )
 
                 Box(
@@ -335,11 +336,11 @@ fun PaymentCard(
             ) {
                 SelectionContainer {
                     AppText(
-                        value = payment.amountCurrency.amount.formatTrim(),
+                        value = payment.fullPrice.amount.formatTrim(),
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
-                        )
+                        ),
                     )
                 }
 
@@ -363,32 +364,68 @@ fun PaymentCard(
             }
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary
             )
 
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(R.drawable.factory_icon),
-                iconSize = 40.dp,
+                iconSize = 30.dp,
                 title = stringResource(R.string.factory),
                 description = payment.factory,
+                cardColors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                )
             )
 
             AppIconInfoField(
                 modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(R.drawable.product_icon),
-                iconSize = 40.dp,
+                iconSize = 30.dp,
                 title = stringResource(R.string.cargo),
                 description = payment.productType,
+                cardColors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                )
+            )
+
+            AppIconInfoField(
+                modifier = Modifier.fillMaxWidth(),
+                icon = painterResource(R.drawable.usd_sign),
+                iconSize = 30.dp,
+                title = "To send",
+                description = "${payment.amountCurrency.amount.formatTrim()} ${payment.fullPrice.iconChar}",
+                cardColors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                )
+            )
+
+            val paymentCommission = StringBuilder().apply {
+                append("${payment.commission}%")
+                if (payment.paymentPrice.amount != 0.0f) {
+                    append(" + ${payment.paymentPrice.amount.formatTrim()}")
+                    append(" ${payment.paymentPrice.iconChar}")
+                }
+            }.toString()
+
+            AppIconInfoField(
+                modifier = Modifier.fillMaxWidth(),
+                icon = painterResource(R.drawable.money_pack),
+                iconSize = 30.dp,
+                title = stringResource(R.string.payment_commission),
+                description = paymentCommission,
+                cardColors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                )
             )
 
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary
             )
 
             // Dates
@@ -402,14 +439,14 @@ fun PaymentCard(
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodySmall
                         ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     AppText(
                         value = payment.paymentDate,
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodyMedium
-                        )
+                        ),
                     )
                 }
 
@@ -419,7 +456,7 @@ fun PaymentCard(
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodySmall
                         ),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     AppText(

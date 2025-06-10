@@ -88,7 +88,6 @@ fun AppIconInfoField(
                         contentDescription = null,
                         modifier = Modifier
                             .size(iconSize),
-                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 

@@ -103,13 +103,14 @@ private fun OrderStatisticCard(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary
             )
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary
             )
 
             Row(
@@ -149,8 +150,8 @@ private fun OrderStatisticCard(
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary
             )
 
             val sumOrderTitle = stringResource(R.string.sum_orders)
@@ -164,6 +165,7 @@ private fun OrderStatisticCard(
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium
                     ),
+                    color = MaterialTheme.colorScheme.primary
                 )
                 AppText(
                     value = "${orderMetrics.totalOrders}",
@@ -171,6 +173,7 @@ private fun OrderStatisticCard(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     ),
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -211,7 +214,8 @@ private fun OrderStat(
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-            )
+            ),
+            color = MaterialTheme.colorScheme.primary
         )
 
         AppText(

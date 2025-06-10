@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -27,6 +28,7 @@ fun TableOrderInfo(
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp),
+        lastRowArrangement = Arrangement.Start
     ) {
         orderInfoList.forEach { orderInfo ->
             AppIconInfoField(
