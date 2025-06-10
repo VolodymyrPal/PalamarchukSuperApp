@@ -11,6 +11,7 @@
     <string name="expected_arrival_date">Arrival Date</string>
     <string name="conatiner_number">Container</string>
     <string name="cargo">Cargo</string>
+    <string name="payment_commission">Commission:</string>
     <string name="manager">Manager</string>
     <string name="order_status_created">Created</string>
     <string name="order_status_calculated">Calculated</string>
