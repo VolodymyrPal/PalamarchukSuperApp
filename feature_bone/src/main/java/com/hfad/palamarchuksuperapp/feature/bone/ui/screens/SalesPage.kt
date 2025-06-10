@@ -98,13 +98,14 @@ fun SalesStatisticsCard(
                     textStyle = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary
             )
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 4.dp),
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 4.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.secondary
             )
 
             Row(
@@ -214,7 +215,7 @@ fun SalesStat(
                 textStyle = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Center
             ),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
         )
     }
 }
