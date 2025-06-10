@@ -10,9 +10,12 @@ data class PaymentOrder(
     val paymentDate: String,
     val dueDate: String,
     val status: PaymentStatus,
+    val commission: Float = 0.0f,
     override val type: TransactionType,
     override val billingDate: Date = Date(),
     override val amountCurrency: AmountCurrency,
+    val paymentPrice: AmountCurrency = AmountCurrency(currency = amountCurrency.currency, amount = 100f),
+    val fullPrice: AmountCurrency = amountCurrency+amountCurrency*commission+paymentPrice
 ) : TypedTransaction
 
 enum class PaymentStatus {
