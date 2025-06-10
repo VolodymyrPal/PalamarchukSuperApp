@@ -32,6 +32,7 @@ import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -76,8 +77,6 @@ fun OrderCard(
     val expanded = remember { mutableStateOf(initialExpanded) }
     val orderStatus = remember { mutableStateOf(initialStatus) }
     val currentStepCount = remember { mutableIntStateOf(currentStep) }
-
-    val colorScheme = colorScheme
 
     val statusColor = when (orderStatus.value) {
         StepperStatus.DONE -> statusColor(Status.DONE)
@@ -202,10 +201,19 @@ fun OrderCard(
                         ),
                 visible = expanded.value
             ) {
-                TableOrderInfo(
-                    modifier = Modifier.fillMaxWidth(),
-                    orderInfoList = order.mapForOrderInfo()
-                )
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(0.9f).padding(bottom = 8.dp),
+                        thickness = 1.dp,
+                        color = colorScheme.secondary
+                    )
+                    TableOrderInfo(
+                        modifier = Modifier.fillMaxWidth(),
+                        orderInfoList = order.mapForOrderInfo()
+                    )
+                }
             }
         }
     }
