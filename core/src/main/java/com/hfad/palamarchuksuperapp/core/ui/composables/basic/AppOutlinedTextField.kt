@@ -35,7 +35,6 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
  * @param placeholder Компонент для отображения подсказки.
  * @param textStyle Стиль текста.
  * @param colors Цвета для текстового поля.
- * @param enabled Включено ли текстовое поле.
  */
 @Composable
 @Suppress("LongParameterList")
