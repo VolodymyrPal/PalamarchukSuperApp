@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneFeatureViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.MapKey
@@ -100,8 +100,8 @@ abstract class ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(BoneFeatureViewModel::class)
-    abstract fun bindSkillsViewModel(viewModel: BoneFeatureViewModel): ViewModel
+    @ViewModelKey(OrderPageViewModel::class)
+    abstract fun bindSkillsViewModel(viewModel: OrderPageViewModel): ViewModel
 }
 
 

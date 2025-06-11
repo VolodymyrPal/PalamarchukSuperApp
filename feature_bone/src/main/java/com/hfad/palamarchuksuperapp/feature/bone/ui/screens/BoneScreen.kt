@@ -35,17 +35,14 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneFeatureViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BoneScreenRoot(
     modifier: Modifier = Modifier,
-    viewModel: BoneFeatureViewModel,
     loginName: String = "User",
 ) {
-    val a = viewModel
     val navController = LocalNavController.current
 
     Log.d("Login name: ", loginName)

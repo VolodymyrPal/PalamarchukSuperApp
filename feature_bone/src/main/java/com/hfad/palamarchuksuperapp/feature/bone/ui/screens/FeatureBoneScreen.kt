@@ -68,7 +68,8 @@ class BoneFeature(
                         hoveredAlpha = 0.2f,
                         draggedAlpha = 0.3f
                     )
-                )
+                ),
+                LocalBoneDependencies provides component,
             ) {
                 FeatureTheme {
                     LaunchedEffect(navController) {

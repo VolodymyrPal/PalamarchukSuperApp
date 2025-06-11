@@ -26,7 +26,10 @@ data class Order(
     val departurePoint: String = "Тест: Гонконг",
     val cargo: String = "Тест: Мебель",
     val manager: String = "Тест: VP +3806338875",
-    override val amountCurrency: AmountCurrency,
+    override val amountCurrency: AmountCurrency = AmountCurrency(
+        currency = Currency.USD,
+        amount = 0f
+    ),
     override val billingDate: Date = Date(),
     override val type: TransactionType = TransactionType.DEBIT,
 ) : TypedTransaction
@@ -39,7 +42,7 @@ enum class CargoType {
     ANY, CONTAINER, TRUCK, AIR
 }
 
-fun generateOrder() : Order {
+fun generateOrder(): Order {
     val serviceScenarios = listOf(
         ServiceScenario.NonEuropeContainer.WithFreight.scenario,
         ServiceScenario.ChinaEuropeContainer.scenario,

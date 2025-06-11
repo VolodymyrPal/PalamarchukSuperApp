@@ -31,29 +31,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
-import kotlin.random.Random
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 
 
 @Composable
 internal fun OrdersPage(
     modifier: Modifier = Modifier,
-    orderPageState: OrderPageState = OrderPageState(),
+    viewModel: OrderPageViewModel = daggerViewModel<OrderPageViewModel>(
+        factory = LocalBoneDependencies.current.viewModelFactory
+    ),
     navController: NavController? = LocalNavController.current,
 ) {
-    val orderPageState = OrderPageState(
-        orders = generateOrderItems(), //TODO for testing
-        orderMetrics = generateOrderStatistic() //TODO for testing
-    )
+    val orderPageState = viewModel.uiState.collectAsStateWithLifecycle()
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -61,15 +60,14 @@ internal fun OrdersPage(
         contentPadding = PaddingValues(bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         item {
             OrderStatisticCard(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
-                orderMetrics = orderPageState.orderMetrics
+                orderMetrics = orderPageState.value.orderMetrics
             )
         }
 
-        items(items = orderPageState.orders) {
+        items(items = orderPageState.value.orders) {
             OrderCard(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp),
                 order = it,
@@ -82,8 +80,8 @@ internal fun OrdersPage(
 
 @Composable
 private fun OrderStatisticCard(
-    orderMetrics: OrderStatistic = OrderStatistic(),
     modifier: Modifier = Modifier,
+    orderMetrics: OrderStatistic = OrderStatistic(),
 ) {
     Card(
         modifier = modifier,
@@ -229,32 +227,13 @@ private fun OrderStat(
     }
 }
 
-internal data class OrderPageState(
-    val orderMetrics: OrderStatistic = OrderStatistic(),
-    val orders: List<Order> = emptyList(),
-)
-
-private fun generateOrderStatistic(): OrderStatistic {
-    return OrderStatistic(
-        totalOrders = Random.nextInt(20, 30),
-        completedOrders = Random.nextInt(5, 15),
-        inProgressOrders = Random.nextInt(1, 5),
-        totalOrderWeight = Random.nextInt(10, 20) + (Random.nextFloat() * 100).toInt() / 100f
-    )
-}
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun OrderCardListPreview() {
-    FeatureTheme (
+    FeatureTheme(
         darkTheme = false
     ) {
         OrdersPage(
-            orderPageState = OrderPageState(
-                orderMetrics = OrderStatistic(
-                    53, 40, 5, 534.25f
-                )
-            ),
             navController = null
         )
     }
@@ -264,21 +243,21 @@ private fun OrderCardListPreview() {
 @Composable
 private fun OrderStatPreview() {
     Column {
-        FeatureTheme (
+        FeatureTheme(
             darkTheme = false
         ) {
             OrderStatisticCard(
-                OrderStatistic(
+                orderMetrics = OrderStatistic(
                     53, 40, 5, 534.25f
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
         }
-        FeatureTheme (
+        FeatureTheme(
             darkTheme = true
         ) {
             OrderStatisticCard(
-                OrderStatistic(
+                orderMetrics = OrderStatistic(
                     53, 40, 5, 534.25f
                 ),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
@@ -290,15 +269,10 @@ private fun OrderStatPreview() {
 @Preview
 @Composable
 private fun OrdersPagePreview() {
-    FeatureTheme (
+    FeatureTheme(
         darkTheme = true
     ) {
         OrdersPage(
-            orderPageState = OrderPageState(
-                orderMetrics = OrderStatistic(
-                    53, 40, 5, 534.25f
-                )
-            ),
             navController = null
         )
     }
