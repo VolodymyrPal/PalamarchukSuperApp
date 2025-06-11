@@ -58,7 +58,7 @@ fun EqualWidthFlowRow(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.Companion.Top,
     maxItemsInRow: Int = Int.MAX_VALUE,
-    equalHeight: Boolean = true,
+    equalHeightInRow: Boolean = true,
     lastRowArrangement: Arrangement.Horizontal = horizontalArrangement,
     content: @Composable () -> Unit,
 ) {
@@ -73,7 +73,7 @@ fun EqualWidthFlowRow(
         val verticalSpacingPx = verticalSpacing.roundToPx()
 
         // Just in case constraints are degenerate, we ensure we have a valid width
-        val maxRowWidth =  constraints.maxWidth.coerceAtLeast(constraints.minWidth)
+        val maxRowWidth = constraints.maxWidth.coerceAtLeast(constraints.minWidth)
 
         // We determine the minimum and maximum intrinsic widths to find a balance between compactness and uniformity
         val itemWidths = measurables.map {
@@ -90,24 +90,20 @@ fun EqualWidthFlowRow(
         }.coerceAtLeast(minItemWidth.coerceAtLeast(1)) // avoid zero-width items
 
         // Figure out how many items can realistically fit in one row
-        val itemsPerRow = if (itemWidth + horizontalSpacingPx <= 0) {
-            1
-        } else {
-            maxOf(
-                1,
-                minOf(
-                    maxItemsInRow,
-                    (maxRowWidth + horizontalSpacingPx) / (itemWidth + horizontalSpacingPx)
-                )
+        val itemsPerRow = maxOf(
+            1, minOf(
+                maxItemsInRow,
+                (maxRowWidth + horizontalSpacingPx) / (itemWidth + horizontalSpacingPx)
             )
-        }
+        )
+
 
         // Recalculate width so items evenly span full width of row
         val actualItemWidth = when {
             itemsPerRow <= 1 -> minOf(itemWidth, maxRowWidth)
             else -> {
                 val availableWidth = maxRowWidth - horizontalSpacingPx * (itemsPerRow - 1)
-                maxOf(1, availableWidth / itemsPerRow)
+                (availableWidth / itemsPerRow).coerceAtLeast(1)
             }
         }
 
@@ -115,7 +111,7 @@ fun EqualWidthFlowRow(
         val measurableRows = measurables.chunked(itemsPerRow)
 
         // If equal height is needed, calculate the maximum height for each row using intrinsic measurements
-        val rowHeightConstraints = if (equalHeight) {
+        val rowHeightConstraints = if (equalHeightInRow) {
             measurableRows.map { rowMeasurables ->
                 // Get intrinsic heights for items in this row with the target width
                 val rowHeights = rowMeasurables.map { measurable ->
@@ -132,7 +128,7 @@ fun EqualWidthFlowRow(
         val placeables = measurables.mapIndexed { index, measurable ->
             val rowIndex = index / itemsPerRow
 
-            val itemConstraints = if (equalHeight && rowIndex < rowHeightConstraints.size) {
+            val itemConstraints = if (equalHeightInRow && rowIndex < rowHeightConstraints.size) {
                 // Force equal width and height within the row
                 val targetHeight = rowHeightConstraints[rowIndex]
                 constraints.copy(
@@ -211,7 +207,7 @@ fun EqualWidthFlowRowPreview() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            equalHeight = true,
+            equalHeightInRow = true,
         ) {
             items.forEach { item ->
                 Text(
