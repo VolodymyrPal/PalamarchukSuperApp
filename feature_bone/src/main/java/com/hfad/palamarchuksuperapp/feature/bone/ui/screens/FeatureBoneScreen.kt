@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -21,6 +20,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -30,18 +31,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.compose.FeatureTheme
-import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
 import com.hfad.palamarchuksuperapp.core.ui.navigation.composable
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenRoot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 class BoneFeature(
     featureDependencies: BoneDeps,
@@ -74,7 +81,6 @@ class BoneFeature(
                 FeatureTheme {
                     LaunchedEffect(navController) {
                         navController.currentBackStack.collect { backStackList ->
-                            Log.d("backStackList", "backStackList $backStackList")
                             if (backStackList.isEmpty()) {
                                 parentNavController.popBackStack()
                             }
@@ -92,7 +98,6 @@ class BoneFeature(
                                     backStackEntry.toRoute<FeatureBoneRoutes.BoneScreen>()
                                 BoneScreenRoot(
                                     modifier = modifier,
-                                    viewModel = daggerViewModel(component.viewModelFactory),
                                     loginName = loginName.loginName
                                 )
                             }
@@ -110,7 +115,7 @@ class BoneFeature(
                                                 inclusive = true
                                             }
                                         }
-                                    },
+                                    }
                                 )
                             }
                         }
@@ -232,10 +237,6 @@ internal val LocalNavController = staticCompositionLocalOf<NavController> {
     error("NavController not provided")
 }
 
-private val IS_LOGGED_KEY = booleanPreferencesKey("is_logged")
-private val Context.isLogged: DataStore<Preferences> by preferencesDataStore(name = "is_logged")
-
-
 @Serializable
 sealed interface FeatureBoneRoutes {
 
@@ -250,24 +251,109 @@ sealed interface FeatureBoneRoutes {
 
 }
 
+private val IS_LOGGED_KEY = booleanPreferencesKey("is_logged")
+private val LOGIN_TIMESTAMP_KEY = longPreferencesKey("login_timestamp")
+private val USERNAME_KEY = stringPreferencesKey("username")
+
+private val Context.userSession: DataStore<Preferences> by preferencesDataStore(name = "user_session")
+
 class LoggerDataStoreHandler(
     val context: Context,
+    val coroutineScope: CoroutineScope,
 ) {
-    private val minuteToLogout = 15.minutes
+    private val sessionDuration = 30.days
 
-    suspend fun setIsLogged() {
-        context.isLogged.edit {
-            it[IS_LOGGED_KEY] = true
+    init {
+        coroutineScope.launch {
+            initialize() // Проверка целостности при создании
+            startValidationLoop()
+        }
+    }
+
+    suspend fun setIsLogged(username: String = "") {
+        context.userSession.edit { preferences ->
+            preferences[IS_LOGGED_KEY] = true
+            preferences[LOGIN_TIMESTAMP_KEY] = System.currentTimeMillis()
+            if (username.isNotEmpty()) {
+                preferences[USERNAME_KEY] = username
+            }
         }
     }
 
     suspend fun clearUser() {
-        context.isLogged.edit {
-            it.remove(IS_LOGGED_KEY)
+        context.userSession.edit { preferences ->
+            preferences.remove(IS_LOGGED_KEY)
+            preferences.remove(LOGIN_TIMESTAMP_KEY)
+            preferences.remove(USERNAME_KEY)
         }
     }
 
-    val isLoggedFlow = context.isLogged.data.map {
-        it[IS_LOGGED_KEY] ?: false
-    }.distinctUntilChanged()
+    private fun isSessionValid(loginTimestamp: Long): Boolean {
+        val currentTime = System.currentTimeMillis()
+        val sessionAge = (currentTime - loginTimestamp).milliseconds
+        return sessionAge < sessionDuration
+    }
+
+    suspend fun validateSession() {
+        val (isLogged, timestamp) = context.userSession.data.first().run {
+            this[IS_LOGGED_KEY] to this[LOGIN_TIMESTAMP_KEY]
+        }
+        if (isLogged == true && timestamp != null && !isSessionValid(timestamp)) {
+            clearUser()
+        }
+    }
+
+    val isLoggedFlow: Flow<Boolean> = context.userSession.data
+        .map { prefs ->
+            val isLogged = prefs[IS_LOGGED_KEY] ?: false
+            val timestamp = prefs[LOGIN_TIMESTAMP_KEY] ?: 0L
+            isLogged && timestamp > 0 && isSessionValid(timestamp)
+        }
+        .distinctUntilChanged()
+
+
+    val usernameFlow: Flow<String> = context.userSession.data
+        .map { preferences ->
+            preferences[USERNAME_KEY] ?: ""
+        }
+        .distinctUntilChanged()
+
+    suspend fun getRemainingSessionTime(): Duration? {
+        return context.userSession.data.first().let { preferences ->
+            val isLogged = preferences[IS_LOGGED_KEY] ?: false
+            val loginTimestamp = preferences[LOGIN_TIMESTAMP_KEY] ?: 0L
+
+            if (isLogged && loginTimestamp > 0) {
+                val currentTime = System.currentTimeMillis()
+                val elapsed = (currentTime - loginTimestamp).milliseconds
+                val remaining = sessionDuration - elapsed
+
+                if (remaining.isPositive()) remaining else null
+            } else {
+                null
+            }
+        }
+    }
+
+    suspend fun extendSession() {
+        context.userSession.edit { preferences ->
+            if (preferences[IS_LOGGED_KEY] == true) {
+                preferences[LOGIN_TIMESTAMP_KEY] = System.currentTimeMillis()
+            }
+        }
+    }
+
+    suspend fun initialize() {
+        val prefs = context.userSession.data.first()
+        if ((prefs[IS_LOGGED_KEY] == true) != (prefs[LOGIN_TIMESTAMP_KEY] != null)) {
+            clearUser() // Автоматический сброс при несоответствии
+        }
+    }
+
+    private suspend fun startValidationLoop() {
+        while (true) {
+            validateSession()
+            delay(5 * 60 * 1000) // Проверка каждые 5 минут
+        }
+    }
 }

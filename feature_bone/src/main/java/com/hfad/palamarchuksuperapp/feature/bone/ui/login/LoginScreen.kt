@@ -61,7 +61,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitio
 fun LoginScreenRoot(
     modifier: Modifier = Modifier,
     onLoginClick: (String, String) -> Unit = { _, _ -> },
-    onForgotPasswordClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
 ) {
     val localTransitionScope = LocalSharedTransitionScope.current
@@ -77,7 +76,6 @@ fun LoginScreenRoot(
         LoginScreen(
             modifier = modifier,
             onLoginClick = onLoginClick,
-            onForgotPasswordClick = onForgotPasswordClick,
             onSignUpClick = onSignUpClick,
             modifierToTransition = modifierToTransition
         )
@@ -89,7 +87,6 @@ fun LoginScreenRoot(
 fun LoginScreen(
     modifier: Modifier = Modifier,
     onLoginClick: (String, String) -> Unit = { _, _ -> },
-    onForgotPasswordClick: () -> Unit = {},
     onSignUpClick: () -> Unit = {},
     modifierToTransition: Modifier = Modifier,
 ) {

@@ -182,9 +182,9 @@ fun EqualWidthFlowRow(
 
                     // Align item vertically within its row (top/middle/bottom)
                     val y = when (verticalAlignment) {
-                        Alignment.Companion.Top -> 0
-                        Alignment.Companion.CenterVertically -> (rowHeight - placeable.height) / 2
-                        Alignment.Companion.Bottom -> rowHeight - placeable.height
+                        Alignment.Top -> 0
+                        Alignment.CenterVertically -> (rowHeight - placeable.height) / 2
+                        Alignment.Bottom -> rowHeight - placeable.height
                         else -> 0
                     }.coerceAtLeast(0)
 

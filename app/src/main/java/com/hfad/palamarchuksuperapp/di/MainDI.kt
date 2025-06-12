@@ -212,12 +212,6 @@ abstract class ViewModelsModule {
     @ViewModelKey(StoreViewModel::class)
     abstract fun bindStoreViewModel(viewModel: StoreViewModel): ViewModel
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(BoneViewModel::class)
-    abstract fun bindBoneViewModel(viewModel: BoneViewModel): ViewModel
-
-
 }
 
 @Module

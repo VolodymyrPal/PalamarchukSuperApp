@@ -22,6 +22,8 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import com.hfad.palamarchuksuperapp.core.ui.theme.AppTheme
 import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -181,7 +184,7 @@ fun BoneScreen(
             beyondViewportPageCount = 4,
         ) { page ->
             when (page) {
-                0 -> OrdersPage()
+                0 -> OrdersPageRoot()
                 1 -> PaymentsPage()
                 2 -> SalesPage()
                 3 -> FinancePage()
@@ -190,12 +193,97 @@ fun BoneScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun BoneScreenPreview() {
-    AppTheme(
-        useDarkTheme = false
-    ) {
-        BoneScreen()
+    FeatureTheme {
+        val tabs = listOf(
+            stringResource(R.string.orders),
+            stringResource(R.string.payment),
+            stringResource(R.string.sales),
+            stringResource(R.string.balance)
+        )
+        val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
+
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize(),
+            topBar = {
+                PrimaryTabRow(
+                    modifier = Modifier.statusBarsPadding(),
+                    selectedTabIndex = 0,
+                    indicator = {
+                        TabRowDefaults.PrimaryIndicator()
+                    }
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        val tooltipState = rememberTooltipState(isPersistent = false)
+                        TooltipBox(
+                            positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(
+                                12.dp
+                            ),
+                            tooltip = {
+                                RichTooltip(
+                                    caretSize = TooltipDefaults.caretSize,
+                                    title = {
+                                        Text(title)
+                                    },
+                                    colors = TooltipDefaults.richTooltipColors(
+                                        containerColor = colorScheme.secondaryContainer,
+                                        contentColor = colorScheme.secondary,
+                                    ),
+                                    tonalElevation = 0.dp,
+                                    shadowElevation = 5.dp
+                                ) {
+                                    Text("This is the main content of the rich tooltip") //Add additional information
+                                }
+                            },
+                            state = tooltipState,
+                        ) {
+                            Tab(
+                                modifier = Modifier.clip(RoundedCornerShape(4.dp)),
+                                text = {
+                                    AppText(
+                                        value = title,
+                                        appTextConfig = appTextConfig(
+                                            textAlign = TextAlign.Center
+                                        )
+                                    )
+                                },
+                                selected = false,
+                                onClick = {
+
+                                }
+                            )
+                        }
+                    }
+                }
+            },
+        ) { paddingValues ->
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                userScrollEnabled = true,
+                beyondViewportPageCount = 4,
+            ) { page ->
+                when (page) {
+                    0 -> OrdersPage(
+                        event = {},
+                        state = remember {
+                            mutableStateOf(
+                                OrderPageState()
+                            )
+                        },
+                        navController = null
+                    )
+//                    1 -> PaymentsPage()
+//                    2 -> SalesPage()
+//                    3 -> FinancePage()
+                }
+            }
+        }
     }
 }

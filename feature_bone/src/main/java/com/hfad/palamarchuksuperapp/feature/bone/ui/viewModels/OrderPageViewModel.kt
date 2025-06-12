@@ -1,21 +1,17 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
-import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
-import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.OrdersPage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
@@ -25,14 +21,14 @@ class OrderPageViewModel @Inject constructor(
 ) : GenericViewModel<Order, OrderPageViewModel.OrderPageEvent, OrderPageViewModel.OrderPageEffect>() {
 
     override val _dataFlow: StateFlow<List<Order>> = flow {
-            emit(generateOrderItems())
+        emit(generateOrderItems())
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         generateOrderItems()
     )
 
-    val statisticFlow : StateFlow<OrderStatistic> = flow {
+    val statisticFlow: StateFlow<OrderStatistic> = flow {
         emit(generateOrderStatistic())
     }.stateIn(
         viewModelScope,
@@ -40,16 +36,17 @@ class OrderPageViewModel @Inject constructor(
         generateOrderStatistic() // TODO for testing
     )
 
-    override val uiState: StateFlow<OrderPageState> = _dataFlow.combine(statisticFlow) { orders, orderMetrics ->
-        OrderPageState(
-            orders = orders,
-            orderMetrics = orderMetrics
+    override val uiState: StateFlow<OrderPageState> =
+        _dataFlow.combine(statisticFlow) { orders, orderMetrics ->
+            OrderPageState(
+                orders = orders,
+                orderMetrics = orderMetrics
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            OrderPageState()
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        OrderPageState()
-    )
 
 
     override fun event(event: OrderPageEvent) {
