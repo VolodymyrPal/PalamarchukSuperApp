@@ -20,6 +20,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,11 +44,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 
 
 @Composable
-internal fun OrdersPage(
+internal fun OrdersPageRoot(
     modifier: Modifier = Modifier,
     viewModel: OrderPageViewModel = daggerViewModel<OrderPageViewModel>(
         factory = LocalBoneDependencies.current.viewModelFactory
@@ -54,6 +58,21 @@ internal fun OrdersPage(
 ) {
     val orderPageState = viewModel.uiState.collectAsStateWithLifecycle()
 
+    OrdersPage(
+        modifier = modifier,
+        navController = navController,
+        event = viewModel::event,
+        state = orderPageState
+    )
+}
+
+@Composable
+fun OrdersPage(
+    modifier: Modifier = Modifier,
+    navController: NavController? = LocalNavController.current,
+    event: (OrderPageViewModel.OrderPageEvent) -> Unit,
+    state: State<OrderPageState>,
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -63,11 +82,11 @@ internal fun OrdersPage(
         item {
             OrderStatisticCard(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
-                orderMetrics = orderPageState.value.orderMetrics
+                state = state,
             )
         }
 
-        items(items = orderPageState.value.orders) {
+        items(items = state.value.orders) {
             OrderCard(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp),
                 order = it,
@@ -81,7 +100,9 @@ internal fun OrdersPage(
 @Composable
 private fun OrderStatisticCard(
     modifier: Modifier = Modifier,
-    orderMetrics: OrderStatistic = OrderStatistic(),
+    state: State<OrderPageState> = remember {
+        mutableStateOf(OrderPageState())
+    },
 ) {
     Card(
         modifier = modifier,
@@ -121,7 +142,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = inProgress,
-                    value = "${orderMetrics.inProgressOrders}",
+                    value = "${state.value.orderMetrics.inProgressOrders}",
                     label = inWork,
                     color = Color.Red
                 )
@@ -130,7 +151,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = Icons.Default.Check,
-                    value = "${orderMetrics.completedOrders}",
+                    value = "${state.value.orderMetrics.completedOrders}",
                     label = completed,
                     color = Color(0xFF55940E)
                 )
@@ -140,7 +161,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
-                    value = "${(orderMetrics.totalOrderWeight * 100).toInt() / 100.0} т",
+                    value = "${(state.value.orderMetrics.totalOrderWeight * 100).toInt() / 100.0} т",
                     label = finishFull,
                     color = Color.Blue
                 )
@@ -166,7 +187,7 @@ private fun OrderStatisticCard(
                     color = MaterialTheme.colorScheme.primary
                 )
                 AppText(
-                    value = "${orderMetrics.totalOrders}",
+                    value = "${state.value.orderMetrics.totalOrders}",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
@@ -234,6 +255,12 @@ private fun OrderCardListPreview() {
         darkTheme = false
     ) {
         OrdersPage(
+            event = {},
+            state = remember {
+                mutableStateOf(
+                    OrderPageState()
+                )
+            },
             navController = null
         )
     }
@@ -247,9 +274,6 @@ private fun OrderStatPreview() {
             darkTheme = false
         ) {
             OrderStatisticCard(
-                orderMetrics = OrderStatistic(
-                    53, 40, 5, 534.25f
-                ),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
         }
@@ -257,9 +281,6 @@ private fun OrderStatPreview() {
             darkTheme = true
         ) {
             OrderStatisticCard(
-                orderMetrics = OrderStatistic(
-                    53, 40, 5, 534.25f
-                ),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
             )
         }
@@ -273,6 +294,12 @@ private fun OrdersPagePreview() {
         darkTheme = true
     ) {
         OrdersPage(
+            event = {},
+            state = remember {
+                mutableStateOf(
+                    OrderPageState()
+                )
+            },
             navController = null
         )
     }
