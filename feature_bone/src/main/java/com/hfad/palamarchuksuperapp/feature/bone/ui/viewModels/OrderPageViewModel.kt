@@ -18,6 +18,7 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 class OrderPageViewModel @Inject constructor(
+
 ) : GenericViewModel<Order, OrderPageViewModel.OrderPageEvent, OrderPageViewModel.OrderPageEffect>() {
 
     override val _dataFlow: StateFlow<List<Order>> = flow {
@@ -25,7 +26,7 @@ class OrderPageViewModel @Inject constructor(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        generateOrderItems()
+        emptyList()
     )
 
     val statisticFlow: StateFlow<OrderStatistic> = flow {
@@ -33,7 +34,7 @@ class OrderPageViewModel @Inject constructor(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        generateOrderStatistic() // TODO for testing
+        OrderStatistic() // TODO for testing
     )
 
     override val uiState: StateFlow<OrderPageState> =
