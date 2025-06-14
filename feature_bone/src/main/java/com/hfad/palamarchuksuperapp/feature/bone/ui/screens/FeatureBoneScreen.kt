@@ -18,11 +18,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -37,18 +34,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenRoot
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
 class BoneFeature(
     featureDependencies: BoneDeps,
@@ -79,18 +66,10 @@ class BoneFeature(
                 LocalBoneDependencies provides component,
             ) {
                 FeatureTheme {
-                    LaunchedEffect(navController) {
-                        navController.currentBackStack.collect { backStackList ->
-                            if (backStackList.isEmpty()) {
-                                parentNavController.popBackStack()
-                            }
-                        }
-                    }
-
                     NavHost(
                         startDestination = homeRoute,
                         navController = navController,
-                        route = FeatureBoneRoutes.BaseFeatureNavarrete::class
+                        route = FeatureBoneRoutes.BaseFeatureNav::class
                     ) {
                         composable<FeatureBoneRoutes.BoneScreen> { backStackEntry ->
                             CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
@@ -121,6 +100,13 @@ class BoneFeature(
                         }
                     }
                 }
+            }
+        }
+        // Handle back stack changes, pop parent back stack TODO
+        val backStack = navController.currentBackStack.collectAsStateWithLifecycle()
+        LaunchedEffect(backStack.value) {
+            if (backStack.value.isEmpty()) {
+                parentNavController.popBackStack()
             }
         }
     }
@@ -241,7 +227,7 @@ internal val LocalNavController = staticCompositionLocalOf<NavController> {
 sealed interface FeatureBoneRoutes {
 
     @Serializable
-    object BaseFeatureNavarrete : FeatureBoneRoutes
+    object BaseFeatureNav : FeatureBoneRoutes
 
     @Serializable
     class BoneScreen(val loginName: String = "bone") : FeatureBoneRoutes
