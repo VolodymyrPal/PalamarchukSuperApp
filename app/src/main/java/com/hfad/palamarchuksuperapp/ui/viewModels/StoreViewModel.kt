@@ -9,7 +9,7 @@ import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
-import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
 import com.hfad.palamarchuksuperapp.domain.models.Product
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import kotlinx.collections.immutable.PersistentList
@@ -37,13 +37,13 @@ class StoreViewModel @Inject constructor(
     private val repository: StoreRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
-) : GenericViewModel<PersistentList<Product>, StoreViewModel.Event, StoreViewModel.Effect>() {
+) : GenericViewModel<StoreViewModel.StoreState, StoreViewModel.Event, StoreViewModel.Effect>() {
 
     data class StoreState(
         val items: PersistentList<Product> = persistentListOf(),
         val loading: Boolean = false,
         val error: AppError? = null,
-    ) : State<PersistentList<Product>>
+    ) : ScreenState
 
     private val productsFlow: Flow<PersistentList<Product>> = flow {
         emitAll(repository.fetchProductsAsFlowFromDB)

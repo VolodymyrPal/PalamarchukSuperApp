@@ -6,7 +6,7 @@ import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
-import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ClientEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.EntityDetails
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 class BoneViewModel @Inject constructor(
-) : GenericViewModel<ClientEntity, BoneViewModel.Event, BoneViewModel.Effect>() {
+) : GenericViewModel<BoneViewModel.StateBone, BoneViewModel.Event, BoneViewModel.Effect>() {
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
@@ -51,7 +51,7 @@ class BoneViewModel @Inject constructor(
         val clientEntity: ClientEntity = ClientEntity(0, EntityDetails().toString()),
         val orderList: List<Order> = listOf(),
         val cashPaymentOrderList: List<CashPaymentOrder> = listOf(),
-    ) : State<ClientEntity>
+    ) : ScreenState
 }
 
 

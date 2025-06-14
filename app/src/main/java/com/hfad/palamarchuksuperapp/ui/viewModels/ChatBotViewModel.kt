@@ -11,7 +11,7 @@ import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
-import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
 import com.hfad.palamarchuksuperapp.data.repository.AiHandlerRepository
 import com.hfad.palamarchuksuperapp.data.services.Base64
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
@@ -62,7 +62,7 @@ class ChatBotViewModel @Inject constructor(
     private val observeAllChatsInfoUseCase: ObserveAllChatsInfoUseCase,
     private val chatController: ChatController,
     private val dataStoreHandler: DataStoreHandler,
-) : GenericViewModel<MessageChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
+) : GenericViewModel<ChatBotViewModel.StateChat, ChatBotViewModel.Event, ChatBotViewModel.Effect>() {
 
     private val currentChatId: StateFlow<Int> = dataStoreHandler.getCurrentChatId.stateIn(
         scope = viewModelScope,
@@ -308,5 +308,5 @@ class ChatBotViewModel @Inject constructor(
         val listHandler: PersistentList<AiModelHandler> = persistentListOf(),
         val modelList: PersistentList<AiModel> = persistentListOf(),
         val chatList: PersistentList<MessageChat> = persistentListOf(),
-    ) : State<MessageChat>
+    ) : ScreenState
 }
