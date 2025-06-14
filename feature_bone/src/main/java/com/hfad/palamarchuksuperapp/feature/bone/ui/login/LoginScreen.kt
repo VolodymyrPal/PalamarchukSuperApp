@@ -52,9 +52,12 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppOutlinedTextFie
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appEditOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalBoneDependencies
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavAnimatedVisibilityScope
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitionScope
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.LoginScreenViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -62,6 +65,9 @@ fun LoginScreenRoot(
     modifier: Modifier = Modifier,
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onSignUpClick: () -> Unit = {},
+    viewModel: LoginScreenViewModel = daggerViewModel<LoginScreenViewModel>(
+        factory = LocalBoneDependencies.current.viewModelFactory
+    ),
 ) {
     val localTransitionScope = LocalSharedTransitionScope.current
         ?: error(IllegalStateException("No SharedElementScope found"))
