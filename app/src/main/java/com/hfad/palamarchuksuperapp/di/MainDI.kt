@@ -61,7 +61,6 @@ import com.hfad.palamarchuksuperapp.domain.usecases.UpdateAiHandlerUseCaseImpl
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCase
 import com.hfad.palamarchuksuperapp.domain.usecases.UpdateMessageStatusUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.ui.screens.MainActivity
 import com.hfad.palamarchuksuperapp.ui.screens.MainScreenFragment
 import com.hfad.palamarchuksuperapp.ui.screens.SkillsFragment

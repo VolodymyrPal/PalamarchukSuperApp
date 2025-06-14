@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.LoginScreenViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import dagger.Binds
 import dagger.Component
@@ -102,6 +103,12 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(OrderPageViewModel::class)
     abstract fun bindSkillsViewModel(viewModel: OrderPageViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LoginScreenViewModel::class)
+    abstract fun bindLoginScreenViewModel(viewModel: LoginScreenViewModel): ViewModel
+
 }
 
 
