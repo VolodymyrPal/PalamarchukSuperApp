@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
-    UnidirectionalViewModel<State<T>, EVENT, EFFECT> {
+abstract class GenericViewModel<T: ScreenState, EVENT : BaseEvent, EFFECT : BaseEffect> : ViewModel(),
+    UnidirectionalViewModel<T, EVENT, EFFECT> {
 
     protected abstract val _dataFlow: Flow<Any> //Result<T, AppError>>
 
@@ -22,7 +22,7 @@ abstract class GenericViewModel<T, EVENT : BaseEvent, EFFECT : BaseEffect> : Vie
     protected open val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     abstract override fun event(event: EVENT)
-    abstract override val uiState: StateFlow<State<T>>
+    abstract override val uiState: StateFlow<T>
 
     private val effectFlow = MutableSharedFlow<EFFECT>(extraBufferCapacity = 1)
     override val effect: SharedFlow<EFFECT> = effectFlow.asSharedFlow()
@@ -46,4 +46,4 @@ interface BaseEvent
 
 interface BaseEffect
 
-interface State<out T>
+interface ScreenState

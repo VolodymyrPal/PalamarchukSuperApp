@@ -8,7 +8,7 @@ import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
-import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.State
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 import com.hfad.palamarchuksuperapp.domain.repository.SkillRepository
 import kotlinx.collections.immutable.PersistentList
@@ -29,7 +29,7 @@ class SkillsViewModel @Inject constructor(
     private val repository: SkillRepository,
     @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-) : GenericViewModel<PersistentList<Skill>, SkillsViewModel.Event, SkillsViewModel.Effect>() {
+) : GenericViewModel<ScreenState, SkillsViewModel.Event, SkillsViewModel.Effect>() {
 
 //    data class SkillStateExpanded(
 //        val stateInfo: String = "Volodymyr",
@@ -57,7 +57,7 @@ class SkillsViewModel @Inject constructor(
         val items: PersistentList<Skill> = persistentListOf(),
         val loading: Boolean = false,
         val error: AppError? = null,
-    ) : State<PersistentList<Skill>>
+    ) : ScreenState
 
     override val _dataFlow: Flow<Result<PersistentList<Skill>, AppError>> =
         repository.getSkillsFromDB().map { Result.Success(it) }

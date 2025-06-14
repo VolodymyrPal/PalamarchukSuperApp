@@ -41,6 +41,13 @@ class AuthRepository @Inject constructor(
         }
     }
 
+    suspend fun isLogged(): Boolean {
+        return context.userSession.data.first().let { preferences ->
+            val isLogged = preferences[IS_LOGGED_KEY] ?: false
+            val loginTimestamp = preferences[LOGIN_TIMESTAMP_KEY] ?: 0L
+            isLogged && loginTimestamp > 0
+        }
+    }
 
 }
 

@@ -19,7 +19,7 @@ import kotlin.random.Random
 
 class OrderPageViewModel @Inject constructor(
 
-) : GenericViewModel<Order, OrderPageViewModel.OrderPageEvent, OrderPageViewModel.OrderPageEffect>() {
+) : GenericViewModel<OrderPageState, OrderPageViewModel.OrderPageEvent, OrderPageViewModel.OrderPageEffect>() {
 
     override val _dataFlow: StateFlow<List<Order>> = flow {
         emit(generateOrderItems())
