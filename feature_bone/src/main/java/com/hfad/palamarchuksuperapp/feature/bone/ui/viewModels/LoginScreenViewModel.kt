@@ -1,6 +1,8 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
+import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
@@ -8,18 +10,68 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoginScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-) : GenericViewModel<LoginScreenViewModel.StateLoginScreen, LoginScreenViewModel.Event, LoginScreenViewModel.Effect>() {
+) : GenericViewModel<LoginScreenViewModel.LoginScreenState, LoginScreenViewModel.Event, LoginScreenViewModel.Effect>() {
 
-    override val uiState: StateFlow<StateLoginScreen> = MutableStateFlow(StateLoginScreen())
-    override val _dataFlow: Flow<Any> = flow {}
+    public override val _dataFlow: Flow<Boolean> = authRepository.isLoggedFlow
+    override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
+    override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
-    override val _errorFlow: Flow<AppError?> = MutableStateFlow(null)
+    private val _email = MutableStateFlow("")
+    private val _password = MutableStateFlow("")
+    private val _rememberMe = MutableStateFlow(false)
+    private val _passwordVisible = MutableStateFlow(false)
+    private val _isAlreadyLoggedIn = MutableStateFlow(false)
+
+
+    override val uiState: StateFlow<LoginScreenState> = combine(
+        _dataFlow,
+        _errorFlow,
+        _loading,
+        _email,
+        _password,
+        _rememberMe,
+        _passwordVisible,
+        _isAlreadyLoggedIn
+    ) { flows ->
+        val isLoggedIn = flows[0] as Boolean
+        val error = flows[1] as AppError?
+        val loading = flows[2] as Boolean
+        val email = flows[3] as String
+        val password = flows[4] as String
+        val rememberMe = flows[5] as Boolean
+        val passwordVisible = flows[6] as Boolean
+        var isAlreadyLogged = flows[7] as Boolean
+
+        if (isLoggedIn) {
+            isAlreadyLogged = true
+            effect(Effect.LoginSuccess)
+        }
+
+        LoginScreenState(
+            email = email,
+            password = password,
+            rememberMe = rememberMe,
+            passwordVisible = passwordVisible,
+            isLoading = loading,
+            error = error,
+            isCreatingPossible = !loading, // Need to update this logic based on requirements
+            isAlreadyLogged = isAlreadyLogged
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = LoginScreenState()
+    )
+
     override fun event(event: Event) {
         when (event) {
             is Event.EmailChanged -> {
