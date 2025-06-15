@@ -22,16 +22,47 @@ class LoginScreenViewModel @Inject constructor(
     override val _errorFlow: Flow<AppError?> = MutableStateFlow(null)
     override fun event(event: Event) {
         when (event) {
-            is Event.loginFieldChanges -> {
-
+            is Event.EmailChanged -> {
+                _email.value = event.email
+                _errorFlow.value = null
             }
 
-            is Event.loginButtonClicked -> {
+            is Event.PasswordChanged -> {
+                _password.value = event.password
+                _errorFlow.value = null
+            }
 
+            is Event.RememberMeChanged -> {
+                _rememberMe.value = event.rememberMe
+            }
+
+            is Event.PasswordVisibilityToggled -> {
+                _passwordVisible.value = !_passwordVisible.value
+            }
+
+            is Event.LoginButtonClicked -> {
+                viewModelScope.launch {
+                    val result = authRepository.login(
+                        username = _email.value,
+                        password = _password.value,
+                    )
+                    if (result is Result.Success) {
+                        effect(Effect.LoginSuccess)
+                    } else {
+                        _errorFlow.value = (result as Result.Error).error
+                        effect(Effect.ShowError(result.error.message ?: "Unknown error"))
+                    }
+                }
+            }
+
+            is Event.BiometricLoginClicked -> {
+            }
+
+            is Event.ErrorDismissed -> {
+                _errorFlow.value = null
             }
         }
     }
-
 
     sealed class Event : BaseEvent {
         data class EmailChanged(val email: String) : Event()
