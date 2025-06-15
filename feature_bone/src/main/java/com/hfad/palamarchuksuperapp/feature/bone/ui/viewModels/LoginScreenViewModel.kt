@@ -42,10 +42,14 @@ class LoginScreenViewModel @Inject constructor(
         data class LoginSuccess(val login: String) : Effect()
     }
 
-    data class StateLoginScreen(
-        val username: String = "",
-        val password: String = "",
+    data class LoginScreenState(
+        var email: String = "Login Screen State - email test", //TODO remove test var / data
+        var password: String = "Login Screen State - password test", //TODO remove test var / data
+        val rememberMe: Boolean = false,
         val isLoading: Boolean = false,
+        val isCreatingPossible: Boolean = false,
         val error: AppError? = null,
+        val passwordVisible: Boolean = false,
+        val isAlreadyLogged: Boolean = false,
     ) : ScreenState
 }
