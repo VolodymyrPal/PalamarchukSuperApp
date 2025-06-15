@@ -44,11 +44,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun BoneScreenRoot(
     modifier: Modifier = Modifier,
-    loginName: String = "User",
 ) {
     val navController = LocalNavController.current
-
-    Log.d("Login name: ", loginName)
 
     //    HideShowSystemBar()
 
@@ -279,9 +276,6 @@ fun BoneScreenPreview() {
                         },
                         navController = null
                     )
-//                    1 -> PaymentsPage()
-//                    2 -> SalesPage()
-//                    3 -> FinancePage()
                 }
             }
         }
