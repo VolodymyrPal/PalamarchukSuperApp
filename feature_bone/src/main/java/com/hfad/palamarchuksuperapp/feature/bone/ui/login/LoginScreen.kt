@@ -30,6 +30,8 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +49,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
@@ -54,8 +58,10 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appEditOutlinedTex
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.FeatureBoneRoutes
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalBoneDependencies
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavAnimatedVisibilityScope
+import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavController
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitionScope
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.LoginScreenViewModel
 
@@ -63,28 +69,53 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.LoginScreenViewMo
 @Composable
 fun LoginScreenRoot(
     modifier: Modifier = Modifier,
-    onLoginClick: (String, String) -> Unit = { _, _ -> },
-    onSignUpClick: () -> Unit = {},
     viewModel: LoginScreenViewModel = daggerViewModel<LoginScreenViewModel>(
         factory = LocalBoneDependencies.current.viewModelFactory
     ),
+    navController: NavController? = LocalNavController.current,
 ) {
     val localTransitionScope = LocalSharedTransitionScope.current
         ?: error(IllegalStateException("No SharedElementScope found"))
     val animatedContentScope = LocalNavAnimatedVisibilityScope.current
         ?: error(IllegalStateException("No AnimatedVisibility found"))
 
-    with(localTransitionScope) {
-        val modifierToTransition = Modifier.sharedBounds(
-            this.rememberSharedContentState("bone"),
-            animatedContentScope,
-        )
-        LoginScreen(
-            modifier = modifier,
-            onLoginClick = onLoginClick,
-            onSignUpClick = onSignUpClick,
-            modifierToTransition = modifierToTransition
-        )
+    val state = viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is LoginScreenViewModel.Effect.LoginSuccess -> {
+                    navController?.navigate(FeatureBoneRoutes.BoneScreen) {
+                        popUpTo(FeatureBoneRoutes.LoginScreen) {
+                            inclusive = true
+                        }
+                    }
+                }
+
+                is LoginScreenViewModel.Effect.BiometricAuthFailed -> {
+
+                }
+
+                is LoginScreenViewModel.Effect.ShowError -> {
+
+                }
+            }
+        }
+    }
+
+    if (!state.value.isAlreadyLogged) {
+        with(localTransitionScope) {
+            val modifierToTransition = Modifier.sharedBounds(
+                this.rememberSharedContentState("bone"),
+                animatedContentScope,
+            )
+            LoginScreen(
+                modifier = modifier,
+                modifierToTransition = modifierToTransition,
+                state = state,
+                event = viewModel::event
+            )
+        }
     }
 }
 
@@ -92,11 +123,10 @@ fun LoginScreenRoot(
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    onLoginClick: (String, String) -> Unit = { _, _ -> },
-    onSignUpClick: () -> Unit = {},
     modifierToTransition: Modifier = Modifier,
+    state: State<LoginScreenViewModel.LoginScreenState> = mutableStateOf(LoginScreenViewModel.LoginScreenState()),
+    event: (LoginScreenViewModel.Event) -> Unit = {},
 ) {
-    var state: LoginScreenState = LoginScreenState()
 
     var passwordVisible by remember { mutableStateOf(true) } //TODO TEST ONLY
     var isLoading by remember { mutableStateOf(false) }
@@ -164,9 +194,9 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     AppOutlinedTextField(
-                        value = state.email,
+                        value = state.value.email,
                         onValueChange = {
-                            state = state.copy(email = it)
+                            event.invoke(LoginScreenViewModel.Event.EmailChanged(it))
                         },
                         labelRes = R.string.email,
                         outlinedTextConfig = appEditOutlinedTextConfig(
@@ -183,8 +213,10 @@ fun LoginScreen(
                     )
 
                     AppOutlinedTextField(
-                        value = state.password,
-                        onValueChange = { state = state.copy(password = it) },
+                        value = state.value.password,
+                        onValueChange = {
+                            event.invoke(LoginScreenViewModel.Event.PasswordChanged(it))
+                        },
                         labelRes = R.string.password,
                         outlinedTextConfig = appEditOutlinedTextConfig(
                             leadingIcon = {
@@ -230,7 +262,7 @@ fun LoginScreen(
                         Button(
                             onClick = {
 //                                isLoading = true
-                                onLoginClick(state.email, state.password)
+                                event.invoke(LoginScreenViewModel.Event.LoginButtonClicked)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -239,7 +271,10 @@ fun LoginScreen(
                                     modifierToTransition
                                 ),
                             shape = MaterialTheme.shapes.extraLarge,
-                            enabled = !isLoading && state.email.isNotBlank() && state.password.isNotBlank(),
+                            enabled = if (
+                                state.value.email.isNotEmpty() &&
+                                state.value.password.isNotEmpty()
+                            ) true else false,
                         ) {
                             if (isLoading) {
                                 CircularProgressIndicator(
@@ -276,7 +311,7 @@ fun LoginScreen(
                 }
             }
 
-            if (state.isCreatingPossible) {
+            if (state.value.isCreatingPossible) {
 
                 Row(
                     modifier = Modifier
@@ -301,7 +336,7 @@ fun LoginScreen(
 
 
                 Button(
-                    onClick = onSignUpClick,
+                    onClick = { },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
@@ -341,14 +376,6 @@ fun LoginScreen(
         }
     }
 }
-
-data class LoginScreenState(
-    var email: String = "Login Screen State - email test", //TODO remove test var / data
-    var password: String = "Login Screen State - password test", //TODO remove test var / data
-    val rememberMe: Boolean = false,
-    val isLoading: Boolean = false,
-    val isCreatingPossible: Boolean = false,
-)
 
 @Preview(showBackground = false)
 @Composable
