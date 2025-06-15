@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.userSession
 import io.ktor.client.HttpClient
 import io.ktor.client.request.request
@@ -27,12 +29,14 @@ class AuthRepository @Inject constructor(
     suspend fun login(
         username: String,
         password: String,
-    ) : Boolean {
+    ) : Result<Boolean, AppError> {
+        return Result.Success(true) // Simulate successful login
+
         val request = httpClient.request {  }
         if (request.status.value != 200) {
-            return false
+            return Result.Error(AppError.NetworkException.ApiError.NotFound())
         }
-        return true
+
     }
 
     suspend fun logout() {
@@ -48,6 +52,14 @@ class AuthRepository @Inject constructor(
             isLogged && loginTimestamp > 0
         }
     }
+
+    val isLoggedFlow: Flow<Boolean> = context.userSession.data
+        .map { prefs ->
+            val isLogged = prefs[IS_LOGGED_KEY] ?: false
+            val timestamp = prefs[LOGIN_TIMESTAMP_KEY] ?: 0L
+            isLogged && timestamp > 0
+        }
+        .distinctUntilChanged()
 
 }
 
