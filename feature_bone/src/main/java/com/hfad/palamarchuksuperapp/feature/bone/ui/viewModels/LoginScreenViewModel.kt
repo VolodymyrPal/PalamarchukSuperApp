@@ -34,12 +34,20 @@ class LoginScreenViewModel @Inject constructor(
 
 
     sealed class Event : BaseEvent {
-        data class loginFieldChanges(val username: String, val password: String) : Event()
-        class loginButtonClicked() : Event()
+        data class EmailChanged(val email: String) : Event()
+        data class PasswordChanged(val password: String) : Event()
+        data class RememberMeChanged(val rememberMe: Boolean) : Event()
+        object PasswordVisibilityToggled : Event()
+        object LoginButtonClicked : Event()
+        object BiometricLoginClicked : Event()
+        object ErrorDismissed : Event()
     }
 
     sealed class Effect : BaseEffect {
-        data class LoginSuccess(val login: String) : Effect()
+        object LoginSuccess : Effect()
+        object BiometricAuthFailed : Effect()
+        data class ShowError(val message: String) : Effect()
+
     }
 
     data class LoginScreenState(
