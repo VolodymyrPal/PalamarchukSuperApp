@@ -71,31 +71,16 @@ class BoneFeature(
                         navController = navController,
                         route = FeatureBoneRoutes.BaseFeatureNav::class
                     ) {
-                        composable<FeatureBoneRoutes.BoneScreen> { backStackEntry ->
+                        composable<FeatureBoneRoutes.BoneScreen> {
                             CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-                                val loginName =
-                                    backStackEntry.toRoute<FeatureBoneRoutes.BoneScreen>()
                                 BoneScreenRoot(
                                     modifier = modifier,
-                                    loginName = loginName.loginName
                                 )
                             }
                         }
                         composable<FeatureBoneRoutes.LoginScreen> {
                             CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
-                                LoginScreenRoot(
-                                    onLoginClick = { loginName, _ ->
-                                        navController.navigate(
-                                            FeatureBoneRoutes.BoneScreen(
-                                                loginName
-                                            )
-                                        ) {
-                                            popUpTo(FeatureBoneRoutes.LoginScreen) {
-                                                inclusive = true
-                                            }
-                                        }
-                                    }
-                                )
+                                LoginScreenRoot()
                             }
                         }
                     }
