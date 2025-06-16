@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
@@ -130,7 +132,6 @@ fun LoginScreen(
 
     var passwordVisible by remember { mutableStateOf(true) } //TODO TEST ONLY
     var isLoading by remember { mutableStateOf(false) }
-    var rememberMe by remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier
@@ -140,7 +141,8 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -248,8 +250,10 @@ fun LoginScreen(
                     ) {
 
                         Checkbox(
-                            checked = rememberMe,
-                            onCheckedChange = { rememberMe = it },
+                            checked = state.value.rememberMe,
+                            onCheckedChange = {
+                                event.invoke(LoginScreenViewModel.Event.RememberMeChanged(it))
+                            },
                         )
                         AppText(
                             value = "Remember me",
