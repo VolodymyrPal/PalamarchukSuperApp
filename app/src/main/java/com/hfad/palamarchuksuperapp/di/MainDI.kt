@@ -79,10 +79,10 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
-import javax.inject.Singleton
+import javax.inject.Scope
 import kotlin.reflect.KClass
 
-@Singleton
+@AppScope
 @Component(
     dependencies = [CoreComponent::class],
     modules = [AppModule::class]
@@ -130,7 +130,7 @@ object AppModule {
 abstract class AiModelHandlerModule {
 
     @Binds
-    @Singleton
+    @AppScope
     abstract fun provideAiHandlerHandler(aiHandlerRepository: AiHandlerRepositoryImpl): AiHandlerRepository
 
 
@@ -158,7 +158,7 @@ interface UseCaseModule {
     fun bindMapAiModelHandlerUseCase(mapAiModelHandlerUseCaseImpl: MapAiModelHandlerUseCaseImpl)
             : MapAiModelHandlerUseCase
 
-//    @Singleton
+//    @AppScope
 //    @Binds
 //    fun bindChangeAiMessageUseCase(changeAiMessageUseCase: UpdateAiMessageUseCaseImpl): UpdateAiMessageUseCase
 
@@ -234,7 +234,7 @@ object NetworkModule {
 @Module
 object DatabaseModule {
 
-    @Singleton
+    @AppScope
     @Provides
     fun provideMessageChatDB(context: Context): MessageChatDatabase {
         return Room.databaseBuilder(
@@ -260,7 +260,7 @@ object DatabaseModule {
         return messageChatDatabase.messageAiDao()
     }
 
-    @Singleton
+    @AppScope
     @Provides
     fun provideStoreDB(context: Context): StoreDatabase {
         return Room.databaseBuilder(
@@ -277,7 +277,7 @@ object DatabaseModule {
     }
 
 
-    @Singleton
+    @AppScope
     @Provides
     fun provideSkillDB(context: Context): SkillsDatabase {
         return Room.databaseBuilder(
@@ -300,21 +300,21 @@ object DatabaseModule {
 @Module
 abstract class RepositoryModule {
 
-    @Singleton
+    @AppScope
     @Binds
     abstract fun bindChatAiRepository(chatAiRepositoryImpl: MessageChatRepositoryImpl): MessageChatRepository
 
-    @Singleton
+    @AppScope
     @Binds
     abstract fun bindMessageGroupRepository(
         messageGroupRepositoryImpl: MessageGroupRepositoryImpl,
     ): MessageGroupRepository
 
-    @Singleton
+    @AppScope
     @Binds
     abstract fun bindMessageAiRepository(messageAiRepositoryImpl: MessageAiRepositoryImpl): MessageAiRepository
 
-    @Singleton
+    @AppScope
     @Binds
     abstract fun provideSkillRepository(skillsRepositoryImpl: SkillsRepositoryImpl): SkillRepository
 
@@ -342,3 +342,8 @@ annotation class MainDispatcher
 @Retention(AnnotationRetention.RUNTIME)
 @MapKey
 annotation class ViewModelKey(val value: KClass<out ViewModel>)
+
+
+@Scope
+@Retention(AnnotationRetention.RUNTIME)
+annotation class AppScope

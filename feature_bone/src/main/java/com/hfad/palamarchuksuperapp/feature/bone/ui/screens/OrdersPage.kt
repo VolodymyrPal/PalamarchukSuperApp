@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,11 +24,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,11 +44,12 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -80,8 +84,22 @@ fun OrdersPage(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
+            val httpClient = LocalBoneDependencies.current.httpClient //TODO
+            val context = LocalContext.current //TODO
+            val coroutineScope = rememberCoroutineScope() //TODO
+
             OrderStatisticCard(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 12.dp)
+                    .clickable { //TODO
+                        val a = AuthRepository(
+                            httpClient = httpClient,
+                            context = context
+                        )
+                        coroutineScope.launch {
+                            a.logout()
+                        }
+                    },
                 state = state,
             )
         }

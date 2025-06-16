@@ -1,42 +1,96 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.userSession
 import io.ktor.client.HttpClient
-import io.ktor.client.request.request
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.Date
 import javax.inject.Inject
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
+@FeatureScope
 class AuthRepository @Inject constructor(
     private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
 ) {
+    var userSession: UserSession? = null
+
+    private val mutex = Mutex()
+    val sessionConfig = SessionConfig()
+
     suspend fun login(
         username: String,
         password: String,
-    ) : Result<Boolean, AppError> {
-        return Result.Success(true) // Simulate successful login
+        isRemembered: Boolean = false,
+    ): Result<Boolean, AppError> = mutex.withLock {
+        if (isRemembered) {
+            val now = Date()
+            val expiresAt = Date(now.time + sessionConfig.sessionDuration)
 
-        val request = httpClient.request {  }
-        if (request.status.value != 200) {
-            return Result.Error(AppError.NetworkException.ApiError.NotFound())
+            val session = UserSession(
+                username = username,
+                accessToken = "access_token",
+                refreshToken = "refresh_token",
+                loginTimestamp = now,
+                expiresAt = expiresAt,
+                rememberSession = isRemembered
+            )
+            saveSession(session)
+            userSession = session
+        } else {
+            userSession = UserSession(
+                username = username,
+                accessToken = "access_token",
+                refreshToken = "refresh_token",
+                loginTimestamp = Date(),
+                expiresAt = Date(Date().time + sessionConfig.sessionDuration),
+                rememberSession = isRemembered
+            )
         }
 
+        Result.Success(true)
+    }
+
+    suspend fun refreshToken(): Result<UserSession, AppError> = mutex.withLock {
+        val currentSession = getCurrentSession()
+            ?: return Result.Error(
+                AppError.NetworkException.ApiError.CustomApiError(
+                    message = "No current session found"
+                )
+            )
+
+        try {
+            val now = Date()
+            val updatedSession = currentSession.copy(
+                accessToken = "new_access_token",
+                refreshToken = "new_refresh_token",
+                expiresAt = Date(now.time + sessionConfig.sessionDuration)
+            )
+
+            saveSession(updatedSession)
+            Result.Success(updatedSession)
+        } catch (e: Exception) {
+            logout()
+            Result.Error(
+                AppError.NetworkException.ApiError.CustomApiError(
+                    message = "Failed to refresh token: ${e.message}",
+                    cause = e
+                )
+            )
+        }
     }
 
     suspend fun logout() {
@@ -45,118 +99,99 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun isLogged(): Boolean {
-        return context.userSession.data.first().let { preferences ->
-            val isLogged = preferences[IS_LOGGED_KEY] ?: false
-            val loginTimestamp = preferences[LOGIN_TIMESTAMP_KEY] ?: 0L
-            isLogged && loginTimestamp > 0
-        }
-    }
+    suspend fun isSessionValid(): Boolean {
+        val session = getCurrentSession() ?: return false
+        val now = Date()
 
-    val isLoggedFlow: Flow<Boolean> = context.userSession.data
-        .map { prefs ->
-            val isLogged = prefs[IS_LOGGED_KEY] ?: false
-            val timestamp = prefs[LOGIN_TIMESTAMP_KEY] ?: 0L
-            isLogged && timestamp > 0
-        }
-        .distinctUntilChanged()
-
-}
-
-
-class LoggerDataStoreHandler(
-    val context: Context,
-) {
-    private val sessionDuration = 30.days
-
-    suspend fun setIsLogged(username: String = "") {
-        context.userSession.edit { preferences ->
-            preferences[IS_LOGGED_KEY] = true
-            preferences[LOGIN_TIMESTAMP_KEY] = System.currentTimeMillis()
-            if (username.isNotEmpty()) {
-                preferences[USERNAME_KEY] = username
+        return when {
+            now.before(session.expiresAt) -> true
+            shouldRefreshToken(session = session) && sessionConfig.autoRefreshEnabled -> {
+                refreshToken() is Result.Success
             }
-        }
-    }
 
-    suspend fun clearUser() {
-        context.userSession.edit { preferences ->
-            preferences.remove(IS_LOGGED_KEY)
-            preferences.remove(LOGIN_TIMESTAMP_KEY)
-            preferences.remove(USERNAME_KEY)
-        }
-    }
-
-    private fun isSessionValid(loginTimestamp: Long): Boolean {
-        val currentTime = System.currentTimeMillis()
-        val sessionAge = (currentTime - loginTimestamp).milliseconds
-        return sessionAge < sessionDuration
-    }
-
-    suspend fun validateSession() {
-        val (isLogged, timestamp) = context.userSession.data.first().run {
-            this[IS_LOGGED_KEY] to this[LOGIN_TIMESTAMP_KEY]
-        }
-        if (isLogged == true && timestamp != null && !isSessionValid(timestamp)) {
-            clearUser()
+            else -> false
         }
     }
 
     val isLoggedFlow: Flow<Boolean> = context.userSession.data
         .map { prefs ->
-            val isLogged = prefs[IS_LOGGED_KEY] ?: false
-            val timestamp = prefs[LOGIN_TIMESTAMP_KEY] ?: 0L
-            isLogged && timestamp > 0 && isSessionValid(timestamp)
-        }
-        .distinctUntilChanged()
-
-
-    val usernameFlow: Flow<String> = context.userSession.data
-        .map { preferences ->
-            preferences[USERNAME_KEY] ?: ""
-        }
-        .distinctUntilChanged()
-
-    suspend fun getRemainingSessionTime(): Duration? {
-        return context.userSession.data.first().let { preferences ->
-            val isLogged = preferences[IS_LOGGED_KEY] ?: false
-            val loginTimestamp = preferences[LOGIN_TIMESTAMP_KEY] ?: 0L
-
-            if (isLogged && loginTimestamp > 0) {
-                val currentTime = System.currentTimeMillis()
-                val elapsed = (currentTime - loginTimestamp).milliseconds
-                val remaining = sessionDuration - elapsed
-
-                if (remaining.isPositive()) remaining else null
+            val session = buildSessionFromPrefs(prefs)
+            if (session != null) {
+                isSessionValid()
             } else {
-                null
+                false
             }
         }
-    }
+        .distinctUntilChanged()
 
-    suspend fun extendSession() {
-        context.userSession.edit { preferences ->
-            if (preferences[IS_LOGGED_KEY] == true) {
-                preferences[LOGIN_TIMESTAMP_KEY] = System.currentTimeMillis()
-            }
+    val sessionFlow: Flow<UserSession> = context.userSession.data
+        .map { preferences ->
+            buildSessionFromPrefs(preferences) ?: UserSession()
+        }
+        .distinctUntilChanged()
+
+    private suspend fun saveSession(session: UserSession) {
+        context.userSession.edit { prefs ->
+            prefs[USERNAME_KEY] = session.username
+            prefs[ACCESS_TOKEN_KEY] = session.accessToken
+            prefs[REFRESH_TOKEN_KEY] = session.refreshToken
+            prefs[LOGIN_TIMESTAMP_KEY] = session.loginTimestamp.time
+            prefs[EXPIRES_AT_KEY] = session.expiresAt.time
+            prefs[IS_REMEMBERED_KEY] = session.rememberSession
+            prefs[IS_LOGGED_KEY] = true
         }
     }
 
-    suspend fun initialize() {
-        val prefs = context.userSession.data.first()
-        if ((prefs[IS_LOGGED_KEY] == true) != (prefs[LOGIN_TIMESTAMP_KEY] != null)) {
-            clearUser() // Автоматический сброс при несоответствии
+    private suspend fun getCurrentSession(): UserSession? {
+        return context.userSession.data.first().let { prefs ->
+            buildSessionFromPrefs(prefs)
         }
     }
 
-    private suspend fun startValidationLoop() {
-        while (true) {
-            validateSession()
-            delay(5 * 60 * 1000) // Проверка каждые 5 минут
-        }
+    private fun shouldRefreshToken(session: UserSession): Boolean {
+        val refreshTime = session.expiresAt.time - sessionConfig.refreshThreshold
+        return Date().after(Date(refreshTime))
+    }
+
+    private fun buildSessionFromPrefs(prefs: Preferences): UserSession? {
+        val isLogged = prefs[IS_LOGGED_KEY] ?: false
+        if (!isLogged) return null
+
+        return UserSession(
+            username = prefs[USERNAME_KEY] ?: return null,
+            accessToken = prefs[ACCESS_TOKEN_KEY] ?: return null,
+            refreshToken = prefs[REFRESH_TOKEN_KEY] ?: return null,
+            loginTimestamp = Date(prefs[LOGIN_TIMESTAMP_KEY] ?: return null),
+            expiresAt = Date(prefs[EXPIRES_AT_KEY] ?: return null),
+            rememberSession = prefs[IS_REMEMBERED_KEY] ?: false
+        )
+    }
+
+
+    data class SessionConfig(
+        val sessionDuration: Long = 14.days.inWholeMilliseconds,
+        val refreshThreshold: Long = 2.days.inWholeMilliseconds,
+        val maxRetryAttempts: Int = 3,
+        val autoRefreshEnabled: Boolean = true,
+        val biometricAuthEnabled: Boolean = false,
+    )
+
+    data class UserSession(
+        val username: String = "",
+        val accessToken: String = "",
+        val refreshToken: String = "",
+        val loginTimestamp: Date = Date(),
+        val expiresAt: Date = Date(),
+        val rememberSession: Boolean = false,
+    )
+
+    companion object {
+        private val IS_LOGGED_KEY = booleanPreferencesKey("is_logged")
+        private val LOGIN_TIMESTAMP_KEY = longPreferencesKey("login_timestamp")
+        private val USERNAME_KEY = stringPreferencesKey("username")
+        private val IS_REMEMBERED_KEY = booleanPreferencesKey("is_remembered")
+        private val EXPIRES_AT_KEY = longPreferencesKey("expires_at")
+        private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
+        private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
     }
 }
-
-private val IS_LOGGED_KEY = booleanPreferencesKey("is_logged")
-private val LOGIN_TIMESTAMP_KEY = longPreferencesKey("login_timestamp")
-private val USERNAME_KEY = stringPreferencesKey("username")

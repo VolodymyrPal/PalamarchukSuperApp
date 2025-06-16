@@ -26,7 +26,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.navigation.FeatureApi
 import com.hfad.palamarchuksuperapp.core.ui.navigation.composable

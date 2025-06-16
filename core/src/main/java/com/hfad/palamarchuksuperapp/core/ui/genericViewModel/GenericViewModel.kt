@@ -24,7 +24,7 @@ abstract class GenericViewModel<T: ScreenState, EVENT : BaseEvent, EFFECT : Base
     abstract override fun event(event: EVENT)
     abstract override val uiState: StateFlow<T>
 
-    private val effectFlow = MutableSharedFlow<EFFECT>(extraBufferCapacity = 1)
+    private val effectFlow = MutableSharedFlow<EFFECT>(extraBufferCapacity = 1, replay = 0)
     override val effect: SharedFlow<EFFECT> = effectFlow.asSharedFlow()
 
     override fun effect(effect: EFFECT) {

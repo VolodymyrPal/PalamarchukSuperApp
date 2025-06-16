@@ -14,7 +14,9 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import javax.inject.Singleton
 
+@Singleton
 @Component(modules = [CoreModule::class])
 interface CoreComponent {
 
@@ -30,6 +32,7 @@ interface CoreComponent {
 internal object CoreModule {
 
     @Provides
+    @Singleton
     fun provideHttpClient(): HttpClient {
         return HttpClient(CIO) {
             install(Logging) {
