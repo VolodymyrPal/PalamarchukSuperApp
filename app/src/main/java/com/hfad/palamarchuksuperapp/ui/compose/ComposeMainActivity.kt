@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -137,21 +138,25 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                             ValentineScreenRoot()
                         }
                     }
+
                     composable<Routes.SkillScreen> {
                         CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
                             SkillScreen()
                         }
                     }
+
                     composable<Routes.Settings> {
                         CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
                             Text(text = "Settings")
                         }
                     }
+
                     composable<Routes.StoreScreen> {
                         CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
                             StoreScreen()
                         }
                     }
+
                     composable<Routes.ChatBotScreen> {
                         CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
                             ChatScreenRoot()
@@ -159,7 +164,8 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                     }
 
                     composable<Routes.BoneFeature> {
-                        BoneFeature(context.appComponent).BoneScreenRooted(
+                        val feature = remember { BoneFeature(context.appComponent) }
+                        feature.BoneScreenRooted(
                             parentNavController = LocalNavController.current,
                             modifier = Modifier
                         )
