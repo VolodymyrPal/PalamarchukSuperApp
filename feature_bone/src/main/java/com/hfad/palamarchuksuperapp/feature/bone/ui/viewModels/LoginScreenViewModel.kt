@@ -21,15 +21,14 @@ class LoginScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
 ) : GenericViewModel<LoginScreenViewModel.LoginScreenState, LoginScreenViewModel.Event, LoginScreenViewModel.Effect>() {
 
-    public override val _dataFlow: Flow<Boolean> = authRepository.isLoggedFlow
+    override val _dataFlow: Flow<Boolean> = authRepository.isLoggedFlow
+
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-
     private val _email = MutableStateFlow("")
     private val _password = MutableStateFlow("")
     private val _rememberMe = MutableStateFlow(false)
     private val _passwordVisible = MutableStateFlow(false)
-    private val _isAlreadyLoggedIn = MutableStateFlow(false)
 
 
     override val uiState: StateFlow<LoginScreenState> = combine(
@@ -40,20 +39,18 @@ class LoginScreenViewModel @Inject constructor(
         _password,
         _rememberMe,
         _passwordVisible,
-        _isAlreadyLoggedIn
     ) { flows ->
-        val isLoggedIn = flows[0] as Boolean
+        var isLoggedIn = flows[0] as Boolean
         val error = flows[1] as AppError?
         val loading = flows[2] as Boolean
         val email = flows[3] as String
         val password = flows[4] as String
         val rememberMe = flows[5] as Boolean
         val passwordVisible = flows[6] as Boolean
-        var isAlreadyLogged = flows[7] as Boolean
 
         if (isLoggedIn) {
-            isAlreadyLogged = true
             effect(Effect.LoginSuccess)
+            isLoggedIn = true
         }
 
         LoginScreenState(
@@ -63,8 +60,8 @@ class LoginScreenViewModel @Inject constructor(
             passwordVisible = passwordVisible,
             isLoading = loading,
             error = error,
-            isCreatingPossible = !loading, // Need to update this logic based on requirements
-            isAlreadyLogged = isAlreadyLogged
+            isCreatingPossible = false, // Need to update this logic based on requirements
+            isAlreadyLogged = isLoggedIn
         )
     }.stateIn(
         scope = viewModelScope,
@@ -93,18 +90,7 @@ class LoginScreenViewModel @Inject constructor(
             }
 
             is Event.LoginButtonClicked -> {
-                viewModelScope.launch {
-                    val result = authRepository.login(
-                        username = _email.value,
-                        password = _password.value,
-                    )
-                    if (result is Result.Success) {
-                        effect(Effect.LoginSuccess)
-                    } else {
-                        _errorFlow.value = (result as Result.Error).error
-                        effect(Effect.ShowError(result.error.message ?: "Unknown error"))
-                    }
-                }
+                login()
             }
 
             is Event.BiometricLoginClicked -> {
@@ -112,6 +98,45 @@ class LoginScreenViewModel @Inject constructor(
 
             is Event.ErrorDismissed -> {
                 _errorFlow.value = null
+            }
+
+            is Event.ClearLogin -> {
+                viewModelScope.launch {
+                    authRepository.logout()
+                }
+            }
+        }
+    }
+
+    private fun login() {
+        viewModelScope.launch {
+            _loading.value = true
+            _errorFlow.value = null
+
+            try {
+                val result = authRepository.login(
+                    username = _email.value,
+                    password = _password.value,
+                    isRemembered = _rememberMe.value
+                )
+
+                when (result) {
+                    is Result.Success -> {
+                        effect(Effect.LoginSuccess)
+                    }
+
+                    is Result.Error -> {
+                        _errorFlow.value = result.error
+                        effect(Effect.ShowError(result.error.message ?: "Login failed"))
+                    }
+                }
+            } catch (e: Exception) {
+                val error = AppError.NetworkException.ApiError.CustomApiError(
+                    message = "Login error: ${e.message}",
+                    cause = e
+                )
+                _errorFlow.value = error
+                effect(Effect.ShowError(error.message.toString()))
             }
         }
     }
@@ -124,6 +149,7 @@ class LoginScreenViewModel @Inject constructor(
         object LoginButtonClicked : Event()
         object BiometricLoginClicked : Event()
         object ErrorDismissed : Event()
+        object ClearLogin : Event()
     }
 
     sealed class Effect : BaseEffect {
@@ -141,6 +167,6 @@ class LoginScreenViewModel @Inject constructor(
         val isCreatingPossible: Boolean = false,
         val error: AppError? = null,
         val passwordVisible: Boolean = false,
-        val isAlreadyLogged: Boolean = false,
+        val isAlreadyLogged: Boolean = true,
     ) : ScreenState
 }
