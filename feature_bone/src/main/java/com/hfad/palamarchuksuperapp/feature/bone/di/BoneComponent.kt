@@ -22,7 +22,10 @@ import javax.inject.Scope
 import kotlin.reflect.KClass
 
 @FeatureScope
-@Component(dependencies = [BoneDeps::class], modules = [ViewModelsModule::class, BoneModule::class])
+@Component(
+    dependencies = [BoneDeps::class],
+    modules = [ViewModelsModule::class, BoneModule::class, DifferentClasses::class]
+)
 internal interface BoneComponent : BoneDeps {
 
     val viewModelFactory: ViewModelProvider.Factory
@@ -50,6 +53,7 @@ internal object DifferentClasses {
 
     @Provides
     @FeatureClient
+    @FeatureScope
     fun provideHttpClient(
         httpClient: HttpClient,
     ): HttpClient {
