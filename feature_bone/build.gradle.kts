@@ -45,5 +45,7 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.database)
 
+    implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
+
     implementation(project(":core"))
 }

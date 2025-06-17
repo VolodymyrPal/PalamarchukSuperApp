@@ -21,15 +21,16 @@ class LoginScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
 ) : GenericViewModel<LoginScreenViewModel.LoginScreenState, LoginScreenViewModel.Event, LoginScreenViewModel.Effect>() {
 
-    override val _dataFlow: Flow<Boolean> = authRepository.isLoggedFlow
+    override val _dataFlow: Flow<Boolean> = authRepository.logSuccess
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    private val _email = MutableStateFlow("")
-    private val _password = MutableStateFlow("")
+    private val _email =
+        MutableStateFlow("Login Screen State - email test") //TODO remove test var / data
+    private val _password =
+        MutableStateFlow("Login Screen State - password test")//TODO remove test var / data
     private val _rememberMe = MutableStateFlow(false)
     private val _passwordVisible = MutableStateFlow(false)
-
 
     override val uiState: StateFlow<LoginScreenState> = combine(
         _dataFlow,
@@ -50,7 +51,6 @@ class LoginScreenViewModel @Inject constructor(
 
         if (isLoggedIn) {
             effect(Effect.LoginSuccess)
-            isLoggedIn = true
         }
 
         LoginScreenState(
@@ -121,9 +121,7 @@ class LoginScreenViewModel @Inject constructor(
                 )
 
                 when (result) {
-                    is Result.Success -> {
-                        effect(Effect.LoginSuccess)
-                    }
+                    is Result.Success -> {}
 
                     is Result.Error -> {
                         _errorFlow.value = result.error
