@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.Date
@@ -26,8 +27,6 @@ class AuthRepository @Inject constructor(
     private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
 ) {
-    var userSession: UserSession? = null
-
     private val mutex = Mutex()
     val sessionConfig = SessionConfig()
 
@@ -36,30 +35,18 @@ class AuthRepository @Inject constructor(
         password: String,
         isRemembered: Boolean = false,
     ): Result<Boolean, AppError> = mutex.withLock {
-        if (isRemembered) {
-            val now = Date()
-            val expiresAt = Date(now.time + sessionConfig.sessionDuration)
+        val now = Date()
+        val expiresAt = Date(now.time + sessionConfig.sessionDuration)
 
-            val session = UserSession(
-                username = username,
-                accessToken = "access_token",
-                refreshToken = "refresh_token",
-                loginTimestamp = now,
-                expiresAt = expiresAt,
-                rememberSession = isRemembered
-            )
-            saveSession(session)
-            userSession = session
-        } else {
-            userSession = UserSession(
-                username = username,
-                accessToken = "access_token",
-                refreshToken = "refresh_token",
-                loginTimestamp = Date(),
-                expiresAt = Date(Date().time + sessionConfig.sessionDuration),
-                rememberSession = isRemembered
-            )
-        }
+        val session = UserSession(
+            username = username,
+            accessToken = "access_token",
+            refreshToken = "refresh_token",
+            loginTimestamp = now,
+            expiresAt = expiresAt,
+            rememberSession = isRemembered
+        )
+        saveSession(session)
 
         Result.Success(true)
     }
@@ -99,30 +86,30 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun isSessionValid(): Boolean {
-        val session = getCurrentSession() ?: return false
+    fun isSessionValid(session: UserSession): Boolean {
         val now = Date()
 
         return when {
             now.before(session.expiresAt) -> true
-            shouldRefreshToken(session = session) && sessionConfig.autoRefreshEnabled -> {
-                refreshToken() is Result.Success
-            }
-
+//            shouldRefreshToken(session = session) && sessionConfig.autoRefreshEnabled -> {
+//                refreshToken() is Result.Success
+//            }
             else -> false
         }
     }
 
-    val isLoggedFlow: Flow<Boolean> = context.userSession.data
-        .map { prefs ->
-            val session = buildSessionFromPrefs(prefs)
-            if (session != null) {
-                isSessionValid()
-            } else {
-                false
+    val logSuccess: Flow<Boolean> = context.userSession.data
+        .onStart {
+            context.userSession.data.first().let { prefs ->
+                if (prefs[IS_REMEMBERED_KEY] != true) {
+                    logout()
+                }
             }
         }
-        .distinctUntilChanged()
+        .map { prefs ->
+            val session = buildSessionFromPrefs(prefs) ?: return@map false
+            isSessionValid(session)
+        }
 
     val sessionFlow: Flow<UserSession> = context.userSession.data
         .map { preferences ->
