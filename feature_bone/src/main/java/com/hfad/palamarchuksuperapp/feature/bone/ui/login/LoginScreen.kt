@@ -1,5 +1,13 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.login
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.biometric.BiometricPrompt
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,6 +60,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.compose.FeatureTheme
@@ -66,6 +77,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavAnimatedVisi
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavController
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitionScope
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.LoginScreenViewModel
+import kotlinx.coroutines.flow.collectLatest
+
+fun canAuthenticate(context: Context): Int {
+    val biometricManager = BiometricManager.from(context)
+    return biometricManager.canAuthenticate(BIOMETRIC_STRONG or BIOMETRIC_WEAK or DEVICE_CREDENTIAL)
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -83,13 +100,59 @@ fun LoginScreenRoot(
 
     val state = viewModel.uiState.collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
+
+    // Executor для BiometricPrompt
+    val executor = remember { ContextCompat.getMainExecutor(context) }
+
+    // Callback для BiometricPrompt
+    val biometricPrompt = BiometricPrompt(
+        context as FragmentActivity,
+        executor,
+        object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                viewModel.event(LoginScreenViewModel.Event.LoginButtonClicked)
+                Toast.makeText(context, "Аутентификация успешна!", Toast.LENGTH_SHORT).show()
+                Log.d("BiometricAuth", "Аутентификация успешна")
+                // Здесь ваша логика: вход пользователя, разблокировка функционала
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                Toast.makeText(context, "Ошибка аутентификации: $errString", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun onAuthenticationFailed() {
+                super.onAuthenticationFailed()
+                Toast.makeText(
+                    context,
+                    "Аутентификация не удалась. Попробуйте снова.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    )
+
+    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+        .setAllowedAuthenticators(BIOMETRIC_STRONG)
+        .setTitle("Biometric Authentication")
+        .setSubtitle("Log in using your biometric credential")
+        .setNegativeButtonText("Use password")
+        .build()
+
     LaunchedEffect(Unit) {
-        viewModel.effect.collect { effect ->
+        var isNavigated = false
+        viewModel.effect.collectLatest { effect ->
             when (effect) {
                 is LoginScreenViewModel.Effect.LoginSuccess -> {
-                    navController?.navigate(FeatureBoneRoutes.BoneScreen) {
-                        popUpTo(FeatureBoneRoutes.LoginScreen) {
-                            inclusive = true
+                    if (!isNavigated) {
+                        isNavigated = true
+                        navController?.navigate(FeatureBoneRoutes.BoneScreen) {
+                            popUpTo(FeatureBoneRoutes.LoginScreen) {
+                                inclusive = true
+                            }
                         }
                     }
                 }
@@ -115,7 +178,8 @@ fun LoginScreenRoot(
                 modifier = modifier,
                 modifierToTransition = modifierToTransition,
                 state = state,
-                event = viewModel::event
+                event = viewModel::event,
+                biometricCallback = { biometricPrompt.authenticate(promptInfo) },
             )
         }
     }
@@ -128,9 +192,9 @@ fun LoginScreen(
     modifierToTransition: Modifier = Modifier,
     state: State<LoginScreenViewModel.LoginScreenState> = mutableStateOf(LoginScreenViewModel.LoginScreenState()),
     event: (LoginScreenViewModel.Event) -> Unit = {},
+    biometricCallback: () -> Unit = {},
 ) {
 
-    var passwordVisible by remember { mutableStateOf(true) } //TODO TEST ONLY
     var isLoading by remember { mutableStateOf(false) }
 
     Surface(
@@ -228,14 +292,17 @@ fun LoginScreen(
                                 )
                             },
                             trailingIcon = {
-                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                    Icon(
-                                        if (passwordVisible) Icons.Default.Info else Icons.Default.Face,
-                                        contentDescription = if (passwordVisible) "Скрыть пароль" else "Показать пароль",
-                                    )
-                                }
+                                IconButton(
+                                    onClick = { event.invoke(LoginScreenViewModel.Event.PasswordVisibilityToggled) },
+                                    content = {
+                                        Icon(
+                                            if (state.value.passwordVisible) Icons.Default.Info else Icons.Default.Face,
+                                            contentDescription = if (state.value.passwordVisible) "Скрыть пароль" else "Показать пароль",
+                                        )
+                                    }
+                                )
                             },
-                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            visualTransformation = if (state.value.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                         ),
                         modifier = Modifier
@@ -297,7 +364,7 @@ fun LoginScreen(
                             }
                         }
                         IconButton(
-                            onClick = { /* Handle user's fingerprints to log in */ },
+                            onClick = { biometricCallback.invoke() },
                             modifier = Modifier
                                 .padding(start = 8.dp)
                                 .size(48.dp),
