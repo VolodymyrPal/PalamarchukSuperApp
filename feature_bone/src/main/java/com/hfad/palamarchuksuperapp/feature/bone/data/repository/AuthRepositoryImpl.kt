@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.userSession
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
@@ -23,14 +24,14 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 
 @FeatureScope
-class AuthRepository @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
-) {
+) : AuthRepository {
     private val mutex = Mutex()
-    val sessionConfig = SessionConfig()
+    private val sessionConfig = SessionConfig()
 
-    suspend fun login(
+    override suspend fun login(
         username: String,
         password: String,
         isRemembered: Boolean = false,
@@ -51,7 +52,7 @@ class AuthRepository @Inject constructor(
         Result.Success(true)
     }
 
-    suspend fun refreshToken(): Result<UserSession, AppError> = mutex.withLock {
+    override suspend fun refreshToken(): Result<UserSession, AppError> = mutex.withLock {
         val currentSession = getCurrentSession()
             ?: return Result.Error(
                 AppError.NetworkException.ApiError.CustomApiError(
@@ -80,7 +81,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun logout() {
+    override suspend fun logout() {
         context.userSession.edit { preferences ->
             preferences.clear() // Clear user session data
         }
@@ -98,7 +99,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    val logSuccess: Flow<Boolean> = context.userSession.data
+    override val logStatus: Flow<LogStatus> = context.userSession.data
         .onStart {
             context.userSession.data.first().let { prefs ->
                 if (prefs[IS_REMEMBERED_KEY] != true) {
@@ -132,6 +133,12 @@ class AuthRepository @Inject constructor(
     private suspend fun getCurrentSession(): UserSession? {
         return context.userSession.data.first().let { prefs ->
             buildSessionFromPrefs(prefs)
+        }
+    }
+
+    override fun observeCurrentSession(): Flow<UserSession?> {
+        return context.userSession.data.map {
+            buildSessionFromPrefs(it)
         }
     }
 
