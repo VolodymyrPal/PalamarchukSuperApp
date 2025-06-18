@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.LoginScreenViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import dagger.Binds
 import dagger.Component
@@ -24,7 +26,7 @@ import kotlin.reflect.KClass
 @FeatureScope
 @Component(
     dependencies = [BoneDeps::class],
-    modules = [ViewModelsModule::class, BoneModule::class, DifferentClasses::class]
+    modules = [BoneModule::class]
 )
 internal interface BoneComponent : BoneDeps {
 
@@ -42,10 +44,18 @@ internal interface BoneComponent : BoneDeps {
     }
 }
 
-@Module
+@Module (includes = [RepositoryModule::class, ViewModelsModule::class, DifferentClasses::class])
 internal abstract class BoneModule {
     @Binds
     abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
+}
+
+@Module
+abstract class RepositoryModule {
+
+    @FeatureScope
+    @Binds
+    abstract fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 }
 
 @Module
