@@ -182,3 +182,11 @@ class AuthRepository @Inject constructor(
         private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
     }
 }
+
+enum class LogStatus {
+    LOGGED_IN,
+    REQUIRE_WEAK_LOGIN,
+    TOKEN_REFRESH_REQUIRED,
+    TOKEN_AUTO_REFRESH,
+    NOT_LOGGED
+}
