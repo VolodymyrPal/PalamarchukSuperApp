@@ -44,7 +44,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
@@ -92,7 +92,7 @@ fun OrdersPage(
                 modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 12.dp)
                     .clickable { //TODO
-                        val a = AuthRepository(
+                        val a = AuthRepositoryImpl( //TODO Test
                             httpClient = httpClient,
                             context = context
                         )
