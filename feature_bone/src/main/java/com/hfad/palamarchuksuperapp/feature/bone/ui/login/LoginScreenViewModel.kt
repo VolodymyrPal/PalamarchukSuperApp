@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
+package com.hfad.palamarchuksuperapp.feature.bone.ui.login
 
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
@@ -7,7 +7,9 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +23,7 @@ class LoginScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
 ) : GenericViewModel<LoginScreenViewModel.LoginScreenState, LoginScreenViewModel.Event, LoginScreenViewModel.Effect>() {
 
-    override val _dataFlow: Flow<Boolean> = authRepository.logSuccess
+    override val _dataFlow: Flow<LogStatus> = authRepository.logStatus
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(true)
@@ -41,7 +43,7 @@ class LoginScreenViewModel @Inject constructor(
         _rememberMe,
         _passwordVisible,
     ) { flows ->
-        var isLoggedIn = flows[0] as Boolean
+        var isLoggedIn = flows[0] as LogStatus
         val error = flows[1] as AppError?
         val loading = flows[2] as Boolean
         val email = flows[3] as String
@@ -49,8 +51,24 @@ class LoginScreenViewModel @Inject constructor(
         val rememberMe = flows[5] as Boolean
         val passwordVisible = flows[6] as Boolean
 
-        if (isLoggedIn) {
-            effect(Effect.LoginSuccess)
+        when (isLoggedIn) {
+            LogStatus.LOGGED_IN -> {
+                effect(Effect.LoginSuccess)
+            }
+
+            LogStatus.REQUIRE_WEAK_LOGIN -> {
+                effect(Effect.RequireWeakLogin)
+            }
+
+            LogStatus.TOKEN_REFRESH_REQUIRED -> {
+                authRepository.refreshToken()
+            }
+
+            LogStatus.TOKEN_AUTO_REFRESH -> {
+                authRepository.refreshToken()
+            }
+
+            else -> {}
         }
 
         LoginScreenState(
@@ -61,11 +79,11 @@ class LoginScreenViewModel @Inject constructor(
             isLoading = loading,
             error = error,
             isCreatingPossible = false, // Need to update this logic based on requirements
-            isAlreadyLogged = isLoggedIn
+            isAlreadyLogged = isLoggedIn != LogStatus.NOT_LOGGED
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = LoginScreenState()
     )
 
@@ -152,7 +170,7 @@ class LoginScreenViewModel @Inject constructor(
 
     sealed class Effect : BaseEffect {
         object LoginSuccess : Effect()
-        object BiometricAuthFailed : Effect()
+        object RequireWeakLogin : Effect()
         data class ShowError(val message: String) : Effect()
 
     }

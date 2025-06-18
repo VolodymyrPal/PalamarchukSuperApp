@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.Result
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.userSession
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
@@ -23,25 +24,25 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 
 @FeatureScope
-class AuthRepository @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
-) {
+) : AuthRepository {
     private val mutex = Mutex()
-    val sessionConfig = SessionConfig()
+    private val sessionConfig = SessionConfig()
 
-    suspend fun login(
+    override suspend fun login(
         username: String,
         password: String,
-        isRemembered: Boolean = false,
+        isRemembered: Boolean,
     ): Result<Boolean, AppError> = mutex.withLock {
         val now = Date()
-        val expiresAt = Date(now.time + sessionConfig.sessionDuration)
+        val expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
 
         val session = UserSession(
             username = username,
-            accessToken = "access_token",
-            refreshToken = "refresh_token",
+            accessToken = "access_token",   // TODO: Replace with real API call for token refresh
+            refreshToken = "refresh_token", // TODO: Replace with real API call for token refresh
             loginTimestamp = now,
             expiresAt = expiresAt,
             rememberSession = isRemembered
@@ -51,7 +52,7 @@ class AuthRepository @Inject constructor(
         Result.Success(true)
     }
 
-    suspend fun refreshToken(): Result<UserSession, AppError> = mutex.withLock {
+    override suspend fun refreshToken(): Result<UserSession, AppError> = mutex.withLock {
         val currentSession = getCurrentSession()
             ?: return Result.Error(
                 AppError.NetworkException.ApiError.CustomApiError(
@@ -64,7 +65,7 @@ class AuthRepository @Inject constructor(
             val updatedSession = currentSession.copy(
                 accessToken = "new_access_token",
                 refreshToken = "new_refresh_token",
-                expiresAt = Date(now.time + sessionConfig.sessionDuration)
+                expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
             )
 
             saveSession(updatedSession)
@@ -80,25 +81,35 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun logout() {
+    override suspend fun logout() {
         context.userSession.edit { preferences ->
             preferences.clear() // Clear user session data
         }
     }
 
-    fun isSessionValid(session: UserSession): Boolean {
+    suspend fun sessionStatus(session: UserSession): LogStatus {
         val now = Date()
+        val toRefresh = shouldRefreshToken(session)
 
         return when {
-            now.before(session.expiresAt) -> true
-//            shouldRefreshToken(session = session) && sessionConfig.autoRefreshEnabled -> {
-//                refreshToken() is Result.Success
-//            }
-            else -> false
+            now.before(Date(session.loginTimestamp.time + sessionConfig.refreshThreshold.time)) -> {
+                saveSession(
+                    session.copy(
+                        loginTimestamp = now,
+                        expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
+                    )
+                )
+                LogStatus.LOGGED_IN
+            }
+
+            now.before(Date(session.loginTimestamp.time + sessionConfig.refreshThreshold.time)) -> LogStatus.REQUIRE_WEAK_LOGIN
+            toRefresh && !sessionConfig.autoRefreshEnabled -> LogStatus.TOKEN_REFRESH_REQUIRED
+            toRefresh && sessionConfig.autoRefreshEnabled -> LogStatus.TOKEN_AUTO_REFRESH
+            else -> LogStatus.NOT_LOGGED
         }
     }
 
-    val logSuccess: Flow<Boolean> = context.userSession.data
+    override val logStatus: Flow<LogStatus> = context.userSession.data
         .onStart {
             context.userSession.data.first().let { prefs ->
                 if (prefs[IS_REMEMBERED_KEY] != true) {
@@ -107,13 +118,16 @@ class AuthRepository @Inject constructor(
             }
         }
         .map { prefs ->
-            val session = buildSessionFromPrefs(prefs) ?: return@map false
-            isSessionValid(session)
+            val session = buildSessionFromPrefs(prefs) ?: return@map LogStatus.NOT_LOGGED
+            sessionStatus(session)
         }
 
-    val sessionFlow: Flow<UserSession> = context.userSession.data
+    val sessionFlow: Flow<Result<UserSession, AppError>> = context.userSession.data
         .map { preferences ->
-            buildSessionFromPrefs(preferences) ?: UserSession()
+            val session = buildSessionFromPrefs(preferences)
+                ?: return@map Result.Error<UserSession, AppError>(AppError.CustomError())
+            Result.Success(session)
+
         }
         .distinctUntilChanged()
 
@@ -129,15 +143,21 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    private suspend fun getCurrentSession(): UserSession? {
+    override suspend fun getCurrentSession(): UserSession? {
         return context.userSession.data.first().let { prefs ->
             buildSessionFromPrefs(prefs)
         }
     }
 
+    override fun observeCurrentSession(): Flow<UserSession?> {
+        return context.userSession.data.map {
+            buildSessionFromPrefs(it)
+        }
+    }
+
     private fun shouldRefreshToken(session: UserSession): Boolean {
-        val refreshTime = session.expiresAt.time - sessionConfig.refreshThreshold
-        return Date().after(Date(refreshTime))
+        val refreshDate = Date(session.expiresAt.time - sessionConfig.refreshThreshold.time)
+        return Date().after(refreshDate)
     }
 
     private fun buildSessionFromPrefs(prefs: Preferences): UserSession? {
@@ -156,10 +176,10 @@ class AuthRepository @Inject constructor(
 
 
     data class SessionConfig(
-        val sessionDuration: Long = 14.days.inWholeMilliseconds,
-        val refreshThreshold: Long = 2.days.inWholeMilliseconds,
+        val sessionDuration: Date = Date(4.days.inWholeMilliseconds),
+        val refreshThreshold: Date = Date(11.days.inWholeMilliseconds),
         val maxRetryAttempts: Int = 3,
-        val autoRefreshEnabled: Boolean = true,
+        val autoRefreshEnabled: Boolean = false,
         val biometricAuthEnabled: Boolean = false,
     )
 
@@ -181,4 +201,12 @@ class AuthRepository @Inject constructor(
         private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
     }
+}
+
+enum class LogStatus {
+    LOGGED_IN,
+    REQUIRE_WEAK_LOGIN,
+    TOKEN_REFRESH_REQUIRED,
+    TOKEN_AUTO_REFRESH,
+    NOT_LOGGED
 }
