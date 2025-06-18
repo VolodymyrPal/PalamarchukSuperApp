@@ -76,7 +76,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalBoneDependencie
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavAnimatedVisibilityScope
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavController
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitionScope
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.LoginScreenViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 fun canAuthenticate(context: Context): Int {
@@ -136,10 +135,11 @@ fun LoginScreenRoot(
     )
 
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setAllowedAuthenticators(BIOMETRIC_STRONG)
         .setTitle("Biometric Authentication")
         .setSubtitle("Log in using your biometric credential")
-        .setNegativeButtonText("Use password")
+        .setAllowedAuthenticators(
+            DEVICE_CREDENTIAL or BIOMETRIC_STRONG or BIOMETRIC_WEAK //Pin, fingerprint, face,
+        )
         .build()
 
     LaunchedEffect(Unit) {
@@ -147,7 +147,7 @@ fun LoginScreenRoot(
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 is LoginScreenViewModel.Effect.LoginSuccess -> {
-                    if (!isNavigated) {
+                    if (!isNavigated) { // Prevent multiple navigation if effect was emitted multiple times
                         isNavigated = true
                         navController?.navigate(FeatureBoneRoutes.BoneScreen) {
                             popUpTo(FeatureBoneRoutes.LoginScreen) {
@@ -157,12 +157,17 @@ fun LoginScreenRoot(
                     }
                 }
 
-                is LoginScreenViewModel.Effect.BiometricAuthFailed -> {
-
+                is LoginScreenViewModel.Effect.RequireWeakLogin -> {
+                    Toast.makeText(
+                        context,
+                        "Need simple login (code or biometric)",  //TODO as business requirement
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
 
                 is LoginScreenViewModel.Effect.ShowError -> {
-
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() //TODO if need to show better error
                 }
             }
         }
