@@ -136,8 +136,8 @@ class AuthRepository @Inject constructor(
     }
 
     private fun shouldRefreshToken(session: UserSession): Boolean {
-        val refreshTime = session.expiresAt.time - sessionConfig.refreshThreshold
-        return Date().after(Date(refreshTime))
+        val refreshDate = Date(session.expiresAt.time - sessionConfig.refreshThreshold.time)
+        return Date().after(refreshDate)
     }
 
     private fun buildSessionFromPrefs(prefs: Preferences): UserSession? {
@@ -156,10 +156,10 @@ class AuthRepository @Inject constructor(
 
 
     data class SessionConfig(
-        val sessionDuration: Long = 14.days.inWholeMilliseconds,
-        val refreshThreshold: Long = 2.days.inWholeMilliseconds,
+        val sessionDuration: Date = Date(4.days.inWholeMilliseconds),
+        val refreshThreshold: Date = Date(11.days.inWholeMilliseconds),
         val maxRetryAttempts: Int = 3,
-        val autoRefreshEnabled: Boolean = true,
+        val autoRefreshEnabled: Boolean = false,
         val biometricAuthEnabled: Boolean = false,
     )
 
