@@ -7,7 +7,6 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
@@ -28,9 +27,9 @@ class LoginScreenViewModel @Inject constructor(
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     private val _email =
-        MutableStateFlow("Login Screen State - email test") //TODO remove test var / data
+        MutableStateFlow("State - email test") //TODO remove test var / data
     private val _password =
-        MutableStateFlow("Login Screen State - password test")//TODO remove test var / data
+        MutableStateFlow("State - password test")//TODO remove test var / data
     private val _rememberMe = MutableStateFlow(false)
     private val _passwordVisible = MutableStateFlow(false)
 
@@ -79,7 +78,7 @@ class LoginScreenViewModel @Inject constructor(
             isLoading = loading,
             error = error,
             isCreatingPossible = false, // Need to update this logic based on requirements
-            isAlreadyLogged = isLoggedIn != LogStatus.NOT_LOGGED
+            isAlreadyLogged = isLoggedIn != LogStatus.NOT_LOGGED // Logic based on requirements
         )
     }.stateIn(
         scope = viewModelScope,
