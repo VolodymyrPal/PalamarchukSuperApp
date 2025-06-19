@@ -84,22 +84,12 @@ fun OrdersPage(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
-            val httpClient = LocalBoneDependencies.current.httpClient //TODO
             val context = LocalContext.current //TODO
             val coroutineScope = rememberCoroutineScope() //TODO
 
             OrderStatisticCard(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                    .clickable { //TODO
-                        val a = AuthRepositoryImpl( //TODO Test
-                            httpClient = httpClient,
-                            context = context
-                        )
-                        coroutineScope.launch {
-                            a.logout()
-                        }
-                    },
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
                 state = state,
             )
         }
