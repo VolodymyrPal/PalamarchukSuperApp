@@ -190,6 +190,7 @@ class AuthRepositoryImpl @Inject constructor(
         val loginTimestamp: Date = Date(),
         val expiresAt: Date = Date(),
         val rememberSession: Boolean = false,
+        val userPermission: List<AppPermission> = emptyList(),
     )
 
     companion object {
@@ -201,6 +202,13 @@ class AuthRepositoryImpl @Inject constructor(
         private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
     }
+}
+
+enum class AppPermission {
+    ORDERS,
+    PAYMENTS,
+    SALES,
+    FINANCE
 }
 
 enum class LogStatus {
