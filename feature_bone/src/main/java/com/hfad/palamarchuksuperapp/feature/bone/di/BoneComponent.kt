@@ -6,6 +6,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LoginWithCredentialsUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.RefreshTokenUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LoginWithCredentialsUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.RefreshTokenUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import dagger.Binds
@@ -44,10 +52,27 @@ internal interface BoneComponent : BoneDeps {
     }
 }
 
-@Module (includes = [RepositoryModule::class, ViewModelsModule::class, DifferentClasses::class])
+@Module (includes = [RepositoryModule::class, ViewModelsModule::class, DifferentClasses::class, FeatureUseCaseModule::class])
 internal abstract class BoneModule {
     @Binds
     abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
+}
+
+@Module
+interface FeatureUseCaseModule {
+
+    @Binds
+    fun bindLoginWithCredentialsUseCase(loginWithCredentialsUseCase: LoginWithCredentialsUseCaseImpl): LoginWithCredentialsUseCase
+
+    @Binds
+    fun bindLogoutUseCase(logoutUseCase: LogoutUseCaseImpl): LogoutUseCase
+
+    @Binds
+    fun bindObserveLoginStatusUseCase(observeLoginStatusUseCase: ObserveLoginStatusUseCaseImpl): ObserveLoginStatusUseCase
+
+    @Binds
+    fun bindRefreshTokenUseCase(refreshTokenUseCase: RefreshTokenUseCaseImpl): RefreshTokenUseCase
+
 }
 
 @Module
