@@ -7,6 +7,17 @@ sealed interface AppError : Error {
 
     data class CustomError(override val message: String? = null, override val cause: Throwable? = null) : AppError
 
+    sealed class LoginError : AppError {
+        class LoginFailed(override val message: String? = null, override val cause: Throwable? = null) : AppError
+        class LoginCanceled(override val message: String? = null, override val cause: Throwable? = null) : AppError
+    }
+
+    sealed class SessionError : AppError {
+        class SessionExpired(override val message: String? = null, override val cause: Throwable? = null) : AppError
+        class SessionNotFound(override val message: String? = null, override val cause: Throwable? = null) : AppError
+        class SessionCanNotBeSaved(override val message: String? = null, override val cause: Throwable? = null) : AppError
+    }
+
     sealed interface NetworkException : AppError {
 
         /**

@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.data.dtos.OpenAIModelDTO
 import com.hfad.palamarchuksuperapp.data.dtos.toOpenAIModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
@@ -41,7 +41,7 @@ class OpenAIApiHandler @AssistedInject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
-    ): Result<MessageAI, AppError> {
+    ): AppResult<MessageAI, AppError> {
         return safeApiCall {
             val gptRequest = messageList.toOpenAIRequest(model = initAiHandlerInfo.model)
 
@@ -58,14 +58,14 @@ class OpenAIApiHandler @AssistedInject constructor(
                     model = initAiHandlerInfo.model,
                     messageGroupId = 0 // Handler don't need to know message group
                 )
-                Result.Success(responseMessage)
+                AppResult.Success(responseMessage)
             } else if (response.status.value in 401..599) {
                 val openAiError = response.body<OpenAIError>()
-                Result.Error(
+                AppResult.Error(
                     AppError.NetworkException.ApiError.CustomApiError(openAiError.error.message),
                 )
             } else {
-                Result.Error(
+                AppResult.Error(
                     error = AppError.NetworkException.ApiError.UndefinedError(
                         message = "Unknown error, please connect developer."
                     )
@@ -74,8 +74,8 @@ class OpenAIApiHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun getModels(): Result<List<AiModel.OpenAIModel>, AppError> {
-        return Result.Success(
+    override suspend fun getModels(): AppResult<List<AiModel.OpenAIModel>, AppError> {
+        return AppResult.Success(
             listOf(
                 OpenAIModelDTO(
                     llmName = LLMName.OPENAI,

@@ -5,7 +5,7 @@ import MainDispatcher
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
@@ -55,10 +55,10 @@ class StoreViewModel @Inject constructor(
 //    override val _dataFlow: Flow<Result<PersistentList<Product>, AppError>> = productsFlow.map {
 //        Result.Success(it)
 //    }
-    override val _dataFlow: Flow<Result<PersistentList<Product>, AppError>> =
+    override val _dataFlow: Flow<AppResult<PersistentList<Product>, AppError>> =
         repository.fetchProductsAsFlowFromDB
-            .map<PersistentList<Product>, Result<PersistentList<Product>, AppError>> {
-                Result.Success(it)
+            .map<PersistentList<Product>, AppResult<PersistentList<Product>, AppError>> {
+                AppResult.Success(it)
             }
             .catch {
                 effect(Effect.ShowToast(it.message ?: "Error. Please provide info to developer"))
@@ -74,14 +74,14 @@ class StoreViewModel @Inject constructor(
     override val uiState: StateFlow<StoreState> =
         combine(_dataFlow, _loading) { data, loading ->
             when (data) {
-                is Result.Success -> {
+                is AppResult.Success -> {
                     StoreState(
                         items = data.data,
                         loading = loading
                     )
                 }
 
-                is Result.Error -> {
+                is AppResult.Error -> {
                     StoreState(
                         error = data.error,
                         loading = loading

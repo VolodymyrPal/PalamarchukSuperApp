@@ -1,13 +1,13 @@
 package com.hfad.palamarchuksuperapp.domain.usecases
 
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 
-inline fun <T> Result<T, AppError>.getOrHandleAppError(
+inline fun <T> AppResult<T, AppError>.getOrHandleAppError(
     onError: (AppError) -> Nothing,
 ): T {
     return when (this) {
-        is Result.Success -> this.data
-        is Result.Error -> onError(this.error)
+        is AppResult.Success -> this.data
+        is AppResult.Error -> onError(this.error)
     }
 }

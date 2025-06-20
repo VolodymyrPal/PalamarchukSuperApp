@@ -6,7 +6,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageAiEntity
 import com.hfad.palamarchuksuperapp.data.entities.MessageStatus
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.domain.repository.MessageAiRepository
 import javax.inject.Inject
 
@@ -14,13 +14,13 @@ class MessageAiRepositoryImpl @Inject constructor(
     private val messageAiDao: MessageAiDao,
 ) : MessageAiRepository {
 
-    override suspend fun addMessageAiEntity(messageAiEntity: MessageAiEntity): Result<Long, AppError> {
+    override suspend fun addMessageAiEntity(messageAiEntity: MessageAiEntity): AppResult<Long, AppError> {
         return withSqlErrorHandling {
             messageAiDao.insertMessage(messageAiEntity)
         }
     }
 
-    override suspend fun addAndGetMessageAi(messageAI: MessageAI): Result<MessageAI, AppError> {
+    override suspend fun addAndGetMessageAi(messageAI: MessageAI): AppResult<MessageAI, AppError> {
         return withSqlErrorHandling {
             val messageAiEntity =
                 messageAiDao.insertAndReturnMessage(MessageAiEntity.from(messageAI))
@@ -28,7 +28,7 @@ class MessageAiRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateMessageAi(messageAI: MessageAI): Result<Unit, AppError> {
+    override suspend fun updateMessageAi(messageAI: MessageAI): AppResult<Unit, AppError> {
         return withSqlErrorHandling {
             messageAiDao.updateMessage(
                 MessageAiEntity.from(messageAI)
@@ -39,7 +39,7 @@ class MessageAiRepositoryImpl @Inject constructor(
     override suspend fun getAllMessagesWithStatus(
         chatId: Int,
         status: MessageStatus,
-    ): Result<List<MessageAI>, AppError> {
+    ): AppResult<List<MessageAI>, AppError> {
         return withSqlErrorHandling {
             messageAiDao.getMessagesWithStatus(chatId, status.name)
                 .map { MessageAI.from(it) }

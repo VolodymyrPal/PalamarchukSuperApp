@@ -2,14 +2,14 @@ package com.hfad.palamarchuksuperapp.core.data
 
 import android.database.SQLException
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 
 suspend fun <T> withSqlErrorHandling(
     block: suspend () -> T,
-): Result<T, AppError> {
+): AppResult<T, AppError> {
     return try {
-        Result.Success(block())
+        AppResult.Success(block())
     } catch (e: SQLException) {
-        Result.Error(mapSQLException(e))
+        AppResult.Error(mapSQLException(e))
     }
 }

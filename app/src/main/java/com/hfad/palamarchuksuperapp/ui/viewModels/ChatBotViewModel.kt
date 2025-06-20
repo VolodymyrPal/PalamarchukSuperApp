@@ -7,7 +7,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.DataStoreHandler
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
@@ -85,7 +85,7 @@ class ChatBotViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override val _dataFlow: StateFlow<MessageChat> = currentChatId.flatMapLatest { chatId ->
         val observedChat = observeChatAiUseCase.invoke(chatId)
-        if (observedChat is Result.Success) {
+        if (observedChat is AppResult.Success) {
             val chat = observedChat.data
             if (chatId != currentChatId.value) {
                 dataStoreHandler.setCurrentChatId(chatId)
@@ -121,11 +121,11 @@ class ChatBotViewModel @Inject constructor(
     private val allChatInfo: StateFlow<List<MessageChat>> = flow {
         val chatList = observeAllChatsInfoUseCase.invoke()
         when (chatList) {
-            is Result.Success -> chatList.data.collect {
+            is AppResult.Success -> chatList.data.collect {
                 emit(it)
             }
 
-            is Result.Error -> _errorFlow.emit(chatList.error)
+            is AppResult.Error -> _errorFlow.emit(chatList.error)
         }
     }.stateIn(
         viewModelScope,
@@ -260,9 +260,9 @@ class ChatBotViewModel @Inject constructor(
     private fun getModels(llmName: LLMName) {
         viewModelScope.launch {
             _choosenAiModelList.update { persistentListOf() }
-            when (val resultModels: Result<List<AiModel>, AppError> = getModelsUseCase(llmName)) {
-                is Result.Success -> _choosenAiModelList.update { resultModels.data.toPersistentList() }
-                is Result.Error -> effect(Effect.ShowToast("Не удалось загрузить модели: ${resultModels.error}"))
+            when (val resultModels: AppResult<List<AiModel>, AppError> = getModelsUseCase(llmName)) {
+                is AppResult.Success -> _choosenAiModelList.update { resultModels.data.toPersistentList() }
+                is AppResult.Error -> effect(Effect.ShowToast("Не удалось загрузить модели: ${resultModels.error}"))
             }
         }
     }

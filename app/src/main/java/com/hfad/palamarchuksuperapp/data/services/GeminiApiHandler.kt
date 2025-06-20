@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.data.dtos.toGeminiModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
@@ -44,16 +44,16 @@ class GeminiApiHandler @AssistedInject constructor(
         "https://generativelanguage.googleapis.com/v1beta/models/${model.modelName}:generateContent?key=$key"
 
 
-    override suspend fun getModels(): Result<List<AiModel.GeminiModel>, AppError> {
+    override suspend fun getModels(): AppResult<List<AiModel.GeminiModel>, AppError> {
         return safeApiCall {
             val response = httpClient.get(
                 "https://generativelanguage.googleapis.com/v1beta/models?key=${aiHandlerInfo.value.aiApiKey}"
             )
             if (response.status.value in 200..299) {
                 val list = response.body<GeminiModelsResponse>()
-                Result.Success(list.models.map { it.toGeminiModel() })
+                AppResult.Success(list.models.map { it.toGeminiModel() })
             } else {
-                Result.Error(AppError.NetworkException.ApiError.NotFound())
+                AppResult.Error(AppError.NetworkException.ApiError.NotFound())
             }
         }
     }
@@ -64,7 +64,7 @@ class GeminiApiHandler @AssistedInject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
-    ): Result<MessageAI, AppError> {
+    ): AppResult<MessageAI, AppError> {
         return safeApiCall {
             val request =
                 httpClient.post(getUrl(model = initAiHandlerInfo.model)) {
@@ -82,16 +82,16 @@ class GeminiApiHandler @AssistedInject constructor(
                     model = initAiHandlerInfo.model,
                     messageGroupId = 0 // Handler don't need to know message group
                 )
-                Result.Success(responseMessage)
+                AppResult.Success(responseMessage)
             } else if (request.status.value in 400..599) {
                 val geminiError = request.body<GeminiError>()
-                Result.Error(
+                AppResult.Error(
                     error = AppError.NetworkException.ApiError.CustomApiError(
                         geminiError.error.message
                     )
                 )
             } else {
-                Result.Error(
+                AppResult.Error(
                     error = AppError.NetworkException.ApiError.UndefinedError(
                         message = "Unknown error, please connect developer."
                     )
