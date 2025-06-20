@@ -1,9 +1,8 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.repository
 
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl.UserSession
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -11,15 +10,18 @@ interface AuthRepository {
         username: String,
         password: String,
         isRemembered: Boolean = false,
-    ): Result<Boolean, AppError>
+    ): AppResult<Boolean, AppError>
 
-    suspend fun refreshToken(): Result<AuthRepositoryImpl.UserSession, AppError>
+    suspend fun refreshToken(): AppResult<Unit, AppError>
 
     suspend fun logout()
 
-    suspend fun getCurrentSession(): AuthRepositoryImpl.UserSession?
+    fun observeCurrentSession(): Flow<UserSession?>
 
-    fun observeCurrentSession(): Flow<AuthRepositoryImpl.UserSession?>
+    fun shouldRefreshToken(session: UserSession): Boolean
 
-    val logStatus: Flow<LogStatus>
+    suspend fun saveSession(session: UserSession): AppResult<Unit, AppError>
+
+    val currentSession: Flow<UserSession>
+
 }

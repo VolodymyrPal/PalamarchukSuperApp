@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.data.services
 
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.data.dtos.toGroqModel
 import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
@@ -41,7 +41,7 @@ class GroqApiHandler @AssistedInject constructor(
 
     override suspend fun getResponse(
         messageList: PersistentList<MessageGroup>,
-    ): Result<MessageAI, AppError> {
+    ): AppResult<MessageAI, AppError> {
         return safeApiCall {
             val contextMessages = if (messageList.last().type == MessageType.IMAGE) {
                 messageList.last().toGroqRequest(initAiHandlerInfo.model)
@@ -66,12 +66,12 @@ class GroqApiHandler @AssistedInject constructor(
                         model = initAiHandlerInfo.model,
                         messageGroupId = 0 // Handler don't need to know message group
                     )
-                    Result.Success(responseMessage)
+                    AppResult.Success(responseMessage)
                 }
 
                 in 400..599 -> {
                     val groqError = request.body<GroqError>()
-                    Result.Error(
+                    AppResult.Error(
                         error = AppError.CustomError(groqError.error.message),
                         MessageAI(
                             model = initAiHandlerInfo.model,
@@ -81,7 +81,7 @@ class GroqApiHandler @AssistedInject constructor(
                 }
 
                 else -> {
-                    Result.Error(
+                    AppResult.Error(
                         error = AppError.NetworkException.ApiError.BadApi(),
                         MessageAI(
                             model = initAiHandlerInfo.model,
@@ -93,7 +93,7 @@ class GroqApiHandler @AssistedInject constructor(
         }
     }
 
-    override suspend fun getModels(): Result<List<AiModel.GroqModel>, AppError> {
+    override suspend fun getModels(): AppResult<List<AiModel.GroqModel>, AppError> {
         return safeApiCall {
             val response = httpClient.get(
                 "https://api.groq.com/openai/v1/models"
@@ -104,12 +104,12 @@ class GroqApiHandler @AssistedInject constructor(
             when (response.status.value) {
                 in 200..299 -> {
                     val list = response.body<GroqModelList>()
-                    Result.Success(list.data.map { it.toGroqModel() })
+                    AppResult.Success(list.data.map { it.toGroqModel() })
                 }
 
                 in 400..599 -> {
                     val groqError = response.body<GroqError>()
-                    Result.Error(
+                    AppResult.Error(
                         AppError.NetworkException.ApiError.CustomApiError(
                             groqError.error.message
                         )
@@ -117,7 +117,7 @@ class GroqApiHandler @AssistedInject constructor(
                 }
 
                 else -> {
-                    Result.Error(
+                    AppResult.Error(
                         error = AppError.NetworkException.ApiError.UndefinedError(
                             message = "Unknown error, please connect developer."
                         )

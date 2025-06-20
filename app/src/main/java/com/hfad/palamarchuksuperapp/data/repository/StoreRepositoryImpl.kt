@@ -6,7 +6,7 @@ import com.hfad.palamarchuksuperapp.data.services.FakeStoreApi
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.Product
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.domain.repository.StoreRepository
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toPersistentList
@@ -23,13 +23,13 @@ class StoreRepositoryImpl @Inject constructor(
     override val fetchProductsAsFlowFromDB: Flow<PersistentList<Product>> =
         storeDao.getAllProductsFromDB().map { list -> list.toPersistentList() }
 
-    suspend fun products(): Result<Flow<PersistentList<Product>>, AppError> {
+    suspend fun products(): AppResult<Flow<PersistentList<Product>>, AppError> {
         return withSqlErrorHandling { fetchProductsAsFlowFromDB }
     }
 
     override suspend fun softRefreshProducts() {
         val productResultApi = getProductWithErrors()
-        if (productResultApi is Result.Success) {
+        if (productResultApi is AppResult.Success) {
             storeDao.insertOrIgnoreProducts(productResultApi.data)
         }
     }
@@ -37,17 +37,17 @@ class StoreRepositoryImpl @Inject constructor(
     override suspend fun hardRefreshProducts() {
         storeDao.deleteAllProducts()
         val productResultApi = getProductWithErrors()
-        if (productResultApi is Result.Success) {
+        if (productResultApi is AppResult.Success) {
             storeDao.insertOrIgnoreProducts(productResultApi.data)
         }
     }
 
-    private suspend fun getProductWithErrors(): Result<PersistentList<Product>, AppError> { //}: List<ProductDomainRW> {
+    private suspend fun getProductWithErrors(): AppResult<PersistentList<Product>, AppError> { //}: List<ProductDomainRW> {
 
         return safeApiCall {
             val storeProducts: PersistentList<Product> =
                 storeApi.getProductsDomainRw().toPersistentList()
-            Result.Success(storeProducts)
+            AppResult.Success(storeProducts)
         }
     }
 

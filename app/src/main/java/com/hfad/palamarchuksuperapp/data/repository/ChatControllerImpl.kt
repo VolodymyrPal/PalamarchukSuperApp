@@ -8,7 +8,7 @@ import com.hfad.palamarchuksuperapp.data.entities.MessageGroupEntity
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageChat
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.domain.repository.ChatController
 import com.hfad.palamarchuksuperapp.domain.repository.MessageAiRepository
 import com.hfad.palamarchuksuperapp.domain.repository.MessageChatRepository
@@ -33,27 +33,27 @@ class ChatControllerImpl @Inject constructor(
     @Transaction
     override suspend fun addMessageGroup(
         messageGroupWithChatID: MessageGroup,
-    ): Result<Long, AppError> {    //TODO NEARLY DONE
+    ): AppResult<Long, AppError> {    //TODO NEARLY DONE
 
         val groupId = addMessageGroupEntity(
             MessageGroupEntity.from(messageGroupWithChatID)
         ).getOrHandleAppError {
-            return Result.Error(it)
+            return AppResult.Error(it)
         }
 
         messageGroupWithChatID.content.forEach { messageAi ->
             messageAiRepository.addMessageAiEntity(
                 MessageAiEntity.from(messageAi.copy(messageGroupId = groupId.toInt()))
             ).getOrHandleAppError {
-                return Result.Error(it)
+                return AppResult.Error(it)
             }
         }
 
-        return Result.Success(groupId)
+        return AppResult.Success(groupId)
     }
 
     @Transaction
-    override suspend fun updateMessageGroup(messageGroup: MessageGroup): Result<Unit, AppError> {
+    override suspend fun updateMessageGroup(messageGroup: MessageGroup): AppResult<Unit, AppError> {
         return withSqlErrorHandling {
             updateMessageGroupEntity(MessageGroupEntity.from(messageGroup))
             messageGroup.content.forEach { messageAi ->
@@ -64,25 +64,25 @@ class ChatControllerImpl @Inject constructor(
     }
 
     @Transaction
-    override suspend fun addChatWithMessages(chat: MessageChat): Result<Long, AppError> {
+    override suspend fun addChatWithMessages(chat: MessageChat): AppResult<Long, AppError> {
         val messageToInsert = MessageChatWithRelationsEntity.from(chat)
         val insertedChatId = insertMessages(messageToInsert).getOrHandleAppError {
-            return Result.Error(it)
+            return AppResult.Error(it)
         }
-        return Result.Success(insertedChatId)
+        return AppResult.Success(insertedChatId)
     }
 
     @Transaction
     private suspend fun insertMessages(
         chat: MessageChatWithRelationsEntity,
-    ): Result<Long, AppError> {
+    ): AppResult<Long, AppError> {
         val chatId = createChat(chat.chat).getOrHandleAppError {
-            return Result.Error(it)
+            return AppResult.Error(it)
         }
         chat.messageGroupsWithMessageEntity.forEach { messageGroup ->
             val groupId = addMessageGroupEntity(messageGroup.group.copy(chatId = chatId.toInt()))
                 .getOrHandleAppError {
-                    return Result.Error(
+                    return AppResult.Error(
                         it
                     )
                 }
@@ -92,6 +92,6 @@ class ChatControllerImpl @Inject constructor(
             }
         }
 
-        return Result.Success(chatId)
+        return AppResult.Success(chatId)
     }
 }

@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.MessageAI
 import com.hfad.palamarchuksuperapp.domain.models.MessageGroup
 import com.hfad.palamarchuksuperapp.domain.models.MessageType
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.domain.models.Role
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.repository.ChatController
@@ -21,7 +21,7 @@ interface SendChatRequestUseCase {
     suspend operator fun invoke(
         message: MessageGroup,
         handlers: List<AiModelHandler>,
-    ): Result<Unit, AppError>
+    ): AppResult<Unit, AppError>
 }
 
 class SendAiRequestUseCaseImpl @Inject constructor(
@@ -31,21 +31,21 @@ class SendAiRequestUseCaseImpl @Inject constructor(
     override suspend operator fun invoke(
         message: MessageGroup,
         handlers: List<AiModelHandler>,
-    ): Result<Unit, AppError> {
+    ): AppResult<Unit, AppError> {
         val chatId = message.chatId
         val activeHandlers = handlers.filter { it.aiHandlerInfo.value.isSelected }
 
         if (activeHandlers.isEmpty()) {
-            return Result.Error(AppError.CustomError("No handlers provided"))
+            return AppResult.Error(AppError.CustomError("No handlers provided"))
         }
 
         chatController.addMessageGroup(messageGroupWithChatID = message).getOrHandleAppError {
-            return Result.Error(it)
+            return AppResult.Error(it)
         }
 
         val currentChat =
             chatController.getChatWithMessagesById(chatId).getOrHandleAppError {
-                return Result.Error(it)
+                return AppResult.Error(it)
             }
 
         val contextMessages = currentChat.messageGroups.toPersistentList()
@@ -59,10 +59,10 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                 content = emptyList()
             )
         ).getOrHandleAppError {
-            return Result.Error(it)
+            return AppResult.Error(it)
         }
         supervisorScope {
-            val requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>> =
+            val requests: List<Pair<MessageAI, Deferred<AppResult<MessageAI, AppError>>>> =
                 activeHandlers.map { handler ->
                     val pendingMessage = chatController.addAndGetMessageAi(
                         MessageAI(
@@ -73,7 +73,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             timestamp = Clock.System.now().toString()
                         )
                     ).getOrHandleAppError {
-                        return@supervisorScope Result.Error(it)
+                        return@supervisorScope AppResult.Error(it)
                     }
                     pendingMessage to async {
                         handler.getResponse(contextMessages)
@@ -82,12 +82,12 @@ class SendAiRequestUseCaseImpl @Inject constructor(
 
             return@supervisorScope proceedRequest(requests)
         }
-        return Result.Success(Unit)
+        return AppResult.Success(Unit)
     }
 
     private suspend fun proceedRequest(
-        requests: List<Pair<MessageAI, Deferred<Result<MessageAI, AppError>>>>,
-    ): Result<Unit, AppError> {
+        requests: List<Pair<MessageAI, Deferred<AppResult<MessageAI, AppError>>>>,
+    ): AppResult<Unit, AppError> {
 
         supervisorScope {
 
@@ -97,7 +97,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                     val result = request.await()
 
                     when (result) {
-                        is Result.Success -> {
+                        is AppResult.Success -> {
                             val successMessage = messageAi.copy(
                                 message = result.data.message,
                                 model = result.data.model,
@@ -107,7 +107,7 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                             chatController.updateMessageAi(successMessage)
                         }
 
-                        is Result.Error -> { //TODO place to handle error]
+                        is AppResult.Error -> { //TODO place to handle error]
                             val error = result.error
                             val errorMessageText =
                                 when (error) {
@@ -128,6 +128,6 @@ class SendAiRequestUseCaseImpl @Inject constructor(
                 }
             }
         }
-        return Result.Success(Unit)
+        return AppResult.Success(Unit)
     }
 }

@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.domain.models.AiHandlerInfo
 import com.hfad.palamarchuksuperapp.domain.models.AiModel
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.domain.models.LLMName
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.domain.repository.AiModelHandler
 import com.hfad.palamarchuksuperapp.domain.usecases.MapAiModelHandlerUseCase
 import kotlinx.coroutines.flow.Flow
@@ -17,11 +17,11 @@ import javax.inject.Inject
 
 interface AiHandlerRepository {
     val aiHandlerFlow: Flow<List<AiModelHandler>>
-    suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError>
+    suspend fun getModelsFromHandler(handler: AiModelHandler): AppResult<List<AiModel>, AppError>
     suspend fun addHandler(handlerInfo: AiHandlerInfo)
     suspend fun removeHandler(handler: AiModelHandler)
     suspend fun updateHandler(handler: AiModelHandler, aiHandlerInfo: AiHandlerInfo)
-    suspend fun getBaseModels(llmName: LLMName): Result<List<AiModel>, AppError>
+    suspend fun getBaseModels(llmName: LLMName): AppResult<List<AiModel>, AppError>
 }
 
 class AiHandlerRepositoryImpl @Inject constructor(
@@ -41,7 +41,7 @@ class AiHandlerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getModelsFromHandler(handler: AiModelHandler): Result<List<AiModel>, AppError> {
+    override suspend fun getModelsFromHandler(handler: AiModelHandler): AppResult<List<AiModel>, AppError> {
         return handler.getModels()
     }
 
@@ -82,7 +82,7 @@ class AiHandlerRepositoryImpl @Inject constructor(
 
     private val mutableBaseHandlerMap: MutableMap<LLMName, AiModelHandler> by lazy { mutableMapOf() }
 
-    override suspend fun getBaseModels(llmName: LLMName): Result<List<AiModel>, AppError> {
+    override suspend fun getBaseModels(llmName: LLMName): AppResult<List<AiModel>, AppError> {
         val baseHandler = mutableBaseHandlerMap.getOrPut(llmName) {
             when (llmName) {
                 LLMName.OPENAI -> mapAiModelHandlerUseCase(AiHandlerInfo.DEFAULT_AI_HANDLER_INFO_OPEN_AI)

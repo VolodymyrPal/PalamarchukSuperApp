@@ -4,7 +4,7 @@ import IoDispatcher
 import MainDispatcher
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
@@ -59,15 +59,15 @@ class SkillsViewModel @Inject constructor(
         val error: AppError? = null,
     ) : ScreenState
 
-    override val _dataFlow: Flow<Result<PersistentList<Skill>, AppError>> =
-        repository.getSkillsFromDB().map { Result.Success(it) }
+    override val _dataFlow: Flow<AppResult<PersistentList<Skill>, AppError>> =
+        repository.getSkillsFromDB().map { AppResult.Success(it) }
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
 
     override val uiState: StateFlow<SkillState> =
         combine(_dataFlow, _errorFlow, _loading) { data, error, loading ->
             when (data) {
-                is Result.Error -> {
+                is AppResult.Error -> {
                     SkillState(
                         items = data.data ?: persistentListOf(),
                         error = data.error,
@@ -75,7 +75,7 @@ class SkillsViewModel @Inject constructor(
                     )
                 }
 
-                is Result.Success -> {
+                is AppResult.Success -> {
                     SkillState(
                         items = data.data,
                         loading = loading
@@ -151,8 +151,8 @@ class SkillsViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             _dataFlow.take(1).collect {
                 when (it) {
-                    is Result.Success -> {
-                        (it as Result.Success).data.filter { it.chosen }
+                    is AppResult.Success -> {
+                        (it as AppResult.Success).data.filter { it.chosen }
                             .forEach { repository.deleteSkill(it) }
                     }
 
