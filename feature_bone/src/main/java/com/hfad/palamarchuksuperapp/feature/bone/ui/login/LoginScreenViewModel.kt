@@ -2,34 +2,59 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.login
 
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.Result
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
-import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LoginWithCredentialsUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.RefreshTokenUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoginScreenViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    observeLoginStatusUseCase: ObserveLoginStatusUseCase,
+    private val loginWithCredentialsUseCase: LoginWithCredentialsUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val refreshTokenUseCase: RefreshTokenUseCase,
 ) : GenericViewModel<LoginScreenViewModel.LoginScreenState, LoginScreenViewModel.Event, LoginScreenViewModel.Effect>() {
 
-    override val _dataFlow: Flow<LogStatus> = authRepository.logStatus
+    override val _dataFlow: Flow<LogStatus> = observeLoginStatusUseCase().onEach {
+        when (it) {
+            LogStatus.LOGGED_IN -> {
+                effect(Effect.LoginSuccess)
+            }
+
+            LogStatus.REQUIRE_WEAK_LOGIN -> {
+                effect(Effect.RequireWeakLogin)
+            }
+
+            LogStatus.TOKEN_REFRESH_REQUIRED -> {
+                refreshTokenUseCase() // Refresh token if required TODO
+            }
+
+            LogStatus.TOKEN_AUTO_REFRESH -> {
+                refreshTokenUseCase() // Automatically refresh token if needed TODO
+            }
+
+            else -> {}
+        }
+    }
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(true)
-    private val _email =
-        MutableStateFlow("State - email test") //TODO remove test var / data
-    private val _password =
-        MutableStateFlow("State - password test")//TODO remove test var / data
+    private val _email = MutableStateFlow("State - email test") //TODO remove test var / data
+    private val _password = MutableStateFlow("State - password test")//TODO remove test var / data
     private val _rememberMe = MutableStateFlow(false)
     private val _passwordVisible = MutableStateFlow(false)
 
@@ -49,26 +74,6 @@ class LoginScreenViewModel @Inject constructor(
         val password = flows[4] as String
         val rememberMe = flows[5] as Boolean
         val passwordVisible = flows[6] as Boolean
-
-        when (isLoggedIn) {
-            LogStatus.LOGGED_IN -> {
-                effect(Effect.LoginSuccess)
-            }
-
-            LogStatus.REQUIRE_WEAK_LOGIN -> {
-                effect(Effect.RequireWeakLogin)
-            }
-
-            LogStatus.TOKEN_REFRESH_REQUIRED -> {
-                authRepository.refreshToken()
-            }
-
-            LogStatus.TOKEN_AUTO_REFRESH -> {
-                authRepository.refreshToken()
-            }
-
-            else -> {}
-        }
 
         LoginScreenState(
             email = email,
@@ -119,7 +124,7 @@ class LoginScreenViewModel @Inject constructor(
 
             is Event.ClearLogin -> {
                 viewModelScope.launch {
-                    authRepository.logout()
+                    logoutUseCase()
                 }
             }
         }
@@ -131,24 +136,26 @@ class LoginScreenViewModel @Inject constructor(
             _errorFlow.value = null
 
             try {
-                val result = authRepository.login(
+                val result = loginWithCredentialsUseCase(
                     username = _email.value,
                     password = _password.value,
                     isRemembered = _rememberMe.value
                 )
 
                 when (result) {
-                    is Result.Success -> {}
+                    is AppResult.Success -> {
+                        _loading.value = false
+                    }
 
-                    is Result.Error -> {
+                    is AppResult.Error -> {
                         _errorFlow.value = result.error
                         effect(Effect.ShowError(result.error.message ?: "Login failed"))
+                        _loading.value = false
                     }
                 }
             } catch (e: Exception) {
                 val error = AppError.NetworkException.ApiError.CustomApiError(
-                    message = "Login error: ${e.message}",
-                    cause = e
+                    message = "Login error: ${e.message}", cause = e
                 )
                 _errorFlow.value = error
                 effect(Effect.ShowError(error.message.toString()))
