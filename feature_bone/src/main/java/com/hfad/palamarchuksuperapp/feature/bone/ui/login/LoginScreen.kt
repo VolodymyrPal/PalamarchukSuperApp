@@ -77,6 +77,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavAnimatedVisi
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalNavController
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitionScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 
 fun canAuthenticate(context: Context): Int {
     val biometricManager = BiometricManager.from(context)
@@ -144,7 +145,7 @@ fun LoginScreenRoot(
 
     LaunchedEffect(Unit) {
         var isNavigated = false
-        viewModel.effect.collectLatest { effect ->
+        viewModel.effect.debounce(250).collectLatest { effect ->
             when (effect) {
                 is LoginScreenViewModel.Effect.LoginSuccess -> {
                     if (!isNavigated) { // Prevent multiple navigation if effect was emitted multiple times
