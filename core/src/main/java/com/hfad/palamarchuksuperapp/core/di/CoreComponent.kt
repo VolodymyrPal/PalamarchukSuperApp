@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.core.di
 
+import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -13,7 +14,9 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.serialization.kotlinx.json.json
+import jakarta.inject.Inject
 import kotlinx.serialization.json.Json
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Singleton
 
 @Singleton
@@ -21,6 +24,7 @@ import javax.inject.Singleton
 interface CoreComponent {
 
     fun provideHttpClient(): HttpClient
+    val appFirstAccessDetector: AppFirstAccessDetector
 
     @Component.Builder
     interface Builder {
@@ -28,7 +32,7 @@ interface CoreComponent {
     }
 }
 
-@Module
+@Module(includes = [DifferentClasses::class])
 internal object CoreModule {
 
     @Provides
@@ -68,5 +72,25 @@ internal object CoreModule {
             }
             install(HttpCache) // Добавляем кэширование запросов, чтобы не обращаться к API каждый раз
         }
+    }
+}
+
+@Module
+abstract class DifferentClasses {
+
+    @Binds
+    abstract fun provideAppLaunchDetector(appLaunchDetectorImpl: AppFirstAccessDetectorImpl): AppFirstAccessDetector
+}
+
+interface AppFirstAccessDetector {
+    fun isFirstAccess(key: String): Boolean
+}
+
+@Singleton
+class AppFirstAccessDetectorImpl @Inject constructor() : AppFirstAccessDetector {
+    private val accessMap = ConcurrentHashMap<String, Boolean>()
+
+    override fun isFirstAccess(key: String): Boolean {
+        return accessMap.putIfAbsent(key, false) == true
     }
 }

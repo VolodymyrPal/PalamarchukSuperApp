@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import com.hfad.palamarchuksuperapp.DataStoreHandler
+import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.di.CoreComponent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.data.dao.MessageAiDao
@@ -98,6 +99,7 @@ interface AppComponent : BoneDeps {
     fun inject(storeFragment: StoreFragment)
     fun getAiHandlerDispatcher(): AiHandlerRepositoryImpl
     fun provideDataStoreHandler(): DataStoreHandler
+    override val appFirstAccessDetector: AppFirstAccessDetector
 
     @Component.Builder
     interface Builder {

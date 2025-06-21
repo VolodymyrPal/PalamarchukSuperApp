@@ -3,8 +3,10 @@ package com.hfad.palamarchuksuperapp.feature.bone.di
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LoginWithCredentialsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCaseImpl
@@ -41,6 +43,7 @@ internal interface BoneComponent : BoneDeps {
     val viewModelFactory: ViewModelProvider.Factory
     override val context: Context
     override fun getFeatureHttpClient(): HttpClient
+    override val appFirstAccessDetector: AppFirstAccessDetector
 
     @FeatureClient
     val httpClient: HttpClient
@@ -55,8 +58,7 @@ internal interface BoneComponent : BoneDeps {
 @Module (includes = [RepositoryModule::class, ViewModelsModule::class, DifferentClasses::class, FeatureUseCaseModule::class])
 internal abstract class BoneModule {
     @Binds
-    abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
-}
+    abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory }
 
 @Module
 interface FeatureUseCaseModule {
@@ -85,6 +87,11 @@ abstract class RepositoryModule {
 
 @Module
 internal object DifferentClasses {
+
+    @Provides
+    fun provideSessionConfig(): SessionConfig {
+        return SessionConfig()
+    }
 
     @Provides
     @FeatureClient
@@ -154,6 +161,7 @@ abstract class ViewModelsModule {
 interface BoneDeps {
     val context: Context
     fun getFeatureHttpClient(): HttpClient
+    val appFirstAccessDetector: AppFirstAccessDetector
 }
 
 
