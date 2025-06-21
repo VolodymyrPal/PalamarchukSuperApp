@@ -1,10 +1,12 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl
 
+import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -14,17 +16,30 @@ import java.util.Date
 
 class ObserveLoginStatusUseCaseImpl @Inject constructor(
     private val authRepository: AuthRepository,
+    private val sessionConfig: SessionConfig,
+    private val logoutUseCase: LogoutUseCase,
+    private val detector: AppFirstAccessDetector,
 ) : ObserveLoginStatusUseCase {
-    private val sessionConfig: SessionConfig = SessionConfig()
+    private val detectorKey = "isFirstAccess"
 
     override fun invoke(): Flow<LogStatus> = authRepository.currentSession
         .map { session -> determineLoginStatus(session) }
         .distinctUntilChanged()
 
     private suspend fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
+
         if (session.userStatus == LogStatus.NOT_LOGGED) {
+            detector.isFirstAccess(detectorKey)
             return LogStatus.NOT_LOGGED
         }
+
+        if (detector.isFirstAccess(detectorKey) && !session.rememberSession) {
+            logoutUseCase()
+            detector.isFirstAccess(detectorKey)
+            return LogStatus.NOT_LOGGED
+        }
+
+        detector.isFirstAccess(detectorKey)
 
         val now = Date()
         val activeSessionEnd =
