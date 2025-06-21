@@ -49,32 +49,12 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         val shouldRefresh = authRepository.shouldRefreshToken(session)
 
         return when {
-            isWithinActiveSession(now, activeSessionEnd) -> {
-                handleActiveSession(session, now)
-            }
-
-            isWithinRefreshWindow(now, refreshThresholdEnd) -> {
-                LogStatus.REQUIRE_WEAK_LOGIN
-            }
-
-            shouldRefresh && !sessionConfig.autoRefreshEnabled -> {
-                LogStatus.TOKEN_REFRESH_REQUIRED
-            }
-
-            shouldRefresh && sessionConfig.autoRefreshEnabled -> {
-                LogStatus.TOKEN_AUTO_REFRESH
-            }
-
+            now.before(activeSessionEnd) -> handleActiveSession(session, now)
+            now.before(refreshThresholdEnd) -> LogStatus.REQUIRE_WEAK_LOGIN
+            shouldRefresh && !sessionConfig.autoRefreshEnabled -> LogStatus.TOKEN_REFRESH_REQUIRED
+            shouldRefresh && sessionConfig.autoRefreshEnabled -> LogStatus.TOKEN_AUTO_REFRESH
             else -> LogStatus.NOT_LOGGED
         }
-    }
-
-    private fun isWithinActiveSession(now: Date, activeSessionEnd: Date): Boolean {
-        return now.before(activeSessionEnd)
-    }
-
-    private fun isWithinRefreshWindow(now: Date, refreshThresholdEnd: Date): Boolean {
-        return now.before(refreshThresholdEnd)
     }
 
     private suspend fun handleActiveSession(
