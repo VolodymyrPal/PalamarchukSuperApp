@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.bundles.database)
 
     implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
+    implementation("androidx.security:security-crypto:1.0.0")
 
     implementation(project(":core"))
 }

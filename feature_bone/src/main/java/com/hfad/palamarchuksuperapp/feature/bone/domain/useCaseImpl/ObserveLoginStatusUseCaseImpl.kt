@@ -28,7 +28,7 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
 
     private suspend fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
 
-        if (session.userStatus == LogStatus.NOT_LOGGED) {
+        if (session.userStatus == LogStatus.NOT_LOGGED || session.expiresAt < Date()) {
             detector.isFirstAccess(detectorKey)
             return LogStatus.NOT_LOGGED
         }

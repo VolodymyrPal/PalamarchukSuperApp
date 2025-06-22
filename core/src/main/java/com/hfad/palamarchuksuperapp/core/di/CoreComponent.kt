@@ -91,6 +91,7 @@ class AppFirstAccessDetectorImpl @Inject constructor() : AppFirstAccessDetector 
     private val accessMap = ConcurrentHashMap<String, Boolean>()
 
     override fun isFirstAccess(key: String): Boolean {
-        return accessMap.putIfAbsent(key, false) == true
+        val wasPresent = accessMap.putIfAbsent(key, false)
+        return wasPresent == null
     }
 }

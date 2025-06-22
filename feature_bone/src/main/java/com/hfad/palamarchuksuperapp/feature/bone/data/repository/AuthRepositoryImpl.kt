@@ -127,8 +127,8 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override fun shouldRefreshToken(session: UserSession): Boolean {
-        val refreshDate = Date(session.expiresAt.time - sessionConfig.refreshThreshold.time)
-        return Date().after(refreshDate)
+        val refreshWindowStartTime = session.expiresAt.time - sessionConfig.refreshThreshold.time
+        return System.currentTimeMillis() >= refreshWindowStartTime
     }
 
     private fun buildSessionFromPrefs(prefs: Preferences): UserSession? {
