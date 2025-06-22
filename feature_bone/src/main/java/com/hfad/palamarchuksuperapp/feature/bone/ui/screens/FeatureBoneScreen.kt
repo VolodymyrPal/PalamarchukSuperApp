@@ -1,6 +1,9 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import android.content.Context
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
+import android.util.Base64
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -18,6 +21,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -33,7 +38,14 @@ import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenRoot
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
 import kotlin.reflect.KClass
 
 class BoneFeature(
@@ -222,3 +234,68 @@ sealed interface FeatureBoneRoutes {
 }
 
 internal val Context.userSession: DataStore<Preferences> by preferencesDataStore(name = "user_session")
+
+
+object CryptoUtil {
+    private const val ANDROID_KEYSTORE = "AndroidKeyStore"
+    private const val KEY_ALIAS = "my_datastore_key"
+    private const val TRANSFORMATION = "AES/GCM/NoPadding"
+
+    private val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
+
+    private fun getSecretKey(): SecretKey {
+        val entry = keyStore.getEntry(KEY_ALIAS, null) as? KeyStore.SecretKeyEntry
+        return entry?.secretKey ?: generateKey()
+    }
+
+    private fun generateKey(): SecretKey {
+        return KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE).apply {
+            init(
+                KeyGenParameterSpec.Builder(
+                    KEY_ALIAS,
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+                )
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .build()
+            )
+        }.generateKey()
+    }
+
+    fun encrypt(input: String): String {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.ENCRYPT_MODE, getSecretKey())
+        val iv = cipher.iv
+        val ciphertext = cipher.doFinal(input.toByteArray(Charsets.UTF_8))
+        return Base64.encodeToString(iv + ciphertext, Base64.NO_WRAP)
+    }
+
+    fun decrypt(input: String): String {
+        val data = Base64.decode(input, Base64.NO_WRAP)
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        val iv = data.copyOfRange(0, 12)
+        val ciphertext = data.copyOfRange(12, data.size)
+        cipher.init(
+            Cipher.DECRYPT_MODE,
+            getSecretKey(),
+            GCMParameterSpec(128, iv)
+        )
+        return String(cipher.doFinal(ciphertext), Charsets.UTF_8)
+    }
+
+    suspend fun saveSecret(context: Context, secret: String) {
+        val encrypted = encrypt(secret)
+        context.dataStore.edit { preferences ->
+            preferences[SECRET_KEY] = encrypted
+        }
+    }
+
+    fun getSecretFlow(context: Context): Flow<String?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[SECRET_KEY]?.let { decrypt(it) }
+        }
+    }
+}
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore("secure_ds")
+val SECRET_KEY = stringPreferencesKey("secret_data")
