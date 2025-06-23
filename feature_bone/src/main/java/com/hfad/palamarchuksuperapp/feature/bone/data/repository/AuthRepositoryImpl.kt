@@ -1,16 +1,16 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SecretRepository
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.userSession
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.delay
@@ -20,6 +20,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -28,6 +36,7 @@ import kotlin.time.Duration.Companion.days
 class AuthRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
+    private val secretRepository: SecretRepository,
 ) : AuthRepository {
     private val mutex = Mutex()
     private val sessionConfig = SessionConfig()
@@ -90,23 +99,26 @@ class AuthRepositoryImpl @Inject constructor(
         val maxRetries = 3
         var lastException: IOException? = null
 
+        val sessionJson = try {
+            Json.encodeToString(session)
+        } catch (e: Exception) {
+            return AppResult.Error(AppError.SessionError.SessionCanNotBeJson("Failed to serialize session: ${e.message}"))
+        }
+
+        Log.d("EncryptedSession", "ENCRYPTED_SESSION_KEY: $sessionJson")
+        val encryptedSession = secretRepository.encrypt(sessionJson)
+
+
+
         repeat(maxRetries) { attempt ->
             try {
                 context.userSession.edit { prefs ->
-                    prefs[USERNAME_KEY] = session.username
-                    prefs[ACCESS_TOKEN_KEY] = session.accessToken
-                    prefs[REFRESH_TOKEN_KEY] = session.refreshToken
-                    prefs[LOGIN_TIMESTAMP_KEY] = session.loginTimestamp.time
-                    prefs[EXPIRES_AT_KEY] = session.expiresAt.time
-                    prefs[IS_REMEMBERED_KEY] = session.rememberSession
-                    prefs[IS_LOGGED_KEY] = true
-                    prefs[USER_STATUS_KEY] = session.userStatus.name
+                    prefs[ENCRYPTED_SESSION_KEY] = encryptedSession
                 }
                 return AppResult.Success(Unit)
             } catch (e: IOException) {
                 lastException = e
                 if (attempt < maxRetries - 1) {
-                    println("Failed to save session, retry attempt ${attempt + 1}/$maxRetries: ${e.message}") //TODO logging
                     delay(1000)
                 }
             }
@@ -132,49 +144,35 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     private fun buildSessionFromPrefs(prefs: Preferences): UserSession? {
-        val isLogged = prefs[IS_LOGGED_KEY] ?: false
-        if (!isLogged) return null
+        val encryptedSession = prefs[ENCRYPTED_SESSION_KEY] ?: return null
+        val decrypted = secretRepository.decrypt(encryptedSession)
+        Log.d("EncryptedSession build", "ENCRYPTED_SESSION_KEY: $decrypted")
 
-        val userStatusString = prefs[USER_STATUS_KEY] ?: LogStatus.NOT_LOGGED.name
-        val userStatus = LogStatus.valueOf(userStatusString)
+        if (decrypted == null || decrypted.isBlank()) return null
+        val userSession = Json.decodeFromString<UserSession>(decrypted)
 
-        return UserSession(
-            username = prefs[USERNAME_KEY] ?: return null,
-            accessToken = prefs[ACCESS_TOKEN_KEY] ?: return null,
-            refreshToken = prefs[REFRESH_TOKEN_KEY] ?: return null,
-            loginTimestamp = Date(prefs[LOGIN_TIMESTAMP_KEY] ?: return null),
-            expiresAt = Date(prefs[EXPIRES_AT_KEY] ?: return null),
-            rememberSession = prefs[IS_REMEMBERED_KEY] ?: false,
-            userStatus = userStatus
-        )
+        return userSession
     }
 
 
+    @Serializable
     data class UserSession(
         val username: String = "",
         val accessToken: String = "",
         val refreshToken: String = "",
-        val loginTimestamp: Date = Date(),
-        val expiresAt: Date = Date(),
+        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp: Date = Date(),
+        @Serializable(with = DateAsLongSerializer::class) val expiresAt: Date = Date(),
         val rememberSession: Boolean = false,
         val userStatus: LogStatus = LogStatus.NOT_LOGGED,
     )
 
     companion object {
-        private val IS_LOGGED_KEY = booleanPreferencesKey("is_logged")
-        private val LOGIN_TIMESTAMP_KEY = longPreferencesKey("login_timestamp")
-        private val USERNAME_KEY = stringPreferencesKey("username")
-        private val IS_REMEMBERED_KEY = booleanPreferencesKey("is_remembered")
-        private val EXPIRES_AT_KEY = longPreferencesKey("expires_at")
-        private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
-        private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
-        private val USER_PERMISSION_KEY = stringPreferencesKey("user_permission")
-        private val USER_STATUS_KEY = stringPreferencesKey("user_status")
+        private val ENCRYPTED_SESSION_KEY = stringPreferencesKey("encrypted_session")
     }
 }
 
 data class SessionConfig(
-    val sessionDuration: Date = Date(4.days.inWholeMilliseconds),
+    val sessionDuration: Date = Date(25.days.inWholeMilliseconds),
     val refreshThreshold: Date = Date(11.days.inWholeMilliseconds),
     val maxRetryAttempts: Int = 3,
     val autoRefreshEnabled: Boolean = false,
@@ -194,4 +192,17 @@ enum class LogStatus {
     TOKEN_REFRESH_REQUIRED,
     TOKEN_AUTO_REFRESH,
     NOT_LOGGED
+}
+
+object DateAsLongSerializer : KSerializer<Date> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("DateAsLong", PrimitiveKind.LONG)
+
+    override fun serialize(encoder: Encoder, value: Date) {
+        encoder.encodeLong(value.time)
+    }
+
+    override fun deserialize(decoder: Decoder): Date {
+        return Date(decoder.decodeLong())
+    }
 }

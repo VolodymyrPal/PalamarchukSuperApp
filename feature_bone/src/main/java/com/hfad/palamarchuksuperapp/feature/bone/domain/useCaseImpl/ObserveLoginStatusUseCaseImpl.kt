@@ -61,14 +61,21 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         session: AuthRepositoryImpl.UserSession,
         now: Date,
     ): LogStatus {
-        val extendedSession = session.copy(
-            loginTimestamp = now,
-            expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
-        )
+        if (detector.isFirstAccess("Extend_Session_On_Start")) {
+            val extendedSession = session.copy(
+                loginTimestamp = now,
+                expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
+            )
 
-        return when (authRepository.saveSession(extendedSession)) {
-            is AppResult.Error -> LogStatus.NOT_LOGGED
-            else -> LogStatus.LOGGED_IN
+            if (extendedSession != session) {
+                return when (authRepository.saveSession(extendedSession)) {
+                    is AppResult.Error -> LogStatus.NOT_LOGGED
+                    else -> LogStatus.LOGGED_IN
+                }
+            }
+            return LogStatus.LOGGED_IN
         }
+
+        return LogStatus.LOGGED_IN
     }
 }

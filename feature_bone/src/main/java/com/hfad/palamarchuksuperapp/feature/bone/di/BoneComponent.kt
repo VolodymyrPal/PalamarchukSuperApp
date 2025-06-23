@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SecretRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SecretRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LoginWithCredentialsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
@@ -83,6 +85,10 @@ abstract class RepositoryModule {
     @FeatureScope
     @Binds
     abstract fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
+
+    @FeatureScope
+    @Binds
+    abstract fun bindSecretRepository(secretRepositoryImpl: SecretRepositoryImpl): SecretRepository
 }
 
 @Module
