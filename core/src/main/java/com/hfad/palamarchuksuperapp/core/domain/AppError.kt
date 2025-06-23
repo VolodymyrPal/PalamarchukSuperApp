@@ -16,6 +16,7 @@ sealed interface AppError : Error {
         class SessionExpired(override val message: String? = null, override val cause: Throwable? = null) : AppError
         class SessionNotFound(override val message: String? = null, override val cause: Throwable? = null) : AppError
         class SessionCanNotBeSaved(override val message: String? = null, override val cause: Throwable? = null) : AppError
+        class SessionCanNotBeJson(override val message: String? = null, override val cause: Throwable? = null) : AppError
     }
 
     sealed interface NetworkException : AppError {
