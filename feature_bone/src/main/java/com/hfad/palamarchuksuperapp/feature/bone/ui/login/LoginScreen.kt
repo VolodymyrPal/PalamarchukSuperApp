@@ -79,11 +79,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.LocalSharedTransitio
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 
-fun canAuthenticate(context: Context): Int {
-    val biometricManager = BiometricManager.from(context)
-    return biometricManager.canAuthenticate(BIOMETRIC_STRONG or BIOMETRIC_WEAK or DEVICE_CREDENTIAL)
-}
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun LoginScreenRoot(
@@ -102,46 +97,33 @@ fun LoginScreenRoot(
 
     val context = LocalContext.current
 
-    // Executor для BiometricPrompt
-    val executor = remember { ContextCompat.getMainExecutor(context) }
+    val biometricHandler = remember { AppBiometricHandler(context) }
 
-    // Callback для BiometricPrompt
-    val biometricPrompt = BiometricPrompt(
+    val biometricPrompt = biometricHandler.createBiometricPrompt(
         context as FragmentActivity,
-        executor,
-        object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                viewModel.event(LoginScreenViewModel.Event.LoginButtonClicked)
-                Toast.makeText(context, "Аутентификация успешна!", Toast.LENGTH_SHORT).show()
-                Log.d("BiometricAuth", "Аутентификация успешна")
-                // Здесь ваша логика: вход пользователя, разблокировка функционала
-            }
-
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Toast.makeText(context, "Ошибка аутентификации: $errString", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                Toast.makeText(
-                    context,
-                    "Аутентификация не удалась. Попробуйте снова.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+        onSuccess = {
+            viewModel.event(LoginScreenViewModel.Event.LoginButtonClicked)
+            Log.d("BiometricAuth", "Аутентификация успешна")
+        },
+        onError = { errorCode, message ->
+            Toast.makeText(
+                context, "Ошибка аутентификации: $message", Toast.LENGTH_SHORT
+            ).show()
+        },
+        onFailed = {
+            Toast.makeText(
+                context, "Аутентификация не удалась. Попробуйте снова.", Toast.LENGTH_SHORT
+            ).show()
         }
     )
 
-    val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle("Biometric Authentication")
-        .setSubtitle("Log in using your biometric credential")
-        .setAllowedAuthenticators(
-            DEVICE_CREDENTIAL or BIOMETRIC_STRONG or BIOMETRIC_WEAK //Pin, fingerprint, face,
+    val promptInfo = remember {
+        biometricHandler.createPromptInfo(
+            title = "Biometric Authentication",
+            subtitle = "Log in using your biometric credential"
         )
-        .build()
+    }
+
 
     LaunchedEffect(Unit) {
         var isNavigated = false
@@ -168,7 +150,8 @@ fun LoginScreenRoot(
                 }
 
                 is LoginScreenViewModel.Effect.ShowError -> {
-                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show() //TODO if need to show better error
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT)
+                        .show() //TODO if need to show better error
                 }
             }
         }
@@ -185,7 +168,8 @@ fun LoginScreenRoot(
                 modifierToTransition = modifierToTransition,
                 state = state,
                 event = viewModel::event,
-                biometricCallback = { biometricPrompt.authenticate(promptInfo) },
+                biometricCallback = { biometricHandler.authenticate(biometricPrompt, promptInfo) },
+                isBiometricAvailable = biometricHandler.canAuthenticate() == BiometricAvailability.Available,
             )
         }
     }
@@ -199,6 +183,7 @@ fun LoginScreen(
     state: State<LoginScreenViewModel.LoginScreenState> = mutableStateOf(LoginScreenViewModel.LoginScreenState()),
     event: (LoginScreenViewModel.Event) -> Unit = {},
     biometricCallback: () -> Unit = {},
+    isBiometricAvailable: Boolean = false,
 ) {
 
     var isLoading by remember { mutableStateOf(false) }
@@ -369,6 +354,7 @@ fun LoginScreen(
                                 )
                             }
                         }
+//                        if (isBiometricAvailable) {
                         IconButton(
                             onClick = { biometricCallback.invoke() },
                             modifier = Modifier
@@ -377,13 +363,13 @@ fun LoginScreen(
                             content = {
                                 Icon(
                                     painter = painterResource(R.drawable.fingerprint),
-                                    contentDescription = "Info",
+                                    contentDescription = "Biometric Login",
                                     tint = LocalContentColor.current.copy(alpha = 0.6f),
-                                    modifier = Modifier
-                                        .size(36.dp),
+                                    modifier = Modifier.size(36.dp),
                                 )
                             }
                         )
+//                        }
                     }
                 }
             }
