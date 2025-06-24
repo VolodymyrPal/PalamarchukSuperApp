@@ -144,6 +144,17 @@ class AuthRepositoryImpl @Inject constructor(
         return userSession
     }
 
+    override suspend fun clearUnrememberedSession() {
+        mutex.withLock {
+            val session = currentSession.first()
+            if (!session.rememberSession) {
+                context.userSession.edit { preferences ->
+                    preferences.clear() // Clear user session data
+                }
+            }
+        }
+    }
+
 
     @Serializable
     data class UserSession(
