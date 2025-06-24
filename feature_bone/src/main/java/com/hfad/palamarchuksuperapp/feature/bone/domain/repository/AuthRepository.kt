@@ -24,4 +24,5 @@ interface AuthRepository {
 
     val currentSession: Flow<UserSession>
 
+    suspend fun clearUnrememberedSession()
 }

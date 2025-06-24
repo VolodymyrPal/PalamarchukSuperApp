@@ -12,6 +12,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import java.util.Date
 
 class ObserveLoginStatusUseCaseImpl @Inject constructor(
@@ -23,18 +24,17 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
     private val detectorKey = "isFirstAccess"
 
     override fun invoke(): Flow<LogStatus> = authRepository.currentSession
+        .onStart {
+            if (detector.isFirstAccess(detectorKey)) {
+                authRepository.clearUnrememberedSession()
+            }
+        }
         .map { session -> determineLoginStatus(session) }
         .distinctUntilChanged()
 
     private suspend fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
 
         if (session.userStatus == LogStatus.NOT_LOGGED || session.expiresAt < Date()) {
-            detector.isFirstAccess(detectorKey)
-            return LogStatus.NOT_LOGGED
-        }
-
-        if (detector.isFirstAccess(detectorKey) && !session.rememberSession) {
-            logoutUseCase()
             detector.isFirstAccess(detectorKey)
             return LogStatus.NOT_LOGGED
         }

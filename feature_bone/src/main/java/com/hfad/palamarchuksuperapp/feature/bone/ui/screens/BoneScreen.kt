@@ -52,6 +52,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.KeystoreCryptoServiceImpl
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import kotlinx.coroutines.launch
 
@@ -202,7 +203,8 @@ fun BoneScreen(
                             coroutineScope.launch {
                                 val a = AuthRepositoryImpl( //TODO Test
                                     httpClient = httpClient,
-                                    context = context
+                                    context = context,
+                                    cryptoService = KeystoreCryptoServiceImpl()
                                 )
                                 a.logout()
                                 navController?.navigate(FeatureBoneRoutes.LoginScreen) {
