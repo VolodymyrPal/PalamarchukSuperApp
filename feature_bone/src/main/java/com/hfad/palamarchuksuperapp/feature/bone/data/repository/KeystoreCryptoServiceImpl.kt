@@ -3,7 +3,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SecretRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.security.KeyStoreException
@@ -13,7 +13,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
 
-class SecretRepositoryImpl @Inject constructor() : SecretRepository {
+class KeystoreCryptoServiceImpl @Inject constructor() : CryptoService {
 
     companion object {
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"
@@ -43,6 +43,13 @@ class SecretRepositoryImpl @Inject constructor() : SecretRepository {
             }.generateKey()
     }
 
+    /**
+     * Cipher encrypts the data and returns the encrypted string
+     * @param cipher - create cipher object for encryption + init it with mode and key.
+     * @param iv - small random pieces for better encryption
+     * @param ciphertext - encrypted data in bytes
+     * @param encryptedString - encrypted string to return
+     */
     override fun encrypt(text: String): String {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, getSecretKey())
@@ -52,9 +59,9 @@ class SecretRepositoryImpl @Inject constructor() : SecretRepository {
         return encryptedString
     }
 
-    override fun decrypt(input: String): String? {
+    override fun decrypt(encryptedText: String): String? {
         val decryptedString = try {
-            val data = Base64.decode(input, Base64.NO_WRAP)
+            val data = Base64.decode(encryptedText, Base64.NO_WRAP)
             val cipher = Cipher.getInstance(TRANSFORMATION)
             val iv = data.copyOfRange(0, 12)
             val ciphertext = data.copyOfRange(12, data.size)
