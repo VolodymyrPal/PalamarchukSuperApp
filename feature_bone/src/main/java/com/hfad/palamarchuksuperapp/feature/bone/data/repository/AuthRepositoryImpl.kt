@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -10,7 +9,7 @@ import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
-import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SecretRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.userSession
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.delay
@@ -36,7 +35,7 @@ import kotlin.time.Duration.Companion.days
 class AuthRepositoryImpl @Inject constructor(
     private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
-    private val secretRepository: SecretRepository,
+    private val cryptoService: CryptoService,
 ) : AuthRepository {
     private val mutex = Mutex()
     private val sessionConfig = SessionConfig()
@@ -89,25 +88,19 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override val currentSession: Flow<UserSession> =
-        context.userSession.data.map { preferences ->
-            buildSessionFromPrefs(preferences)
-                ?: return@map UserSession()
-        }.distinctUntilChanged()
+    override val currentSession: Flow<UserSession> = context.userSession.data.map { preferences ->
+        buildSessionFromPrefs(preferences) ?: return@map UserSession()
+    }.distinctUntilChanged()
 
     override suspend fun saveSession(session: UserSession): AppResult<Unit, AppError> {
         val maxRetries = 3
         var lastException: IOException? = null
-
         val sessionJson = try {
             Json.encodeToString(session)
         } catch (e: Exception) {
             return AppResult.Error(AppError.SessionError.SessionCanNotBeJson("Failed to serialize session: ${e.message}"))
         }
-
-        Log.d("EncryptedSession", "ENCRYPTED_SESSION_KEY: $sessionJson")
-        val encryptedSession = secretRepository.encrypt(sessionJson)
-
+        val encryptedSession = cryptoService.encrypt(sessionJson)
 
 
         repeat(maxRetries) { attempt ->
@@ -145,12 +138,9 @@ class AuthRepositoryImpl @Inject constructor(
 
     private fun buildSessionFromPrefs(prefs: Preferences): UserSession? {
         val encryptedSession = prefs[ENCRYPTED_SESSION_KEY] ?: return null
-        val decrypted = secretRepository.decrypt(encryptedSession)
-        Log.d("EncryptedSession build", "ENCRYPTED_SESSION_KEY: $decrypted")
-
+        val decrypted = cryptoService.decrypt(encryptedSession)
         if (decrypted == null || decrypted.isBlank()) return null
         val userSession = Json.decodeFromString<UserSession>(decrypted)
-
         return userSession
     }
 
@@ -180,18 +170,11 @@ data class SessionConfig(
 )
 
 enum class AppPermission {
-    ORDERS,
-    PAYMENTS,
-    SALES,
-    FINANCE
+    ORDERS, PAYMENTS, SALES, FINANCE
 }
 
 enum class LogStatus {
-    LOGGED_IN,
-    REQUIRE_WEAK_LOGIN,
-    TOKEN_REFRESH_REQUIRED,
-    TOKEN_AUTO_REFRESH,
-    NOT_LOGGED
+    LOGGED_IN, REQUIRE_WEAK_LOGIN, TOKEN_REFRESH_REQUIRED, TOKEN_AUTO_REFRESH, NOT_LOGGED
 }
 
 object DateAsLongSerializer : KSerializer<Date> {
