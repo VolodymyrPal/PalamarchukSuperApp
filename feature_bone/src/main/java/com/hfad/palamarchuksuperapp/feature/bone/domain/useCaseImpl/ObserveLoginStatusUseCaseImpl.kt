@@ -6,7 +6,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryI
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
-import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -18,10 +17,10 @@ import java.util.Date
 class ObserveLoginStatusUseCaseImpl @Inject constructor(
     private val authRepository: AuthRepository,
     private val sessionConfig: SessionConfig,
-    private val logoutUseCase: LogoutUseCase,
     private val detector: AppFirstAccessDetector,
 ) : ObserveLoginStatusUseCase {
     private val detectorKey = "isFirstAccess"
+    private val sessionExtensionThresholdMs = 1_000L // Value to avoid save session duplication
 
     override fun invoke(): Flow<LogStatus> = authRepository.currentSession
         .onStart {
@@ -33,15 +32,12 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         .distinctUntilChanged()
 
     private suspend fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
+        val now = Date()
 
-        if (session.userStatus == LogStatus.NOT_LOGGED || session.expiresAt < Date()) {
-            detector.isFirstAccess(detectorKey)
+        if (session.userStatus == LogStatus.NOT_LOGGED) {
             return LogStatus.NOT_LOGGED
         }
 
-        detector.isFirstAccess(detectorKey)
-
-        val now = Date()
         val activeSessionEnd =
             Date(session.loginTimestamp.time + sessionConfig.sessionDuration.time)
         val refreshThresholdEnd =
@@ -62,18 +58,22 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         now: Date,
     ): LogStatus {
         if (detector.isFirstAccess("Extend_Session_On_Start")) {
-            val extendedSession = session.copy(
-                loginTimestamp = now,
-                expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
-            )
+            val newLoginTimestamp = now
+            val newExpiresAt = Date(now.time + sessionConfig.sessionDuration.time)
 
-            if (extendedSession != session) {
+            val delta = session.loginTimestamp.time - newLoginTimestamp.time
+
+            if (delta > sessionExtensionThresholdMs) {
+                val extendedSession = session.copy(
+                    loginTimestamp = newLoginTimestamp,
+                    expiresAt = newExpiresAt
+                )
+
                 return when (authRepository.saveSession(extendedSession)) {
                     is AppResult.Error -> LogStatus.NOT_LOGGED
                     else -> LogStatus.LOGGED_IN
                 }
             }
-            return LogStatus.LOGGED_IN
         }
 
         return LogStatus.LOGGED_IN

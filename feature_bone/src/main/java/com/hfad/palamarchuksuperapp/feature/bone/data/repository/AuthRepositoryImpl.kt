@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
+import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureClient
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
@@ -33,7 +34,7 @@ import kotlin.time.Duration.Companion.days
 
 @FeatureScope
 class AuthRepositoryImpl @Inject constructor(
-    private val httpClient: HttpClient, // For api call of token
+    @FeatureClient private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
     private val cryptoService: CryptoService,
 ) : AuthRepository {
@@ -146,10 +147,11 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun clearUnrememberedSession() {
         mutex.withLock {
-            val session = currentSession.first()
-            if (!session.rememberSession) {
+            val prefs = context.userSession.data.first()
+            val session = buildSessionFromPrefs(prefs)
+            if (session != null && !session.rememberSession) {
                 context.userSession.edit { preferences ->
-                    preferences.clear() // Clear user session data
+                    preferences.clear()
                 }
             }
         }

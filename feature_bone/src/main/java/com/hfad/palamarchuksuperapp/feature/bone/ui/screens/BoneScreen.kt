@@ -95,7 +95,8 @@ fun BoneScreen(
         stringResource(R.string.orders),
         stringResource(R.string.payment),
         stringResource(R.string.sales),
-        stringResource(R.string.balance)
+        stringResource(R.string.balance),
+        "Settings"
     )
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
     val coroutineScope = rememberCoroutineScope()
@@ -189,7 +190,7 @@ fun BoneScreen(
         },
         floatingActionButton = {
             var expanded by remember { mutableStateOf(false) }
-            val httpClient = LocalBoneDependencies.current.httpClient //TODO
+            val httpClient = LocalBoneDependencies.current.getFeatureHttpClient() //TODO
             val context = LocalContext.current
             Row(
                 modifier = Modifier
