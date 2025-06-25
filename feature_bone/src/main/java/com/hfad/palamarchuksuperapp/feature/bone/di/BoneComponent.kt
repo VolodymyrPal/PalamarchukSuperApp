@@ -47,9 +47,6 @@ internal interface BoneComponent : BoneDeps {
     override fun getFeatureHttpClient(): HttpClient
     override val appFirstAccessDetector: AppFirstAccessDetector
 
-    @FeatureClient
-    val httpClient: HttpClient
-
     @Component.Builder
     interface Builder {
         fun deps(boneDeps: BoneDeps): Builder
