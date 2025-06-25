@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
+import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureClient
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
@@ -33,7 +34,7 @@ import kotlin.time.Duration.Companion.days
 
 @FeatureScope
 class AuthRepositoryImpl @Inject constructor(
-    private val httpClient: HttpClient, // For api call of token
+    @FeatureClient private val httpClient: HttpClient, // For api call of token
     private val context: Context, //For encrypted shared preferences or other context-related operations
     private val cryptoService: CryptoService,
 ) : AuthRepository {
