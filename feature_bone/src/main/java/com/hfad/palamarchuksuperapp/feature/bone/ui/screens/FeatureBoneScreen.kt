@@ -55,6 +55,7 @@ class BoneFeature(
     override val homeRoute: FeatureBoneRoutes = FeatureBoneRoutes.LoginScreen
 
     @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
+    @Suppress("RestrictedApi")
     @Composable
     override fun BoneScreenRooted(
         parentNavController: NavController,
