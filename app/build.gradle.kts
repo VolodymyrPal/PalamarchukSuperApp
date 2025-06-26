@@ -67,9 +67,6 @@ dependencies {
     implementation(project(":core"))
 
     //Test block
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 
     // Database bundles
     implementation(libs.bundles.database)
