@@ -892,11 +892,8 @@ fun RequestPanelPreview() {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun ChatScreenPreview() {
-    ChatScreen(
-        modifier = Modifier.fillMaxSize(),
-        event = {},
-        navController = null,
-        state = mutableStateOf(
+    val state = remember {
+        mutableStateOf(
             ChatBotViewModel.StateChat(
                 listHandler = persistentListOf(),
                 modelList = persistentListOf(),
@@ -905,5 +902,11 @@ fun ChatScreenPreview() {
                 )
             )
         )
+    }
+    ChatScreen(
+        modifier = Modifier.fillMaxSize(),
+        event = {},
+        navController = null,
+        state = state
     )
 }

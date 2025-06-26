@@ -447,6 +447,7 @@ fun AiHandlerBox(
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
+                val handlerInfoState = aiModelHandler.aiHandlerInfo.collectAsStateWithLifecycle()
                 ConfirmationDialog(
                     modifier = Modifier.wrapContentSize(),
                     show = isDeleteDialogShow.value,
@@ -458,7 +459,7 @@ fun AiHandlerBox(
                     },
                     title = stringResource(
                         R.string.delete_ai_handler,
-                        aiModelHandler.aiHandlerInfo.value.name
+                        handlerInfoState
                     ),
                     description = ""
                 )

@@ -861,22 +861,23 @@ fun StoreLazyListForPreview(
 
 @Composable
 @Preview
-fun StoreScreenPreview() {
+fun StoreScreenPreview(
+    viewModel : StoreViewModel = StoreViewModel(
+        repository = StoreRepositoryImpl(
+            storeApi = FakeStoreApiRepository(HttpClient()),
+            storeDao = Room.databaseBuilder(
+                context = LocalContext.current.applicationContext,
+                klass = StoreDatabase::class.java,
+                name = DATABASE_MAIN_ENTITY_PRODUCT
+            ).fallbackToDestructiveMigration()
+                .build().storeDao()
+        ),
+        ioDispatcher = Dispatchers.IO,
+        mainDispatcher = Dispatchers.Main
+    )
+) {
     StoreScreen(
-        viewModel = StoreViewModel(
-            repository = StoreRepositoryImpl(
-                storeApi = FakeStoreApiRepository(HttpClient()),
-                storeDao = Room.databaseBuilder(
-                    context = LocalContext.current.applicationContext,
-                    klass = StoreDatabase::class.java,
-                    name = DATABASE_MAIN_ENTITY_PRODUCT
-                ).fallbackToDestructiveMigration()
-                    .build().storeDao()
-            ),
-            ioDispatcher = Dispatchers.IO,
-            mainDispatcher = Dispatchers.Main
-
-        )
+        viewModel = viewModel
         //daggerViewModel<StoreViewModel>(LocalContext.current.appComponent.viewModelFactory())
     )
 }
