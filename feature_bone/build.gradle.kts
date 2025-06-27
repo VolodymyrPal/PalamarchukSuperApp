@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -31,12 +33,14 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+        }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
     }
 }
 
@@ -49,11 +53,9 @@ dependencies {
     implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
     implementation("androidx.security:security-crypto:1.0.0")
 
-//    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.2")
-//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.2")
-//    testImplementation("org.junit.jupiter:junit-jupiter-params:5.13.2")
-//    testImplementation("junit:junit:4.13.2")
-//    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.13.0")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation(platform("org.junit:junit-bom:5.13.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
 
 
 //    testImplementation(libs.bundles.test)
