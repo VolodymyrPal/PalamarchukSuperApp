@@ -36,20 +36,7 @@ fun generateSaleOrder(): SaleOrder = SaleOrder(
     companyName = "ООО «Офис Плюс»",
     commissionPercent = 5.0,
     prepayment = true,
-    order = Order(
-        id = 1,
-        businessEntityNum = 4321,
-        num = 48756,
-        destinationPoint = "Киев",
-        arrivalDate = "20.04.2024",
-        departurePoint = "Шанхай",
-        cargo = "Офисная мебель",
-        manager = "Петров В.П. +380633887542",
-        amountCurrency = AmountCurrency(
-            currency = Currency.USD,
-            amount = 12200f
-        )
-    ),
+    order = generateOrder(),
     amountCurrency = AmountCurrency(
         currency = Currency.USD,
         amount = 12200f
