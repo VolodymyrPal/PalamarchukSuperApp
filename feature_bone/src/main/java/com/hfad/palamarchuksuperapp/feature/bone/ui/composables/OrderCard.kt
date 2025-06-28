@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
+import android.icu.text.SimpleDateFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -286,7 +287,7 @@ private fun Order.mapForOrderInfo(): List<OrderInfo> {
         ),
         OrderInfo(
             stringResource(R.string.expected_arrival_date),
-            this.arrivalDate,
+            SimpleDateFormat("dd.MM.yyyy").format(this.arrivalDate),
             rememberVectorPainter(Icons.Outlined.DateRange)
         ),
         OrderInfo(
