@@ -9,30 +9,34 @@ import kotlin.random.Random
 
 data class Order(
     @PrimaryKey
-    override val id: Int = 0,
-    val businessEntityNum: Int = Random.Default.nextInt(2001, 8300),  //TODO change
-    val num: Int = Random.Default.nextInt(44000, 50000),              //TODO change
-    val serviceList: List<ServiceOrder> = listOf(),
+    override val id: Int,
+    val businessEntityNum: Int,
+    val num: Int,
+    val serviceList: List<ServiceOrder> = emptyList(),
     val status: OrderStatus = OrderStatus.CREATED,
-    val cargoType: CargoType = when {
-        serviceList.any { it.serviceType == ServiceType.AIR_FREIGHT } -> CargoType.AIR
-        serviceList.any { it.serviceType == ServiceType.FULL_FREIGHT } -> CargoType.CONTAINER
-        serviceList.any { it.serviceType == ServiceType.EUROPE_TRANSPORT } -> CargoType.TRUCK
-        else -> CargoType.ANY
-    },
-    val destinationPoint: String = "Тест: Киев",
-    val arrivalDate: String = "Тест: 20.05.2025",
-    val containerNumber: String = "Тест: 40HC-7865425",
-    val departurePoint: String = "Тест: Гонконг",
-    val cargo: String = "Тест: Мебель",
-    val manager: String = "Тест: VP +3806338875",
+    val destinationPoint: String,
+    val arrivalDate: Date,
+    val containerNumber: String = "",
+    val departurePoint: String,
+    val cargo: String,
+    val manager: String,
     override val amountCurrency: AmountCurrency = AmountCurrency(
         currency = Currency.USD,
         amount = 0f
     ),
-    override val billingDate: Date = Date(),
+    override val billingDate: Date,
     override val type: TransactionType = TransactionType.DEBIT,
-) : TypedTransaction
+) : TypedTransaction {
+    val cargoType: CargoType
+        get() {
+            return when {
+                serviceList.any { it.serviceType == ServiceType.AIR_FREIGHT } -> CargoType.AIR
+                serviceList.any { it.serviceType == ServiceType.FULL_FREIGHT } -> CargoType.CONTAINER
+                serviceList.any { it.serviceType == ServiceType.EUROPE_TRANSPORT } -> CargoType.TRUCK
+                else -> CargoType.ANY
+            }
+        }
+}
 
 enum class OrderStatus {
     CREATED, CALCULATED, IN_PROGRESS, DONE
@@ -77,12 +81,21 @@ fun generateOrder(): Order {
 
     return Order(
         id = Random.nextInt(10000, 60000),
+        businessEntityNum = Random.Default.nextInt(2001, 8300),
         serviceList = serviceOrders,
         status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)],
         amountCurrency = AmountCurrency(
             currency = Currency.USD,
             amount = 12200f
-        )
+        ),
+        num = Random.Default.nextInt(44000, 50000),
+        destinationPoint = "Тест: Киев",
+        arrivalDate = Date(1747785600000L),// "20.05.2025",
+        containerNumber = "Тест: 40HC-7865425",
+        departurePoint = "Тест: Гонконг",
+        cargo = "Тест: Мебель",
+        manager = "Тест: VP +3806338875",
+        billingDate = Date()
         // cargoType будет определен автоматически на основе serviceList в data class
     )
 
@@ -130,7 +143,16 @@ fun generateOrderItems(): List<Order> {
             amountCurrency = AmountCurrency(
                 currency = Currency.USD,
                 amount = 12200f
-            )
+            ),
+            num = Random.Default.nextInt(44000, 50000),
+            destinationPoint = "Тест: Киев",
+            arrivalDate = Date(1747785600000L),// "20.05.2025",
+            containerNumber = "Тест: 40HC-7865425",
+            departurePoint = "Тест: Гонконг",
+            cargo = "Тест: Мебель",
+            businessEntityNum = Random.Default.nextInt(2001, 8300),
+            manager = "Тест: VP +3806338875",
+            billingDate = Date()
             // cargoType будет определен автоматически на основе serviceList в data class
         )
     }
