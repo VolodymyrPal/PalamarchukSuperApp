@@ -7,10 +7,10 @@ data class CashPaymentOrder(
     val paymentNum: Int,
     val paymentSum: Float,
     val paymentDateCreation: Date,
-    override val billingDate: Date = Date(),
+    override val billingDate: Date,
     override val type: TransactionType = TransactionType.CREDIT,
     override val amountCurrency: AmountCurrency = AmountCurrency(
-        currency = Currency.EUR,
-        amount = 50042f
+        currency = Currency.USD,
+        amount = 0f
     ),
 ) : TypedTransaction
