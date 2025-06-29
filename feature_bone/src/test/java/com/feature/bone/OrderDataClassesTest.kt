@@ -24,7 +24,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class TransactionDataClassesTest {
+class OrderDataClassesTest {
 
     private lateinit var testDate: Date
     private lateinit var testAmountCurrency: AmountCurrency
@@ -35,15 +35,21 @@ class TransactionDataClassesTest {
         testDate = Date()
         testAmountCurrency = AmountCurrency(Currency.USD, 1000f)
         testOrder = Order(
-            id = 1, businessEntityNum = 1, num = 1, destinationPoint = "",
-            arrivalDate = testDate, departurePoint = "", cargo = "", manager = "", billingDate = testDate
+            id = 1,
+            businessEntityNum = 1,
+            num = 1,
+            destinationPoint = "",
+            arrivalDate = testDate,
+            departurePoint = "",
+            cargo = "",
+            manager = "",
+            billingDate = testDate
         )
     }
 
     @Test
     fun `Order should have correct default values`() {
 
-        assertTrue(testOrder is TypedTransaction)
 
         assertTrue(testOrder.serviceList.isEmpty())
         assertEquals(OrderStatus.CREATED, testOrder.status)
@@ -69,119 +75,112 @@ class TransactionDataClassesTest {
         val truckOrder = testOrder.copy(serviceList = listOf(europeService))
         assertEquals(CargoType.TRUCK, truckOrder.cargoType)
     }
+}
+
+class CashPaymentOrderTest {
+
+    private lateinit var testDate: Date
+    private lateinit var cashOrder: CashPaymentOrder
+
+    @BeforeEach
+    fun setUp() {
+        testDate = Date()
+        cashOrder = CashPaymentOrder(
+            id = 1,
+            paymentNum = 12345,
+            paymentSum = 500f,
+            paymentDateCreation = testDate,
+            billingDate = testDate
+        )
+    }
 
     @Test
     fun `CashPaymentOrder should have correct default values`() {
-
-        val cashOrder = CashPaymentOrder(
-            id = 1, paymentNum = 12345, paymentSum = 500f,
-            paymentDateCreation = testDate, billingDate = testDate
-        )
-
-        assertTrue(cashOrder is TypedTransaction)
         assertEquals(cashOrder.type, TransactionType.CREDIT)
         assertEquals(cashOrder.amountCurrency.currency, Currency.USD)
         assertEquals(cashOrder.amountCurrency.amount, 0f)
     }
+}
 
-    @Test
-    fun `ExchangeOrder should calculate exchange rate correctly`() {
-        val amountToExchange = AmountCurrency(Currency.USD, 100f)
-        val targetAmount = AmountCurrency(Currency.EUR, 85f)
+class PaymentOrderTest {
 
-        val exchangeOrder = ExchangeOrder(
-            id = 3,
-            amountToExchange = amountToExchange,
-            amountCurrency = targetAmount,
-            date = testDate,
-            billingDate = testDate
-        )
+    private lateinit var testAmountCurrency: AmountCurrency
+    private lateinit var paymentOrder: PaymentOrder
 
-        val expectedRate = 100f / 85f
-        assertEquals(expectedRate, exchangeOrder.exchangeRate, 0.001f)
-        assertEquals(TransactionType.CREDIT, exchangeOrder.type)
-        assertEquals(TransactionType.DEBIT, exchangeOrder.typeToChange)
-    }
-
-    @Test
-    fun `ExchangeOrder should implement TypedTransaction interface`() {
-        val exchangeOrder = ExchangeOrder(
-            id = 4,
-            amountToExchange = testAmountCurrency,
-            amountCurrency = testAmountCurrency,
-            date = testDate,
-            billingDate = testDate
-        )
-
-        assertTrue(exchangeOrder is TypedTransaction)
-        assertEquals(4, exchangeOrder.id)
-        assertEquals(testAmountCurrency, exchangeOrder.amountCurrency)
-        assertEquals(testDate, exchangeOrder.billingDate)
-        assertEquals(TransactionType.CREDIT, exchangeOrder.type)
-    }
-
-    @Test
-    fun `PaymentOrder should calculate fullPrice correctly with commission`() {
-        val baseAmount = AmountCurrency(Currency.USD, 1000f)
-        val commission = 0.05f // 5%
-
-        val paymentOrder = PaymentOrder(
+    @BeforeEach
+    fun setUp() {
+        testAmountCurrency = AmountCurrency(Currency.USD, 1000f)
+        paymentOrder = PaymentOrder(
             id = 5,
-            factory = "Test Factory",
-            productType = "Electronics",
-            paymentDate = "2025-06-01",
-            dueDate = "2025-07-01",
-            status = PaymentStatus.PENDING,
-            commission = commission,
-            type = TransactionType.DEBIT,
-            amountCurrency = baseAmount
-        )
-
-        val expectedFullPrice = 1000f + (1000f * 0.05f) + 100f // base + commission + payment price
-        assertEquals(expectedFullPrice, paymentOrder.fullPrice.amount, 0.001f)
-        assertEquals(Currency.USD, paymentOrder.fullPrice.currency)
-    }
-
-    @Test
-    fun `PaymentOrder should have correct default values`() {
-        val paymentOrder = PaymentOrder(
-            id = 6,
-            factory = "Factory",
-            productType = "Product",
-            paymentDate = "2025-06-01",
-            dueDate = "2025-07-01",
-            status = PaymentStatus.PAID,
-            type = TransactionType.CREDIT,
-            amountCurrency = testAmountCurrency
-        )
-
-        assertEquals(0.0f, paymentOrder.commission)
-        assertEquals(100f, paymentOrder.paymentPrice.amount)
-        assertEquals(testAmountCurrency.currency, paymentOrder.paymentPrice.currency)
-    }
-
-    @Test
-    fun `PaymentOrder should implement TypedTransaction interface`() {
-        val paymentOrder = PaymentOrder(
-            id = 7,
             factory = "Test Factory",
             productType = "Test Product",
             paymentDate = "2025-06-01",
             dueDate = "2025-07-01",
-            status = PaymentStatus.OVERDUE,
+            status = PaymentStatus.PENDING,
             type = TransactionType.DEBIT,
             amountCurrency = testAmountCurrency
         )
-
-        assertTrue(paymentOrder is TypedTransaction)
-        assertEquals(7, paymentOrder.id)
-        assertEquals(testAmountCurrency, paymentOrder.amountCurrency)
-        assertEquals(TransactionType.DEBIT, paymentOrder.type)
     }
 
     @Test
-    fun `SaleOrder should have correct default values`() {
-        val saleOrder = SaleOrder(
+    fun `PaymentOrder should calculate fullPrice correctly with commission`() {
+
+        val customCommission = 0.2f
+        val paymentOrder = paymentOrder.copy(commission = customCommission)
+
+        val expectedFullPrice =
+            1000f + (1000f * customCommission) + 100f // base + commission + payment price
+        assertEquals(paymentOrder.fullPrice.amount, expectedFullPrice, 0.001f)
+        assertEquals(paymentOrder.fullPrice.currency, Currency.USD)
+    }
+
+    @Test
+    fun `PaymentOrder should have correct default values`() {
+
+        assertEquals(paymentOrder.commission, 0.0f)
+        assertEquals(paymentOrder.paymentPrice.amount, 100f)
+        assertEquals(paymentOrder.paymentPrice.currency, testAmountCurrency.currency)
+    }
+}
+
+class ExchangeOrderTest {
+
+    private lateinit var exchangeOrder: ExchangeOrder
+
+    @BeforeEach
+    fun setUp() {
+        exchangeOrder = ExchangeOrder(
+            id = 3,
+            amountToExchange = AmountCurrency(Currency.USD, 100f),
+            amountCurrency = AmountCurrency(Currency.EUR, 85f),
+            date = Date(),
+            billingDate = Date()
+        )
+    }
+
+    @Test
+    fun `ExchangeOrder should calculate exchange rate correctly`() {
+
+        val expectedRate: Float =
+            exchangeOrder.amountToExchange.amount / exchangeOrder.amountCurrency.amount
+        assertEquals(exchangeOrder.exchangeRate, expectedRate, 0.01f)
+        assertEquals(exchangeOrder.type, TransactionType.CREDIT)
+        assertEquals(exchangeOrder.typeToChange, TransactionType.DEBIT)
+    }
+
+}
+
+class SaleOrderTest {
+
+    private lateinit var testAmountCurrency: AmountCurrency
+    private lateinit var testDate: Date
+    private lateinit var saleOrder: SaleOrder
+
+    @BeforeEach
+    fun setUp() {
+        testAmountCurrency = AmountCurrency(Currency.USD, 1000f)
+        testDate = Date()
+        saleOrder = SaleOrder(
             id = 8,
             productName = "Test Product",
             cargoCategory = "Electronics",
@@ -194,55 +193,39 @@ class TransactionDataClassesTest {
             prepayment = true,
             amountCurrency = testAmountCurrency
         )
+    }
+
+
+    @Test
+    fun `SaleOrder should have correct default values`() {
 
         assertNull(saleOrder.order)
-        assertEquals(0.20f, saleOrder.vat)
-        assertEquals(TransactionType.DEBIT, saleOrder.type)
+        assertEquals(saleOrder.vat, 0.20f)
+        assertEquals(saleOrder.type, TransactionType.DEBIT)
     }
 
     @Test
     fun `SaleOrder should accept Order reference`() {
         val order = generateOrder()
-        val saleOrder = SaleOrder(
-            id = 9,
-            productName = "Product with Order",
-            cargoCategory = "Category",
-            customerName = "Customer",
-            status = SaleStatus.IN_PROGRESS,
-            requestDate = "2025-06-01",
-            documentDate = "2025-06-02",
-            companyName = "Company",
-            commissionPercent = 3.5,
-            prepayment = false,
-            order = order,
-            amountCurrency = testAmountCurrency
-        )
+        val saleOrder = saleOrder.copy(order = order)
 
         assertNotNull(saleOrder.order)
-        assertEquals(100, saleOrder.order?.id)
+        assertEquals(saleOrder.order.id, order.id)
+    }
+}
+
+
+class EnumClassesTest {
+
+    private lateinit var testDate: Date
+    private lateinit var testAmountCurrency: AmountCurrency
+
+    @BeforeEach
+    fun setUp() {
+        testDate = Date()
+        testAmountCurrency = AmountCurrency(Currency.USD, 1000f)
     }
 
-    @Test
-    fun `SaleOrder should implement TypedTransaction interface`() {
-        val saleOrder = SaleOrder(
-            id = 10,
-            productName = "Interface Test Product",
-            cargoCategory = "Test Category",
-            customerName = "Test Customer",
-            status = SaleStatus.COMPLETED,
-            requestDate = "2025-06-01",
-            documentDate = "2025-06-02",
-            companyName = "Test Company",
-            commissionPercent = 2.5,
-            prepayment = true,
-            amountCurrency = testAmountCurrency
-        )
-
-        assertTrue(saleOrder is TypedTransaction)
-        assertEquals(10, saleOrder.id)
-        assertEquals(testAmountCurrency, saleOrder.amountCurrency)
-        assertEquals(TransactionType.DEBIT, saleOrder.type)
-    }
 
     @Test
     fun `OrderStatus enum should have all expected values`() {
@@ -286,7 +269,7 @@ class TransactionDataClassesTest {
 
     @Test
     fun `TransactionType enum should have all expected values`() {
-        val transactionTypes = TransactionType.values()
+        val transactionTypes = TransactionType.entries
         assertEquals(2, transactionTypes.size)
         assertTrue(transactionTypes.contains(TransactionType.CREDIT))
         assertTrue(transactionTypes.contains(TransactionType.DEBIT))

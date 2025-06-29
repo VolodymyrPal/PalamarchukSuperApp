@@ -7,12 +7,13 @@ data class ExchangeOrder(
     val amountToExchange: AmountCurrency,
     val typeToChange: TransactionType = TransactionType.DEBIT,
     val date: Date,
-    val exchangeRate: Float = amountToExchange.amount/amountCurrency.amount,
     override val type: TransactionType = TransactionType.CREDIT,
     override val amountCurrency: AmountCurrency,
     override val billingDate: Date,
     override val id: Int,
-) : TypedTransaction
+) : TypedTransaction {
+    val exchangeRate: Float get() = amountToExchange.amount / amountCurrency.amount
+}
 
 fun generateExchangeOrderItems(): List<ExchangeOrder> {
     return listOf(
