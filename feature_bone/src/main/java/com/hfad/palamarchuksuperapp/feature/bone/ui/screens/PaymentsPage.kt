@@ -54,6 +54,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.EqualWidthFlowRow
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentPageState
 import kotlin.random.Random
@@ -476,11 +477,7 @@ fun PaymentCard(
 private fun generatePaymentSample(): PaymentPageState {
     return PaymentPageState(
         payments = generatePaymentOrderItems(),
-        paymentStatistic = PaymentStatistic(
-            totalPayment = Random.nextInt(10, 20),
-            totalReceiver = Random.nextInt(1, 4),
-            daysToSend = 1
-        )
+        paymentStatistic = generatePaymentStatistic()
     )
 }
 
