@@ -13,7 +13,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.inject.Inject
 
-class KeystoreCryptoServiceImpl @Inject constructor() : CryptoService {
+class CryptoServiceKeystoreImpl @Inject constructor() : CryptoService {
 
     companion object {
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"

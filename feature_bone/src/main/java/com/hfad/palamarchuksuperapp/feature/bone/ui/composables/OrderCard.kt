@@ -336,7 +336,7 @@ fun OrderCardPreview() {
                 modifier = Modifier
                     .padding(5.dp)
                     .height(450.dp),
-                order = generateOrder(),
+                order = generateOrder(), //TODO for test
                 initialExpanded = true
             )
         }
@@ -345,7 +345,7 @@ fun OrderCardPreview() {
                 modifier = Modifier
                     .padding(5.dp)
                     .height(450.dp),
-                order = generateOrder(),
+                order = generateOrder(), //TODO for test
                 initialExpanded = true
             )
         }

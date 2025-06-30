@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.KeystoreCryptoServiceImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.CryptoServiceKeystoreImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
@@ -85,7 +85,7 @@ abstract class RepositoryModule {
 
     @FeatureScope
     @Binds
-    abstract fun bindSecretRepository(secretRepositoryImpl: KeystoreCryptoServiceImpl): CryptoService
+    abstract fun bindSecretRepository(secretRepositoryImpl: CryptoServiceKeystoreImpl): CryptoService
 }
 
 @Module

@@ -46,7 +46,7 @@ enum class CargoType {
     ANY, CONTAINER, TRUCK, AIR
 }
 
-fun generateOrder(): Order {
+fun generateOrder(): Order { //TODO for test only
     val serviceScenarios = listOf(
         ServiceScenario.NonEuropeContainer.WithFreight.scenario,
         ServiceScenario.ChinaEuropeContainer.scenario,
@@ -101,7 +101,7 @@ fun generateOrder(): Order {
 
 }
 
-fun generateOrderItems(): List<Order> {
+fun generateOrderItems(): List<Order> { //TODO for test only
     val serviceScenarios = listOf(
         ServiceScenario.NonEuropeContainer.WithFreight.scenario,
         ServiceScenario.ChinaEuropeContainer.scenario,
