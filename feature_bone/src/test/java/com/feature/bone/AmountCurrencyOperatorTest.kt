@@ -12,12 +12,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.times
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.unaryMinus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.unaryPlus
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
