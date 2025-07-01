@@ -44,6 +44,10 @@ android {
     }
 }
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
+
 dependencies {
     ksp(libs.dagger.compiler)
     implementation(libs.bundles.networking)
@@ -54,8 +58,9 @@ dependencies {
     implementation("androidx.security:security-crypto:1.0.0")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation(platform("org.junit:junit-bom:5.13.2"))
     testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("io.mockk:mockk:1.14.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
 
 //    testImplementation(libs.bundles.test)

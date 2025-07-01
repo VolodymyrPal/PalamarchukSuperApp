@@ -31,6 +31,20 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         .map { session -> determineLoginStatus(session) }
         .distinctUntilChanged()
 
+//        flow {
+//        if (detector.isFirstAccess(detectorKey)) {
+//            authRepository.clearUnrememberedSession()
+//        }
+//
+//        Log.d("2", "2")
+//        emitAll(
+//            authRepository.currentSession
+//                .map { session -> determineLoginStatus(session) }
+//                .distinctUntilChanged()
+//        )
+//    }
+
+
     private suspend fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
         val now = Date()
 
