@@ -44,6 +44,10 @@ android {
     }
 }
 
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
+
 dependencies {
     ksp(libs.dagger.compiler)
     implementation(libs.bundles.networking)
