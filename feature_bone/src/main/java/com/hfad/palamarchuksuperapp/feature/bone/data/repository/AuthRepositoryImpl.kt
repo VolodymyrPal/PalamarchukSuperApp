@@ -47,14 +47,12 @@ class AuthRepositoryImpl @Inject constructor(
         isRemembered: Boolean,
     ): AppResult<Boolean, AppError> = mutex.withLock {
         val now = Date()
-        val expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
 
         val session = UserSession(
             username = username,
             accessToken = "access_token",   // TODO: Replace with real API call for token refresh
             refreshToken = "refresh_token", // TODO: Replace with real API call for token refresh
             loginTimestamp = now,
-            expiresAt = expiresAt,
             rememberSession = isRemembered,
             userStatus = LogStatus.LOGGED_IN
         )
@@ -67,11 +65,9 @@ class AuthRepositoryImpl @Inject constructor(
         val currentSession = observeCurrentSession().first() ?: return@withLock AppResult.Error(
             AppError.SessionError.SessionNotFound("No active session found")
         )
-        val now = Date()
         val updatedSession = currentSession.copy(
             accessToken = "new_access_token",
             refreshToken = "new_refresh_token",
-            expiresAt = Date(now.time + sessionConfig.sessionDuration.time),
             userStatus = LogStatus.LOGGED_IN
         )
         val saveResult = saveSession(updatedSession)
@@ -133,7 +129,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override fun shouldRefreshToken(session: UserSession): Boolean {
-        val refreshWindowStartTime = session.expiresAt.time - sessionConfig.refreshThreshold.time
+        val refreshWindowStartTime = session.loginTimestamp.time + sessionConfig.refreshThreshold.time
         return System.currentTimeMillis() >= refreshWindowStartTime
     }
 
@@ -163,8 +159,7 @@ class AuthRepositoryImpl @Inject constructor(
         val username: String = "",
         val accessToken: String = "",
         val refreshToken: String = "",
-        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp: Date = Date(),
-        @Serializable(with = DateAsLongSerializer::class) val expiresAt: Date = Date(),
+        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp:Date = Date(),
         val rememberSession: Boolean = false,
         val userStatus: LogStatus = LogStatus.NOT_LOGGED,
     )
