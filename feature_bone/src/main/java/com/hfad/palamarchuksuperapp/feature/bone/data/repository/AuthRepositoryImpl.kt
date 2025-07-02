@@ -31,6 +31,7 @@ import kotlinx.serialization.json.Json
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 @FeatureScope
 class AuthRepositoryImpl @Inject constructor(
@@ -47,14 +48,12 @@ class AuthRepositoryImpl @Inject constructor(
         isRemembered: Boolean,
     ): AppResult<Boolean, AppError> = mutex.withLock {
         val now = Date()
-        val expiresAt = Date(now.time + sessionConfig.sessionDuration.time)
 
         val session = UserSession(
             username = username,
             accessToken = "access_token",   // TODO: Replace with real API call for token refresh
             refreshToken = "refresh_token", // TODO: Replace with real API call for token refresh
             loginTimestamp = now,
-            expiresAt = expiresAt,
             rememberSession = isRemembered,
             userStatus = LogStatus.LOGGED_IN
         )
@@ -67,11 +66,9 @@ class AuthRepositoryImpl @Inject constructor(
         val currentSession = observeCurrentSession().first() ?: return@withLock AppResult.Error(
             AppError.SessionError.SessionNotFound("No active session found")
         )
-        val now = Date()
         val updatedSession = currentSession.copy(
             accessToken = "new_access_token",
             refreshToken = "new_refresh_token",
-            expiresAt = Date(now.time + sessionConfig.sessionDuration.time),
             userStatus = LogStatus.LOGGED_IN
         )
         val saveResult = saveSession(updatedSession)
@@ -90,7 +87,14 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override val currentSession: Flow<UserSession> = context.userSession.data.map { preferences ->
-        buildSessionFromPrefs(preferences) ?: return@map UserSession()
+        buildSessionFromPrefs(preferences) ?: return@map UserSession(
+            username = "",
+            accessToken = "",
+            refreshToken = "",
+            loginTimestamp = Date(),
+            rememberSession = false,
+            userStatus = LogStatus.NOT_LOGGED
+        )
     }.distinctUntilChanged()
 
     override suspend fun saveSession(session: UserSession): AppResult<Unit, AppError> {
@@ -133,7 +137,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override fun shouldRefreshToken(session: UserSession): Boolean {
-        val refreshWindowStartTime = session.expiresAt.time - sessionConfig.refreshThreshold.time
+        val refreshWindowStartTime = session.loginTimestamp.time + sessionConfig.refreshThreshold
         return System.currentTimeMillis() >= refreshWindowStartTime
     }
 
@@ -145,28 +149,15 @@ class AuthRepositoryImpl @Inject constructor(
         return userSession
     }
 
-    override suspend fun clearUnrememberedSession() {
-        mutex.withLock {
-            val prefs = context.userSession.data.first()
-            val session = buildSessionFromPrefs(prefs)
-            if (session != null && !session.rememberSession) {
-                context.userSession.edit { preferences ->
-                    preferences.clear()
-                }
-            }
-        }
-    }
-
 
     @Serializable
     data class UserSession(
-        val username: String = "",
-        val accessToken: String = "",
-        val refreshToken: String = "",
-        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp: Date = Date(),
-        @Serializable(with = DateAsLongSerializer::class) val expiresAt: Date = Date(),
-        val rememberSession: Boolean = false,
-        val userStatus: LogStatus = LogStatus.NOT_LOGGED,
+        val username: String,
+        val accessToken: String,
+        val refreshToken: String,
+        val rememberSession: Boolean,
+        val userStatus: LogStatus,
+        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp:Date
     )
 
     companion object {
@@ -175,11 +166,12 @@ class AuthRepositoryImpl @Inject constructor(
 }
 
 data class SessionConfig(
-    val sessionDuration: Date = Date(25.days.inWholeMilliseconds),
-    val refreshThreshold: Date = Date(11.days.inWholeMilliseconds),
+    val sessionDuration: Long = 25.days.inWholeMilliseconds,
+    val refreshThreshold: Long = 11.days.inWholeMilliseconds,
     val maxRetryAttempts: Int = 3,
     val autoRefreshEnabled: Boolean = false,
     val biometricAuthEnabled: Boolean = false,
+    val sessionTimeout: Long = 20.seconds.inWholeMilliseconds,
 )
 
 enum class AppPermission {
