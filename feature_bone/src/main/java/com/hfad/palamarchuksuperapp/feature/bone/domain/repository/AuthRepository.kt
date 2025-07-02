@@ -23,6 +23,4 @@ interface AuthRepository {
     suspend fun saveSession(session: UserSession): AppResult<Unit, AppError>
 
     val currentSession: Flow<UserSession>
-
-    suspend fun clearUnrememberedSession()
 }
