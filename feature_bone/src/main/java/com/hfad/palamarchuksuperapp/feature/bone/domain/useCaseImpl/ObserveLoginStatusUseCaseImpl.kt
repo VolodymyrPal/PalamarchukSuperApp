@@ -46,7 +46,6 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
 
 
     private suspend fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
-        val now = Date()
 
         if (session.userStatus == LogStatus.NOT_LOGGED) {
             return LogStatus.NOT_LOGGED
@@ -57,6 +56,8 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         val refreshThresholdEnd =
             Date(session.loginTimestamp.time + sessionConfig.refreshThreshold.time)
         val shouldRefresh = authRepository.shouldRefreshToken(session)
+
+        val now = Date()
 
         return when {
             now.before(activeSessionEnd) -> handleActiveSession(session, now)
@@ -80,7 +81,6 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
             if (delta > sessionExtensionThresholdMs) {
                 val extendedSession = session.copy(
                     loginTimestamp = newLoginTimestamp,
-                    expiresAt = newExpiresAt
                 )
 
                 return when (authRepository.saveSession(extendedSession)) {
