@@ -41,12 +41,11 @@ android {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
         }
+        tasks.withType<Test>().configureEach {
+            useJUnitPlatform()
+            jvmArgs("-XX:+EnableDynamicAgentLoading")
+        }
     }
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 dependencies {
