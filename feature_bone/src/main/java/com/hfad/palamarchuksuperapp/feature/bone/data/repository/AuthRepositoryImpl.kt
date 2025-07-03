@@ -31,7 +31,7 @@ import kotlinx.serialization.json.Json
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.minutes
 
 @FeatureScope
 class AuthRepositoryImpl @Inject constructor(
@@ -166,12 +166,12 @@ class AuthRepositoryImpl @Inject constructor(
 }
 
 data class SessionConfig(
-    val sessionDuration: Long = 25.days.inWholeMilliseconds,
+    val sessionTokenDuration: Long = 25.days.inWholeMilliseconds,
     val refreshThreshold: Long = 11.days.inWholeMilliseconds,
     val maxRetryAttempts: Int = 3,
     val autoRefreshEnabled: Boolean = false,
     val biometricAuthEnabled: Boolean = false,
-    val sessionTimeout: Long = 20.seconds.inWholeMilliseconds,
+    val sessionTimeout: Long = 20.minutes.inWholeMilliseconds,
 )
 
 enum class AppPermission {
