@@ -1,6 +1,5 @@
 package com.feature.bone
 
-import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
@@ -8,6 +7,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -34,8 +34,8 @@ class ObserveLoginStatusUseCaseImplTest {
 
     private val authRepository = mockk<AuthRepository>()
     private val sessionConfig = SessionConfig()
-    private val detector = mockk<AppFirstAccessDetector>()
-    private val date = Date()
+    private val logoutUseCase = mockk<LogoutUseCase>()
+    private val dateNow = Date()
 
     private val baseTime = 1000000000L // Фиксированное время для тестов
 
@@ -45,7 +45,8 @@ class ObserveLoginStatusUseCaseImplTest {
     @BeforeEach
     fun setup() {
         clearAllMocks()
-        useCase = ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig, detector)
+        useCase = ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig, logoutUseCase)
+        coEvery { logoutUseCase.invoke() } just Runs
     }
 
     @AfterEach
