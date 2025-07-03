@@ -1,6 +1,5 @@
 package com.feature.bone
 
-import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
@@ -8,6 +7,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -34,8 +34,8 @@ class ObserveLoginStatusUseCaseImplTest {
 
     private val authRepository = mockk<AuthRepository>()
     private val sessionConfig = SessionConfig()
-    private val detector = mockk<AppFirstAccessDetector>()
-    private val date = Date()
+    private val logoutUseCase = mockk<LogoutUseCase>()
+    private val dateNow = Date()
 
     private val baseTime = 1000000000L // Фиксированное время для тестов
 
@@ -45,7 +45,8 @@ class ObserveLoginStatusUseCaseImplTest {
     @BeforeEach
     fun setup() {
         clearAllMocks()
-        useCase = ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig, detector)
+        useCase = ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig, logoutUseCase)
+        coEvery { logoutUseCase.invoke() } just Runs
     }
 
     @AfterEach
@@ -53,23 +54,54 @@ class ObserveLoginStatusUseCaseImplTest {
         unmockkAll()
     }
 
-    @Test
-    fun `when session is unremembered on first access should return NOT_LOGGED`() = runTest {
-        val session = createUserSession(
-            LogStatus.LOGGED_IN,
-            Date(date.time - sessionConfig.refreshThreshold.time),
+    fun generateSession(
+        rememberSession: Boolean,
+        loginTimestamp: Date,
+        userStatus: LogStatus,
+    ): AuthRepositoryImpl.UserSession {
+        return AuthRepositoryImpl.UserSession(
+            username = "",
+            accessToken = "",
+            refreshToken = "",
+            rememberSession = rememberSession,
+            userStatus = userStatus,
+            loginTimestamp = loginTimestamp
         )
-        every { detector.isFirstAccess("isFirstAccess") } returns true
-        every { detector.isFirstAccess("Extend_Session_On_Start") } returns false
+    }
+
+    @Test
+    fun `Unlogged session returns NOT_LOGGED`() = runTest {
+        val session = generateSession(
+            rememberSession = false,
+            loginTimestamp = Date(),
+            userStatus = LogStatus.NOT_LOGGED
+        )
+
         every { authRepository.currentSession } returns flowOf(session)
         every { authRepository.shouldRefreshToken(session) } returns false
-        coEvery { authRepository.clearUnrememberedSession() } just Runs
 
         val result = useCase.invoke().toList()
 
-        coVerify { authRepository.clearUnrememberedSession() }
-        assertEquals(LogStatus.LOGGED_IN, result.first())
+        assertEquals(LogStatus.NOT_LOGGED, result.first())
     }
+
+    @Test
+    fun `unremembered expired session returns NOT_LOGGED and triggers logout`() =
+        runTest {
+            val session = generateSession(
+                rememberSession = false,
+                loginTimestamp = Date(dateNow.time - sessionConfig.sessionTimeout - 1),
+                userStatus = LogStatus.LOGGED_IN
+            )
+
+            every { authRepository.currentSession } returns flowOf(session)
+            every { authRepository.shouldRefreshToken(session) } returns false
+
+            val result = useCase.invoke().toList()
+
+            coVerify(exactly = 1) { logoutUseCase.invoke() }
+            assertEquals(LogStatus.NOT_LOGGED, result.first())
+        }
 
     private fun createUserSession(
         userStatus: LogStatus,
@@ -82,55 +114,24 @@ class ObserveLoginStatusUseCaseImplTest {
     }
 
     @Test
-    fun `invoke should not clear session when not first access`() = runTest {
-        // Given
-        val session = createUserSession(LogStatus.LOGGED_IN, Date(baseTime))
-        every { detector.isFirstAccess("isFirstAccess") } returns false
-        every { detector.isFirstAccess("Extend_Session_On_Start") } returns false
+    fun `unremembered active session returns LOGGED_IN`() = runTest {
+        val session = AuthRepositoryImpl.UserSession(
+            username = "",
+            accessToken = "",
+            refreshToken = "",
+            rememberSession = false,
+            userStatus = LogStatus.LOGGED_IN,
+            loginTimestamp = Date(dateNow.time - 1)
+        )
+
         every { authRepository.currentSession } returns flowOf(session)
         every { authRepository.shouldRefreshToken(session) } returns false
 
-        // When
         val result = useCase.invoke().toList()
 
-        // Then
-        coVerify(exactly = 0) { authRepository.clearUnrememberedSession() }
         assertEquals(LogStatus.LOGGED_IN, result.first())
     }
 
-    @Test
-    fun `determineLoginStatus should return NOT_LOGGED when session status is NOT_LOGGED`() =
-        runTest {
-            // Given
-            val session = createUserSession(LogStatus.NOT_LOGGED, Date(baseTime))
-            every { detector.isFirstAccess("isFirstAccess") } returns false
-            every { authRepository.currentSession } returns flowOf(session)
-
-            // When
-            val result = useCase.invoke().toList()
-
-            // Then
-            assertEquals(LogStatus.NOT_LOGGED, result.first())
-        }
-
-    @Test
-    fun `determineLoginStatus should return LOGGED_IN for active session within duration`() =
-        runTest {
-            // Given
-            val session = createUserSession(LogStatus.LOGGED_IN, Date(baseTime))
-
-            every { detector.isFirstAccess("isFirstAccess") } returns false
-            every { detector.isFirstAccess("Extend_Session_On_Start") } returns false
-            every { authRepository.currentSession } returns flowOf(session)
-            every { authRepository.shouldRefreshToken(session) } returns false
-
-
-            // When
-            val result = useCase.invoke().toList()
-
-            // Then
-            assertEquals(LogStatus.LOGGED_IN, result.first())
-        }
 
     @Test
     fun `determineLoginStatus should return REQUIRE_WEAK_LOGIN when past session duration but within refresh threshold`() =

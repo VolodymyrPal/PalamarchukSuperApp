@@ -34,14 +34,14 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         val now = Date()
 
         if (!session.rememberSession &&
-            (session.loginTimestamp.time + sessionConfig.sessionTimeout) < now.time
+            (session.loginTimestamp.time + sessionConfig.sessionTimeout) <= now.time
         ) {
             logoutUseCase.invoke()
             return LogStatus.NOT_LOGGED
         }
 
         val activeSessionEnd =
-            Date(session.loginTimestamp.time + sessionConfig.sessionDuration)
+            Date(session.loginTimestamp.time + sessionConfig.sessionTokenDuration)
         val refreshThresholdEnd =
             Date(session.loginTimestamp.time + sessionConfig.refreshThreshold)
         val shouldRefresh = authRepository.shouldRefreshToken(session)
@@ -49,9 +49,9 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
 
         return when {
             now.before(activeSessionEnd) -> handleActiveSession(session, now)
-            now.before(refreshThresholdEnd) -> LogStatus.REQUIRE_WEAK_LOGIN
-            shouldRefresh && !sessionConfig.autoRefreshEnabled -> LogStatus.TOKEN_REFRESH_REQUIRED
             shouldRefresh && sessionConfig.autoRefreshEnabled -> LogStatus.TOKEN_AUTO_REFRESH
+            shouldRefresh && !sessionConfig.autoRefreshEnabled -> LogStatus.TOKEN_REFRESH_REQUIRED
+            now.before(refreshThresholdEnd) -> LogStatus.REQUIRE_WEAK_LOGIN
             else -> LogStatus.NOT_LOGGED
         }
     }
@@ -60,13 +60,12 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         session: AuthRepositoryImpl.UserSession,
         now: Date,
     ): LogStatus {
-        val newLoginTimestamp = now
 
-        val delta = session.loginTimestamp.time - newLoginTimestamp.time
+        val delta = now.time - session.loginTimestamp.time
 
         if (delta > sessionExtensionThresholdMs) {
             val extendedSession = session.copy(
-                loginTimestamp = newLoginTimestamp,
+                loginTimestamp = now,
             )
             return when (authRepository.saveSession(extendedSession)) {
                 is AppResult.Error -> LogStatus.NOT_LOGGED
