@@ -55,7 +55,7 @@ class AuthRepositoryImpl @Inject constructor(
             refreshToken = "refresh_token", // TODO: Replace with real API call for token refresh
             loginTimestamp = now,
             rememberSession = isRemembered,
-            userStatus = LogStatus.LOGGED_IN
+            userStatus = LogStatus.LOGGED_IN // TODO: IF LOGIN SUCCESSFUL
         )
         saveSession(session)
 
@@ -98,7 +98,7 @@ class AuthRepositoryImpl @Inject constructor(
     }.distinctUntilChanged()
 
     override suspend fun saveSession(session: UserSession): AppResult<Unit, AppError> {
-        val maxRetries = 3
+        val maxRetries = sessionConfig.maxRetryAttempts
         var lastException: IOException? = null
         val sessionJson = try {
             Json.encodeToString(session)
@@ -168,10 +168,10 @@ class AuthRepositoryImpl @Inject constructor(
 data class SessionConfig(
     val sessionTokenDuration: Long = 25.days.inWholeMilliseconds,
     val refreshThreshold: Long = 11.days.inWholeMilliseconds,
-    val maxRetryAttempts: Int = 3,
-    val autoRefreshEnabled: Boolean = false,
-    val biometricAuthEnabled: Boolean = false,
     val sessionTimeout: Long = 20.minutes.inWholeMilliseconds,
+    val maxRetryAttempts: Int = 5,
+    val tokenRefreshEnable: Boolean = false,
+    val biometricAuthEnabled: Boolean = false,
 )
 
 enum class AppPermission {
@@ -179,7 +179,10 @@ enum class AppPermission {
 }
 
 enum class LogStatus {
-    LOGGED_IN, REQUIRE_WEAK_LOGIN, TOKEN_REFRESH_REQUIRED, TOKEN_AUTO_REFRESH, NOT_LOGGED
+    LOGGED_IN,
+    REQUIRE_WEAK_LOGIN,      // if session is past refresh threshold but within session duration
+    TOKEN_REFRESH_REQUIRED,  // if auto refresh is disabled
+    NOT_LOGGED
 }
 
 object DateAsLongSerializer : KSerializer<Date> {

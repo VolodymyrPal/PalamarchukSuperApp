@@ -43,10 +43,6 @@ class LoginScreenViewModel @Inject constructor(
                 refreshTokenUseCase() // Refresh token if required TODO
             }
 
-            LogStatus.TOKEN_AUTO_REFRESH -> {
-                refreshTokenUseCase() // Automatically refresh token if needed TODO
-            }
-
             else -> {}
         }
     }
