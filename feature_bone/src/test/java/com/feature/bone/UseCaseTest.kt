@@ -1,6 +1,5 @@
 package com.feature.bone
 
-import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
@@ -23,8 +22,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -37,16 +34,24 @@ class ObserveLoginStatusUseCaseImplTest {
     private val logoutUseCase = mockk<LogoutUseCase>()
     private val dateNow = Date()
 
-    private val baseTime = 1000000000L // Фиксированное время для тестов
 
+    private lateinit var useCaseNonRefresh: ObserveLoginStatusUseCaseImpl
+    private lateinit var useCaseWithRefresh: ObserveLoginStatusUseCaseImpl
 
-    private lateinit var useCase: ObserveLoginStatusUseCaseImpl
 
     @BeforeEach
     fun setup() {
         clearAllMocks()
-        useCase = ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig, logoutUseCase)
+        useCaseNonRefresh =
+            ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig, logoutUseCase)
+
+        useCaseWithRefresh = ObserveLoginStatusUseCaseImpl(
+            authRepository, sessionConfig.copy(
+                tokenRefreshEnable = true
+            ), logoutUseCase
+        )
         coEvery { logoutUseCase.invoke() } just Runs
+        coEvery { authRepository.saveSession(any()) } returns AppResult.Success(Unit)
     }
 
     @AfterEach
@@ -95,23 +100,12 @@ class ObserveLoginStatusUseCaseImplTest {
             )
 
             every { authRepository.currentSession } returns flowOf(session)
-            every { authRepository.shouldRefreshToken(session) } returns false
 
-            val result = useCase.invoke().toList()
+            val result = useCaseNonRefresh.invoke().toList()
 
             coVerify(exactly = 1) { logoutUseCase.invoke() }
             assertEquals(LogStatus.NOT_LOGGED, result.first())
         }
-
-    private fun createUserSession(
-        userStatus: LogStatus,
-        loginTimestamp: Date,
-    ): AuthRepositoryImpl.UserSession {
-        return AuthRepositoryImpl.UserSession(
-            userStatus = userStatus,
-            loginTimestamp = loginTimestamp,
-        )
-    }
 
     @Test
     fun `unremembered active session returns LOGGED_IN`() = runTest {
@@ -125,9 +119,8 @@ class ObserveLoginStatusUseCaseImplTest {
         )
 
         every { authRepository.currentSession } returns flowOf(session)
-        every { authRepository.shouldRefreshToken(session) } returns false
 
-        val result = useCase.invoke().toList()
+        val result = useCaseNonRefresh.invoke().toList()
 
         assertEquals(LogStatus.LOGGED_IN, result.first())
     }
