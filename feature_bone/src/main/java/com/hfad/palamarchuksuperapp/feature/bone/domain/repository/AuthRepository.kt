@@ -20,7 +20,7 @@ interface AuthRepository {
 
     fun shouldRefreshToken(session: UserSession): Boolean
 
-    suspend fun saveSession(session: UserSession): AppResult<Unit, AppError>
+    suspend fun saveUpdateSession(session: UserSession): AppResult<Unit, AppError>
 
     val currentSession: Flow<UserSession>
 }
