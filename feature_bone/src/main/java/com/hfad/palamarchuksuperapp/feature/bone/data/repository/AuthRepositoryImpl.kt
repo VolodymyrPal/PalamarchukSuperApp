@@ -57,7 +57,7 @@ class AuthRepositoryImpl @Inject constructor(
             rememberSession = isRemembered,
             userStatus = LogStatus.LOGGED_IN // TODO: IF LOGIN SUCCESSFUL
         )
-        saveSession(session)
+        saveUpdateSession(session)
 
         AppResult.Success(true)
     }
@@ -71,7 +71,7 @@ class AuthRepositoryImpl @Inject constructor(
             refreshToken = "new_refresh_token",
             userStatus = LogStatus.LOGGED_IN
         )
-        val saveResult = saveSession(updatedSession)
+        val saveResult = saveUpdateSession(updatedSession)
         if (saveResult is AppResult.Error) {
             return@withLock saveResult
         }
@@ -97,7 +97,7 @@ class AuthRepositoryImpl @Inject constructor(
         )
     }.distinctUntilChanged()
 
-    override suspend fun saveSession(session: UserSession): AppResult<Unit, AppError> {
+    override suspend fun saveUpdateSession(session: UserSession): AppResult<Unit, AppError> {
         val maxRetries = sessionConfig.maxRetryAttempts
         var lastException: IOException? = null
         val sessionJson = try {
@@ -180,7 +180,7 @@ enum class AppPermission {
 
 enum class LogStatus {
     LOGGED_IN,
-    REQUIRE_WEAK_LOGIN,      // if session is past refresh threshold but within session duration
+    REQUIRE_WEAK_LOGIN,      // if session is past refresh threshold but within session duration, has to be refreshed
     TOKEN_REFRESH_REQUIRED,  // if auto refresh is disabled
     NOT_LOGGED
 }
