@@ -51,7 +51,7 @@ class ObserveLoginStatusUseCaseImplTest {
             ), logoutUseCase
         )
         coEvery { logoutUseCase.invoke() } just Runs
-        coEvery { authRepository.saveSession(any()) } returns AppResult.Success(Unit)
+        coEvery { authRepository.saveUpdateSession(any()) } returns AppResult.Success(Unit)
     }
 
     @AfterEach
@@ -140,7 +140,7 @@ class ObserveLoginStatusUseCaseImplTest {
     }
 
     @Test
-    fun `should be REQUIRE_WEAK_LOGIN when remembered session is past session duration but within refresh threshold`() =
+    fun `should be REQUIRE_WEAK_LOGIN when remembered session is past refresh threshold but within active session `() =
         runTest {
             val session = generateSession(
                 rememberSession = true,
@@ -169,36 +169,38 @@ class ObserveLoginStatusUseCaseImplTest {
     }
 
     @Test
-    fun `should be LOGGED_IN when remembered refreshable session within refresh threshold`() = runTest {
-        val session = generateSession(
-            rememberSession = true,
-            loginTimestamp = Date(dateNow.time-sessionConfig.refreshThreshold+1000),
-            userStatus = LogStatus.LOGGED_IN
-        )
-        every { authRepository.currentSession } returns flowOf(session)
+    fun `should be LOGGED_IN when remembered refreshable session within refresh threshold`() =
+        runTest {
+            val session = generateSession(
+                rememberSession = true,
+                loginTimestamp = Date(dateNow.time - sessionConfig.refreshThreshold + 1000),
+                userStatus = LogStatus.LOGGED_IN
+            )
+            every { authRepository.currentSession } returns flowOf(session)
 
-        val result = useCaseWithRefresh.invoke().toList()
-        assertEquals(LogStatus.LOGGED_IN, result.first())
-    }
+            val result = useCaseWithRefresh.invoke().toList()
+            assertEquals(LogStatus.LOGGED_IN, result.first())
+        }
 
     @Test
-    fun `should be TOKEN_REFRESH_REQUIRED when remembered refreshable session within active session`() = runTest {
-        val session = generateSession(
-            rememberSession = true,
-            loginTimestamp = Date(dateNow.time-sessionConfig.refreshThreshold-1),
-            userStatus = LogStatus.LOGGED_IN
-        )
-        every { authRepository.currentSession } returns flowOf(session)
+    fun `should be TOKEN_REFRESH_REQUIRED when remembered refreshable session within active session`() =
+        runTest {
+            val session = generateSession(
+                rememberSession = true,
+                loginTimestamp = Date(dateNow.time - sessionConfig.refreshThreshold - 1),
+                userStatus = LogStatus.LOGGED_IN
+            )
+            every { authRepository.currentSession } returns flowOf(session)
 
-        val result = useCaseWithRefresh.invoke().toList()
-        assertEquals(LogStatus.TOKEN_REFRESH_REQUIRED, result.first())
-    }
+            val result = useCaseWithRefresh.invoke().toList()
+            assertEquals(LogStatus.TOKEN_REFRESH_REQUIRED, result.first())
+        }
 
     @Test
     fun `should be NOT_LOGGED when remembered refreshable session expired`() = runTest {
         val session = generateSession(
             rememberSession = true,
-            loginTimestamp = Date(dateNow.time-sessionConfig.sessionTokenDuration-1),
+            loginTimestamp = Date(dateNow.time - sessionConfig.sessionTokenDuration - 1),
             userStatus = LogStatus.LOGGED_IN
         )
         every { authRepository.currentSession } returns flowOf(session)
