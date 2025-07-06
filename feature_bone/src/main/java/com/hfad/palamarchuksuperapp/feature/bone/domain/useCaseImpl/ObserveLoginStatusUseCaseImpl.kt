@@ -49,7 +49,7 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         }
 
         return when {
-            now <= refreshThresholdEnd -> LogStatus.LOGGED_IN
+            now <= refreshThresholdEnd -> LogStatus.LOGIN_ALLOWED
             now <= activeSessionEnd -> LogStatus.REQUIRE_WEAK_LOGIN
             else -> logoutCleanLogStatus()
         }

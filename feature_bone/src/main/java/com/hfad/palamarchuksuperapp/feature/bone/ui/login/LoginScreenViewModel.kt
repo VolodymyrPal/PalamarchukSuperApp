@@ -31,7 +31,7 @@ class LoginScreenViewModel @Inject constructor(
 
     override val _dataFlow: Flow<LogStatus> = observeLoginStatusUseCase().onEach {
         when (it) {
-            LogStatus.LOGGED_IN -> {
+            LogStatus.LOGIN_ALLOWED -> {
                 effect(Effect.LoginSuccess)
             }
 
