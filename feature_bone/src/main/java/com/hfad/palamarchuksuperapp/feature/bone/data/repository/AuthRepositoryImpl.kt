@@ -55,7 +55,7 @@ class AuthRepositoryImpl @Inject constructor(
             refreshToken = "refresh_token", // TODO: Replace with real API call for token refresh
             loginTimestamp = now,
             rememberSession = isRemembered,
-            userStatus = LogStatus.LOGGED_IN // TODO: IF LOGIN SUCCESSFUL
+            userStatus = LogStatus.LOGIN_ALLOWED // TODO: IF LOGIN SUCCESSFUL
         )
         saveUpdateSession(session)
 
@@ -69,7 +69,8 @@ class AuthRepositoryImpl @Inject constructor(
         val updatedSession = currentSession.copy(
             accessToken = "new_access_token",
             refreshToken = "new_refresh_token",
-            userStatus = LogStatus.LOGGED_IN
+            userStatus = LogStatus.LOGIN_ALLOWED,
+            loginTimestamp = Date()
         )
         val saveResult = saveUpdateSession(updatedSession)
         if (saveResult is AppResult.Error) {
@@ -157,7 +158,7 @@ class AuthRepositoryImpl @Inject constructor(
         val refreshToken: String,
         val rememberSession: Boolean,
         val userStatus: LogStatus,
-        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp:Date
+        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp: Date,
     )
 
     companion object {
@@ -179,7 +180,7 @@ enum class AppPermission {
 }
 
 enum class LogStatus {
-    LOGGED_IN,
+    LOGIN_ALLOWED,
     REQUIRE_WEAK_LOGIN,      // if session is past refresh threshold but within session duration, has to be refreshed
     TOKEN_REFRESH_REQUIRED,  // if auto refresh is disabled
     NOT_LOGGED
