@@ -95,7 +95,7 @@ class ObserveLoginStatusUseCaseImplTest {
             val session = generateSession(
                 rememberSession = false,
                 loginTimestamp = Date(dateNow.time - sessionConfig.sessionTimeout - 1),
-                userStatus = LogStatus.LOGGED_IN
+                userStatus = LogStatus.LOGIN_ALLOWED
             )
 
             every { authRepository.currentSession } returns flowOf(session)
@@ -113,7 +113,7 @@ class ObserveLoginStatusUseCaseImplTest {
             accessToken = "",
             refreshToken = "",
             rememberSession = false,
-            userStatus = LogStatus.LOGGED_IN,
+            userStatus = LogStatus.LOGIN_ALLOWED,
             loginTimestamp = Date(dateNow.time - 1)
         )
 
@@ -121,7 +121,7 @@ class ObserveLoginStatusUseCaseImplTest {
 
         val result = useCaseNonRefresh.invoke().toList()
 
-        assertEquals(LogStatus.LOGGED_IN, result.first())
+        assertEquals(LogStatus.LOGIN_ALLOWED, result.first())
     }
 
     @Test
@@ -129,13 +129,13 @@ class ObserveLoginStatusUseCaseImplTest {
         val session = generateSession(
             rememberSession = true,
             loginTimestamp = Date(dateNow.time - sessionConfig.refreshThreshold / 2),
-            userStatus = LogStatus.LOGGED_IN
+            userStatus = LogStatus.LOGIN_ALLOWED
         )
 
         every { authRepository.currentSession } returns flowOf(session)
 
         val result = useCaseNonRefresh.invoke().toList()
-        assertEquals(LogStatus.LOGGED_IN, result.first())
+        assertEquals(LogStatus.LOGIN_ALLOWED, result.first())
 
     }
 
@@ -145,7 +145,7 @@ class ObserveLoginStatusUseCaseImplTest {
             val session = generateSession(
                 rememberSession = true,
                 loginTimestamp = Date(dateNow.time - sessionConfig.refreshThreshold),
-                userStatus = LogStatus.LOGGED_IN
+                userStatus = LogStatus.LOGIN_ALLOWED
             )
 
             every { authRepository.currentSession } returns flowOf(session)
@@ -159,7 +159,7 @@ class ObserveLoginStatusUseCaseImplTest {
         val session = generateSession(
             rememberSession = true,
             loginTimestamp = Date(dateNow.time - sessionConfig.sessionTokenDuration),
-            userStatus = LogStatus.LOGGED_IN
+            userStatus = LogStatus.LOGIN_ALLOWED
         )
 
         every { authRepository.currentSession } returns flowOf(session)
@@ -174,12 +174,12 @@ class ObserveLoginStatusUseCaseImplTest {
             val session = generateSession(
                 rememberSession = true,
                 loginTimestamp = Date(dateNow.time - sessionConfig.refreshThreshold + 1000),
-                userStatus = LogStatus.LOGGED_IN
+                userStatus = LogStatus.LOGIN_ALLOWED
             )
             every { authRepository.currentSession } returns flowOf(session)
 
             val result = useCaseWithRefresh.invoke().toList()
-            assertEquals(LogStatus.LOGGED_IN, result.first())
+            assertEquals(LogStatus.LOGIN_ALLOWED, result.first())
         }
 
     @Test
@@ -188,7 +188,7 @@ class ObserveLoginStatusUseCaseImplTest {
             val session = generateSession(
                 rememberSession = true,
                 loginTimestamp = Date(dateNow.time - sessionConfig.refreshThreshold - 1),
-                userStatus = LogStatus.LOGGED_IN
+                userStatus = LogStatus.LOGIN_ALLOWED
             )
             every { authRepository.currentSession } returns flowOf(session)
 
@@ -201,7 +201,7 @@ class ObserveLoginStatusUseCaseImplTest {
         val session = generateSession(
             rememberSession = true,
             loginTimestamp = Date(dateNow.time - sessionConfig.sessionTokenDuration - 1),
-            userStatus = LogStatus.LOGGED_IN
+            userStatus = LogStatus.LOGIN_ALLOWED
         )
         every { authRepository.currentSession } returns flowOf(session)
 
