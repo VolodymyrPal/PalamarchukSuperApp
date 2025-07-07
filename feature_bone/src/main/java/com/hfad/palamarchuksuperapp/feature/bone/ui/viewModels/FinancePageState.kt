@@ -9,5 +9,5 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
 
 data class FinancePageState(
     val salesItems: List<TypedTransaction> = (generateOrderItems() + generateSaleOrderItems() + generateExchangeOrderItems() + generatePaymentOrderItems()).shuffled(),
-    val salesStatistics: FinanceStatistic = FinanceStatistic(),
+    val financeStatistic: FinanceStatistic = FinanceStatistic(),
 )
