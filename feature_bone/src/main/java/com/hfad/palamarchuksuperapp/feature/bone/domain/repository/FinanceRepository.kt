@@ -1,5 +1,12 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.repository
 
-interface FinanceRepository {
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
+import kotlinx.coroutines.flow.Flow
 
+interface FinanceRepository {
+    val operations: AppResult<Flow<List<TypedTransaction>>, AppError>
+    val statistic: AppResult<Flow<FinanceStatistic>, AppError>
 }
