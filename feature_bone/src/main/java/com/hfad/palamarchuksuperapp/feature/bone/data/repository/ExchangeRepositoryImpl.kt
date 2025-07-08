@@ -1,4 +1,4 @@
-package com.hfad.palamarchuksuperapp.feature.bone.data.remote.api
+package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult

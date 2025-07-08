@@ -7,4 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CashRepository {
     val cashPaymentOrders: AppResult<Flow<List<PaymentOrder>>, AppError>
+    suspend fun softRefreshOrders()
+    suspend fun hardRefreshOrders()
 }
