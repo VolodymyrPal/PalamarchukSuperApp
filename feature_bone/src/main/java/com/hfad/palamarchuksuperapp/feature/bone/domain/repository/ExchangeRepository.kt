@@ -7,4 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExchangeRepository {
     val exchanges: AppResult<Flow<List<ExchangeOrder>>, AppError>
+    suspend fun getExchangeById(id: Int): AppResult<ExchangeOrder, AppError>
+    suspend fun softRefreshExchanges()
+    suspend fun hardRefreshExchanges()
 }

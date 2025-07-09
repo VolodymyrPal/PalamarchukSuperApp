@@ -9,4 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface OrdersRepository {
     val orders: AppResult<Flow<List<Order>>, AppError>
     val orderStatistic: AppResult<Flow<OrderStatistic>, AppError>
+    suspend fun getOrderById(id: Int): AppResult<Order, AppError>
+    suspend fun softRefreshOrders()
+    suspend fun hardRefreshOrders()
 }

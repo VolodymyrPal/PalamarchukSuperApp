@@ -9,4 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface FinanceRepository {
     val operations: AppResult<Flow<List<TypedTransaction>>, AppError>
     val statistic: AppResult<Flow<FinanceStatistic>, AppError>
+    suspend fun getOperationById(id: Int): AppResult<TypedTransaction, AppError>
+    suspend fun softRefreshOperations()
+    suspend fun hardRefreshOperations()
 }

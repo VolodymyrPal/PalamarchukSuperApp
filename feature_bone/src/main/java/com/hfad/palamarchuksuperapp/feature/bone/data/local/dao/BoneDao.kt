@@ -1,10 +1,52 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.dao
 
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import kotlinx.coroutines.flow.Flow
 
 interface BoneDao {
-    val getPaymentOrders : Flow<List<PaymentOrder>>
+    // Orders
+    val orders : Flow<List<Order>>
+    val orderStatistic : Flow<OrderStatistic>
+    suspend fun getOrderById(id: Int): Order
+    suspend fun insertOrIgnoreOrders(orders : List<Order>)
+    suspend fun deleteAllOrders()
+    suspend fun insertOrIgnoreOrderStatistic(statistic : OrderStatistic)
+
+    // SaleOrders
+    val saleOrders : Flow<List<SaleOrder>>
+    val salesStatistics : Flow<SalesStatistics>
+    suspend fun getSaleOrderById(id: Int): SaleOrder
+    suspend fun insertOrIgnoreSaleOrders(orders : List<SaleOrder>)
+    suspend fun deleteAllSaleOrders()
+    suspend fun insertOrIgnoreSalesStatistics(statistics : SalesStatistics)
+
+    // PaymentOrders
+    val paymentOrders : Flow<List<PaymentOrder>>
+    val paymentStatistics : Flow<List<PaymentStatistic>>
+    suspend fun getPaymentOrderById(id: Int): PaymentOrder
     suspend fun insertOrIgnorePaymentOrders(orders : List<PaymentOrder>)
     suspend fun deleteAllPaymentOrders()
+    suspend fun insertOrIgnorePaymentStatistics(statistics : List<PaymentStatistic>)
+
+    // Finance Operations
+    val operations : Flow<List<TypedTransaction>>
+    val financeStatistic : Flow<FinanceStatistic>
+    suspend fun getOperationById(id: Int): TypedTransaction
+    suspend fun insertOrIgnoreOperations(operations : List<TypedTransaction>)
+    suspend fun deleteAllOperations()
+    suspend fun insertOrIgnoreFinanceStatistic(statistic : FinanceStatistic)
+
+    // Exchanges
+    val exchanges : Flow<List<ExchangeOrder>>
+    suspend fun getExchangeById(id: Int): ExchangeOrder
+    suspend fun insertOrIgnoreExchanges(exchanges : List<ExchangeOrder>)
+    suspend fun deleteAllExchanges()
 }
