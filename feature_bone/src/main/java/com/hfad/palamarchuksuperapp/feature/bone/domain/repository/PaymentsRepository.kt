@@ -9,4 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface PaymentsRepository {
     val payment: AppResult<Flow<List<PaymentOrder>>, AppError>
     val paymentStatistic: AppResult<Flow<List<PaymentStatistic>>, AppError>
+    suspend fun getPaymentById(id: Int): AppResult<PaymentOrder, AppError>
+    suspend fun softRefreshPayments()
+    suspend fun hardRefreshPayments()
 }
