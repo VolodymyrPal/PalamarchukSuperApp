@@ -5,11 +5,9 @@ import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 interface FinanceRepository {
-    val operations: AppResult<Flow<List<TypedTransaction>>, AppError>
+    fun operationsFromTo(from: Date, to: Date): AppResult<Flow<List<TypedTransaction>>, AppError>
     val statistic: AppResult<Flow<FinanceStatistic>, AppError>
-    suspend fun getOperationById(id: Int): AppResult<TypedTransaction, AppError>
-    suspend fun softRefreshOperations()
-    suspend fun hardRefreshOperations()
 }

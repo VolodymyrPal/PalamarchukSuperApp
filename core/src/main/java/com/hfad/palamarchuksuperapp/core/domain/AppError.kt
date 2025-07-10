@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.core.domain
 
-sealed interface AppError : Error {
+interface AppError : Error {
 
     val message: String?
     val cause: Throwable?
