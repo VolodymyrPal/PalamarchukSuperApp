@@ -17,21 +17,18 @@ class PaymentsRepositoryImpl @Inject constructor(
     private val boneApi: BoneApi,
 ) : PaymentsRepository {
 
-    override val payment: AppResult<Flow<List<PaymentOrder>>, AppError> =
-        trySqlApp {
-            boneDao.paymentOrders
-        }
+    override val payment: AppResult<Flow<List<PaymentOrder>>, AppError> = trySqlApp {
+        boneDao.paymentOrders
+    }
 
-    override val paymentStatistic: AppResult<Flow<List<PaymentStatistic>>, AppError> =
+    override val paymentStatistic: AppResult<Flow<PaymentStatistic>, AppError> =
         trySqlApp {
             boneDao.paymentStatistics
         }
 
-    override suspend fun getPaymentById(id: Int): AppResult<PaymentOrder, AppError> {
-        return withSqlErrorHandling {
-            boneDao.getPaymentOrderById(id)
+    override suspend fun getPaymentById(id: Int): AppResult<PaymentOrder, AppError> = withSqlErrorHandling {
+            boneDao.getPaymentOrderById(id)!!
         }
-    }
 
     override suspend fun softRefreshPayments() {
         val paymentsResultApi = getPaymentsResultApiWithError()
