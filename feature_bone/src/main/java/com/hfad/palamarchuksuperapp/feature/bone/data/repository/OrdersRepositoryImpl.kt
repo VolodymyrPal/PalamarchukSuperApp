@@ -17,20 +17,17 @@ class OrdersRepositoryImpl @Inject constructor(
     private val boneApi: BoneApi,
 ) : OrdersRepository {
 
-    override val orders: AppResult<Flow<List<Order>>, AppError> =
-        trySqlApp {
-            boneDao.orders
-        }
+    override val orders: AppResult<Flow<List<Order>>, AppError> = trySqlApp {
+        boneDao.orders
+    }
 
-    override val orderStatistic: AppResult<Flow<OrderStatistic>, AppError> =
-        trySqlApp {
-            boneDao.orderStatistic
-        }
+    override val orderStatistic: AppResult<Flow<OrderStatistic>, AppError> = trySqlApp {
+        boneDao.orderStatistic
+    }
 
     override suspend fun getOrderById(id: Int): AppResult<Order, AppError> {
-        return withSqlErrorHandling {
-            boneDao.getOrderById(id)
-        }
+        val order = boneDao.getOrderById(id) // ?: return AppResult.Error(AppError.NetworkError)
+        return AppResult.Success(order!!)
     }
 
     override suspend fun softRefreshOrders() {
@@ -38,7 +35,7 @@ class OrdersRepositoryImpl @Inject constructor(
         if (ordersResultApi is AppResult.Success) {
             boneDao.insertOrIgnoreOrders(ordersResultApi.data)
         }
-        
+
         val orderStatisticResultApi = getOrderStatisticResultApiWithError()
         if (orderStatisticResultApi is AppResult.Success) {
             boneDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
@@ -51,7 +48,7 @@ class OrdersRepositoryImpl @Inject constructor(
         if (ordersResultApi is AppResult.Success) {
             boneDao.insertOrIgnoreOrders(ordersResultApi.data)
         }
-        
+
         val orderStatisticResultApi = getOrderStatisticResultApiWithError()
         if (orderStatisticResultApi is AppResult.Success) {
             boneDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
@@ -64,7 +61,7 @@ class OrdersRepositoryImpl @Inject constructor(
             AppResult.Success(orders)
         }
     }
-    
+
     private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistic, AppError> {
         return safeApiCall {
             val orderStatistic: OrderStatistic = boneApi.getOrderStatisticApi()
