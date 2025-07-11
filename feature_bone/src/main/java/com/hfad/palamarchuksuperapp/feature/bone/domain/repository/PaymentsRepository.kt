@@ -7,7 +7,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import kotlinx.coroutines.flow.Flow
 
 interface PaymentsRepository {
-    val payment: AppResult<Flow<List<PaymentOrder>>, AppError>
+    val payments: AppResult<Flow<List<PaymentOrder>>, AppError>
     val paymentStatistic: AppResult<Flow<PaymentStatistic>, AppError>
     suspend fun getPaymentById(id: Int): AppResult<PaymentOrder, AppError>
     suspend fun softRefreshPayments()

@@ -17,7 +17,7 @@ class PaymentsRepositoryImpl @Inject constructor(
     private val boneApi: BoneApi,
 ) : PaymentsRepository {
 
-    override val payment: AppResult<Flow<List<PaymentOrder>>, AppError> = trySqlApp {
+    override val payments: AppResult<Flow<List<PaymentOrder>>, AppError> = trySqlApp {
         boneDao.paymentOrders
     }
 

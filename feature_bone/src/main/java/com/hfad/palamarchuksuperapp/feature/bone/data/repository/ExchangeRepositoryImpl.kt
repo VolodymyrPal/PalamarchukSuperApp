@@ -9,6 +9,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.ExchangeRepository
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 import javax.inject.Inject
 
 class ExchangeRepositoryImpl @Inject constructor(
@@ -23,7 +24,7 @@ class ExchangeRepositoryImpl @Inject constructor(
 
     override suspend fun getExchangeById(id: Int): AppResult<ExchangeOrder, AppError> {
         return withSqlErrorHandling {
-            boneDao.getExchangeById(id)
+            boneDao.getExchangeById(id)!!
         }
     }
 
@@ -40,6 +41,13 @@ class ExchangeRepositoryImpl @Inject constructor(
         if (exchangesResultApi is AppResult.Success) {
             boneDao.insertOrIgnoreExchanges(exchangesResultApi.data)
         }
+    }
+
+    override suspend fun syncedDateForPeriod(
+        from: Date,
+        to: Date,
+    ): Flow<List<ExchangeOrder>> {
+        TODO("Not yet implemented")
     }
 
     private suspend fun getExchangesResultApiWithError(): AppResult<List<ExchangeOrder>, AppError> {
