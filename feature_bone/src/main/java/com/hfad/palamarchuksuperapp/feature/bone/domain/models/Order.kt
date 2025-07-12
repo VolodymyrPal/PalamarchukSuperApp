@@ -10,6 +10,7 @@ import kotlin.random.Random
 data class Order(
     @PrimaryKey
     override val id: Int,
+    override val type: String = "Order",
     val businessEntityNum: Int,
     val num: Int,
     val serviceList: List<ServiceOrder> = emptyList(),
@@ -25,7 +26,8 @@ data class Order(
         amount = 0f
     ),
     override val billingDate: Date,
-    override val type: TransactionType = TransactionType.DEBIT,
+    override val transactionType: TransactionType = TransactionType.DEBIT,
+    override val versionHash: String = ""
 ) : TypedTransaction {
     val cargoType: CargoType
         get() {

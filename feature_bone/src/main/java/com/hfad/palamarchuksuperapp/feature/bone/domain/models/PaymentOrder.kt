@@ -4,6 +4,7 @@ import java.util.Date
 import kotlin.random.Random
 
 data class PaymentOrder(
+    override val type: String = "PaymentOrder",
     override val id: Int,
     val factory: String,
     val productType: String,
@@ -11,13 +12,14 @@ data class PaymentOrder(
     val dueDate: String,
     val status: PaymentStatus,
     val commission: Float = 0.0f,
-    override val type: TransactionType,
+    override val transactionType: TransactionType,
     override val billingDate: Date = Date(),
     override val amountCurrency: AmountCurrency,
     val paymentPrice: AmountCurrency = AmountCurrency(
         currency = amountCurrency.currency,
         amount = 100f
     ),
+    override val versionHash: String = ""
 ) : TypedTransaction {
     val fullPrice: AmountCurrency get() = amountCurrency + amountCurrency * commission + paymentPrice
 }
@@ -65,7 +67,7 @@ internal fun generatePaymentOrderSample() : PaymentOrder {
         paymentDate = paymentDate,
         dueDate = dueDate,
         status = status,
-        type = TransactionType.DEBIT
+        transactionType = TransactionType.DEBIT
     )
 }
 
@@ -112,7 +114,7 @@ internal fun generatePaymentOrderItems(): List<PaymentOrder> {
             paymentDate = paymentDate,
             dueDate = dueDate,
             status = status,
-            type = TransactionType.DEBIT
+            transactionType = TransactionType.DEBIT
         )
     }
 }

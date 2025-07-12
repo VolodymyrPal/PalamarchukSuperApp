@@ -507,7 +507,7 @@ fun PaymentCardPreview() {
                     paymentDate = "15.09.2023",
                     dueDate = "15.10.2023",
                     status = PaymentStatus.PAID,
-                    type = TransactionType.CREDIT
+                    transactionType = TransactionType.CREDIT
                 )
             )
         }
@@ -525,7 +525,7 @@ fun PaymentCardPreview() {
                     paymentDate = "15.09.2023",
                     dueDate = "15.10.2023",
                     status = PaymentStatus.PAID,
-                    type = TransactionType.CREDIT
+                    transactionType = TransactionType.CREDIT
                 )
             )
         }
