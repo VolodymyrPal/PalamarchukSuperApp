@@ -440,8 +440,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is Order -> {
         TransactionUiModel(
             iconRes = R.drawable.product_icon,
-            color = financeStatusColor(this.type),
-            transactionType = this.type,
+            color = financeStatusColor(this.transactionType),
+            transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
@@ -454,8 +454,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is ExchangeOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.exchange_icon,
-            color = financeStatusColor(this.type),
-            transactionType = this.type,
+            color = financeStatusColor(this.transactionType),
+            transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
@@ -471,8 +471,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is CashPaymentOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.money_pack,
-            color = financeStatusColor(this.type),
-            transactionType = this.type,
+            color = financeStatusColor(this.transactionType),
+            transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
@@ -485,8 +485,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is SaleOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.freight,
-            color = financeStatusColor(this.type),
-            transactionType = this.type,
+            color = financeStatusColor(this.transactionType),
+            transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
@@ -499,8 +499,8 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
     is PaymentOrder -> {
         TransactionUiModel(
             iconRes = R.drawable.factory_icon,
-            color = financeStatusColor(this.type),
-            transactionType = this.type,
+            color = financeStatusColor(this.transactionType),
+            transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
                 this.billingDate
