@@ -1,11 +1,5 @@
 package com.feature.bone
 
-import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
-import com.hfad.palamarchuksuperapp.core.domain.AppError
-import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CargoType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
@@ -22,25 +16,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
-import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
-import io.mockk.Runs
-import io.mockk.clearAllMocks
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.junit5.MockKExtension
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.unmockkAll
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -81,7 +57,7 @@ class OrderDataClassesTest {
         assertTrue(testOrder.containerNumber.isBlank())
         assertEquals(Currency.USD, testOrder.amountCurrency.currency)
         assertEquals(0f, testOrder.amountCurrency.amount)
-        assertEquals(TransactionType.DEBIT, testOrder.type)
+        assertEquals(TransactionType.DEBIT, testOrder.transactionType)
     }
 
     @Test
@@ -120,7 +96,7 @@ class CashPaymentOrderTest {
 
     @Test
     fun `CashPaymentOrder should have correct default values`() {
-        assertEquals(cashOrder.type, TransactionType.CREDIT)
+        assertEquals(cashOrder.transactionType, TransactionType.CREDIT)
         assertEquals(cashOrder.amountCurrency.currency, Currency.USD)
         assertEquals(cashOrder.amountCurrency.amount, 0f)
     }
@@ -141,7 +117,7 @@ class PaymentOrderTest {
             paymentDate = "2025-06-01",
             dueDate = "2025-07-01",
             status = PaymentStatus.PENDING,
-            type = TransactionType.DEBIT,
+            transactionType = TransactionType.DEBIT,
             amountCurrency = testAmountCurrency
         )
     }
@@ -188,7 +164,7 @@ class ExchangeOrderTest {
         val expectedRate: Float =
             exchangeOrder.amountToExchange.amount / exchangeOrder.amountCurrency.amount
         assertEquals(exchangeOrder.exchangeRate, expectedRate, 0.01f)
-        assertEquals(exchangeOrder.type, TransactionType.CREDIT)
+        assertEquals(exchangeOrder.transactionType, TransactionType.CREDIT)
         assertEquals(exchangeOrder.typeToChange, TransactionType.DEBIT)
     }
 
@@ -225,7 +201,7 @@ class SaleOrderTest {
 
         assertNull(saleOrder.order)
         assertEquals(saleOrder.vat, 0.20f)
-        assertEquals(saleOrder.type, TransactionType.DEBIT)
+        assertEquals(saleOrder.transactionType, TransactionType.DEBIT)
     }
 
     @Test
@@ -310,33 +286,33 @@ class EnumClassesTest {
             billingDate = testDate
         )
         val exchangeOrder = ExchangeOrder(
-            testAmountCurrency,
+            amountToExchange = testAmountCurrency,
             date = testDate,
             amountCurrency = testAmountCurrency,
             billingDate = testDate,
-            id = 1
+            id = 1,
         )
         val paymentOrder = PaymentOrder(
-            1,
-            "Factory",
-            "Product",
-            "2025-06-01",
-            "2025-07-01",
-            PaymentStatus.PAID,
-            type = TransactionType.DEBIT,
+            id = 1,
+            factory = "Factory",
+            productType = "Product",
+            paymentDate = "2025-06-01",
+            dueDate = "2025-07-01",
+            status = PaymentStatus.PAID,
+            transactionType = TransactionType.DEBIT,
             amountCurrency = testAmountCurrency
         )
         val saleOrder = SaleOrder(
-            1,
-            "Product",
-            "Category",
-            "Customer",
-            SaleStatus.CREATED,
-            "2025-06-01",
-            "2025-06-02",
-            "Company",
-            5.0,
-            false,
+            id = 1,
+            productName = "Product",
+            cargoCategory = "Category",
+            customerName = "Customer",
+            status = SaleStatus.CREATED,
+            requestDate = "2025-06-01",
+            documentDate = "2025-06-02",
+            companyName = "Company",
+            commissionPercent = 5.0,
+            prepayment = false,
             amountCurrency = testAmountCurrency
         )
 

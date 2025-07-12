@@ -11,6 +11,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentsRepos
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SalesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import java.util.Date
 import javax.inject.Inject
 
@@ -53,13 +54,14 @@ class FinanceRepositoryImpl @Inject constructor(
     }
 
     override val statistic: AppResult<Flow<FinanceStatistic>, AppError> = trySqlApp {
-        boneDao.financeStatistic
+//        boneDao.financeStatistic
+        flowOf(FinanceStatistic()) //TODO
     }
 
     suspend fun syncData() {
-        exchangeRepository.syncData()
-        ordersRepository.syncData()
-        paymentsRepository.syncData()
-        salesRepository.syncData()
+//        exchangeRepository.syncData() //TODO
+//        ordersRepository.syncData()
+//        paymentsRepository.syncData()
+//        salesRepository.syncData()
     }
 }

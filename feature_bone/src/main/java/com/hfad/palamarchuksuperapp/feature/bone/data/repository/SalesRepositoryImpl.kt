@@ -8,6 +8,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SalesRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -29,7 +30,8 @@ class SalesRepositoryImpl @Inject constructor(
 
     override suspend fun getSaleOrderById(id: Int): AppResult<SaleOrder, AppError> {
         return withSqlErrorHandling {
-            boneDao.getSaleOrderById(id)
+            generateSaleOrder()
+//            boneDao.getSaleOrderById(id)
         }
     }
 
