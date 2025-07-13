@@ -1,7 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
-import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneDao
@@ -57,14 +56,14 @@ class OrdersRepositoryImpl @Inject constructor(
 
     private suspend fun getOrdersResultApiWithError(): AppResult<List<Order>, AppError> {
         return safeApiCall {
-            val orders: List<Order> = boneApi.getOrdersApi()
+            val orders: List<Order> = boneApi.getOrdersByPage(1)
             AppResult.Success(orders)
         }
     }
 
     private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistic, AppError> {
         return safeApiCall {
-            val orderStatistic: OrderStatistic = boneApi.getOrderStatisticApi()
+            val orderStatistic: OrderStatistic = boneApi.syncOrderStatistic()
             AppResult.Success(orderStatistic)
         }
     }

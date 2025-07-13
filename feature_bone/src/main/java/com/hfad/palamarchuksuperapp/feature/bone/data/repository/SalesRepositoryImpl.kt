@@ -62,14 +62,14 @@ class SalesRepositoryImpl @Inject constructor(
 
     private suspend fun getSaleOrdersResultApiWithError(): AppResult<List<SaleOrder>, AppError> {
         return safeApiCall {
-            val saleOrders: List<SaleOrder> = boneApi.getSaleOrdersApi()
+            val saleOrders: List<SaleOrder> = boneApi.getSaleOrdersByPage(1)
             AppResult.Success(saleOrders)
         }
     }
     
     private suspend fun getSalesStatisticsResultApiWithError(): AppResult<SalesStatistics, AppError> {
         return safeApiCall {
-            val salesStatistics: SalesStatistics = boneApi.getSalesStatisticsApi()
+            val salesStatistics: SalesStatistics = boneApi.syncSaleStatistics()
             AppResult.Success(salesStatistics)
         }
     }
