@@ -57,14 +57,14 @@ class PaymentsRepositoryImpl @Inject constructor(
 
     private suspend fun getPaymentsResultApiWithError(): AppResult<List<PaymentOrder>, AppError> {
         return safeApiCall {
-            val payments: List<PaymentOrder> = boneApi.getPaymentOrdersApi()
+            val payments: List<PaymentOrder> = boneApi.getPaymentOrdersByPage(1)
             AppResult.Success(payments)
         }
     }
 
     private suspend fun getPaymentStatisticResultApiWithError(): AppResult<List<PaymentStatistic>, AppError> {
         return safeApiCall {
-            val paymentStatistic: PaymentStatistic = boneApi.getPaymentStatisticApi()
+            val paymentStatistic: PaymentStatistic = boneApi.syncPaymentStatistic()
             AppResult.Success(listOf(paymentStatistic))
         }
     }

@@ -4,7 +4,6 @@ import java.util.Date
 import kotlin.random.Random
 
 data class ExchangeOrder(
-    override val type: String = "ExchangeOrder",
     val amountToExchange: AmountCurrency,
     val typeToChange: TransactionType = TransactionType.DEBIT,
     val date: Date,
@@ -14,6 +13,7 @@ data class ExchangeOrder(
     override val id: Int,
     override val versionHash: String = "",
 ) : TypedTransaction {
+    override val type: String = getType()
     val exchangeRate: Float get() = amountToExchange.amount / amountCurrency.amount
 }
 

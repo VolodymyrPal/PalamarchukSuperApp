@@ -4,7 +4,6 @@ import java.util.Date
 import kotlin.random.Random
 
 data class PaymentOrder(
-    override val type: String = "PaymentOrder",
     override val id: Int,
     val factory: String,
     val productType: String,
@@ -21,6 +20,7 @@ data class PaymentOrder(
     ),
     override val versionHash: String = ""
 ) : TypedTransaction {
+    override val type: String = getType()
     val fullPrice: AmountCurrency get() = amountCurrency + amountCurrency * commission + paymentPrice
 }
 

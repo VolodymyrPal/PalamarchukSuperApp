@@ -3,7 +3,6 @@ package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 import java.util.Date
 
 data class CashPaymentOrder(
-    override val type: String = "CashPaymentOrder",
     override val id: Int,
     val paymentNum: Int,
     val paymentSum: Float,
@@ -15,4 +14,6 @@ data class CashPaymentOrder(
         amount = 0f
     ),
     override val versionHash: String = ""
-) : TypedTransaction
+) : TypedTransaction {
+    override val type: String = getType()
+}
