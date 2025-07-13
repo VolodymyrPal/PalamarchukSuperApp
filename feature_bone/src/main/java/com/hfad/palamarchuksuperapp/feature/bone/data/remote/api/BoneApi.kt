@@ -11,30 +11,31 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import java.util.Date
 
 interface BoneApi {
-    fun getOrdersApi(): List<Order>
-    fun getOrderById(id: Int): Order
-    fun getOrderStatisticApi(): OrderStatistic
+    fun getTypeOrderById(key: String) : TypedTransaction? // key = "${type}:${id}",
 
-    fun getSaleOrdersApi(): List<SaleOrder>
-    fun getSaleOrderById(id: Int): SaleOrder
-    fun getSalesStatisticsApi(): SalesStatistics
+    fun getOrdersByPage(page: Int): List<Order>
+    fun syncOrders(cachedOrders: List<Order>): SyncResponse<Order>
+    fun syncOrderStatistic(): OrderStatistic
 
-    fun getPaymentOrdersApi(): List<PaymentOrder>
-    fun getPaymentById(id: Int): PaymentOrder
-    fun getPaymentStatisticApi(): PaymentStatistic
+    fun getSaleOrdersByPage(page: Int): List<SaleOrder>
+    fun syncSaleOrders(cachedOrders: List<SaleOrder>): SyncResponse<SaleOrder>
+    fun syncSaleStatistics(): SalesStatistics
 
-    fun getExchangesApi(): List<ExchangeOrder>
-    fun getExchangeById(id: Int): ExchangeOrder
+    fun getPaymentOrdersByPage(page: Int): List<PaymentOrder>
+    fun syncPaymentOrders(cachedOrders: List<PaymentOrder>): SyncResponse<PaymentOrder>
+    fun syncPaymentStatistic(): PaymentStatistic
+
+    fun getExchangesByPage(page: Int): List<ExchangeOrder>
 
     fun syncTypedTransactionsInRange(
         from: Date,
         to: Date,
         transactionHashesByTypeAndId: Map<String, String>, // key = "${type}:${id}", value = backand hash
-    ): SyncResponse
+    ): SyncResponse<TypedTransaction>
 }
 
-data class SyncResponse(
-    val new: List<TypedTransaction>,
-    val updated: List<TypedTransaction>,
+data class SyncResponse<T>(
+    val new: List<T>,
+    val updated: List<T>,
     val deleted: List<String>,
 )
