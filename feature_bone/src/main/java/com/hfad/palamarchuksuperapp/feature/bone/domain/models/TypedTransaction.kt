@@ -14,3 +14,13 @@ sealed interface TypedTransaction {
 enum class TransactionType {
     CREDIT, DEBIT
 }
+
+fun TypedTransaction.getType(): String {
+    return when (this) {
+        is Order -> "Order"
+        is CashPaymentOrder -> "CashPaymentOrder"
+        is ExchangeOrder -> "ExchangeOrder"
+        is PaymentOrder -> "PaymentOrder"
+        is SaleOrder -> "SaleOrder"
+    }
+}

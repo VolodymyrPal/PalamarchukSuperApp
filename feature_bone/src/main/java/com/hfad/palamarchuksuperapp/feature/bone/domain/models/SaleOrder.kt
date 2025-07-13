@@ -4,7 +4,6 @@ import java.util.Date
 import kotlin.random.Random
 
 data class SaleOrder(
-    override val type: String = "SaleOrder",
     override val id: Int,
     val productName: String,
     val cargoCategory: String,
@@ -21,7 +20,9 @@ data class SaleOrder(
     override val billingDate: Date = Date(),
     override val transactionType: TransactionType = TransactionType.DEBIT,
     override val versionHash: String = ""
-) : TypedTransaction
+) : TypedTransaction {
+    override val type: String = getType()
+}
 
 enum class SaleStatus {
     CREATED, IN_PROGRESS, DOCUMENT_PROCEED, COMPLETED, CANCELED
