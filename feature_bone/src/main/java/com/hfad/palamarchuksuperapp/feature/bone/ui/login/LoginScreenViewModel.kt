@@ -43,7 +43,9 @@ class LoginScreenViewModel @Inject constructor(
                 refreshTokenUseCase() // Refresh token if required TODO
             }
 
-            else -> {}
+            LogStatus.NOT_LOGGED -> {
+                logoutUseCase()
+            }
         }
     }
 
@@ -118,7 +120,7 @@ class LoginScreenViewModel @Inject constructor(
                 _errorFlow.value = null
             }
 
-            is Event.ClearLogin -> {
+            is Event.Logout -> {
                 viewModelScope.launch {
                     logoutUseCase()
                 }
@@ -167,7 +169,7 @@ class LoginScreenViewModel @Inject constructor(
         object LoginButtonClicked : Event()
         object BiometricLoginClicked : Event()
         object ErrorDismissed : Event()
-        object ClearLogin : Event()
+        object Logout : Event()
     }
 
     sealed class Effect : BaseEffect {
