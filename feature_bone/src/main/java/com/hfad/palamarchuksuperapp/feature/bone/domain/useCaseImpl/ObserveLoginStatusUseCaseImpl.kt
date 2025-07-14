@@ -4,7 +4,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryI
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
-import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,7 +15,6 @@ import java.util.Date
 class ObserveLoginStatusUseCaseImpl @Inject constructor(
     private val authRepository: AuthRepository,
     private val sessionConfig: SessionConfig,
-    private val logoutUseCase: LogoutUseCase,
 ) : ObserveLoginStatusUseCase {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,10 +22,10 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         .mapLatest { session -> determineLoginStatus(session) }
         .distinctUntilChanged()
 
-    private suspend fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
+    private fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
 
         if (session.userStatus == LogStatus.NOT_LOGGED) {
-            return logoutCleanLogStatus()
+            return LogStatus.NOT_LOGGED
         }
 
         val now = Date().time
@@ -36,7 +34,7 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         if (!session.rememberSession &&
             now - loginTime >= sessionConfig.sessionTimeout
         ) {
-            return logoutCleanLogStatus()
+            return LogStatus.NOT_LOGGED
         }
 
         val refreshThresholdEnd = loginTime + sessionConfig.refreshThreshold
@@ -51,12 +49,7 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         return when {
             now <= refreshThresholdEnd -> LogStatus.LOGIN_ALLOWED
             now <= activeSessionEnd -> LogStatus.REQUIRE_WEAK_LOGIN
-            else -> logoutCleanLogStatus()
+            else -> LogStatus.NOT_LOGGED
         }
-    }
-
-    private suspend fun logoutCleanLogStatus(): LogStatus {
-        logoutUseCase.invoke()
-        return LogStatus.NOT_LOGGED
     }
 }
