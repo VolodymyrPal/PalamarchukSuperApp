@@ -167,7 +167,7 @@ class LoginScreenViewModel @Inject constructor(
         object LoginButtonClicked : Event()
         object BiometricLoginClicked : Event()
         object ErrorDismissed : Event()
-        object ClearLogin : Event()
+        object Logout : Event()
     }
 
     sealed class Effect : BaseEffect {
