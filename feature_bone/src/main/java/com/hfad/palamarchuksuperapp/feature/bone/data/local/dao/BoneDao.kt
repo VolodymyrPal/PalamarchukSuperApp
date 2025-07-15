@@ -17,6 +17,7 @@ interface BoneDao {
     val orders : Flow<List<Order>>
     val orderStatistic : Flow<OrderStatistic>
     suspend fun getOrderById(id: Int): Order?
+    suspend fun geAllOrders(): List<Order>
     suspend fun insertOrIgnoreOrders(orders : List<Order>)
     suspend fun deleteAllOrders()
     suspend fun insertOrIgnoreOrderStatistic(statistic : OrderStatistic)
@@ -25,6 +26,7 @@ interface BoneDao {
     val saleOrders : Flow<List<SaleOrder>>
     val salesStatistics : Flow<SalesStatistics>
     suspend fun getSaleOrderById(id: Int): SaleOrder?
+    suspend fun getAllSaleOrders(): List<SaleOrder>
     suspend fun insertOrIgnoreSaleOrders(orders : List<SaleOrder>)
     suspend fun deleteAllSaleOrders()
     suspend fun insertOrIgnoreSalesStatistics(statistics : SalesStatistics)
@@ -33,6 +35,7 @@ interface BoneDao {
     val paymentOrders : Flow<List<PaymentOrder>>
     val paymentStatistics: Flow<PaymentStatistic>
     suspend fun getPaymentOrderById(id: Int): PaymentOrder?
+    suspend fun getAllPaymentOrders(): List<PaymentOrder>
     suspend fun insertOrIgnorePaymentOrders(orders : List<PaymentOrder>)
     suspend fun deleteAllPaymentOrders()
     suspend fun insertOrIgnorePaymentStatistics(statistics : List<PaymentStatistic>)
@@ -45,6 +48,7 @@ interface BoneDao {
     // Exchanges
     val exchanges : Flow<List<ExchangeOrder>>
     suspend fun getExchangeById(id: Int): ExchangeOrder?
+    suspend fun getAllExchangeOrders(): List<ExchangeOrder>
     suspend fun insertOrIgnoreExchanges(exchanges : List<ExchangeOrder>)
     suspend fun deleteAllExchanges()
 
