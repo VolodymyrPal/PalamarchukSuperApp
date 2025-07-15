@@ -43,12 +43,10 @@ class ObserveLoginStatusUseCaseImplTest {
     fun setup() {
         clearAllMocks()
         useCaseNonRefresh =
-            ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig, logoutUseCase)
+            ObserveLoginStatusUseCaseImpl(authRepository, sessionConfig)
 
         useCaseWithRefresh = ObserveLoginStatusUseCaseImpl(
-            authRepository, sessionConfig.copy(
-                tokenRefreshEnable = true
-            ), logoutUseCase
+            authRepository, sessionConfig.copy(tokenRefreshEnable = true)
         )
         coEvery { logoutUseCase.invoke() } just Runs
         coEvery { authRepository.saveUpdateSession(any()) } returns AppResult.Success(Unit)
@@ -90,7 +88,7 @@ class ObserveLoginStatusUseCaseImplTest {
     }
 
     @Test
-    fun `unremembered expired session returns NOT_LOGGED and triggers logout`() =
+    fun `unremembered expired session returns NOT_LOGGED`() =
         runTest {
             val session = generateSession(
                 rememberSession = false,
@@ -102,7 +100,6 @@ class ObserveLoginStatusUseCaseImplTest {
 
             val result = useCaseNonRefresh.invoke().toList()
 
-            coVerify(exactly = 1) { logoutUseCase.invoke() }
             assertEquals(LogStatus.NOT_LOGGED, result.first())
         }
 
