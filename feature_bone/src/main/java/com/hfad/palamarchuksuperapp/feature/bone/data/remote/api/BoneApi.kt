@@ -14,18 +14,23 @@ interface BoneApi {
     fun getTypeOrderById(key: String) : TypedTransaction? // key = "${type}:${id}",
 
     fun getOrdersByPage(page: Int): List<Order>
-    fun syncOrders(cachedOrders: List<Order>): SyncResponse<Order>
+    fun getOrder(id: Int): Order
+    fun getOrdersWithRange(from: Date, to: Date): List<Order>
     fun syncOrderStatistic(): OrderStatistic
 
     fun getSaleOrdersByPage(page: Int): List<SaleOrder>
-    fun syncSaleOrders(cachedOrders: List<SaleOrder>): SyncResponse<SaleOrder>
+    fun getSaleOrder(id: Int): SaleOrder
+    fun getSaleOrdersWithRange(from: Date, to: Date): List<Order>
     fun syncSaleStatistics(): SalesStatistics
 
     fun getPaymentOrdersByPage(page: Int): List<PaymentOrder>
-    fun syncPaymentOrders(cachedOrders: List<PaymentOrder>): SyncResponse<PaymentOrder>
+    fun getPaymentOrder(id: Int): PaymentOrder
+    fun getPaymentOrdersWithRange(from: Date, to: Date): List<Order>
     fun syncPaymentStatistic(): PaymentStatistic
 
     fun getExchangesByPage(page: Int): List<ExchangeOrder>
+    fun getExchange(id: Int): ExchangeOrder
+    fun getExchangesWithRange(from: Date, to: Date): List<ExchangeOrder>
 
     fun syncTypedTransactionsInRange(
         from: Date,
