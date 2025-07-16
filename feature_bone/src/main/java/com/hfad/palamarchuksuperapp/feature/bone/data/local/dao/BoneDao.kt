@@ -16,6 +16,7 @@ interface BoneDao {
     // Orders
     val orders : Flow<List<Order>>
     val orderStatistic : Flow<OrderStatistic>
+    fun ordersInRange(from: Date, to: Date) : Flow<List<Order>>
     suspend fun getOrderById(id: Int): Order?
     suspend fun geAllOrders(): List<Order>
     suspend fun insertOrIgnoreOrders(orders : List<Order>)
@@ -41,7 +42,7 @@ interface BoneDao {
     suspend fun insertOrIgnorePaymentStatistics(statistics : List<PaymentStatistic>)
 
     // Finance Operations
-    fun operationsFromTo(from: Date, to: Date) : Flow<List<TypedTransaction>>
+    fun operationsInRange(from: Date, to: Date) : Flow<List<TypedTransaction>>
     val operations : Flow<List<TypedTransaction>>
     val financeStatistic : Flow<FinanceStatistic>
 
