@@ -4,30 +4,28 @@ import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateExchangeOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.typeApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.ExchangeRepository
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ExchangeOrderCard
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.util.Date
 import javax.inject.Inject
 
 class ExchangeRepositoryImpl @Inject constructor(
-    private val boneDao: BoneDao,
+    private val boneControllerDao: BoneControllerDao,
     private val boneApi: BoneApi,
 ) : ExchangeRepository {
 
     override val exchanges: AppResult<Flow<List<ExchangeOrder>>, AppError> = trySqlApp {
-        boneDao.exchanges
+        boneControllerDao.exchanges
     }
 
     override suspend fun getExchangeById(id: Int): AppResult<ExchangeOrder, AppError> {
-        return when (val exchangeDao = withSqlErrorHandling { boneDao.getExchangeById(id) }) {
+        return when (val exchangeDao = withSqlErrorHandling { boneControllerDao.getExchangeById(id) }) {
             is AppResult.Success -> {
                 exchangeDao.data?.let { AppResult.Success(it) } ?: fetchFromApiAndCache(id)
             }
@@ -43,7 +41,7 @@ class ExchangeRepositoryImpl @Inject constructor(
         return if (exchangeApi == null || exchangeApi !is ExchangeOrder) {
             AppResult.Error(AppError.CustomError("Exchange not found"))
         } else {
-            boneDao.insertOrIgnoreExchanges(listOf(exchangeApi))
+            boneControllerDao.insertOrIgnoreExchanges(listOf(exchangeApi))
             AppResult.Success(exchangeApi)
         }
     }
@@ -51,15 +49,15 @@ class ExchangeRepositoryImpl @Inject constructor(
     override suspend fun softRefreshExchanges() {
         val exchangesResultApi = getExchangesResultApiWithError()
         if (exchangesResultApi is AppResult.Success) {
-            boneDao.insertOrIgnoreExchanges(exchangesResultApi.data)
+            boneControllerDao.insertOrIgnoreExchanges(exchangesResultApi.data)
         }
     }
 
     override suspend fun hardRefreshExchanges() {
-        boneDao.deleteAllExchanges()
+        boneControllerDao.deleteAllExchanges()
         val exchangesResultApi = getExchangesResultApiWithError()
         if (exchangesResultApi is AppResult.Success) {
-            boneDao.insertOrIgnoreExchanges(exchangesResultApi.data)
+            boneControllerDao.insertOrIgnoreExchanges(exchangesResultApi.data)
         }
     }
 

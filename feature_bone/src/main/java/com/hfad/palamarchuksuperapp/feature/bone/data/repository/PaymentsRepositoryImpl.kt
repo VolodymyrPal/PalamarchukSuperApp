@@ -4,7 +4,8 @@ import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.PaymentOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
@@ -13,45 +14,45 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class PaymentsRepositoryImpl @Inject constructor(
-    private val boneDao: BoneDao,
+    private val boneControllerDao: PaymentOrderDao,
     private val boneApi: BoneApi,
 ) : PaymentsRepository {
 
     override val payments: AppResult<Flow<List<PaymentOrder>>, AppError> = trySqlApp {
-        boneDao.paymentOrders
+        boneControllerDao.paymentOrders
     }
 
     override val paymentStatistic: AppResult<Flow<PaymentStatistic>, AppError> =
         trySqlApp {
-            boneDao.paymentStatistics
+            boneControllerDao.paymentStatistics
         }
 
     override suspend fun getPaymentById(id: Int): AppResult<PaymentOrder, AppError> = withSqlErrorHandling {
-            boneDao.getPaymentOrderById(id)!!
+            boneControllerDao.getPaymentOrderById(id)!!
         }
 
     override suspend fun softRefreshPayments() {
         val paymentsResultApi = getPaymentsResultApiWithError()
         if (paymentsResultApi is AppResult.Success) {
-            boneDao.insertOrIgnorePaymentOrders(paymentsResultApi.data)
+            boneControllerDao.insertOrIgnorePaymentOrders(paymentsResultApi.data)
         }
 
         val paymentStatisticResultApi = getPaymentStatisticResultApiWithError()
         if (paymentStatisticResultApi is AppResult.Success) {
-            boneDao.insertOrIgnorePaymentStatistics(paymentStatisticResultApi.data)
+            boneControllerDao.insertOrIgnorePaymentStatistics(paymentStatisticResultApi.data)
         }
     }
 
     override suspend fun hardRefreshPayments() {
-        boneDao.deleteAllPaymentOrders()
+        boneControllerDao.deleteAllPaymentOrders()
         val paymentsResultApi = getPaymentsResultApiWithError()
         if (paymentsResultApi is AppResult.Success) {
-            boneDao.insertOrIgnorePaymentOrders(paymentsResultApi.data)
+            boneControllerDao.insertOrIgnorePaymentOrders(paymentsResultApi.data)
         }
 
         val paymentStatisticResultApi = getPaymentStatisticResultApiWithError()
         if (paymentStatisticResultApi is AppResult.Success) {
-            boneDao.insertOrIgnorePaymentStatistics(paymentStatisticResultApi.data)
+            boneControllerDao.insertOrIgnorePaymentStatistics(paymentStatisticResultApi.data)
         }
     }
 

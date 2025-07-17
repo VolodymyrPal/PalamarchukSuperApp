@@ -3,17 +3,17 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 import javax.inject.Inject
 
 class OrdersRepositoryImpl @Inject constructor(
-    private val boneDao: BoneDao,
+    private val boneControllerDao: BoneControllerDao,
     private val boneApi: BoneApi,
 ) : OrdersRepository {
 
