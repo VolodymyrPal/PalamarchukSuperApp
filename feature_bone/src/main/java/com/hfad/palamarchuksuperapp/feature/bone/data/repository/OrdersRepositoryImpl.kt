@@ -60,7 +60,7 @@ class OrdersRepositoryImpl @Inject constructor(
 
         val orderStatisticResultApi = getOrderStatisticResultApiWithError()
         if (orderStatisticResultApi is AppResult.Success) {
-            boneDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
+            boneControllerDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
         }
     }
 
@@ -71,10 +71,10 @@ class OrdersRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistic, AppError> {
+    private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistics, AppError> {
         return safeApiCall {
-            val orderStatistic: OrderStatistic = boneApi.syncOrderStatistic()
-            AppResult.Success(orderStatistic)
+            val orderStatistics: OrderStatistics = boneApi.syncOrderStatistic()
+            AppResult.Success(orderStatistics)
         }
     }
 }
