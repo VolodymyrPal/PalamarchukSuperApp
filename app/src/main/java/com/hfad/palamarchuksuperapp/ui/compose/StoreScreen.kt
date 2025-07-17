@@ -308,7 +308,7 @@ fun StoreScreen(
                     modifier = modifier
                         .fillMaxSize()
                         .padding(
-                            top = paddingValues.calculateTopPadding(),
+                            paddingValues
                         )
                 ) {
                     StoreScreenContent(
