@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.hfad.palamarchuksuperapp.core"
-    compileSdk = 35
+    compileSdk = 36
 
     buildFeatures {
         compose = true

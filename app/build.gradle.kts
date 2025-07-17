@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "com.hfad.palamarchuksuperapp"
-    compileSdk = 35
+    compileSdk = 36
 
     val groqKey: String = gradleLocalProperties(rootDir, providers).getProperty("GROQ_KEY")
     val openAiKey: String = gradleLocalProperties(rootDir, providers).getProperty("OPEN_AI_KEY_USER")
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.hfad.palamarchuksuperapp"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "0.6" //TODO update on release to follow version name in play market
 
