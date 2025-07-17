@@ -136,7 +136,7 @@ fun SkillScreen(
                     .sharedBounds(
                         this.rememberSharedContentState("skill"), animatedContentScope
                     )
-                    .padding()
+                    .padding(paddingValues)
             ) {
                 val state by viewModel.uiState.collectAsState()
 

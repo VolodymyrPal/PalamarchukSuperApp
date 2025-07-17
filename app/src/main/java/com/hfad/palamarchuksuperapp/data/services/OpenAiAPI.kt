@@ -47,7 +47,7 @@ data class ChatCompletionResponse(
     val model: String,
     val choices: List<Choice>,
     val usage: Usage,
-    @SerialName("system_fingerprint") val systemFingerprint: String
+    @SerialName("system_fingerprint") val systemFingerprint: String?
 )
 
 @Serializable

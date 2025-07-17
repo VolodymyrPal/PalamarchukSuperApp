@@ -27,10 +27,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -94,7 +95,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -224,7 +224,9 @@ fun ChatScreen(
             RequestPanel(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp, 0.dp, 10.dp, 5.dp),
+                    .imePadding()
+                    .navigationBarsPadding()
+                ,
                 onEvent = event,
                 loading = state.value.isLoading,
                 containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -234,17 +236,14 @@ fun ChatScreen(
         Surface(
             color = Color.Transparent,
             modifier = Modifier
+                .padding(paddingValues)
                 .fillMaxSize()
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                )
         ) {
             LazyChatScreen(
                 modifier = Modifier.fillMaxWidth(),
                 messagesList = state.value.chat.messageGroups.toPersistentList(),
                 event = event,
                 error = state.value.error,
-                bottomPaddings = paddingValues.calculateBottomPadding(),
                 state = listState
             )
         }
@@ -476,7 +475,6 @@ fun LazyChatScreen(
     event: (ChatBotViewModel.Event) -> Unit,
     error: AppError?,
     state: LazyListState,
-    bottomPaddings: Dp,
 ) {
     val brush = Brush.verticalGradient(
         listOf(
@@ -515,14 +513,6 @@ fun LazyChatScreen(
                     // Обработка изображений
                 }
             }
-        }
-
-        item {
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(bottomPaddings)
-            )
         }
     }
 }

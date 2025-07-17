@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.remote.api
 
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
@@ -16,7 +16,7 @@ interface BoneApi {
     fun getOrdersByPage(page: Int): List<Order>
     fun getOrder(id: Int): Order
     fun getOrdersWithRange(from: Date, to: Date): List<Order>
-    fun syncOrderStatistic(): OrderStatistic
+    fun syncOrderStatistic(): OrderStatistics
 
     fun getSaleOrdersByPage(page: Int): List<SaleOrder>
     fun getSaleOrder(id: Int): SaleOrder

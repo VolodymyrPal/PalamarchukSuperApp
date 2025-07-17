@@ -12,7 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -29,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -166,8 +164,6 @@ fun BottomNavBar(
 
     NavigationBar(
         modifier = modifier
-            .padding(bottom = 5.dp, start = 5.dp, end = 5.dp)
-            .clip(RoundedCornerShape(25))
             .border(2.dp, MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(25)),
         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.95f)
     ) {

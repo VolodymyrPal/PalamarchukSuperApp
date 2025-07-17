@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.ExchangeRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.FinanceRepository
@@ -28,7 +28,7 @@ class FinanceRepositoryImpl @Inject constructor(
     ): AppResult<Flow<List<TypedTransaction>>, AppError> {
         // Распаковка результатов
         val exchangeFlow = exchangeRepository.exchanges
-        val ordersFlow = ordersRepository.orders
+        val ordersFlow = ordersRepository.cachedOrders
         val paymentsFlow = paymentsRepository.payments
         val salesFlow = salesRepository.saleOrders
 
@@ -53,9 +53,9 @@ class FinanceRepositoryImpl @Inject constructor(
         return AppResult.Success(combinedFlow)
     }
 
-    override val statistic: AppResult<Flow<FinanceStatistic>, AppError> = trySqlApp {
+    override val statistic: AppResult<Flow<FinanceStatistics>, AppError> = trySqlApp {
 //        boneDao.financeStatistic
-        flowOf(FinanceStatistic()) //TODO
+        flowOf(FinanceStatistics()) //TODO
     }
 
     suspend fun syncData() {

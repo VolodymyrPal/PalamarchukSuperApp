@@ -161,7 +161,7 @@ fun MainScreenRow(
 
 
         Surface(
-            color = Color.Transparent, modifier = modifier
+            color = Color.Transparent, modifier = modifier.padding(paddingValues)
         ) {
             with(localTransitionScope) {//TODO
                 LazyColumn(
@@ -334,12 +334,9 @@ fun MainScreenRow(
                                         .size(150.dp)
                                         .padding(10.dp)
                                         .clip(RoundedCornerShape(80.dp))
-
                                 )
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(paddingValues.calculateBottomPadding() + 10.dp))
                     }
                 }
             }

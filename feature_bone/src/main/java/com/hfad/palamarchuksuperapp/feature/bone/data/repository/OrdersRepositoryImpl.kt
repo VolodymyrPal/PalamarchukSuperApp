@@ -3,26 +3,27 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 import javax.inject.Inject
 
 class OrdersRepositoryImpl @Inject constructor(
-    private val boneDao: BoneDao,
+    private val boneControllerDao: BoneControllerDao,
     private val boneApi: BoneApi,
 ) : OrdersRepository {
 
-    override val orders: AppResult<Flow<List<Order>>, AppError> = trySqlApp {
-        boneDao.orders
+    override val cachedOrders: AppResult<Flow<List<Order>>, AppError> = trySqlApp {
+        boneControllerDao.cachedOrders
     }
 
-    override val orderStatistic: AppResult<Flow<OrderStatistic>, AppError> = trySqlApp {
-        boneDao.orderStatistic
+    override val cachedOrderStatistics: AppResult<Flow<OrderStatistics>, AppError> = trySqlApp {
+        boneApi.syncOrderStatistic()
+        boneControllerDao.cachedOrderStatistics
     }
 
     override fun ordersInRange(
@@ -30,37 +31,37 @@ class OrdersRepositoryImpl @Inject constructor(
         to: Date,
     ): Flow<List<Order>> {
         boneApi.getOrdersWithRange(from, to)
-        return boneDao.ordersInRange(from, to)
+        return boneControllerDao.ordersInRange(from, to)
     }
 
-    override suspend fun getOrderById(id: Int): AppResult<Order, AppError> {
+    override suspend fun getOrderById(id: Int): AppResult<Flow<Order?>, AppError> {
         val orderApi = boneApi.getOrder(id)
-        val order = boneDao.getOrderById(id) // ?: return AppResult.Error(AppError.NetworkError)
-        return AppResult.Success(order!!)
+        val order = boneControllerDao.getOrderById(id) // ?: return AppResult.Error(AppError.NetworkError)
+        return AppResult.Success(order)
     }
 
     override suspend fun softRefreshOrders() {
         val ordersResultApi = getOrdersResultApiWithError()
         if (ordersResultApi is AppResult.Success) {
-            boneDao.insertOrIgnoreOrders(ordersResultApi.data)
+            boneControllerDao.insertOrIgnoreOrders(ordersResultApi.data)
         }
 
         val orderStatisticResultApi = getOrderStatisticResultApiWithError()
         if (orderStatisticResultApi is AppResult.Success) {
-            boneDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
+            boneControllerDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
         }
     }
 
     override suspend fun hardRefreshOrders() {
-        boneDao.deleteAllOrders()
         val ordersResultApi = getOrdersResultApiWithError()
         if (ordersResultApi is AppResult.Success) {
-            boneDao.insertOrIgnoreOrders(ordersResultApi.data)
+            boneControllerDao.deleteAllOrders()
+            boneControllerDao.insertOrIgnoreOrders(ordersResultApi.data)
         }
 
         val orderStatisticResultApi = getOrderStatisticResultApiWithError()
         if (orderStatisticResultApi is AppResult.Success) {
-            boneDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
+            boneControllerDao.insertOrIgnoreOrderStatistic(orderStatisticResultApi.data)
         }
     }
 
@@ -71,10 +72,10 @@ class OrdersRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistic, AppError> {
+    private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistics, AppError> {
         return safeApiCall {
-            val orderStatistic: OrderStatistic = boneApi.syncOrderStatistic()
-            AppResult.Success(orderStatistic)
+            val orderStatistics: OrderStatistics = boneApi.syncOrderStatistic()
+            AppResult.Success(orderStatistics)
         }
     }
 }

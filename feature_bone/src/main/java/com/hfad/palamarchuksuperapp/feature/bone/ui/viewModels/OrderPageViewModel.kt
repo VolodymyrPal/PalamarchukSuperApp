@@ -6,7 +6,7 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,12 +29,12 @@ class OrderPageViewModel @Inject constructor(
         emptyList()
     )
 
-    val statisticFlow: StateFlow<OrderStatistic> = flow {
+    val statisticFlow: StateFlow<OrderStatistics> = flow {
         emit(generateOrderStatistic())
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        OrderStatistic() // TODO for testing
+        OrderStatistics() // TODO for testing
     )
 
     override val uiState: StateFlow<OrderPageState> =
@@ -70,8 +70,8 @@ class OrderPageViewModel @Inject constructor(
 }
 
 
-internal fun generateOrderStatistic(): OrderStatistic {
-    return OrderStatistic(
+internal fun generateOrderStatistic(): OrderStatistics {
+    return OrderStatistics(
         totalOrders = Random.nextInt(20, 30),
         completedOrders = Random.nextInt(5, 15),
         inProgressOrders = Random.nextInt(1, 5),
