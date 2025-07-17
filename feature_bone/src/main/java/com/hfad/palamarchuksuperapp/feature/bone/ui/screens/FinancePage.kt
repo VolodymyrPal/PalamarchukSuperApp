@@ -55,7 +55,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
@@ -86,7 +86,7 @@ fun FinancePage(
         item {
             FinanceStatisticCard(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
-                financeState.financeStatistic
+                financeState.financeStatistics
             )
         }
         items(financeState.salesItems) { item ->
@@ -101,7 +101,7 @@ fun FinancePage(
 @Composable
 fun FinanceStatisticCard(
     modifier: Modifier = Modifier,
-    financeStatistic: FinanceStatistic,
+    financeStatistics: FinanceStatistics,
 ) {
     Card(
         modifier = modifier,
