@@ -26,22 +26,26 @@ class OrdersRepositoryImpl @Inject constructor(
         boneControllerDao.cachedOrders
     }
 
-    override val cachedOrderStatistics: AppResult<Flow<OrderStatistics>, AppError> = trySqlApp {
-        boneApi.syncOrderStatistic()
-        boneControllerDao.cachedOrderStatistics
-    }
+    override val cachedOrderStatistics: AppResult<Flow<OrderStatistics>, AppError> =
+        appSafeApiCall {
+            trySqlApp {
+                orderApi.syncOrderStatistic()
+                boneControllerDao.cachedOrderStatistics
+            }
+        }
 
     override fun ordersInRange(
         from: Date,
         to: Date,
     ): Flow<List<Order>> {
-        boneApi.getOrdersWithRange(from, to)
+        orderApi.getOrdersWithRange(from, to)
         return boneControllerDao.ordersInRange(from, to)
     }
 
     override suspend fun getOrderById(id: Int): AppResult<Flow<Order?>, AppError> {
-        val orderApi = boneApi.getOrder(id)
-        val order = boneControllerDao.getOrderById(id) // ?: return AppResult.Error(AppError.NetworkError)
+        val orderApi = orderApi.getOrder(id)
+        val order =
+            boneControllerDao.getOrderById(id) // ?: return AppResult.Error(AppError.NetworkError)
         return AppResult.Success(order)
     }
 
@@ -72,14 +76,14 @@ class OrdersRepositoryImpl @Inject constructor(
 
     private suspend fun getOrdersResultApiWithError(): AppResult<List<Order>, AppError> {
         return safeApiCall {
-            val orders: List<Order> = boneApi.getOrdersByPage(1)
+            val orders: List<Order> = orderApi.getOrdersByPage(1)
             AppResult.Success(orders)
         }
     }
 
     private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistics, AppError> {
         return safeApiCall {
-            val orderStatistics: OrderStatistics = boneApi.syncOrderStatistic()
+            val orderStatistics: OrderStatistics = orderApi.syncOrderStatistic()
             AppResult.Success(orderStatistics)
         }
     }
