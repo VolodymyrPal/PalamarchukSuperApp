@@ -11,7 +11,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import java.util.Date
 
 interface BoneApi {
-    fun getTypeOrderById(key: String) : TypedTransaction? // key = "${type}:${id}",
+    fun getTypeOrderById(key: String): TypedTransaction? // key = "${type}:${id}",
 
     fun getOrdersByPage(page: Int): List<Order>
     fun getOrder(id: Int): Order
