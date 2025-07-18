@@ -79,3 +79,48 @@ class OrdersRepositoryImpl @Inject constructor(
         }
     }
 }
+
+private suspend fun some(): AppResult<Unit, AppError> {
+    coroutineScope {
+        appSafeApiCall {
+            AppResult.Success(Unit)
+        }
+    }
+    return trySqlApp {
+        AppResult.Success<Unit, AppError>(Unit)
+    }
+}
+
+fun <T> appSafeApiCall(call: () -> AppResult<T, AppError>): AppResult<T, AppError> {
+    return try {
+        call()
+    } catch (e: UnresolvedAddressException) {
+        AppResult.Error(
+            error = AppError.NetworkException.ApiError.UndefinedError(
+                message = "Problem with internet connection.",
+                cause = e
+            )
+        )
+    } catch (e: JsonConvertException) {
+        AppResult.Error(
+            error = AppError.NetworkException.ApiError.UndefinedError(
+                message = "Problem with parsing response. Please contact developer.",
+                cause = e
+            )
+        )
+    } catch (e: ClosedReceiveChannelException) {
+        AppResult.Error(
+            error = AppError.NetworkException.ApiError.UndefinedError(
+                message = "Waiting for response timeout. Please contact developer.",
+                cause = e
+            )
+        )
+    } catch (e: SocketException) { //Sometimes when bad connection occur
+        AppResult.Error(
+            error = AppError.NetworkException.ApiError.UndefinedError(
+                message = "Waiting for response timeout. Please contact developer.",
+                cause = e
+            )
+        )
+    }
+}
