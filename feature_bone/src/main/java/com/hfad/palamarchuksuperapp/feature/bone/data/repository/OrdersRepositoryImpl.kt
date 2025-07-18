@@ -4,17 +4,22 @@ import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import io.ktor.serialization.JsonConvertException
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import java.net.SocketException
+import java.nio.channels.UnresolvedAddressException
 import java.util.Date
 import javax.inject.Inject
 
 class OrdersRepositoryImpl @Inject constructor(
     private val boneControllerDao: BoneControllerDao,
-    private val boneApi: BoneApi,
+    private val orderApi: OrderApi,
 ) : OrdersRepository {
 
     override val cachedOrders: AppResult<Flow<List<Order>>, AppError> = trySqlApp {
