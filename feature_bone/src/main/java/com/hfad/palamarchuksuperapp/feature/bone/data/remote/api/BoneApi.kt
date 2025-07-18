@@ -39,6 +39,44 @@ interface BoneApi {
     ): SyncResponse<TypedTransaction>
 }
 
+interface OrderApi {
+    fun getOrdersByPage(page: Int): List<Order>
+    fun getOrder(id: Int): Order
+    fun getOrdersWithRange(from: Date, to: Date): List<Order>
+    fun syncOrderStatistic(): OrderStatistics
+}
+
+interface SaleOrderApi {
+    fun getSaleOrdersByPage(page: Int): List<SaleOrder>
+    fun getSaleOrder(id: Int): SaleOrder
+    fun getSaleOrdersWithRange(from: Date, to: Date): List<Order>
+    fun syncSaleStatistics(): SalesStatistics
+}
+
+interface PaymentOrderApi {
+    fun getPaymentOrdersByPage(page: Int): List<PaymentOrder>
+    fun getPaymentOrder(id: Int): PaymentOrder
+    fun getPaymentOrdersWithRange(from: Date, to: Date): List<Order>
+    fun syncPaymentStatistic(): PaymentStatistic
+}
+
+interface ExchangeOrderApi {
+    fun getExchangesByPage(page: Int): List<ExchangeOrder>
+    fun getExchange(id: Int): ExchangeOrder
+    fun getExchangesWithRange(from: Date, to: Date): List<ExchangeOrder>
+}
+
+interface TransactionSyncApi {
+    fun getTypeOrderById(key: String): TypedTransaction?
+
+    fun syncTypedTransactionsInRange(
+        from: Date,
+        to: Date,
+        transactionHashesByTypeAndId: Map<String, String>,
+    ): SyncResponse<TypedTransaction>
+}
+
+
 data class SyncResponse<T>(
     val new: List<T>,
     val updated: List<T>,
