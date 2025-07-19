@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
+import android.database.SQLException
+import com.hfad.palamarchuksuperapp.core.data.mapSQLException
 import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
@@ -10,8 +12,9 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import io.ktor.serialization.JsonConvertException
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import java.net.SocketException
 import java.nio.channels.UnresolvedAddressException
 import java.util.Date
@@ -132,4 +135,16 @@ fun <T> appSafeApiCall(call: () -> AppResult<T, AppError>): AppResult<T, AppErro
             )
         )
     }
+}
+
+fun <T> Flow<T>.withSqlErrorHandling(): Flow<AppResult<T, AppError>> {
+    return this
+        .map { AppResult.Success<T, AppError>(it) as AppResult<T, AppError> }
+        .catch { e ->
+            if (e is SQLException) {
+                emit(AppResult.Error<T, AppError>(mapSQLException(e)))
+            } else {
+                throw e
+            }
+        }
 }
