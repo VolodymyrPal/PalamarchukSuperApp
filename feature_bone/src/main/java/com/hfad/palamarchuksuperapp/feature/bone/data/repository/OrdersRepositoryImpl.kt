@@ -33,21 +33,20 @@ class OrdersRepositoryImpl @Inject constructor(
 
     override fun ordersInRange(from: Date, to: Date): Flow<AppResult<List<Order>, AppError>> {
 
-    override val cachedOrderStatistics: AppResult<Flow<OrderStatistics>, AppError> =
-        appSafeApiCall {
-            trySqlApp {
-                orderApi.syncOrderStatistic()
-                boneControllerDao.cachedOrderStatistics
-            }
+        val apiOrders = safeApiCall { orderApi.getOrdersWithRange(from, to) }
+        if (apiOrders is AppResult.Success) {
+            boneControllerDao.insertOrIgnoreOrders(apiOrders.data)
         }
-
-    override fun ordersInRange(
-        from: Date,
-        to: Date,
-    ): Flow<List<Order>> {
-        orderApi.getOrdersWithRange(from, to)
-        return boneControllerDao.ordersInRange(from, to)
+        return boneControllerDao.ordersInRange(from, to).withSqlErrorHandling()
     }
+
+//    override fun ordersInRange(
+//        from: Date,
+//        to: Date,
+//    ): Flow<List<Order>> {
+//        orderApi.getOrdersWithRange(from, to)
+//        return boneControllerDao.ordersInRange(from, to)
+//    }
 
     override suspend fun getOrderById(id: Int): AppResult<Flow<Order?>, AppError> {
         val orderApi = orderApi.getOrder(id)
@@ -93,17 +92,6 @@ class OrdersRepositoryImpl @Inject constructor(
             val orderStatistics: OrderStatistics = orderApi.syncOrderStatistic()
             AppResult.Success(orderStatistics)
         }
-    }
-}
-
-private suspend fun some(): AppResult<Unit, AppError> {
-    coroutineScope {
-        appSafeApiCall {
-            AppResult.Success(Unit)
-        }
-    }
-    return trySqlApp {
-        AppResult.Success<Unit, AppError>(Unit)
     }
 }
 
