@@ -25,9 +25,13 @@ class OrdersRepositoryImpl @Inject constructor(
     private val orderApi: OrderApi,
 ) : OrdersRepository {
 
-    override val cachedOrders: AppResult<Flow<List<Order>>, AppError> = trySqlApp {
-        boneControllerDao.cachedOrders
-    }
+    override val cachedOrders: Flow<AppResult<List<Order>, AppError>> =
+        boneControllerDao.cachedOrders.withSqlErrorHandling()
+
+    override val cachedOrderStatistics: Flow<AppResult<OrderStatistics, AppError>> =
+        boneControllerDao.cachedOrderStatistics.withSqlErrorHandling()
+
+    override fun ordersInRange(from: Date, to: Date): Flow<AppResult<List<Order>, AppError>> {
 
     override val cachedOrderStatistics: AppResult<Flow<OrderStatistics>, AppError> =
         appSafeApiCall {
