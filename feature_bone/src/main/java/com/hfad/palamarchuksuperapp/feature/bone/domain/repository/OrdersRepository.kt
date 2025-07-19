@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface OrdersRepository {
-    val cachedOrders: AppResult<Flow<List<Order>>, AppError>
-    val cachedOrderStatistics: AppResult<Flow<OrderStatistics>, AppError>
-    fun ordersInRange(from: Date, to: Date): Flow<List<Order>>
-    suspend fun getOrderById(id: Int): AppResult<Flow<Order?>, AppError>
+    val cachedOrders: Flow<AppResult<List<Order>, AppError>>
+    val cachedOrderStatistics: Flow<AppResult<OrderStatistics, AppError>>
+    suspend fun ordersInRange(from: Date, to: Date): Flow<AppResult<List<Order>, AppError>>
+    suspend fun getOrderById(id: Int): Flow<AppResult<List<Order?>, AppError>>
     suspend fun softRefreshOrders()
     suspend fun hardRefreshOrders()
 }
