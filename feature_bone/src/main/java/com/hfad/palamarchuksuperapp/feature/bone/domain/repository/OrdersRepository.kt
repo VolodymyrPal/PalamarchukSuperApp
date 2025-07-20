@@ -11,7 +11,7 @@ interface OrdersRepository {
     val cachedOrders: Flow<AppResult<List<Order>, AppError>>
     val cachedOrderStatistics: Flow<AppResult<OrderStatistics, AppError>>
     suspend fun ordersInRange(from: Date, to: Date): Flow<AppResult<List<Order>, AppError>>
-    suspend fun getOrderById(id: Int): Flow<AppResult<List<Order?>, AppError>>
+    suspend fun getOrderById(id: Int): Flow<AppResult<Order?, AppError>>
     suspend fun softRefreshOrders()
     suspend fun hardRefreshOrders()
 }
