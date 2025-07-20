@@ -31,28 +31,23 @@ class OrdersRepositoryImpl @Inject constructor(
     override val cachedOrderStatistics: Flow<AppResult<OrderStatistics, AppError>> =
         boneControllerDao.cachedOrderStatistics.withSqlErrorHandling()
 
-    override fun ordersInRange(from: Date, to: Date): Flow<AppResult<List<Order>, AppError>> {
-
-        val apiOrders = safeApiCall { orderApi.getOrdersWithRange(from, to) }
+    override suspend fun ordersInRange(
+        from: Date,
+        to: Date,
+    ): Flow<AppResult<List<Order>, AppError>> {
+        val apiOrders = orderApi.getOrdersWithRange(from, to)
         if (apiOrders is AppResult.Success) {
             boneControllerDao.insertOrIgnoreOrders(apiOrders.data)
         }
         return boneControllerDao.ordersInRange(from, to).withSqlErrorHandling()
     }
 
-//    override fun ordersInRange(
-//        from: Date,
-//        to: Date,
-//    ): Flow<List<Order>> {
-//        orderApi.getOrdersWithRange(from, to)
-//        return boneControllerDao.ordersInRange(from, to)
-//    }
-
-    override suspend fun getOrderById(id: Int): AppResult<Flow<Order?>, AppError> {
+    override suspend fun getOrderById(id: Int): Flow<AppResult<Order?, AppError>> {
         val orderApi = orderApi.getOrder(id)
-        val order =
-            boneControllerDao.getOrderById(id) // ?: return AppResult.Error(AppError.NetworkError)
-        return AppResult.Success(order)
+        if (orderApi is AppResult.Success) {
+            boneControllerDao.insertOrIgnoreOrders(listOf(orderApi.data))
+        }
+        return boneControllerDao.getOrderById(id).withSqlErrorHandling()
     }
 
     override suspend fun softRefreshOrders() {
@@ -81,16 +76,21 @@ class OrdersRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getOrdersResultApiWithError(): AppResult<List<Order>, AppError> {
-        return safeApiCall {
-            val orders: List<Order> = orderApi.getOrdersByPage(1)
-            AppResult.Success(orders)
+        val ordersResultApi = orderApi.getOrdersByPage(1)
+        if (ordersResultApi is AppResult.Success) {
+            boneControllerDao.insertOrIgnoreOrders(ordersResultApi.data)
         }
+        return ordersResultApi
     }
 
     private suspend fun getOrderStatisticResultApiWithError(): AppResult<OrderStatistics, AppError> {
         return safeApiCall {
-            val orderStatistics: OrderStatistics = orderApi.syncOrderStatistic()
-            AppResult.Success(orderStatistics)
+            val orderStatistics = orderApi.syncOrderStatistic()
+            if (orderStatistics is AppResult.Success) {
+                boneControllerDao.insertOrIgnoreOrderStatistic(orderStatistics.data)
+                return@safeApiCall orderStatistics
+            }
+            return@safeApiCall AppResult.Error(AppError.NetworkException.ApiError.UndefinedError())
         }
     }
 }

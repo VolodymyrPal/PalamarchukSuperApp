@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.remote.api
 
+import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
@@ -40,40 +42,40 @@ interface BoneApi {
 }
 
 interface OrderApi {
-    fun getOrdersByPage(page: Int): List<Order>
-    fun getOrder(id: Int): Order
-    fun getOrdersWithRange(from: Date, to: Date): List<Order>
-    fun syncOrderStatistic(): OrderStatistics
+    fun getOrdersByPage(page: Int): AppResult<List<Order>, AppError>
+    fun getOrder(id: Int): AppResult<Order, AppError>
+    fun getOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError>
+    fun syncOrderStatistic(): AppResult<OrderStatistics, AppError>
 }
 
 interface SaleOrderApi {
-    fun getSaleOrdersByPage(page: Int): List<SaleOrder>
-    fun getSaleOrder(id: Int): SaleOrder
-    fun getSaleOrdersWithRange(from: Date, to: Date): List<Order>
-    fun syncSaleStatistics(): SalesStatistics
+    fun getSaleOrdersByPage(page: Int): AppResult<List<SaleOrder>, AppError>
+    fun getSaleOrder(id: Int): AppResult<SaleOrder, AppError>
+    fun getSaleOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError>
+    fun syncSaleStatistics(): AppResult<SalesStatistics, AppError>
 }
 
 interface PaymentOrderApi {
-    fun getPaymentOrdersByPage(page: Int): List<PaymentOrder>
-    fun getPaymentOrder(id: Int): PaymentOrder
-    fun getPaymentOrdersWithRange(from: Date, to: Date): List<Order>
-    fun syncPaymentStatistic(): PaymentStatistic
+    fun getPaymentOrdersByPage(page: Int): AppResult<List<PaymentOrder>, AppError>
+    fun getPaymentOrder(id: Int): AppResult<PaymentOrder, AppError>
+    fun getPaymentOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError>
+    fun syncPaymentStatistic(): AppResult<PaymentStatistic, AppError>
 }
 
 interface ExchangeOrderApi {
-    fun getExchangesByPage(page: Int): List<ExchangeOrder>
-    fun getExchange(id: Int): ExchangeOrder
-    fun getExchangesWithRange(from: Date, to: Date): List<ExchangeOrder>
+    fun getExchangesByPage(page: Int): AppResult<List<ExchangeOrder>, AppError>
+    fun getExchange(id: Int): AppResult<ExchangeOrder, AppError>
+    fun getExchangesWithRange(from: Date, to: Date): AppResult<List<ExchangeOrder>, AppError>
 }
 
 interface TransactionSyncApi {
-    fun getTypeOrderById(key: String): TypedTransaction?
+    fun getTypeOrderById(key: String): AppResult<TypedTransaction?, AppError>
 
     fun syncTypedTransactionsInRange(
         from: Date,
         to: Date,
         transactionHashesByTypeAndId: Map<String, String>,
-    ): SyncResponse<TypedTransaction>
+    ): AppResult<SyncResponse<TypedTransaction>, AppError>
 }
 
 
