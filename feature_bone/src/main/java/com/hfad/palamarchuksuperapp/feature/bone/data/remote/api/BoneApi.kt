@@ -12,70 +12,41 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import java.util.Date
 
-interface BoneApi {
-    fun getTypeOrderById(key: String): TypedTransaction? // key = "${type}:${id}",
-
-    fun getOrdersByPage(page: Int): List<Order>
-    fun getOrder(id: Int): Order
-    fun getOrdersWithRange(from: Date, to: Date): List<Order>
-    fun syncOrderStatistic(): OrderStatistics
-
-    fun getSaleOrdersByPage(page: Int): List<SaleOrder>
-    fun getSaleOrder(id: Int): SaleOrder
-    fun getSaleOrdersWithRange(from: Date, to: Date): List<Order>
-    fun syncSaleStatistics(): SalesStatistics
-
-    fun getPaymentOrdersByPage(page: Int): List<PaymentOrder>
-    fun getPaymentOrder(id: Int): PaymentOrder
-    fun getPaymentOrdersWithRange(from: Date, to: Date): List<Order>
-    fun syncPaymentStatistic(): PaymentStatistic
-
-    fun getExchangesByPage(page: Int): List<ExchangeOrder>
-    fun getExchange(id: Int): ExchangeOrder
-    fun getExchangesWithRange(from: Date, to: Date): List<ExchangeOrder>
-
-    fun syncTypedTransactionsInRange(
-        from: Date,
-        to: Date,
-        transactionHashesByTypeAndId: Map<String, String>, // key = "${type}:${id}", value = backand hash
-    ): SyncResponse<TypedTransaction>
-}
-
 interface OrderApi {
-    fun getOrdersByPage(page: Int): AppResult<List<Order>, AppError>
-    fun getOrder(id: Int): AppResult<Order, AppError>
-    fun getOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError>
-    fun syncOrderStatistic(): AppResult<OrderStatistics, AppError>
+    fun getOrdersByPage(page: Int): AppResult<List<Order>, AppError.NetworkException>
+    fun getOrder(id: Int): AppResult<Order, AppError.NetworkException>
+    fun getOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError.NetworkException>
+    fun syncOrderStatistic(): AppResult<OrderStatistics, AppError.NetworkException>
 }
 
 interface SaleOrderApi {
-    fun getSaleOrdersByPage(page: Int): AppResult<List<SaleOrder>, AppError>
-    fun getSaleOrder(id: Int): AppResult<SaleOrder, AppError>
-    fun getSaleOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError>
-    fun syncSaleStatistics(): AppResult<SalesStatistics, AppError>
+    fun getSaleOrdersByPage(page: Int): AppResult<List<SaleOrder>, AppError.NetworkException>
+    fun getSaleOrder(id: Int): AppResult<SaleOrder, AppError.NetworkException>
+    fun getSaleOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError.NetworkException>
+    fun syncSaleStatistics(): AppResult<SalesStatistics, AppError.NetworkException>
 }
 
 interface PaymentOrderApi {
-    fun getPaymentOrdersByPage(page: Int): AppResult<List<PaymentOrder>, AppError>
-    fun getPaymentOrder(id: Int): AppResult<PaymentOrder, AppError>
-    fun getPaymentOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError>
-    fun syncPaymentStatistic(): AppResult<PaymentStatistic, AppError>
+    fun getPaymentOrdersByPage(page: Int): AppResult<List<PaymentOrder>, AppError.NetworkException>
+    fun getPaymentOrder(id: Int): AppResult<PaymentOrder, AppError.NetworkException>
+    fun getPaymentOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError.NetworkException>
+    fun syncPaymentStatistic(): AppResult<PaymentStatistic, AppError.NetworkException>
 }
 
 interface ExchangeOrderApi {
-    fun getExchangesByPage(page: Int): AppResult<List<ExchangeOrder>, AppError>
-    fun getExchange(id: Int): AppResult<ExchangeOrder, AppError>
-    fun getExchangesWithRange(from: Date, to: Date): AppResult<List<ExchangeOrder>, AppError>
+    fun getExchangesByPage(page: Int): AppResult<List<ExchangeOrder>, AppError.NetworkException>
+    fun getExchange(id: Int): AppResult<ExchangeOrder, AppError.NetworkException>
+    fun getExchangesWithRange(from: Date, to: Date): AppResult<List<ExchangeOrder>, AppError.NetworkException>
 }
 
 interface TransactionSyncApi {
-    fun getTypeOrderById(key: String): AppResult<TypedTransaction?, AppError>
+    fun getTypeOrderById(key: String): AppResult<TypedTransaction?, AppError.NetworkException>
 
     fun syncTypedTransactionsInRange(
         from: Date,
         to: Date,
         transactionHashesByTypeAndId: Map<String, String>,
-    ): AppResult<SyncResponse<TypedTransaction>, AppError>
+    ): AppResult<SyncResponse<TypedTransaction>, AppError.NetworkException>
 }
 
 
