@@ -4,18 +4,20 @@ import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.SaleOrderDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.SaleOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSalesStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SalesRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SalesRepositoryImpl @Inject constructor(
-    private val boneControllerDao: BoneControllerDao,
-    private val boneApi: BoneApi,
+class SalesRepositoryImpl// @Inject constructor
+    (
+    private val boneControllerDao: SaleOrderDao,
+    private val boneApi: SaleOrderApi,
 ) : SalesRepository {
 
     override val saleOrders: AppResult<Flow<List<SaleOrder>>, AppError> =
@@ -62,14 +64,15 @@ class SalesRepositoryImpl @Inject constructor(
 
     private suspend fun getSaleOrdersResultApiWithError(): AppResult<List<SaleOrder>, AppError> {
         return safeApiCall {
-            val saleOrders: List<SaleOrder> = boneApi.getSaleOrdersByPage(1)
-            AppResult.Success(saleOrders)
+//            val saleOrders: List<SaleOrder> = boneApi.getSaleOrdersByPage(1)
+            AppResult.Success(emptyList())
         }
     }
     
     private suspend fun getSalesStatisticsResultApiWithError(): AppResult<SalesStatistics, AppError> {
         return safeApiCall {
-            val salesStatistics: SalesStatistics = boneApi.syncSaleStatistics()
+            val salesStatistics: SalesStatistics =
+                generateSalesStatistics()// boneApi.syncSaleStatistics()
             AppResult.Success(salesStatistics)
         }
     }

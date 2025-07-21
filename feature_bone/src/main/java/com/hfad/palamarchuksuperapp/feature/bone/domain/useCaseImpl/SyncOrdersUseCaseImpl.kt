@@ -3,15 +3,15 @@ package com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl
 import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.SyncOrdersUseCase
-import javax.inject.Inject
 
-class SyncOrdersUseCaseImpl @Inject constructor(
-    private val boneApi: BoneApi,
-    private val boneControllerDao: BoneControllerDao,
+class SyncOrdersUseCaseImpl // @Inject constructor
+    (
+    private val boneApi: OrderApi,
+    private val boneControllerDao: OrderDao,
 ) : SyncOrdersUseCase {
     override suspend fun invoke(): AppResult<Unit, AppError> {
         val cachedDaoOrders = withSqlErrorHandling { boneControllerDao.geAllOrders() }

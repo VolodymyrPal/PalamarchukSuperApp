@@ -4,8 +4,8 @@ import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.ExchangeOrderDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.ExchangeOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateExchangeOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.typeApi
@@ -15,9 +15,10 @@ import kotlinx.coroutines.flow.flowOf
 import java.util.Date
 import javax.inject.Inject
 
-class ExchangeRepositoryImpl @Inject constructor(
-    private val boneControllerDao: BoneControllerDao,
-    private val boneApi: BoneApi,
+class ExchangeRepositoryImpl // @Inject constructor
+    (
+    private val boneControllerDao: ExchangeOrderDao,
+    private val boneApi: ExchangeOrderApi,
 ) : ExchangeRepository {
 
     override val exchanges: AppResult<Flow<List<ExchangeOrder>>, AppError> = trySqlApp {
@@ -36,7 +37,7 @@ class ExchangeRepositoryImpl @Inject constructor(
 
     private suspend fun fetchFromApiAndCache(id: Int): AppResult<ExchangeOrder, AppError> {
         val key = typeApi(ExchangeOrder::class, id.toString())
-        val exchangeApi = boneApi.getTypeOrderById(key)
+        val exchangeApi = boneApi.getExchange(id)
 
         return if (exchangeApi == null || exchangeApi !is ExchangeOrder) {
             AppResult.Error(AppError.CustomError("Exchange not found"))
