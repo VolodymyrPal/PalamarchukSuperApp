@@ -16,16 +16,6 @@ suspend fun <T> safeApiCall(call: suspend () -> AppResult<T, AppError>): AppResu
     }
 }
 
-suspend fun <T> safeApiCall(
-    call: suspend () -> T
-): AppResult<T, AppError> {
-    return try {
-        AppResult.Success(call())
-    } catch (e: Throwable) {
-        AppResult.Error(mapApiExceptionToAppError(e))
-    }
-}
-
 internal fun mapApiExceptionToAppError(e: Throwable): AppError {
     return when (e) {
         is UnresolvedAddressException -> AppError.NetworkException.ApiError.UndefinedError(
