@@ -10,6 +10,7 @@ import java.util.Date
 interface OrdersRepository {
     val cachedOrders: Flow<AppResult<List<Order>, AppError>>
     val cachedOrderStatistics: Flow<AppResult<OrderStatistics, AppError>>
+    suspend fun ordersByPage(page: Int, size: Int): Flow<AppResult<List<Order>, AppError>>
     suspend fun ordersInRange(from: Date, to: Date): Flow<AppResult<List<Order>, AppError>>
     suspend fun getOrderById(id: Int): Flow<AppResult<Order?, AppError>>
     suspend fun softRefreshOrders()
