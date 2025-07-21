@@ -4,18 +4,18 @@ import com.hfad.palamarchuksuperapp.core.data.safeApiCall
 import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.BoneControllerDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.PaymentOrderDao
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.BoneApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.PaymentOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentsRepository
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-class PaymentsRepositoryImpl @Inject constructor(
+class PaymentsRepositoryImpl //@Inject constructor
+    (
     private val boneControllerDao: PaymentOrderDao,
-    private val boneApi: BoneApi,
+    private val boneApi: PaymentOrderApi,
 ) : PaymentsRepository {
 
     override val payments: AppResult<Flow<List<PaymentOrder>>, AppError> = trySqlApp {
@@ -58,15 +58,15 @@ class PaymentsRepositoryImpl @Inject constructor(
 
     private suspend fun getPaymentsResultApiWithError(): AppResult<List<PaymentOrder>, AppError> {
         return safeApiCall {
-            val payments: List<PaymentOrder> = boneApi.getPaymentOrdersByPage(1)
-            AppResult.Success(payments)
+//            val payments: List<PaymentOrder> = boneApi.getPaymentOrdersByPage(1)
+            AppResult.Success(emptyList())
         }
     }
 
     private suspend fun getPaymentStatisticResultApiWithError(): AppResult<List<PaymentStatistic>, AppError> {
         return safeApiCall {
-            val paymentStatistic: PaymentStatistic = boneApi.syncPaymentStatistic()
-            AppResult.Success(listOf(paymentStatistic))
+//            val paymentStatistic: PaymentStatistic = boneApi.syncPaymentStatistic()
+            AppResult.Success(listOf(generatePaymentStatistic()))
         }
     }
 }

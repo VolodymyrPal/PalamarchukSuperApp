@@ -20,7 +20,7 @@ class RefreshTokenUseCaseImpl @Inject constructor(
             }
 
             is AppResult.Error -> {
-                if (result.error is AppError.SessionError.SessionNotFound) {
+                if (result.error is AppError.SessionParseError.SessionNotFound) {
                     logoutUseCase()
                 }
                 result

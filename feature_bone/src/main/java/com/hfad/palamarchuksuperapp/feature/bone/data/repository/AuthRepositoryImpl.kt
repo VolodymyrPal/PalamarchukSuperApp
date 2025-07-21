@@ -64,7 +64,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun refreshToken(): AppResult<Unit, AppError> = mutex.withLock {
         val currentSession = observeCurrentSession().first() ?: return@withLock AppResult.Error(
-            AppError.SessionError.SessionNotFound("No active session found")
+            AppError.SessionParseError.SessionNotFound("No active session found")
         )
         val updatedSession = currentSession.copy(
             accessToken = "new_access_token",
@@ -104,7 +104,7 @@ class AuthRepositoryImpl @Inject constructor(
         val sessionJson = try {
             Json.encodeToString(session)
         } catch (e: Exception) {
-            return AppResult.Error(AppError.SessionError.SessionCanNotBeJson("Failed to serialize session: ${e.message}"))
+            return AppResult.Error(AppError.SessionParseError.SessionCanNotBeJson("Failed to serialize session: ${e.message}"))
         }
         val encryptedSession = cryptoService.encrypt(sessionJson)
 
@@ -124,7 +124,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
 
         return AppResult.Error(
-            AppError.SessionError.SessionNotFound(
+            AppError.SessionParseError.SessionNotFound(
                 lastException?.message ?: "Failed to save session after $maxRetries attempts"
             )
         )

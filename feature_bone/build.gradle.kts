@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.database)
 
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
     implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
     implementation("androidx.security:security-crypto:1.0.0")
 
