@@ -7,11 +7,11 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ClientEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.EntityDetails
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import kotlinx.coroutines.flow.Flow
