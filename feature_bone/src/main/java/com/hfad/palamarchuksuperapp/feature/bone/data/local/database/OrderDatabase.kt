@@ -23,8 +23,16 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 
 @Database(
-    entities = [Order::class, OrderRemoteKeys::class, OrderStatistics::class,
-        ExchangeOrder::class, PaymentOrder::class, PaymentStatistic::class, SaleOrder::class, SalesStatistics::class],
+    entities = [
+        Order::class,
+        OrderRemoteKeys::class,
+        OrderStatistics::class,
+        ExchangeOrder::class,
+        PaymentOrder::class,
+        PaymentStatistic::class,
+        SaleOrder::class,
+        SalesStatistics::class
+    ],
     version = 1,
     exportSchema = true
 )
@@ -41,21 +49,19 @@ abstract class BoneDatabase : RoomDatabase() {
 @Dao
 interface RemoteKeysDao {
 
-    @Query("SELECT * FROM remote_order_keys WHERE orderId = :orderId")
+    @Query("SELECT * FROM $REMOTE_KEYS LIMIT 10")
     suspend fun remoteKeysOrderId(orderId: String): OrderRemoteKeys?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(keys: List<OrderRemoteKeys>)
 
-    @Query("DELETE FROM remote_order_keys")
+    @Query("DELETE FROM $REMOTE_KEYS")
     suspend fun clearRemoteKeys()
 }
 
 @Entity(tableName = "remote_order_keys")
 data class OrderRemoteKeys(
-    @PrimaryKey val orderId: String,
+    @PrimaryKey val id: String,
     val prevKey: Int?,
     val nextKey: Int?,
 )
-
-const val DATABASE_MAIN_ENTITY_ORDER = "bonedatabase"
