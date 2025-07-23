@@ -17,6 +17,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.SaleOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
@@ -49,8 +50,8 @@ abstract class BoneDatabase : RoomDatabase() {
 @Dao
 interface RemoteKeysDao {
 
-    @Query("SELECT * FROM $REMOTE_KEYS LIMIT 10")
-    suspend fun remoteKeysOrderId(orderId: String): OrderRemoteKeys?
+    @Query("SELECT * FROM $REMOTE_KEYS WHERE id = :orderId AND `filter` = :filterStatus LIMIT 10")
+    suspend fun remoteKeysOrderId(orderId: String, filterStatus: OrderStatus): OrderRemoteKeys?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(keys: List<OrderRemoteKeys>)
@@ -62,6 +63,7 @@ interface RemoteKeysDao {
 @Entity(tableName = "remote_order_keys")
 data class OrderRemoteKeys(
     @PrimaryKey val id: String,
+    val filter: OrderStatus,
     val prevKey: Int?,
     val nextKey: Int?,
 )
