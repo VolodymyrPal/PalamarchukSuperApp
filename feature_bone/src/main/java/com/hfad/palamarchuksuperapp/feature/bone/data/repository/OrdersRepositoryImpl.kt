@@ -83,76 +83,59 @@ fun <T> Flow<T>.withSqlErrorHandling(): Flow<AppResult<T, AppError>> {
         }
 }
 
-//@OptIn(ExperimentalPagingApi::class)
-//class OrderRemoteMediator(
-//    private val database: OrderDao,
-//    private val orderApi: OrderApi
-//) : RemoteMediator<Int, Order>() {
-//
-//    override suspend fun load(
-//        loadType: LoadType,
-//        state: PagingState<Int, Order>
-//    ): MediatorResult {
-//        val page = when (loadType) {
-//            LoadType.REFRESH -> 1
-//            LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-//            LoadType.APPEND -> {
-//                val lastItem = state.lastItemOrNull()
-//                if (lastItem == null) return 1
-//                val keys = database.remoteKeysDao().remoteKeysOrderId(lastItem.id)
-//                keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
-//            }
-//        }
-//
-//        return try {
-//            val response = orderApi.getOrdersByPage(page, state.config.pageSize)
-//            val endReached = response.isEmpty()
-//
-//            database.withTransaction {
-//                if (loadType == LoadType.REFRESH) {
-//                    database.orderDao().clearAll()
-//                    database.remoteKeysDao().clearRemoteKeys()
-//                }
-//
-//                val keys = response.map {
-//                    OrderRemoteKeys(
-//                        orderId = it.id,
-//                        prevKey = if (page == 1) null else page - 1,
-//                        nextKey = if (endReached) null else page + 1
-//                    )
-//                }
-//
-//                database.remoteKeysDao().insertAll(keys)
-//                database.orderDao().insertAll(response.map { it.toEntity() })
-//            }
-//
-//            MediatorResult.Success(endOfPaginationReached = endReached)
-//        } catch (e: Exception) {
-//            MediatorResult.Error(e)
-//        }
-//    }
-//}
+@OptIn(ExperimentalPagingApi::class)
+class OrderRemoteMediator(
+    private val database: BoneDatabase,
+    private val orderApi: OrderApi,
+    private val status: OrderStatus?,
+) : RemoteMediator<Int, Order>() {
 
-//class OrdersPagingSource (
-//    private val orderApi: OrderApi
-//) : PagingSource<Int, Order>() {
-//    override fun getRefreshKey(state: PagingState<Int, Order>): Int? {
-//        state.anchorPosition?.let { anchorPosition ->
-//            val anchorPage = state.closestPageToPosition(anchorPosition)
-//            return anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
-//        }
-//        return null
-//    }
-//
-//    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Order> {
-//        val nextPageKey = params.key ?: 1
-//        val response = orderApi.getOrdersByPage(nextPageKey) as AppResult.Success
-//
-//        return LoadResult.Page(
-//            data = response.data,
-//            prevKey = null,
-//            nextKey = nextPageKey + 1
-//        )
-//    }
-//
-//}
+    val orderDao = database.orderDao()
+    val remoteKeysDao = database.remoteKeysDao()
+
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, Order>,
+    ): MediatorResult {
+        val page = when (loadType) {
+            LoadType.REFRESH -> 1
+            LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+            LoadType.APPEND -> {
+                val lastItem = state.lastItemOrNull()
+                if (lastItem == null) return MediatorResult.Success(endOfPaginationReached = true)
+                val keys = database.remoteKeysDao()
+                    .remoteKeysOrderId(lastItem.id, status)
+                keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
+            }
+        }
+
+        val response = orderApi.getOrdersByPage(page, state.config.pageSize)
+
+        if (response is AppResult.Error) {
+            return MediatorResult.Error(
+                throwable = response.error.cause ?: Exception(response.error.message)
+            )
+        }
+
+        response as AppResult.Success
+        val endReached = response.data.size < state.config.pageSize
+
+        database.withTransaction {
+            val keys = response.data.map {
+                OrderRemoteKeys(
+                    id = it.id,
+                    prevKey = if (page == 1) null else page - 1,
+                    nextKey = if (endReached) null else page + 1,
+                    filter = status
+                )
+            }
+            if (loadType == LoadType.REFRESH) {
+                orderDao.deleteAllOrders()
+                remoteKeysDao.clearRemoteKeys()
+            }
+            orderDao.insertOrIgnoreOrders(response.data)
+            remoteKeysDao.insertAll(keys)
+        }
+        return MediatorResult.Success(endOfPaginationReached = endReached)
+    }
+}
