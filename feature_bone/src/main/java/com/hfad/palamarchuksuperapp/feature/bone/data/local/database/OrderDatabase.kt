@@ -50,8 +50,8 @@ abstract class BoneDatabase : RoomDatabase() {
 @Dao
 interface RemoteKeysDao {
 
-    @Query("SELECT * FROM $REMOTE_KEYS WHERE id = :orderId AND `filter` = :filterStatus LIMIT 10")
-    suspend fun remoteKeysOrderId(orderId: String, filterStatus: OrderStatus): OrderRemoteKeys?
+    @Query("SELECT * FROM $REMOTE_KEYS WHERE id = :orderId AND `filter` = :filterStatus")
+    suspend fun remoteKeysOrderId(orderId: Int, filterStatus: OrderStatus?): OrderRemoteKeys?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(keys: List<OrderRemoteKeys>)
@@ -62,8 +62,8 @@ interface RemoteKeysDao {
 
 @Entity(tableName = "remote_order_keys")
 data class OrderRemoteKeys(
-    @PrimaryKey val id: String,
-    val filter: OrderStatus,
+    @PrimaryKey val id: Int,
+    val filter: OrderStatus?,
     val prevKey: Int?,
     val nextKey: Int?,
 )
