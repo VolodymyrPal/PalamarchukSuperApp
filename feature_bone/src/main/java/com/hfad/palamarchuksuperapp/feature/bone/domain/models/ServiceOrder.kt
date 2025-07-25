@@ -15,10 +15,17 @@ class ServiceOrder(
     val fullTransport: Boolean = true,
     override val serviceType: ServiceType = ServiceType.OTHER,
     val price: Float = 0.0f,
-    val duration: Int = 0,
+    val durationDay: Int = 0,
     override val status: StepperStatus = StepperStatus.CREATED,
-    @DrawableRes override val icon: Int = R.drawable.lock_outlined,
-) : Stepper
+) : Stepper {
+    @get: DrawableRes
+    override val icon = when (serviceType) {
+        ServiceType.FULL_FREIGHT -> R.drawable.in_progress
+        ServiceType.AIR_FREIGHT -> R.drawable.kilogram
+        ServiceType.CUSTOMS -> R.drawable.lock_outlined
+        else -> R.drawable.in_progress
+    }
+}
 
 enum class ServiceType(val title: String) {
     FULL_FREIGHT("Freight whole container"),

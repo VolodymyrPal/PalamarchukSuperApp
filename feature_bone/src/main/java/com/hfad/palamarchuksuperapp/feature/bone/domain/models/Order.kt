@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
-import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
@@ -8,7 +7,6 @@ import java.util.Date
 import kotlin.random.Random
 
 data class Order(
-    @PrimaryKey
     override val id: Int,
     val businessEntityNum: Int,
     val num: Int,
@@ -70,14 +68,8 @@ fun generateOrder(): Order { //TODO for test only
             fullTransport = Random.nextBoolean(),
             serviceType = serviceType,
             price = Random.nextFloat() * 10000 + 1000,
-            duration = Random.nextInt(3, 30),
+            durationDay = Random.nextInt(3, 30),
             status = StepperStatus.entries[Random.nextInt(StepperStatus.entries.size)],
-            icon = when (serviceType) {
-                ServiceType.FULL_FREIGHT -> R.drawable.in_progress
-                ServiceType.AIR_FREIGHT -> R.drawable.kilogram
-                ServiceType.CUSTOMS -> R.drawable.lock_outlined
-                else -> R.drawable.in_progress
-            }
         )
     }
 
@@ -127,14 +119,8 @@ fun generateOrderItems(): List<Order> { //TODO for test only
                 fullTransport = Random.nextBoolean(),
                 serviceType = serviceType,
                 price = Random.nextFloat() * 10000 + 1000,
-                duration = Random.nextInt(3, 30),
+                durationDay = Random.nextInt(3, 30),
                 status = StepperStatus.entries[Random.nextInt(StepperStatus.entries.size)],
-                icon = when (serviceType) {
-                    ServiceType.FULL_FREIGHT -> R.drawable.in_progress
-                    ServiceType.AIR_FREIGHT -> R.drawable.kilogram
-                    ServiceType.CUSTOMS -> R.drawable.lock_outlined
-                    else -> R.drawable.in_progress
-                }
             )
         }
 
