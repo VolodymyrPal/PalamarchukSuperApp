@@ -1,18 +1,17 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.database
 
-import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
-import androidx.room.Query
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.converters.DateConverter
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.ExchangeOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.FinanceOperationDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.GeneralDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.PaymentOrderDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.RemoteKeysDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.SaleOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
@@ -37,6 +36,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
     version = 1,
     exportSchema = true
 )
+@TypeConverters(DateConverter::class)
 abstract class BoneDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun remoteKeysDao(): RemoteKeysDao
@@ -45,19 +45,6 @@ abstract class BoneDatabase : RoomDatabase() {
     abstract fun paymentOrderDao(): PaymentOrderDao
     abstract fun saleOrderDao(): SaleOrderDao
     abstract fun generalDao(): GeneralDao
-}
-
-@Dao
-interface RemoteKeysDao {
-
-    @Query("SELECT * FROM $REMOTE_KEYS WHERE id = :orderId AND `filter` = :filterStatus")
-    suspend fun remoteKeysOrderId(orderId: Int, filterStatus: OrderStatus?): OrderRemoteKeys?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(keys: List<OrderRemoteKeys>)
-
-    @Query("DELETE FROM $REMOTE_KEYS")
-    suspend fun clearRemoteKeys()
 }
 
 @Entity(tableName = "remote_order_keys")
