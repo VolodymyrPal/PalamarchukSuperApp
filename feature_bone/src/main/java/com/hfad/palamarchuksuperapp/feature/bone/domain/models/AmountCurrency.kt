@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.hfad.palamarchuksuperapp.feature.bone.R
 
@@ -10,6 +11,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.R
 data class AmountCurrency(
     val currency: Currency,
     val amount: Float,
+) {
+    @get: DrawableRes
     val iconResource: Int = when (currency) {
         Currency.USD -> R.drawable.usd_sign
         Currency.EUR -> R.drawable.euro_sign
@@ -18,7 +21,8 @@ data class AmountCurrency(
         Currency.PLN -> R.drawable.zloty_sign
         Currency.BTC -> R.drawable.btc_sign
         Currency.OTHER -> R.drawable.shekel_sign
-    },
+    }
+
     val iconChar: Char = when (currency) {
         Currency.USD -> '$'
         Currency.EUR -> '€'
@@ -27,7 +31,8 @@ data class AmountCurrency(
         Currency.PLN -> 'z'
         Currency.BTC -> '₿'
         Currency.OTHER -> '₪'
-    },
+    }
+
     val color: Color = when (currency) {
         Currency.USD -> Color(0xFF4CAF50)
         Currency.EUR -> Color(0xFF2196F3)
@@ -36,7 +41,9 @@ data class AmountCurrency(
         Currency.PLN -> Color(0xFF9C27B0)
         Currency.BTC -> Color(0xFFFF5722)
         Currency.OTHER -> Color(0xFF9E9E9E)
-    },
+    }
+
+    @get:StringRes
     val currencyTextRes: Int = when (currency) {
         Currency.USD -> R.string.usd
         Currency.EUR -> R.string.eur
@@ -45,8 +52,10 @@ data class AmountCurrency(
         Currency.PLN -> R.string.zloty
         Currency.BTC -> R.string.bitcoin
         Currency.OTHER -> R.string.undefined_currency
-    },
-    @DrawableRes val  currencyCountry :  Int = when (currency) {
+    }
+
+    @get:DrawableRes
+    val currencyCountry: Int = when (currency) {
         Currency.USD -> R.drawable.usa
         Currency.EUR -> R.drawable.europe
         Currency.CNY -> R.drawable.china
@@ -55,7 +64,7 @@ data class AmountCurrency(
         Currency.BTC -> R.drawable.bitcoin
         Currency.OTHER -> R.drawable.world
     }
-)
+}
 
 enum class Currency {
     USD, EUR, CNY, UAH, PLN, BTC, OTHER
