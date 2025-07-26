@@ -13,6 +13,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.PaymentOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.RemoteKeysDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.SaleOrderDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.ServiceOrderDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
@@ -27,6 +29,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
         Order::class,
         OrderRemoteKeys::class,
         OrderStatistics::class,
+        ServiceOrderEntity::class,
         ExchangeOrder::class,
         PaymentOrder::class,
         PaymentStatistic::class,
@@ -45,6 +48,7 @@ abstract class BoneDatabase : RoomDatabase() {
     abstract fun paymentOrderDao(): PaymentOrderDao
     abstract fun saleOrderDao(): SaleOrderDao
     abstract fun generalDao(): GeneralDao
+    abstract fun serviceOrderDao(): ServiceOrderDao
 }
 
 @Entity(tableName = "remote_order_keys")

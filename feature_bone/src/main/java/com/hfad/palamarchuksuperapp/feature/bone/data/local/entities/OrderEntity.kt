@@ -14,7 +14,6 @@ data class OrderEntity(
     val id: Int,
     val businessEntityNum: Int,
     val num: Int,
-//    val serviceList: List<ServiceOrder> = emptyList(), // Need to fine way to remove list from db
     val status: OrderStatus = OrderStatus.CREATED,
     val destinationPoint: String,
     val arrivalDate: Date,
