@@ -8,11 +8,10 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import java.util.Date
 
-@Entity (tableName = DATABASE_EXCHANGES)
+@Entity(tableName = DATABASE_EXCHANGES)
 data class ExchangeOrderEntity(
     @PrimaryKey
     val id: Int,
-    val amountToExchange: AmountCurrency,
     val sumToExchange: Float,
     val currencyToChange: Currency,
     val typeToChange: TransactionType = TransactionType.DEBIT,
@@ -21,5 +20,5 @@ data class ExchangeOrderEntity(
     val exchangedSum: Float,
     val exchangedCurrency: Currency,
     val billingDate: Date,
-    val versionHash: String = ""
+    val versionHash: String = "",
 )
