@@ -87,7 +87,44 @@ class OrdersRepositoryImpl @Inject constructor(
         if (apiOrders is AppResult.Success) {
             orderDao.insertOrIgnoreOrders(apiOrders.data)
         }
-        return orderDao.ordersInRange(from, to).withSqlErrorHandling()
+        val orders = orderDao.ordersInRange(from, to).map { list ->
+            list.map { orderEntityWithServices ->
+                val orderEntity = orderEntityWithServices.order
+                val services = orderEntityWithServices.services.map {
+                    ServiceOrder(
+                        id = it.id,
+                        orderId = it.orderId,
+                        fullTransport = it.fullTransport,
+                        serviceType = it.serviceType,
+                        price = it.price,
+                        durationDay = it.durationDay,
+                        status = it.status
+                    )
+                }
+
+                Order(
+                    id = orderEntity.id,
+                    businessEntityNum = orderEntity.businessEntityNum,
+                    num = orderEntity.num,
+                    serviceList = services,
+                    status = orderEntity.status,
+                    destinationPoint = orderEntity.destinationPoint,
+                    arrivalDate = orderEntity.arrivalDate,
+                    containerNumber = orderEntity.containerNumber,
+                    departurePoint = orderEntity.departurePoint,
+                    cargo = orderEntity.cargo,
+                    manager = orderEntity.manager,
+                    amountCurrency = AmountCurrency(
+                        amount = orderEntity.sum,
+                        currency = orderEntity.currency
+                    ),
+                    billingDate = orderEntity.billingDate,
+                    transactionType = orderEntity.transactionType,
+                    versionHash = orderEntity.versionHash
+                )
+            }
+            return orderDao.ordersInRange(from, to).withSqlErrorHandling()
+        }
     }
 
     override suspend fun getOrderById(id: Int): Flow<AppResult<Order?, AppError>> {
