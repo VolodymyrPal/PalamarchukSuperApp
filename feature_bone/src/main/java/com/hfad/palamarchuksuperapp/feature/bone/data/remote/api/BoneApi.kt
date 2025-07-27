@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.remote.api
 
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderDto
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
@@ -13,9 +14,9 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import java.util.Date
 
 interface OrderApi {
-    fun getOrdersByPage(page: Int, size: Int): AppResult<List<Order>, AppError.NetworkException>
-    fun getOrder(id: Int): AppResult<Order, AppError.NetworkException>
-    fun getOrdersWithRange(from: Date, to: Date): AppResult<List<Order>, AppError.NetworkException>
+    fun getOrdersByPage(page: Int, size: Int): AppResult<List<OrderDto>, AppError.NetworkException>
+    fun getOrder(id: Int): AppResult<OrderDto, AppError.NetworkException>
+    fun getOrdersWithRange(from: Date, to: Date): AppResult<List<OrderDto>, AppError.NetworkException>
     fun getOrderStatistics(): AppResult<OrderStatistics, AppError.NetworkException>
 }
 

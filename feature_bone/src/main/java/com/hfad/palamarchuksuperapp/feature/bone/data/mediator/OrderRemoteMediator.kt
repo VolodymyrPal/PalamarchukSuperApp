@@ -8,8 +8,8 @@ import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 
 @OptIn(ExperimentalPagingApi::class)
@@ -17,14 +17,14 @@ class OrderRemoteMediator(
     private val database: BoneDatabase,
     private val orderApi: OrderApi,
     private val status: OrderStatus?,
-) : RemoteMediator<Int, Order>() {
+) : RemoteMediator<Int, OrderEntityWithServices>() {
 
     val orderDao = database.orderDao()
     val remoteKeysDao = database.remoteKeysDao()
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, Order>,
+        state: PagingState<Int, OrderEntityWithServices>,
     ): MediatorResult {
         val page = when (loadType) {
             LoadType.REFRESH -> 1
@@ -33,7 +33,7 @@ class OrderRemoteMediator(
                 val lastItem = state.lastItemOrNull()
                 if (lastItem == null) return MediatorResult.Success(endOfPaginationReached = true)
                 val keys = database.remoteKeysDao()
-                    .remoteKeysOrderId(lastItem.id, status)
+                    .remoteKeysOrderId(lastItem.order.id, status)
                 keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
         }
@@ -62,7 +62,7 @@ class OrderRemoteMediator(
                 orderDao.deleteAllOrders()
                 remoteKeysDao.clearRemoteKeys()
             }
-            orderDao.insertOrIgnoreOrders(response.data)
+            orderDao.insertOrIgnoreOrders(response.data) //TODO
             remoteKeysDao.insertAll(keys)
         }
         return MediatorResult.Success(endOfPaginationReached = endReached)

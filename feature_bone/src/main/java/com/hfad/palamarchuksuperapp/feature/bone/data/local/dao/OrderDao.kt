@@ -5,9 +5,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_ORDERS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_REMOTE_KEYS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
@@ -19,10 +21,15 @@ interface OrderDao {
     @Query("SELECT * FROM $DATABASE_ORDERS WHERE :orderStatus IS NULL OR status = :orderStatus")
     fun getOrders(orderStatus: OrderStatus?): PagingSource<Int, Order>
 
-    fun ordersInRange(from: Date, to: Date): Flow<List<Order>>
-    suspend fun getOrderById(id: Int): Flow<Order?>
-    suspend fun geAllOrders(): List<Order>
-    suspend fun insertOrIgnoreOrders(orders: List<Order>)
+    @Transaction
+    @Query("SELECT * FROM orders WHERE :orderStatus IS NULL OR status = :orderStatus")
+    fun getOrdersWithServices(orderStatus: OrderStatus?): PagingSource<Int, OrderEntityWithServices>
+
+
+    fun ordersInRange(from: Date, to: Date): Flow<List<OrderEntityWithServices>>
+    suspend fun getOrderById(id: Int): Flow<OrderEntityWithServices?>
+    suspend fun geAllOrders(): List<OrderEntityWithServices>
+    suspend fun insertOrIgnoreOrders(orders: List<OrderEntityWithServices>)
     suspend fun deleteAllOrders()
 
     suspend fun clearOrderStatistics()
