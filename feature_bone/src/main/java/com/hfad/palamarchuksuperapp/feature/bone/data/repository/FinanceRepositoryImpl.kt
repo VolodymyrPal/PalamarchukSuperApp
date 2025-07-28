@@ -29,7 +29,7 @@ class FinanceRepositoryImpl //@Inject constructor
     ): AppResult<Flow<List<TypedTransaction>>, AppError> {
         // Распаковка результатов
         val exchangeFlow = exchangeRepository.exchanges
-        val ordersFlow = ordersRepository.cachedOrders
+//        val ordersFlow = ordersRepository.cachedOrders
         val paymentsFlow = paymentsRepository.payments
         val salesFlow = salesRepository.saleOrders
 
