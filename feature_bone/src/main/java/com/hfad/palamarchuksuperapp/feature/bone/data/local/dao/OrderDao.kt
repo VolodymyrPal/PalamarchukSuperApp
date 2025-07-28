@@ -18,11 +18,9 @@ import java.util.Date
 
 @Dao
 interface OrderDao {
-    @Query("SELECT * FROM $DATABASE_ORDERS WHERE :orderStatus IS NULL OR status = :orderStatus")
-    fun getOrders(orderStatus: OrderStatus?): PagingSource<Int, Order>
 
     @Transaction
-    @Query("SELECT * FROM orders WHERE :orderStatus IS NULL OR status = :orderStatus")
+    @Query("SELECT * FROM $DATABASE_ORDERS WHERE :orderStatus IS NULL OR status = :orderStatus")
     fun getOrdersWithServices(orderStatus: OrderStatus?): PagingSource<Int, OrderEntityWithServices>
 
 

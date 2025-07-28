@@ -14,19 +14,7 @@ class SyncOrdersUseCaseImpl // @Inject constructor
     private val boneControllerDao: OrderDao,
 ) : SyncOrdersUseCase {
     override suspend fun invoke(): AppResult<Unit, AppError> {
-        val cachedDaoOrders = withSqlErrorHandling { boneControllerDao.geAllOrders() }
-        val syncResult = when (cachedDaoOrders) {
-            is AppResult.Error -> return AppResult.Error(cachedDaoOrders.error)
-            is AppResult.Success -> {
-                syncOrders(cachedDaoOrders.data)
-            }
-        }
-        return if (syncResult is AppResult.Error)
-            AppResult.Error(syncResult.error)
-        else
-            AppResult.Success(
-                Unit
-            )
+        return AppResult.Error(AppError.CustomError("Not implemented"))
     }
 
     override suspend fun invoke(list: List<Order>): AppResult<Unit, AppError> {

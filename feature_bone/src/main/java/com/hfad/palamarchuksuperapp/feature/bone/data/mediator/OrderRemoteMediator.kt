@@ -10,6 +10,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabas
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 
 @OptIn(ExperimentalPagingApi::class)
@@ -62,7 +63,9 @@ class OrderRemoteMediator(
                 orderDao.deleteAllOrders()
                 remoteKeysDao.clearRemoteKeys()
             }
-            orderDao.insertOrIgnoreOrders(response.data) //TODO
+            orderDao.insertOrIgnoreOrders(response.data.map {
+                it.toEntity()
+            }) //TODO
             remoteKeysDao.insertAll(keys)
         }
         return MediatorResult.Success(endOfPaginationReached = endReached)

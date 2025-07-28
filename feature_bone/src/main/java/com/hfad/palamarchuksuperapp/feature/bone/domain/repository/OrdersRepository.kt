@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface OrdersRepository {
-    suspend fun ordersInRange(from: Date, to: Date): Flow<AppResult<List<Order>, AppError>>
-    suspend fun getOrderById(id: Int): Flow<AppResult<Order?, AppError>>
+    suspend fun ordersInRange(from: Date, to: Date): AppResult<List<Order>, AppError>
+    suspend fun getOrderById(id: Int): AppResult<Order?, AppError>
     suspend fun softRefreshStatistic()
 
     fun pagingOrders(status: OrderStatus?): Flow<PagingData<Order>>

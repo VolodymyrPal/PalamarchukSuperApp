@@ -14,10 +14,10 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import java.util.Date
 
 interface OrderApi {
-    fun getOrdersByPage(page: Int, size: Int): AppResult<List<OrderDto>, AppError.NetworkException>
-    fun getOrder(id: Int): AppResult<OrderDto, AppError.NetworkException>
-    fun getOrdersWithRange(from: Date, to: Date): AppResult<List<OrderDto>, AppError.NetworkException>
-    fun getOrderStatistics(): AppResult<OrderStatistics, AppError.NetworkException>
+    fun getOrdersByPage(page: Int, size: Int): List<OrderDto>
+    fun getOrder(id: Int): OrderDto
+    fun getOrdersWithRange(from: Date, to: Date): List<OrderDto>
+    fun getOrderStatistics(): OrderStatistics
 }
 
 interface SaleOrderApi {

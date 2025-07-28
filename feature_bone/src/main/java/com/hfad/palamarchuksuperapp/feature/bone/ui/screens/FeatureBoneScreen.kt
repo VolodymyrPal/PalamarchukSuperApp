@@ -1,9 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import android.content.Context
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
-import android.util.Base64
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -21,8 +18,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -38,14 +33,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenRoot
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
-import java.security.KeyStore
-import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
-import javax.crypto.spec.GCMParameterSpec
 import kotlin.reflect.KClass
 
 class BoneFeature(
