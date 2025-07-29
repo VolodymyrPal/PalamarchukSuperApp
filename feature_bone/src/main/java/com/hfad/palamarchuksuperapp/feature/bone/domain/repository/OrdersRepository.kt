@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
@@ -11,7 +12,7 @@ import java.util.Date
 interface OrdersRepository {
     suspend fun ordersInRange(from: Date, to: Date): AppResult<List<Order>, AppError>
     suspend fun getOrderById(id: Int): AppResult<Order?, AppError>
-    suspend fun softRefreshStatistic()
+    suspend fun softRefreshStatistic() : AppResult<OrderStatistics, AppError>
 
     fun pagingOrders(status: OrderStatus?): Flow<PagingData<Order>>
 }
