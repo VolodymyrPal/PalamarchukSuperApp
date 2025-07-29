@@ -24,13 +24,14 @@ interface OrderDao {
     fun getOrdersWithServices(orderStatus: OrderStatus?): PagingSource<Int, OrderEntityWithServices>
 
 
-    fun ordersInRange(from: Date, to: Date): Flow<List<OrderEntityWithServices>>
-    suspend fun getOrderById(id: Int): Flow<OrderEntityWithServices?>
+    fun ordersInRange(from: Date, to: Date): List<OrderEntityWithServices>
+    suspend fun getOrderById(id: Int): OrderEntityWithServices?
     suspend fun geAllOrders(): List<OrderEntityWithServices>
     suspend fun insertOrIgnoreOrders(orders: List<OrderEntityWithServices>)
     suspend fun deleteAllOrders()
 
     suspend fun clearOrderStatistics()
+    suspend fun getOrderStatistics(): OrderStatistics
     suspend fun insertOrIgnoreOrderStatistic(statistic: OrderStatistics)
 }
 
