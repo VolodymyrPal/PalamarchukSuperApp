@@ -12,11 +12,13 @@ import com.hfad.palamarchuksuperapp.core.data.mapSQLException
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.mediator.OrderRemoteMediator
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.data.toDomain
 import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
@@ -54,63 +56,48 @@ class OrdersRepositoryImpl @Inject constructor(
         to: Date,
     ): AppResult<List<Order>, AppError> {
 
-        val apiResult = runCatching { orderApi.getOrdersWithRange(from, to) }
-
-        apiResult.fold(
-            onSuccess = { orders ->
+        return fetchWithCacheFallback<List<Order>>(
+            fetchRemote = { orderApi.getOrdersWithRange(from, to).map { it.toDomain() } },
+            saveRemoteAndFetchLocal = { orders ->
                 boneDatabase.withTransaction {
                     orderDao.insertOrIgnoreOrders(orders.map { it.toEntity() })
-                    orderDao.ordersInRange(from, to).map { orders ->
-                        orders.map {
-                            it.toDomain()
-                        }
-                    }.withSqlErrorHandling()
+                    val a: List<OrderEntityWithServices> = orderDao.ordersInRange(from, to)
+                    a.map { it.toDomain() }
                 }
-
             },
-            onFailure = { exception ->
-                val apiError = mapApiException(exception as Exception)
-                val ordersDaoResult = orderDao.ordersInRange(from, to).map { orders ->
-                    orders.map {
-                        it.toDomain()
-                    }
-                }.withSqlErrorHandling()
+            fetchLocal = {
+                orderDao.ordersInRange(from, to).map { it.toDomain() }
             }
         )
+    }
 
+    override suspend fun getOrderById(id: Int): AppResult<Order?, AppError> {
 
-        if (apiResult.isSuccess) {
-            val data = apiResult.getOrElse { emptyList() }
-            orderDao.insertOrIgnoreOrders(apiResult.map { it.toEntity() })
-        }
-
-        val apiOrders = orderApi.getOrdersWithRange(from, to)
-        if (apiOrders is AppResult.Success) {
-            orderDao.insertOrIgnoreOrders(apiOrders.data.map { it.toEntity() })
-        }
-
-        return orderDao.ordersInRange(from, to).map { orders ->
-            orders.map {
-                it.toDomain()
+        return fetchWithCacheFallback(
+            fetchRemote = { orderApi.getOrder(id)?.toDomain() },
+            saveRemoteAndFetchLocal = {
+                if (it != null) orderDao.insertOrIgnoreOrders(listOf(it.toEntity()))
+                orderDao.getOrderById(id)?.toDomain()
+            },
+            fetchLocal = {
+                orderDao.getOrderById(id)?.toDomain()
             }
-        }.withSqlErrorHandling()
+        )
     }
 
-    override suspend fun getOrderById(id: Int): Flow<AppResult<Order?, AppError>> {
-        val orderApi = orderApi.getOrder(id)
-        if (orderApi is AppResult.Success) {
-            orderDao.insertOrIgnoreOrders(listOf(orderApi.data.toEntity()))
-        }
-        return orderDao.getOrderById(id).map { orders ->
-            orders?.toDomain()
-        }.withSqlErrorHandling()
-    }
-
-    override suspend fun softRefreshStatistic() {
-        val ordersResultApi = orderApi.getOrderStatistics()
-        if (ordersResultApi is AppResult.Success) {
-            orderDao.insertOrIgnoreOrderStatistic(ordersResultApi.data)
-        }
+    override suspend fun softRefreshStatistic(): AppResult<OrderStatistics, AppError> {
+        return fetchWithCacheFallback<OrderStatistics>(
+            fetchRemote = {
+                orderApi.getOrderStatistics()
+            },
+            saveRemoteAndFetchLocal = {
+                orderDao.insertOrIgnoreOrderStatistic(it)
+                orderDao.getOrderStatistics()
+            },
+            fetchLocal = {
+                orderDao.getOrderStatistics()
+            }
+        )
     }
 }
 
@@ -126,7 +113,7 @@ fun <T> Flow<T>.withSqlErrorHandling(): Flow<AppResult<T, AppError>> {
         }
 }
 
-suspend fun <T : Any> fetchWithCacheFallback(
+suspend fun <T : Any?> fetchWithCacheFallback(
     fetchRemote: suspend () -> T,
     saveRemoteAndFetchLocal: suspend (T) -> T,
     fetchLocal: suspend () -> T,
@@ -137,9 +124,9 @@ suspend fun <T : Any> fetchWithCacheFallback(
     } catch (apiEx: Exception) {
         return try {
             val localData = fetchLocal()
-            AppResult.Success(localData)
-        } catch (_: SQLException) {
-            AppResult.Error(mapApiException(apiEx))
+            AppResult.Error(data = localData, error = mapApiException(apiEx))
+        } catch (dbEx: SQLException) {
+            AppResult.Error(AppError.CustomError("Problem with internet and database: ${apiEx.message}, ${dbEx.message}"))
         }
     }
 
@@ -147,6 +134,6 @@ suspend fun <T : Any> fetchWithCacheFallback(
         val localData = saveRemoteAndFetchLocal(remoteData)
         AppResult.Success(localData)
     } catch (dbEx: SQLException) {
-        AppResult.Error(mapSQLException(dbEx))
+        AppResult.Error(data = remoteData, error = mapSQLException(dbEx))
     }
 }

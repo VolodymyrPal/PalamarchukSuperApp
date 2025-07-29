@@ -15,7 +15,7 @@ import java.util.Date
 
 interface OrderApi {
     fun getOrdersByPage(page: Int, size: Int): List<OrderDto>
-    fun getOrder(id: Int): OrderDto
+    fun getOrder(id: Int): OrderDto?
     fun getOrdersWithRange(from: Date, to: Date): List<OrderDto>
     fun getOrderStatistics(): OrderStatistics
 }
