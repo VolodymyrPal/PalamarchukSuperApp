@@ -126,7 +126,7 @@ fun <T> Flow<T>.withSqlErrorHandling(): Flow<AppResult<T, AppError>> {
         }
 }
 
-suspend fun <T : Any> fetchWithCacheFallback(
+suspend fun <T : Any?> fetchWithCacheFallback(
     fetchRemote: suspend () -> T,
     saveRemoteAndFetchLocal: suspend (T) -> T,
     fetchLocal: suspend () -> T,
@@ -137,9 +137,9 @@ suspend fun <T : Any> fetchWithCacheFallback(
     } catch (apiEx: Exception) {
         return try {
             val localData = fetchLocal()
-            AppResult.Success(localData)
-        } catch (_: SQLException) {
-            AppResult.Error(mapApiException(apiEx))
+            AppResult.Error(data = localData, error = mapApiException(apiEx))
+        } catch (dbEx: SQLException) {
+            AppResult.Error(AppError.CustomError("Problem with internet and database: ${apiEx.message}, ${dbEx.message}"))
         }
     }
 
@@ -147,6 +147,6 @@ suspend fun <T : Any> fetchWithCacheFallback(
         val localData = saveRemoteAndFetchLocal(remoteData)
         AppResult.Success(localData)
     } catch (dbEx: SQLException) {
-        AppResult.Error(mapSQLException(dbEx))
+        AppResult.Error(data = remoteData, error = mapSQLException(dbEx))
     }
 }
