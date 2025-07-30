@@ -39,35 +39,32 @@ class OrderRemoteMediator(
             }
         }
 
-        val response = orderApi.getOrdersByPage(page, state.config.pageSize)
+        try {
+            val response = orderApi.getOrdersByPage(page, state.config.pageSize)
 
-        if (response is AppResult.Error) {
-            return MediatorResult.Error(
-                throwable = response.error.cause ?: Exception(response.error.message)
-            )
-        }
+            val endReached = response.size < state.config.pageSize
 
-        response as AppResult.Success
-        val endReached = response.data.size < state.config.pageSize
-
-        database.withTransaction {
-            val keys = response.data.map {
-                OrderRemoteKeys(
-                    id = it.id,
-                    prevKey = if (page == 1) null else page - 1,
-                    nextKey = if (endReached) null else page + 1,
-                    filter = status
-                )
+            database.withTransaction {
+                val keys = response.map {
+                    OrderRemoteKeys(
+                        id = it.id,
+                        prevKey = if (page == 1) null else page - 1,
+                        nextKey = if (endReached) null else page + 1,
+                        filter = status
+                    )
+                }
+                if (loadType == LoadType.REFRESH) {
+                    orderDao.deleteAllOrders()
+                    remoteKeysDao.clearRemoteKeys()
+                }
+                orderDao.insertOrIgnoreOrders(response.map {
+                    it.toEntity()
+                }) //TODO
+                remoteKeysDao.insertAll(keys)
             }
-            if (loadType == LoadType.REFRESH) {
-                orderDao.deleteAllOrders()
-                remoteKeysDao.clearRemoteKeys()
-            }
-            orderDao.insertOrIgnoreOrders(response.data.map {
-                it.toEntity()
-            }) //TODO
-            remoteKeysDao.insertAll(keys)
+            return MediatorResult.Success(endOfPaginationReached = endReached)
+        } catch (e: Exception) {
+            return MediatorResult.Error(e)
         }
-        return MediatorResult.Success(endOfPaginationReached = endReached)
     }
 }
