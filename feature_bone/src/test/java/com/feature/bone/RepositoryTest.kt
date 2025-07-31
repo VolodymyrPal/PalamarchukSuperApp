@@ -408,10 +408,6 @@ class FetchWithCacheFallbackTest {
         coEvery { fetchRemote() } returns remoteData
         coEvery { storeAndRead(remoteData) } throws dbException
 
-        every { mapSQLException(dbException) } returns AppError.DatabaseError.UnhandledSQLException(
-            "Database error"
-        )
-
         val result = fetchWithCacheFallback(fetchRemote, storeAndRead, fallbackFetch)
 
         assertTrue(result is AppResult.Success)
@@ -437,10 +433,6 @@ class FetchWithCacheFallbackTest {
             coEvery { fetchRemote() } throws apiException
             coEvery { fallbackFetch() } returns fallbackData
 
-            every { mapApiException(apiException) } returns AppError.NetworkException.ApiError.UndefinedError(
-                "Network error"
-            )
-
             val result = fetchWithCacheFallback(fetchRemote, storeAndRead, fallbackFetch)
 
             assertTrue(result is AppResult.Error)
@@ -456,7 +448,10 @@ class FetchWithCacheFallbackTest {
     @Test
     fun `fetchWithCacheFallback returns error when both remote and fallback fail`() = runTest {
         val apiException = RuntimeException("Network error")
-        val dbException = SQLException("Database error")
+        val dbException = SQLException(
+            "Problem with internet and database",
+            RuntimeException("Network error"),
+        )
 
         val fetchRemote: suspend () -> String = mockk()
         val storeAndRead: suspend (String) -> String = mockk()
@@ -464,10 +459,6 @@ class FetchWithCacheFallbackTest {
 
         coEvery { fetchRemote() } throws apiException
         coEvery { fallbackFetch() } throws dbException
-
-        every { mapApiException(apiException) } returns AppError.NetworkException.ApiError.UndefinedError(
-            "Network error"
-        )
 
         val result = fetchWithCacheFallback(fetchRemote, storeAndRead, fallbackFetch)
 
@@ -477,7 +468,7 @@ class FetchWithCacheFallbackTest {
         val customError = result.error as AppError.CustomError
         assertTrue(customError.message?.contains("Problem with internet and database") == true)
         assertTrue(customError.message?.contains("Network error") == true)
-        assertTrue(customError.message?.contains("Database error") == true)
+        assertTrue(customError.message?.contains("unknown DB error") == true)
         coVerify { fetchRemote() }
         coVerify { fallbackFetch() }
         coVerify(exactly = 0) { storeAndRead(any()) }
