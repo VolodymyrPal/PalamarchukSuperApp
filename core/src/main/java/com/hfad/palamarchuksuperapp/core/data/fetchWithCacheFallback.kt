@@ -17,7 +17,9 @@ suspend fun <T : Any?> fetchWithCacheFallback(
             val localData = fallbackFetch()
             AppResult.Error(data = localData, error = mapApiException(apiEx))
         } catch (dbEx: SQLException) {
-            AppResult.Error(AppError.CustomError("Problem with internet and database: ${apiEx.message}, ${dbEx.message}"))
+            AppResult.Error(
+                AppError.CustomError(
+                    "Problem with internet and database: ${apiEx.message}, ${dbEx.message ?: "$dbEx : unknown DB error"}"))
         }
     }
 
