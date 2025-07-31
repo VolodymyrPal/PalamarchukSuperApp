@@ -2,10 +2,9 @@ package com.feature.bone
 
 import android.database.SQLException
 import androidx.paging.PagingSource
+import androidx.room.R
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.core.data.fetchWithCacheFallback
-import com.hfad.palamarchuksuperapp.core.data.mapApiException
-import com.hfad.palamarchuksuperapp.core.data.mapSQLException
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
@@ -17,9 +16,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrde
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderDto
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.OrdersRepositoryImpl
-import com.hfad.palamarchuksuperapp.feature.bone.data.toDomain
 import com.hfad.palamarchuksuperapp.feature.bone.data.toDto
-import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
@@ -29,6 +26,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
+import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -37,6 +35,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -84,7 +83,6 @@ class OrdersRepositoryImplTestSub {
         durationDay = 2,
         status = StepperStatus.DONE
     )
-
     private val testOrderEntity = OrderEntityWithServices(
         order = OrderEntity(
             id = 1,
@@ -105,7 +103,6 @@ class OrdersRepositoryImplTestSub {
         ),
         services = listOf(testServiceOrderEntity)
     )
-
     private val testOrder = Order(
         id = 1,
         businessEntityNum = 12345,
@@ -126,7 +123,6 @@ class OrdersRepositoryImplTestSub {
         transactionType = TransactionType.DEBIT,
         versionHash = "testHash123"
     )
-
     private val testOrderDto = OrderDto(
         id = 1,
         businessEntityNum = 12345,
@@ -154,13 +150,19 @@ class OrdersRepositoryImplTestSub {
         completedOrders = 7
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeEach
     fun setup() {
+        MockKAnnotations.init(this)
+        mockkStatic("androidx.room.RoomDatabaseKt")
         Dispatchers.setMain(testDispatcher)
         every { boneDatabase.orderDao() } returns orderDao
         every { boneDatabase.remoteKeysDao() } returns remoteKeysDao
         repository = OrdersRepositoryImpl(boneDatabase, orderApi)
+
+        val transactionLambda = slot<suspend () -> R>()
+        coEvery { boneDatabase.withTransaction(capture(transactionLambda)) } coAnswers {
+            transactionLambda.captured.invoke()
+        }
     }
 
     @AfterEach
