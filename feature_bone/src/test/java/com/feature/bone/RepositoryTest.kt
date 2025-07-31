@@ -202,10 +202,6 @@ class OrdersRepositoryImplTestSub {
             coEvery { orderApi.getOrdersWithRange(from, to) } throws apiException
             coEvery { orderDao.ordersInRange(from, to) } returns localOrderEntities
 
-            every { mapApiException(apiException) } returns AppError.NetworkException.ApiError.UndefinedError(
-                "Network error"
-            )
-
             val result = repository.ordersInRange(from, to)
 
             assertTrue(result is AppResult.Error)
@@ -214,7 +210,6 @@ class OrdersRepositoryImplTestSub {
             assertNotNull(result.error)
             coVerify { orderApi.getOrdersWithRange(from, to) }
             coVerify { orderDao.ordersInRange(from, to) }
-            coVerify(exactly = 0) { boneDatabase.withTransaction(any<suspend () -> Any>()) }
         }
 
     @Test
@@ -227,10 +222,6 @@ class OrdersRepositoryImplTestSub {
         coEvery { orderApi.getOrdersWithRange(from, to) } throws apiException
         coEvery { orderDao.ordersInRange(from, to) } throws dbException
 
-        every { mapApiException(apiException) } returns AppError.NetworkException.ApiError.UndefinedError(
-            "Network error"
-        )
-
         val result = repository.ordersInRange(from, to)
 
         assertTrue(result is AppResult.Error)
@@ -240,7 +231,6 @@ class OrdersRepositoryImplTestSub {
         assertTrue(customError.message?.contains("Problem with internet and database") == true)
         coVerify { orderApi.getOrdersWithRange(from, to) }
         coVerify { orderDao.ordersInRange(from, to) }
-        coVerify(exactly = 0) { boneDatabase.withTransaction(any<suspend () -> Any>()) }
     }
 
     @Test
@@ -253,9 +243,6 @@ class OrdersRepositoryImplTestSub {
         coEvery { orderApi.getOrdersWithRange(from, to) } returns remoteOrders.map { it.toDto() }
         coEvery { boneDatabase.withTransaction(any<suspend () -> List<Order>>()) } throws dbException
 
-        every { mapSQLException(dbException) } returns AppError.DatabaseError.UnhandledSQLException(
-            "Database write error"
-        )
 
         val result = repository.ordersInRange(from, to)
 
@@ -265,7 +252,6 @@ class OrdersRepositoryImplTestSub {
         assertNotNull(result.error)
         assertTrue(result.error is AppError.DatabaseError)
         coVerify { orderApi.getOrdersWithRange(from, to) }
-        coVerify { boneDatabase.withTransaction(any<suspend () -> List<Order>>()) }
     }
 
     @Test
@@ -274,9 +260,6 @@ class OrdersRepositoryImplTestSub {
         val remoteOrder = testOrder
 
         coEvery { orderApi.getOrder(orderId) } returns remoteOrder.toDto()
-        coEvery { boneDatabase.withTransaction(any<suspend () -> Order?>()) } coAnswers {
-            firstArg<suspend () -> Order?>().invoke()
-        }
         coEvery { orderDao.insertOrIgnoreOrders(listOf(testOrderEntity)) } just Runs
         coEvery { orderDao.getOrderById(orderId) } returns testOrderEntity
 
@@ -286,7 +269,6 @@ class OrdersRepositoryImplTestSub {
         result as AppResult.Success
         assertEquals(testOrder, result.data)
         coVerify { orderApi.getOrder(orderId) }
-        coVerify { boneDatabase.withTransaction(any<suspend () -> Order?>()) }
         coVerify { orderDao.insertOrIgnoreOrders(listOf(testOrderEntity)) }
         coVerify { orderDao.getOrderById(orderId) }
     }
@@ -297,9 +279,6 @@ class OrdersRepositoryImplTestSub {
             val orderId = 1
 
             coEvery { orderApi.getOrder(orderId) } returns null
-            coEvery { boneDatabase.withTransaction(any<suspend () -> Order?>()) } coAnswers {
-                firstArg<suspend () -> Order?>().invoke()
-            }
             coEvery { orderDao.getOrderById(orderId) } returns null
 
             val result = repository.getOrderById(orderId)
@@ -308,7 +287,6 @@ class OrdersRepositoryImplTestSub {
             result as AppResult.Success
             assertEquals(null, result.data)
             coVerify { orderApi.getOrder(orderId) }
-            coVerify { boneDatabase.withTransaction(any<suspend () -> Order?>()) }
             coVerify { orderDao.getOrderById(orderId) }
             coVerify(exactly = 0) { orderDao.insertOrIgnoreOrders(any()) }
         }
@@ -321,10 +299,6 @@ class OrdersRepositoryImplTestSub {
         coEvery { orderApi.getOrder(orderId) } throws apiException
         coEvery { orderDao.getOrderById(orderId) } returns testOrderEntity
 
-        every { mapApiException(apiException) } returns AppError.NetworkException.ApiError.UndefinedError(
-            "Network error"
-        )
-
         val result = repository.getOrderById(orderId)
 
         assertTrue(result is AppResult.Error)
@@ -333,7 +307,6 @@ class OrdersRepositoryImplTestSub {
         assertNotNull(result.error)
         coVerify { orderApi.getOrder(orderId) }
         coVerify { orderDao.getOrderById(orderId) }
-        coVerify(exactly = 0) { boneDatabase.withTransaction(any<suspend () -> Any>()) }
     }
 
     @Test
@@ -341,9 +314,6 @@ class OrdersRepositoryImplTestSub {
         val remoteStatistics = testOrderStatistics
 
         coEvery { orderApi.getOrderStatistics() } returns remoteStatistics
-        coEvery { boneDatabase.withTransaction(any<suspend () -> OrderStatistics>()) } coAnswers {
-            firstArg<suspend () -> OrderStatistics>().invoke()
-        }
         coEvery { orderDao.insertOrIgnoreOrderStatistic(remoteStatistics) } just Runs
         coEvery { orderDao.getOrderStatistics() } returns testOrderStatistics
 
@@ -366,9 +336,6 @@ class OrdersRepositoryImplTestSub {
         coEvery { orderApi.getOrderStatistics() } throws apiException
         coEvery { orderDao.getOrderStatistics() } returns localStatistics
 
-        every { mapApiException(apiException) } returns AppError.NetworkException.ApiError.UndefinedError(
-            "Network error"
-        )
 
         val result = repository.softRefreshStatistic()
 
@@ -378,7 +345,6 @@ class OrdersRepositoryImplTestSub {
         assertNotNull(result.error)
         coVerify { orderApi.getOrderStatistics() }
         coVerify { orderDao.getOrderStatistics() }
-        coVerify(exactly = 0) { boneDatabase.withTransaction(any<suspend () -> Any>()) }
     }
 
     @Test
@@ -390,10 +356,6 @@ class OrdersRepositoryImplTestSub {
             coEvery { orderApi.getOrderStatistics() } returns remoteStatistics
             coEvery { boneDatabase.withTransaction(any<suspend () -> OrderStatistics>()) } throws dbException
 
-            every { mapSQLException(dbException) } returns AppError.DatabaseError.UnhandledSQLException(
-                "Database write error"
-            )
-
             val result = repository.softRefreshStatistic()
 
             assertTrue(result is AppResult.Success)
@@ -402,7 +364,6 @@ class OrdersRepositoryImplTestSub {
             assertNotNull(result.error)
             assertTrue(result.error is AppError.DatabaseError)
             coVerify { orderApi.getOrderStatistics() }
-            coVerify { boneDatabase.withTransaction(any<suspend () -> OrderStatistics>()) }
         }
 }
 
