@@ -29,21 +29,26 @@ class OrdersRepositoryImpl @Inject constructor(
     private val orderApi: OrderApi,
 ) : OrdersRepository {
 
-    val orderDao = boneDatabase.orderDao()
+    private val orderDao = boneDatabase.orderDao()
+
+    @OptIn(ExperimentalPagingApi::class)
+    private val pagerCache = mutableMapOf<OrderStatus?, Flow<PagingData<Order>>>()
 
     @OptIn(ExperimentalPagingApi::class)
     override fun pagingOrders(status: OrderStatus?): Flow<PagingData<Order>> {
-        return Pager(
-            config = PagingConfig(pageSize = 20),
-            remoteMediator = OrderRemoteMediator(
-                orderApi = orderApi,
-                database = boneDatabase,
-                status = status
-            ),
-            pagingSourceFactory = { orderDao.getOrdersWithServices(status) }
-        ).flow.map { pagingData ->
-            pagingData.map { orderEntityWithServices ->
-                orderEntityWithServices.toDomain()
+        return pagerCache.getOrPut(status) {
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                remoteMediator = OrderRemoteMediator(
+                    orderApi = orderApi,
+                    database = boneDatabase,
+                    status = status
+                ),
+                pagingSourceFactory = { orderDao.getOrdersWithServices(status) }
+            ).flow.map { pagingData ->
+                pagingData.map { orderEntityWithServices ->
+                    orderEntityWithServices.toDomain()
+                }
             }
         }
     }
@@ -53,7 +58,7 @@ class OrdersRepositoryImpl @Inject constructor(
         to: Date,
     ): AppResult<List<Order>, AppError> {
 
-        return fetchWithCacheFallback<List<Order>>(
+        return fetchWithCacheFallback(
             fetchRemote = { orderApi.getOrdersWithRange(from, to).map { it.toDomain() } },
             storeAndRead = { orders ->
                 boneDatabase.withTransaction {
@@ -86,7 +91,7 @@ class OrdersRepositoryImpl @Inject constructor(
     }
 
     override suspend fun softRefreshStatistic(): AppResult<OrderStatistics, AppError> {
-        return fetchWithCacheFallback<OrderStatistics>(
+        return fetchWithCacheFallback(
             fetchRemote = {
                 orderApi.getOrderStatistics()
             },
