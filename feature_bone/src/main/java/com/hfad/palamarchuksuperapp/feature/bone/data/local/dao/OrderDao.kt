@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.local.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -10,10 +11,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_OR
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_REMOTE_KEYS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
-import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 @Dao
@@ -29,6 +28,7 @@ interface OrderDao {
     suspend fun geAllOrders(): List<OrderEntityWithServices>
     suspend fun insertOrIgnoreOrders(orders: List<OrderEntityWithServices>)
     suspend fun deleteAllOrders()
+    suspend fun deleteOrdersByStatus(status: OrderStatus?)
 
     suspend fun clearOrderStatistics()
     suspend fun getOrderStatistics(): OrderStatistics
@@ -44,6 +44,9 @@ interface RemoteKeysDao {
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(keys: List<OrderRemoteKeys>)
 
-    @Query("DELETE FROM $DATABASE_REMOTE_KEYS")
-    suspend fun clearRemoteKeys()
+    @Query("DELETE FROM $DATABASE_REMOTE_KEYS where `filter` = :status")
+    suspend fun clearRemoteKeysByStatus(status: OrderStatus?)
+
+    @Delete
+    suspend fun deleteAll()
 }

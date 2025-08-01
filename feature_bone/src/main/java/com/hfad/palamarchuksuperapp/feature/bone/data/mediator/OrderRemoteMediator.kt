@@ -5,7 +5,6 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
@@ -23,6 +22,13 @@ class OrderRemoteMediator(
     val orderDao = database.orderDao()
     val remoteKeysDao = database.remoteKeysDao()
 
+    override suspend fun initialize(): InitializeAction {
+        if (orderDao.getOrdersWithServices(status).invalid) {
+            return InitializeAction.SKIP_INITIAL_REFRESH
+        }
+        return super.initialize()
+    }
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, OrderEntityWithServices>,
@@ -33,14 +39,13 @@ class OrderRemoteMediator(
             LoadType.APPEND -> {
                 val lastItem = state.lastItemOrNull()
                 if (lastItem == null) return MediatorResult.Success(endOfPaginationReached = true)
-                val keys = database.remoteKeysDao()
-                    .remoteKeysOrderId(lastItem.order.id, status)
+                val keys = database.remoteKeysDao().remoteKeysOrderId(lastItem.order.id, status)
                 keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
         }
 
         try {
-            val response = orderApi.getOrdersByPage(page, state.config.pageSize)
+            val response = orderApi.getOrdersByPage(page, state.config.pageSize, status)
 
             val endReached = response.size < state.config.pageSize
 
@@ -54,12 +59,14 @@ class OrderRemoteMediator(
                     )
                 }
                 if (loadType == LoadType.REFRESH) {
-                    orderDao.deleteAllOrders()
-                    remoteKeysDao.clearRemoteKeys()
+                    orderDao.deleteOrdersByStatus(status)
+                    remoteKeysDao.clearRemoteKeysByStatus(status)
                 }
-                orderDao.insertOrIgnoreOrders(response.map {
-                    it.toEntity()
-                }) //TODO
+                orderDao.insertOrIgnoreOrders(
+                    response.map {
+                        it.toEntity()
+                    }
+                ) //TODO
                 remoteKeysDao.insertAll(keys)
             }
             return MediatorResult.Success(endOfPaginationReached = endReached)

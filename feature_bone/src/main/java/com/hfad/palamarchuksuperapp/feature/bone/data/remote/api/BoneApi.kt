@@ -6,6 +6,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderDto
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
@@ -14,7 +15,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import java.util.Date
 
 interface OrderApi {
-    fun getOrdersByPage(page: Int, size: Int): List<OrderDto>
+    fun getOrdersByPage(page: Int, size: Int, status: OrderStatus?): List<OrderDto>
     fun getOrder(id: Int): OrderDto?
     fun getOrdersWithRange(from: Date, to: Date): List<OrderDto>
     fun getOrderStatistics(): OrderStatistics
