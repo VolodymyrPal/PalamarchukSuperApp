@@ -63,8 +63,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.serviceOrderLists
 import com.hfad.palamarchuksuperapp.feature.bone.ui.theme.appRippleEffect
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
 
 @Composable
 fun OrderCard(

@@ -1,8 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
-import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.ServiceScenario
 import java.util.Date
 import kotlin.random.Random
 
