@@ -10,6 +10,7 @@ import com.hfad.palamarchuksuperapp.core.data.fetchWithCacheFallback
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.datastore.SyncPreferences
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.mediator.OrderRemoteMediator
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class OrdersRepositoryImpl @Inject constructor(
     private val boneDatabase: BoneDatabase,
     private val orderApi: OrderApi,
+    private val syncPreferences: SyncPreferences
 ) : OrdersRepository {
 
     private val orderDao = boneDatabase.orderDao()
@@ -42,9 +44,10 @@ class OrdersRepositoryImpl @Inject constructor(
                 remoteMediator = OrderRemoteMediator(
                     orderApi = orderApi,
                     database = boneDatabase,
-                    status = status
+                    status = status,
+                    syncPreferences = syncPreferences
                 ),
-                pagingSourceFactory = { orderDao.getOrdersWithServices(status) }
+                pagingSourceFactory = { orderDao.getOrdersWithServices(status) },
             ).flow.map { pagingData ->
                 pagingData.map { orderEntityWithServices ->
                     orderEntityWithServices.toDomain()
