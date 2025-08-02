@@ -7,26 +7,43 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.datastore.SyncPreferences
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
+import java.util.Calendar
 
 @OptIn(ExperimentalPagingApi::class)
 class OrderRemoteMediator(
     private val database: BoneDatabase,
     private val orderApi: OrderApi,
     private val status: OrderStatus?,
+    private val syncPreferences: SyncPreferences,
 ) : RemoteMediator<Int, OrderEntityWithServices>() {
 
     val orderDao = database.orderDao()
     val remoteKeysDao = database.remoteKeysDao()
 
     override suspend fun initialize(): InitializeAction {
-        if (orderDao.getOrdersWithServices(status).invalid) {
-            return InitializeAction.SKIP_INITIAL_REFRESH
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 11)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
-        return super.initialize()
+        val elevenAMTodayMillis = calendar.timeInMillis
+
+        val lastSyncTime = syncPreferences.getLastSyncTime(status)
+
+        val needsRefresh = lastSyncTime == null || lastSyncTime < elevenAMTodayMillis
+        val localInvalid = orderDao.getOrdersWithServices(status).invalid
+
+        return if (needsRefresh || localInvalid) {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
     }
 
     override suspend fun load(
@@ -46,7 +63,6 @@ class OrderRemoteMediator(
 
         try {
             val response = orderApi.getOrdersByPage(page, state.config.pageSize, status)
-
             val endReached = response.size < state.config.pageSize
 
             database.withTransaction {
@@ -62,13 +78,13 @@ class OrderRemoteMediator(
                     orderDao.deleteOrdersByStatus(status)
                     remoteKeysDao.clearRemoteKeysByStatus(status)
                 }
-                orderDao.insertOrIgnoreOrders(
-                    response.map {
-                        it.toEntity()
-                    }
-                ) //TODO
+                orderDao.insertOrIgnoreOrders(response.map { it.toEntity() }) //TODO
                 remoteKeysDao.insertAll(keys)
             }
+            if (loadType == LoadType.REFRESH) {
+                syncPreferences.setLastSyncTime(status, System.currentTimeMillis())
+            }
+
             return MediatorResult.Success(endOfPaginationReached = endReached)
         } catch (e: Exception) {
             return MediatorResult.Error(e)
