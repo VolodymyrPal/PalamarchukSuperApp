@@ -8,12 +8,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-class OrderPreferences @Inject constructor(
+class SyncPreferences @Inject constructor(
     private val context: Context
 ) {
     private val Context.dataStore by preferencesDataStore(name = "order_prefs")
 
-    private val LAST_SYNC_PREFIX = "last_sync_"
+    private val LAST_SYNC_PREFIX = "last_sync"
 
     suspend fun getLastSyncTime(status: OrderStatus?): Long? {
         val key = longPreferencesKey("$LAST_SYNC_PREFIX${status?.name ?: "ALL"}")
