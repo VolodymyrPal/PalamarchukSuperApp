@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.serviceOrderLists
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.serviceOrderLists
 
 @Composable
 fun StepProgressionBar(
