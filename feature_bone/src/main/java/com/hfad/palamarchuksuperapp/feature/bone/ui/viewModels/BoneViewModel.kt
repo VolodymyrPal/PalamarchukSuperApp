@@ -7,6 +7,7 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.PrefetchRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ClientEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.EntityDetails
@@ -22,13 +23,19 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 class BoneViewModel @Inject constructor(
+    private val prefetchRepository: PrefetchRepository
 ) : GenericViewModel<BoneViewModel.StateBone, BoneViewModel.Event, BoneViewModel.Effect>() {
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
 
     override fun event(event: Event) {
-
+        when (event) {
+            is Event.Init -> {
+                prefetchRepository.init()
+            }
+            is Event.SendImage -> {}
+        }
     }
 
     override val uiState: StateFlow<StateBone> = emptyFlow<StateBone>().stateIn(
@@ -40,6 +47,7 @@ class BoneViewModel @Inject constructor(
 
     sealed class Event : BaseEvent {
         data class SendImage(val text: String, val image: String) : Event()
+        object Init : Event()
     }
 
     sealed class Effect : BaseEffect {
