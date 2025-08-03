@@ -28,7 +28,8 @@ import javax.inject.Inject
 class OrdersRepositoryImpl @Inject constructor(
     private val boneDatabase: BoneDatabase,
     private val orderApi: OrderApi,
-    private val syncPreferences: SyncPreferences
+    private val syncPreferences: SyncPreferences,
+    private val prefetchRepository: PrefetchRepository
 ) : OrdersRepository {
 
     private val orderDao = boneDatabase.orderDao()
@@ -45,7 +46,8 @@ class OrdersRepositoryImpl @Inject constructor(
                     orderApi = orderApi,
                     database = boneDatabase,
                     status = status,
-                    syncPreferences = syncPreferences
+                    syncPreferences = syncPreferences,
+                    prefetchRepository = prefetchRepository
                 ),
                 pagingSourceFactory = { orderDao.getOrdersWithServices(status) },
             ).flow.map { pagingData ->
