@@ -50,9 +50,11 @@ import androidx.navigation.NavController
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.CryptoServiceKeystoreImpl
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import kotlinx.coroutines.launch
 
@@ -90,7 +92,12 @@ fun BoneScreenRoot(
 fun BoneScreen(
     modifier: Modifier = Modifier,
     navController: NavController? = null,
+    boneViewModel: BoneViewModel = daggerViewModel<BoneViewModel>(
+        factory = LocalBoneDependencies.current.viewModelFactory
+    )
 ) {
+    boneViewModel.event(BoneViewModel.Event.Init)
+
     val tabs = listOf(
         stringResource(R.string.orders),
         stringResource(R.string.payment),
