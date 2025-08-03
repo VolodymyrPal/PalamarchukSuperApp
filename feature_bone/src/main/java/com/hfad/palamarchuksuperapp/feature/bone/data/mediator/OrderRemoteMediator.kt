@@ -10,6 +10,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemote
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.datastore.SyncPreferences
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.PrefetchRepository
 import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import java.util.Calendar
@@ -20,6 +21,7 @@ class OrderRemoteMediator(
     private val orderApi: OrderApi,
     private val status: OrderStatus?,
     private val syncPreferences: SyncPreferences,
+    private val prefetchRepository: PrefetchRepository
 ) : RemoteMediator<Int, OrderEntityWithServices>() {
 
     val orderDao = database.orderDao()
@@ -50,6 +52,8 @@ class OrderRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, OrderEntityWithServices>,
     ): MediatorResult {
+        if (!prefetchRepository.fetchDone.value) return MediatorResult.Success(endOfPaginationReached = false)
+
         val page = when (loadType) {
             LoadType.REFRESH -> 1
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
