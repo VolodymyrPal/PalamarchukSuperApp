@@ -79,6 +79,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 room = { module = "androidx.room:room-runtime", name = "room-runtime", version.ref = "room_version" }
 room-ktx = { module = "androidx.room:room-ktx", name = "room-ktx", version.ref = "room_version" }
 room-annotation = { module = "androidx.room:room-compiler", name = "room-compiler", version.ref = "room_version" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room_version" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime-android", version.ref = "runtimeAndroid" }
 
 #moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
