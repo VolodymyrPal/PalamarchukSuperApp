@@ -2,19 +2,17 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.ScreenState
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.PrefetchRepository
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ClientEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.EntityDetails
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,8 +21,11 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 class BoneViewModel @Inject constructor(
-    private val prefetchRepository: PrefetchRepository
+    private val ordersRepository: OrdersRepository,
 ) : GenericViewModel<BoneViewModel.StateBone, BoneViewModel.Event, BoneViewModel.Effect>() {
+
+    val pagingDataFlow: Flow<PagingData<Order>> =
+        ordersRepository.pagingOrders(null).cachedIn(viewModelScope)
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
@@ -32,8 +33,8 @@ class BoneViewModel @Inject constructor(
     override fun event(event: Event) {
         when (event) {
             is Event.Init -> {
-                prefetchRepository.init()
             }
+
             is Event.SendImage -> {}
         }
     }
