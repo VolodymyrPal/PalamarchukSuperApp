@@ -13,7 +13,6 @@ import java.util.Date
     tableName = DATABASE_ORDERS,
     indices = [
         Index(value = ["status"]),
-        Index(value = ["status", "created_date"])
     ]
 )
 data class OrderEntity(
