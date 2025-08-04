@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -10,7 +11,6 @@ import com.hfad.palamarchuksuperapp.core.data.fetchWithCacheFallback
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.datastore.SyncPreferences
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.mediator.OrderRemoteMediator
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
@@ -19,18 +19,35 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 
+@OptIn(DelicateCoroutinesApi::class)
 class OrdersRepositoryImpl @Inject constructor(
     private val boneDatabase: BoneDatabase,
     private val orderApi: OrderApi,
-    private val syncPreferences: SyncPreferences,
-    private val prefetchRepository: PrefetchRepository
 ) : OrdersRepository {
+
+    init {
+        GlobalScope.launch {
+            delay(1000)
+            Log.d("OrdersRepositoryImpl", "init")
+            boneDatabase.withTransaction {
+                boneDatabase.orderDao().deleteAllOrders()
+                boneDatabase.orderDao().insertOrIgnoreOrders(
+                    generateOrderItems().map { it.toEntity() }
+                )
+            }
+        }
+    }
 
     private val orderDao = boneDatabase.orderDao()
 
@@ -41,15 +58,16 @@ class OrdersRepositoryImpl @Inject constructor(
     override fun pagingOrders(status: OrderStatus?): Flow<PagingData<Order>> {
         return pagerCache.getOrPut(status) {
             Pager(
-                config = PagingConfig(pageSize = 20),
+                config = PagingConfig(pageSize = 20, enablePlaceholders = true),
                 remoteMediator = OrderRemoteMediator(
                     orderApi = orderApi,
                     database = boneDatabase,
                     status = status,
-                    syncPreferences = syncPreferences,
-                    prefetchRepository = prefetchRepository
                 ),
-                pagingSourceFactory = { orderDao.getOrdersWithServices(status) },
+                pagingSourceFactory = {
+                    Log.d("OrderRemoteMediator", "Database was updated and get data")
+                    orderDao.getOrdersWithServices(status)
+                },
             ).flow.map { pagingData ->
                 pagingData.map { orderEntityWithServices ->
                     orderEntityWithServices.toDomain()

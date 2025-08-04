@@ -3,13 +3,17 @@ package com.hfad.palamarchuksuperapp.feature.bone.di
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.room.Room
 import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.CryptoServiceKeystoreImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.OrdersRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LoginWithCredentialsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
@@ -19,6 +23,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.RefreshTokenUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import dagger.Binds
 import dagger.Component
@@ -54,10 +59,11 @@ internal interface BoneComponent : BoneDeps {
     }
 }
 
-@Module (includes = [RepositoryModule::class, ViewModelsModule::class, DifferentClasses::class, FeatureUseCaseModule::class])
+@Module(includes = [RepositoryModule::class, ViewModelsModule::class, DifferentClasses::class, FeatureUseCaseModule::class])
 internal abstract class BoneModule {
     @Binds
-    abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory }
+    abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
+}
 
 @Module
 interface FeatureUseCaseModule {
@@ -81,6 +87,10 @@ abstract class RepositoryModule {
 
     @FeatureScope
     @Binds
+    abstract fun bindOrderRepository(orderRepositoryImpl: OrdersRepositoryImpl): OrdersRepository
+
+    @FeatureScope
+    @Binds
     abstract fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 
     @FeatureScope
@@ -90,6 +100,17 @@ abstract class RepositoryModule {
 
 @Module
 internal object DifferentClasses {
+
+    @FeatureScope
+    @Provides
+    fun provideMessageChatDB(context: Context): BoneDatabase {
+        return Room.databaseBuilder(
+            context = context.applicationContext,
+            klass = BoneDatabase::class.java,
+            name = "bone_db"
+        ).fallbackToDestructiveMigration(true) //TODO Don't forget to remove this in production
+            .build()
+    }
 
     @Provides
     fun provideSessionConfig(): SessionConfig {
@@ -147,6 +168,11 @@ internal object DifferentClasses {
 
 @Module
 abstract class ViewModelsModule {
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(BoneViewModel::class)
+    abstract fun bindMainViewModel(viewModel: BoneViewModel): ViewModel
 
     @Binds
     @IntoMap

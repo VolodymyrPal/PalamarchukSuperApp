@@ -13,12 +13,13 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import java.util.Date
+import javax.inject.Inject
 
-interface OrderApi {
-    fun getOrdersByPage(page: Int, size: Int, status: OrderStatus?): List<OrderDto>
-    fun getOrder(id: Int): OrderDto?
-    fun getOrdersWithRange(from: Date, to: Date): List<OrderDto>
-    fun getOrderStatistics(): OrderStatistics
+class OrderApi @Inject constructor() {
+    fun getOrdersByPage(page: Int, size: Int, status: OrderStatus?): List<OrderDto> = emptyList()
+    fun getOrder(id: Int): OrderDto? = null
+    fun getOrdersWithRange(from: Date, to: Date): List<OrderDto> = emptyList()
+    fun getOrderStatistics(): OrderStatistics = OrderStatistics()
 }
 
 interface SaleOrderApi {

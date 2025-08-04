@@ -8,6 +8,7 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 class OrderPageViewModel @Inject constructor(
-
+    private val ordersRepository: OrdersRepository,
 ) : GenericViewModel<OrderPageState, OrderPageViewModel.OrderPageEvent, OrderPageViewModel.OrderPageEffect>() {
 
     override val _dataFlow: StateFlow<List<Order>> = flow {
