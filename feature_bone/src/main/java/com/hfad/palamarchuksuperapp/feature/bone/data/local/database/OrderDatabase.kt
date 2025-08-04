@@ -27,7 +27,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 
 @Database(
     entities = [
-        Order::class,
+        OrderEntity::class,
         OrderRemoteKeys::class,
         OrderStatistics::class,
         ServiceOrderEntity::class,
