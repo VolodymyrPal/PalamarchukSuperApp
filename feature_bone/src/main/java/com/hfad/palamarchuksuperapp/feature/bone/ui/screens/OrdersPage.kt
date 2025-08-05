@@ -1,7 +1,9 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
+import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,47 +11,53 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @Composable
@@ -61,12 +69,14 @@ internal fun OrdersPageRoot(
     navController: NavController? = LocalNavController.current,
 ) {
     val orderPageState = viewModel.uiState.collectAsStateWithLifecycle()
+    val orderPaging = viewModel.orderPaging.collectAsLazyPagingItems()
 
     OrdersPage(
         modifier = modifier,
         navController = navController,
         event = viewModel::event,
-        state = orderPageState
+        state = orderPageState,
+        orderPaging = orderPaging
     )
 }
 
@@ -76,7 +86,9 @@ fun OrdersPage(
     navController: NavController? = LocalNavController.current,
     event: (OrderPageViewModel.OrderPageEvent) -> Unit,
     state: State<OrderPageState>,
+    orderPaging: LazyPagingItems<Order>,
 ) {
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -84,23 +96,32 @@ fun OrdersPage(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
-            val context = LocalContext.current //TODO
-            val coroutineScope = rememberCoroutineScope() //TODO
-
             OrderStatisticCard(
-                modifier = Modifier
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
                 state = state,
             )
         }
+        item {
+            Log.d("OrdersPage", "orderPaging.loadState: ${orderPaging.loadState}")
+            if (orderPaging.loadState.refresh == LoadState.Loading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(4.dp)
+                        .background(Color.LightGray),
+                )
+            }
+        }
 
-        items(items = state.value.orders) {
-            OrderCard(
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
-                order = it,
-                initialStatus = StepperStatus.entries.random(),
-                internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
-            )
+        items(count = orderPaging.itemCount) {
+            if (orderPaging[it] != null) {
+                OrderCard(
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp),
+                    order = orderPaging[it]!!,
+                    initialStatus = StepperStatus.entries.random(),
+                    internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
+                )
+            }
         }
     }
 }
@@ -113,11 +134,9 @@ private fun OrderStatisticCard(
     },
 ) {
     Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
+        modifier = modifier, colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        shape = MaterialTheme.shapes.extraSmall
+        ), shape = MaterialTheme.shapes.extraSmall
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
@@ -125,13 +144,9 @@ private fun OrderStatisticCard(
         ) {
             val title = stringResource(R.string.order_statistic_title)
             AppText(
-                value = title,
-                appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary
+                value = title, appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center
+                ), modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary
             )
 
             HorizontalDivider(
@@ -141,8 +156,7 @@ private fun OrderStatisticCard(
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 val inProgress = ImageVector.vectorResource(R.drawable.in_progress)
 
@@ -150,7 +164,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = inProgress,
-                    value = "${state.value.orderMetrics.inProgressOrders}",
+                    value = state.value.orderMetrics.inProgressOrders,
                     label = inWork,
                     color = Color.Red
                 )
@@ -159,7 +173,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = Icons.Default.Check,
-                    value = "${state.value.orderMetrics.completedOrders}",
+                    value = state.value.orderMetrics.completedOrders,
                     label = completed,
                     color = Color(0xFF55940E)
                 )
@@ -169,7 +183,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
-                    value = "${(state.value.orderMetrics.totalOrderWeight * 100).toInt() / 100.0} т",
+                    value = state.value.orderMetrics.totalOrderWeight,
                     label = finishFull,
                     color = Color.Blue
                 )
@@ -188,19 +202,17 @@ private fun OrderStatisticCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    value = "$sumOrderTitle ",
-                    appTextConfig = appTextConfig(
+                    value = "$sumOrderTitle ", appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium
-                    ),
-                    color = MaterialTheme.colorScheme.primary
+                    ), color = MaterialTheme.colorScheme.primary
                 )
-                AppText(
-                    value = "${state.value.orderMetrics.totalOrders}",
-                    appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = MaterialTheme.colorScheme.primary
+                AnimatedValueText(
+                    value = state.value.orderMetrics.totalOrderWeight,
+                    textStyle = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    isInteger = true,
+                    suffix = ""
                 )
             }
         }
@@ -210,7 +222,7 @@ private fun OrderStatisticCard(
 @Composable
 private fun OrderStat(
     icon: ImageVector,
-    value: String,
+    value: Number,
     label: String,
     modifier: Modifier = Modifier,
     color: Color,
@@ -224,8 +236,7 @@ private fun OrderStat(
             modifier = Modifier
                 .size(60.dp)
                 .clip(shape = MaterialTheme.shapes.extraSmall)
-                .background(color.copy(alpha = 0.2f)),
-            contentAlignment = Alignment.Center
+                .background(color.copy(alpha = 0.2f)), contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
@@ -235,23 +246,46 @@ private fun OrderStat(
             )
         }
 
-        AppText(
-            modifier = Modifier,
+        AnimatedValueText(
             value = value,
-            appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            ),
-            color = MaterialTheme.colorScheme.primary
+            textStyle = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            isInteger = if (value is Int) true else false,
+            suffix = if (value is Int) "шт" else "кг"
         )
+    }
+}
 
+@Composable
+fun AnimatedValueText(
+    value: Number,
+    textStyle: TextStyle,
+    fontWeight: FontWeight? = null,
+    color: Color,
+    isInteger: Boolean = true,
+    suffix: String = "",
+) {
+    val currentValue = value.toFloat()
+
+    val animatedValue by animateFloatAsState(
+        targetValue = currentValue,
+        animationSpec = tween(durationMillis = 1000), // Можно настроить анимацию
+        label = "AnimatedValueFloat"
+    )
+    val displayText = if (isInteger) {
+        "${animatedValue.toInt()} $suffix"
+    } else {
+        "${"%.2f".format(animatedValue)} $suffix"
+    }
+
+    Box(
+        modifier = Modifier.height(24.dp), contentAlignment = Alignment.Center
+    ) {
         AppText(
-            value = label,
-            appTextConfig = appTextConfig(
-                textStyle = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center
-            ),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            value = displayText, appTextConfig = appTextConfig(
+                textStyle = textStyle, fontWeight = fontWeight
+            ), color = color
         )
     }
 }
@@ -259,17 +293,24 @@ private fun OrderStat(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun OrderCardListPreview() {
+    val pagingData = remember {
+        MutableStateFlow(
+            PagingData.from(
+                generateOrderItems()
+            )
+        )
+    }.collectAsLazyPagingItems()
+
     FeatureTheme(
         darkTheme = false
     ) {
         OrdersPage(
-            event = {},
-            state = remember {
+            event = {}, state = remember {
                 mutableStateOf(
                     OrderPageState()
                 )
-            },
-            navController = null
+            }, navController = null,
+            orderPaging = pagingData
         )
     }
 }
@@ -298,17 +339,24 @@ private fun OrderStatPreview() {
 @Preview
 @Composable
 private fun OrdersPagePreview() {
+    val pagingData = remember {
+        MutableStateFlow(
+            PagingData.from(
+                generateOrderItems()
+            )
+        )
+    }.collectAsLazyPagingItems()
+
     FeatureTheme(
         darkTheme = true
     ) {
         OrdersPage(
-            event = {},
-            state = remember {
+            event = {}, state = remember {
                 mutableStateOf(
                     OrderPageState()
                 )
-            },
-            navController = null
+            }, navController = null,
+            orderPaging = pagingData
         )
     }
 }

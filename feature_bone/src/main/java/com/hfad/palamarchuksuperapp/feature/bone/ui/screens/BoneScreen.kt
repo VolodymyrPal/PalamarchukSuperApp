@@ -4,14 +4,11 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -44,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -52,7 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
@@ -61,10 +56,10 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.CryptoServiceKeystoreImpl
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -105,8 +100,6 @@ fun BoneScreen(
         factory = LocalBoneDependencies.current.viewModelFactory
     ),
 ) {
-
-    val lazyPagingItems = boneViewModel.pagingDataFlow.collectAsLazyPagingItems()
 
     val tabs = listOf(
         stringResource(R.string.orders),
@@ -261,62 +254,20 @@ fun BoneScreen(
             }
         }
     ) { paddingValues ->
-        if (true) {
-            CircularProgressIndicator(
-                modifier = Modifier.fillMaxSize(),
-                color = Color.Red
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.padding(paddingValues)
-            ) {
-                items(count = lazyPagingItems.itemCount) { index ->
-                    OrderCard(
-                        modifier = Modifier.padding(start = 12.dp, end = 12.dp),
-                        order = lazyPagingItems[index]!!,
-                        initialStatus = StepperStatus.entries.random(),
-                        internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
-                    )
-                }
-
-
-                lazyPagingItems.apply {
-                    when {
-                        loadState.refresh is LoadState.Loading -> {
-                            // You can add shimmer here
-                        }
-
-                        loadState.append is LoadState.Loading -> {
-                            item {
-                                Box(modifier = Modifier.fillMaxWidth()) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                            }
-                        }
-
-                        loadState.append is LoadState.Error -> {
-                            // Handle error
-                        }
-                    }
-                }
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            userScrollEnabled = true,
+            beyondViewportPageCount = 4,
+        ) { page ->
+            when (page) {
+                0 -> OrdersPageRoot()
+                1 -> PaymentsPage()
+                2 -> SalesPage()
+                3 -> FinancePage()
             }
-//        HorizontalPager(
-//            state = pagerState,
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(paddingValues),
-//            userScrollEnabled = true,
-//            beyondViewportPageCount = 4,
-//        ) { page ->
-//            when (page) {
-//                0 -> OrdersPageRoot()
-//                1 -> PaymentsPage()
-//                2 -> SalesPage()
-//                3 -> FinancePage()
-//            }
-//        }
         }
     }
 }
@@ -397,6 +348,11 @@ fun BoneScreenPreview() {
                 userScrollEnabled = true,
                 beyondViewportPageCount = 4,
             ) { page ->
+                val pagingData = MutableStateFlow(
+                    PagingData.from(
+                        generateOrderItems()
+                    )
+                ).collectAsLazyPagingItems()
                 when (page) {
                     0 -> OrdersPage(
                         event = {},
@@ -405,7 +361,8 @@ fun BoneScreenPreview() {
                                 OrderPageState()
                             )
                         },
-                        navController = null
+                        navController = null,
+                        orderPaging = pagingData
                     )
                 }
             }
