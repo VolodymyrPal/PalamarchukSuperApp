@@ -12,7 +12,8 @@ import java.util.Date
 interface OrdersRepository {
     suspend fun ordersInRange(from: Date, to: Date): AppResult<List<Order>, AppError>
     suspend fun getOrderById(id: Int): AppResult<Order?, AppError>
-    suspend fun softRefreshStatistic() : AppResult<OrderStatistics, AppError>
+    suspend fun refreshStatistic() : AppResult<OrderStatistics, AppError>
 
+    val orderStatistics: Flow<OrderStatistics>
     fun pagingOrders(status: OrderStatus?): Flow<PagingData<Order>>
 }
