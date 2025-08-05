@@ -12,11 +12,15 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
+import kotlinx.coroutines.delay
 import java.util.Date
 import javax.inject.Inject
 
 class OrderApi @Inject constructor() {
-    fun getOrdersByPage(page: Int, size: Int, status: OrderStatus?): List<OrderDto> = emptyList()
+    suspend fun getOrdersByPage(page: Int, size: Int, status: OrderStatus?): List<OrderDto> {
+        delay(4000) //TODO
+        return emptyList()
+    }
     fun getOrder(id: Int): OrderDto? = null
     fun getOrdersWithRange(from: Date, to: Date): List<OrderDto> = emptyList()
     fun getOrderStatistics(): OrderStatistics = OrderStatistics()
