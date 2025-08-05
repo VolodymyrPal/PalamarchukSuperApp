@@ -21,11 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 class BoneViewModel @Inject constructor(
-    private val ordersRepository: OrdersRepository,
 ) : GenericViewModel<BoneViewModel.StateBone, BoneViewModel.Event, BoneViewModel.Effect>() {
-
-    val pagingDataFlow: Flow<PagingData<Order>> =
-        ordersRepository.pagingOrders(null).cachedIn(viewModelScope)
 
     override val _dataFlow: Flow<Any> = emptyFlow()
     override val _errorFlow: Flow<AppError?> = emptyFlow()
