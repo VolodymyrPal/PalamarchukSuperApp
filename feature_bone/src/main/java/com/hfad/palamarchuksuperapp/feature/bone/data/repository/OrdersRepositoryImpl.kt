@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.core.data.fetchWithCacheFallback
+import com.hfad.palamarchuksuperapp.core.data.tryApiRequest
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
@@ -21,6 +22,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.generateOrderStatistic
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -36,20 +38,25 @@ class OrdersRepositoryImpl @Inject constructor(
     private val orderApi: OrderApi,
 ) : OrdersRepository {
 
-    init {
+    private val orderDao = boneDatabase.orderDao()
+
+
+    init { //TODO: test data for db
         GlobalScope.launch {
-            delay(1000)
+            delay(5000)
             Log.d("OrdersRepositoryImpl", "init")
             boneDatabase.withTransaction {
-                boneDatabase.orderDao().deleteAllOrders()
-                boneDatabase.orderDao().insertOrIgnoreOrders(
+                orderDao.deleteAllOrders()
+                orderDao.insertOrIgnoreOrders(
                     generateOrderItems().map { it.toEntity() }
+                )
+                orderDao.insertOrUpdateStatistic(
+                    statistic = generateOrderStatistic()
                 )
             }
         }
     }
 
-    private val orderDao = boneDatabase.orderDao()
 
     @OptIn(ExperimentalPagingApi::class)
     private val pagerCache = mutableMapOf<OrderStatus?, Flow<PagingData<Order>>>()
@@ -65,7 +72,6 @@ class OrdersRepositoryImpl @Inject constructor(
                     status = status,
                 ),
                 pagingSourceFactory = {
-                    Log.d("OrderRemoteMediator", "Database was updated and get data")
                     orderDao.getOrdersWithServices(status)
                 },
             ).flow.map { pagingData ->
@@ -113,20 +119,18 @@ class OrdersRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun softRefreshStatistic(): AppResult<OrderStatistics, AppError> {
-        return fetchWithCacheFallback(
-            fetchRemote = {
-                orderApi.getOrderStatistics()
-            },
-            storeAndRead = {
-                boneDatabase.withTransaction {
-                    orderDao.insertOrIgnoreOrderStatistic(it)
-                    orderDao.getOrderStatistics()
-                }
-            },
-            fallbackFetch = {
-                orderDao.getOrderStatistics()
-            }
-        )
+    override suspend fun refreshStatistic(): AppResult<OrderStatistics, AppError> {
+        val statisticApi = tryApiRequest { orderApi.getOrderStatistics() }
+        return if (statisticApi is AppResult.Success) {
+            orderDao.insertOrUpdateStatistic(statisticApi.data)
+            AppResult.Success(statisticApi.data)
+        } else {
+            statisticApi as AppResult.Error
+            AppResult.Error(statisticApi.error)
+        }
+    }
+
+    override val orderStatistics: Flow<OrderStatistics> = orderDao.getStatistic().map {
+        it ?: OrderStatistics()
     }
 }

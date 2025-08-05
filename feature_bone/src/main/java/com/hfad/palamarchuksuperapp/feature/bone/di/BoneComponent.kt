@@ -14,10 +14,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ClearAllDatabaseUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LoginWithCredentialsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.RefreshTokenUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ClearAllDatabaseUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LoginWithCredentialsUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
@@ -42,8 +44,7 @@ import kotlin.reflect.KClass
 
 @FeatureScope
 @Component(
-    dependencies = [BoneDeps::class],
-    modules = [BoneModule::class]
+    dependencies = [BoneDeps::class], modules = [BoneModule::class]
 )
 internal interface BoneComponent : BoneDeps {
 
@@ -80,6 +81,8 @@ interface FeatureUseCaseModule {
     @Binds
     fun bindRefreshTokenUseCase(refreshTokenUseCase: RefreshTokenUseCaseImpl): RefreshTokenUseCase
 
+    @Binds
+    fun bindClearAllDatabaseUseCaseImpl(clearAllDatabaseUseCase: ClearAllDatabaseUseCaseImpl): ClearAllDatabaseUseCase
 }
 
 @Module

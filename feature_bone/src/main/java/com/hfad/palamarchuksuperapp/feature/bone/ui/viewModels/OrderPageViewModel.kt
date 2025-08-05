@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
@@ -9,6 +10,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,18 +32,13 @@ class OrderPageViewModel @Inject constructor(
         emptyList()
     )
 
-    val statisticFlow: StateFlow<OrderStatistics> = flow {
-        emit(generateOrderStatistic())
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        OrderStatistics() // TODO for testing
-    )
+    val orderPaging = ordersRepository.pagingOrders(null).cachedIn(viewModelScope)
+
+    private val statisticFlow: Flow<OrderStatistics> = ordersRepository.orderStatistics
 
     override val uiState: StateFlow<OrderPageState> =
         _dataFlow.combine(statisticFlow) { orders, orderMetrics ->
             OrderPageState(
-                orders = orders,
                 orderMetrics = orderMetrics
             )
         }.stateIn(

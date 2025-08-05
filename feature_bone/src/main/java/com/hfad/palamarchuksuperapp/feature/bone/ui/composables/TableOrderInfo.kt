@@ -28,7 +28,7 @@ fun TableOrderInfo(
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp),
-        lastRowArrangement = Arrangement.Start
+        lastRowArrangement = Arrangement.Center
     ) {
         orderInfoList.forEach { orderInfo ->
             AppIconInfoField(

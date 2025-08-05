@@ -8,8 +8,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_ST
     tableName = DATABASE_STATISTICS,
 )
 data class OrderStatistics(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey
+    val id: Int = 1,
     val totalOrders: Int = 0,
     val completedOrders: Int = 0,
     val inProgressOrders: Int = 0,
