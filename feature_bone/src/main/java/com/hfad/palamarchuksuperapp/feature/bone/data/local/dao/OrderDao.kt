@@ -16,6 +16,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
+import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 @Dao
@@ -54,11 +55,11 @@ interface OrderDao {
     @Query("DELETE FROM $DATABASE_STATISTICS")
     suspend fun clearOrderStatistics()
 
-    @Query("SELECT * FROM $DATABASE_STATISTICS LIMIT 1")
-    suspend fun getOrderStatistics(): OrderStatistics
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateStatistic(statistic: OrderStatistics)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertOrIgnoreOrderStatistic(statistic: OrderStatistics)
+    @Query("SELECT * FROM $DATABASE_STATISTICS WHERE id = 1")
+    fun getStatistic(): Flow<OrderStatistics?>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertOrder(order: OrderEntity)
