@@ -97,7 +97,7 @@ fun OrdersPage(
     ) {
         item {
             OrderStatisticCard(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 6.dp),
                 state = state,
             )
         }
