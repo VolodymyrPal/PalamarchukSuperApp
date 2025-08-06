@@ -41,23 +41,6 @@ class OrdersRepositoryImpl @Inject constructor(
     private val orderDao = boneDatabase.orderDao()
 
 
-    init { //TODO: test data for db
-        GlobalScope.launch {
-            delay(5000)
-            Log.d("OrdersRepositoryImpl", "init")
-            boneDatabase.withTransaction {
-                orderDao.deleteAllOrders()
-                orderDao.insertOrIgnoreOrders(
-                    generateOrderItems().map { it.toEntity() }
-                )
-                orderDao.insertOrUpdateStatistic(
-                    statistic = generateOrderStatistic()
-                )
-            }
-        }
-    }
-
-
     @OptIn(ExperimentalPagingApi::class)
     private val pagerCache = mutableMapOf<OrderStatus?, Flow<PagingData<Order>>>()
 
