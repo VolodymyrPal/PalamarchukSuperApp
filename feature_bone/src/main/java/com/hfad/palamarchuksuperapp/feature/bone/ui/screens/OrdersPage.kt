@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -97,27 +96,37 @@ fun OrdersPage(
     ) {
         item {
             OrderStatisticCard(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 6.dp),
                 state = state,
             )
         }
         item {
-            Log.d("OrdersPage", "orderPaging.loadState: ${orderPaging.loadState}")
             if (orderPaging.loadState.refresh == LoadState.Loading) {
                 LinearProgressIndicator(
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .height(4.dp)
-                        .background(Color.LightGray),
+                        .fillMaxWidth(0.9f)
+                        .height(0.5.dp)
+                        .background(MaterialTheme.colorScheme.onPrimaryContainer),
+                    gapSize = 1.dp
                 )
             }
         }
 
-        items(count = orderPaging.itemCount) {
-            if (orderPaging[it] != null) {
+        items(
+            orderPaging.itemCount,
+            key = { index -> orderPaging.peek(index)?.id ?: index }) { index ->
+            val item = orderPaging[index]
+            if (item != null) {
                 OrderCard(
-                    modifier = Modifier.padding(start = 12.dp, end = 12.dp),
-                    order = orderPaging[it]!!,
+                    modifier = Modifier
+                        .padding(start = 12.dp, end = 12.dp, top = 6.dp)
+                        .animateItem(
+                            fadeInSpec = tween(5000),
+                            fadeOutSpec = tween(durationMillis = 500),
+                            placementSpec = tween(500)
+                        )
+                    ,
+                    order = item,
                     initialStatus = StepperStatus.entries.random(),
                     internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
                 )
@@ -134,9 +143,11 @@ private fun OrderStatisticCard(
     },
 ) {
     Card(
-        modifier = modifier, colors = CardDefaults.cardColors(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ), shape = MaterialTheme.shapes.extraSmall
+        ),
+        shape = MaterialTheme.shapes.extraSmall
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
@@ -251,8 +262,8 @@ private fun OrderStat(
             textStyle = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
-            isInteger = if (value is Int) true else false,
-            suffix = if (value is Int) "шт" else "кг"
+            isInteger = value is Int,
+            suffix = if (value is Int) "шт" else "т"
         )
     }
 }
@@ -270,7 +281,7 @@ fun AnimatedValueText(
 
     val animatedValue by animateFloatAsState(
         targetValue = currentValue,
-        animationSpec = tween(durationMillis = 1000), // Можно настроить анимацию
+        animationSpec = tween(durationMillis = 750), // Можно настроить анимацию
         label = "AnimatedValueFloat"
     )
     val displayText = if (isInteger) {

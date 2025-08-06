@@ -61,8 +61,8 @@ class OrderRemoteMediator(
                     )
                 }
                 if (loadType == LoadType.REFRESH) {
-                    orderDao.deleteOrdersByStatus(status)
-                    remoteKeysDao.clearRemoteKeysByStatus(status)
+//                    orderDao.deleteOrdersByStatus(status) //TODO for testing
+//                    remoteKeysDao.clearRemoteKeysByStatus(status)
                 }
                 orderDao.insertOrIgnoreOrders(response.map { it.toEntity() }) //TODO
                 remoteKeysDao.insertAll(keys)
