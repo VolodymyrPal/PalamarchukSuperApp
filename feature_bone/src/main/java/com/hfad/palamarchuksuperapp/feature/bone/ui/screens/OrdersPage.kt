@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
