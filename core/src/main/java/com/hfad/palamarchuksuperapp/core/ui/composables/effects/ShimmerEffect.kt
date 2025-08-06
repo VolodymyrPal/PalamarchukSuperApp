@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -26,47 +26,41 @@ import kotlin.math.sqrt
 fun Modifier.shimmerLoading(
     durationMillis: Int = 1000,
 ): Modifier {
-    // Создаем бесконечную анимацию
     val transition = rememberInfiniteTransition(label = "Shimmer transition")
-
-    // Настраиваем параметры анимации перемещения
     val shimmerFloatAnimation = transition.animateFloat(
-        // Анимация для изменения значения Float
-        initialValue = 0f,                                         // Начальное значение
-        targetValue = 1f,                                         // Целевое значение до которого начальное движется
+        initialValue = 0f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            // Настраиваем бесконечную анимацию
             animation = tween(
-                // Тип анимации и характеристики
-                durationMillis = durationMillis,                   // Продолжительность одного цикла анимации
-                easing = LinearEasing,                             // Тип движения анимации
+                durationMillis = durationMillis,
+                easing = LinearEasing,
             ),
             repeatMode = RepeatMode.Restart,
         ),
         label = "Shimmer animation",
     )
 
-    // Применяем эффект мерцания, рисуя градиент
     return graphicsLayer {
-        alpha = 0.95f  // Небольшая прозрачность для смягчения эффекта
+        alpha = 0.95f
         clip = true
     }
         .blur(
             radius = 10.dp,
             edgeTreatment = BlurredEdgeTreatment.Unbounded
-        )  // Легкое размытие
-        .drawBehind {
-            val width = size.width  // Ширина элемента
-            val height = size.height // Высота элемента
+        )
+        .drawWithContent {
+            drawContent()
+
+            val width = size.width
+            val height = size.height
             val diagonal =
-                sqrt(width * width + height * height) // Диагональ элемента для повышения качества анимации
+                sqrt(width * width + height * height)
             val startX =
-                -diagonal + (diagonal * 2 * shimmerFloatAnimation.value) // Старт градиента заранее
+                -diagonal + (diagonal * 2 * shimmerFloatAnimation.value)
             val startY = -diagonal + (diagonal * 2 * shimmerFloatAnimation.value)
 
             drawRect(
                 brush = Brush.linearGradient(
-                    // Определяем цвета градиента с разной прозрачностью
                     colors = listOf(
                         Color.Transparent,
                         Color.LightGray.copy(alpha = 0.10f),
@@ -75,12 +69,12 @@ fun Modifier.shimmerLoading(
                         Color.Transparent,
                     ),
                     start = Offset(
-                        x = startX, // Начало градиента по Х
-                        y = startY  // Начало градиента по Y
+                        x = startX,
+                        y = startY
                     ),
                     end = Offset(
-                        x = startX + diagonal * 0.3f,  // Конец градиента по Х
-                        y = startY + diagonal * 0.3f  // Конец градиента по Y
+                        x = startX + diagonal * 0.3f,
+                        y = startY + diagonal * 0.3f
                     ),
                 )
             )
