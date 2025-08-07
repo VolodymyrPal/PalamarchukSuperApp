@@ -202,11 +202,13 @@ fun OrderCard(
                         ),
                 visible = expanded.value
             ) {
-                Column (
+                Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(0.9f).padding(bottom = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(bottom = 8.dp),
                         thickness = 1.dp,
                         color = colorScheme.secondary
                     )
