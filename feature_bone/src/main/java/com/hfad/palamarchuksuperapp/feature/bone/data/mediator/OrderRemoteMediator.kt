@@ -24,7 +24,6 @@ class OrderRemoteMediator(
     val remoteKeysDao = database.remoteKeysDao()
 
     override suspend fun initialize(): InitializeAction {
-        Log.d("Initialize remoter", "Remoter was initialized")
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
