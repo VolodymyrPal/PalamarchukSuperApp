@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -45,6 +46,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
@@ -52,6 +54,7 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
@@ -87,7 +90,6 @@ fun OrdersPage(
     state: State<OrderPageState>,
     orderPaging: LazyPagingItems<Order>,
 ) {
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -101,31 +103,29 @@ fun OrdersPage(
             )
         }
         item {
-            if (orderPaging.loadState.refresh == LoadState.Loading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(0.5.dp)
-                        .background(MaterialTheme.colorScheme.onPrimaryContainer),
-                    gapSize = 1.dp
-                )
-            }
+            val isVisible = orderPaging.loadState.refresh == LoadState.Loading
+            val alphaAnim by animateFloatAsState(if (isVisible) 1f else 0f)
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .height(2.dp)
+                    .graphicsLayer(alpha = alphaAnim),
+                color = MaterialTheme.colorScheme.onSurface,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                gapSize = 1.dp
+            )
         }
 
         items(
             orderPaging.itemCount,
-            key = { index -> orderPaging.peek(index)?.id ?: index }) { index ->
+            key = orderPaging.itemKey { it.id }
+        ) { index ->
             val item = orderPaging[index]
             if (item != null) {
                 OrderCard(
                     modifier = Modifier
                         .padding(start = 12.dp, end = 12.dp, top = 6.dp)
-                        .animateItem(
-                            fadeInSpec = tween(5000),
-                            fadeOutSpec = tween(durationMillis = 500),
-                            placementSpec = tween(500)
-                        )
-                    ,
+                        .animatedScaleIn(),
                     order = item,
                     initialStatus = StepperStatus.entries.random(),
                     internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
