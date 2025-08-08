@@ -1,10 +1,9 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl
 
-import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.SyncOrdersUseCase
 
