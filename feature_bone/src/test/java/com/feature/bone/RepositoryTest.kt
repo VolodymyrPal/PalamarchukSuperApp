@@ -2,18 +2,18 @@ package com.feature.bone
 
 import android.database.SQLException
 import androidx.paging.PagingSource
-import androidx.room.R
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.core.data.fetchWithCacheFallback
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
+import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.RemoteKeysDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderDto
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.OrdersRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.toDto
