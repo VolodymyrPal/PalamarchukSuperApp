@@ -7,6 +7,8 @@ import androidx.room.Room
 import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApiTestImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.CryptoServiceKeystoreImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.OrdersRepositoryImpl
@@ -99,6 +101,10 @@ abstract class RepositoryModule {
     @FeatureScope
     @Binds
     abstract fun bindSecretRepository(secretRepositoryImpl: CryptoServiceKeystoreImpl): CryptoService
+
+    @FeatureScope
+    @Binds
+    abstract fun bindOrderApi (orderApiTestImpl: OrderApiTestImpl) : OrderApi
 }
 
 @Module
