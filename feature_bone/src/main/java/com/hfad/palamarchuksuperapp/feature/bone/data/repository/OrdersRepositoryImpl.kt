@@ -99,7 +99,12 @@ class OrdersRepositoryImpl @Inject constructor(
     override suspend fun refreshStatistic(): AppResult<OrderStatistics, AppError> {
         val statisticApi = tryApiRequest { orderApi.getOrderStatistics() }
         return if (statisticApi is AppResult.Success) {
-            orderDao.insertOrUpdateStatistic(statisticApi.data)
+            val dbCall = withSqlErrorHandling {
+                orderDao.insertOrUpdateStatistic(statisticApi.data)
+            }
+            if (dbCall is AppResult.Error) {
+                return AppResult.Error(dbCall.error, data = statisticApi.data)
+            }
             AppResult.Success(statisticApi.data)
         } else {
             statisticApi as AppResult.Error
