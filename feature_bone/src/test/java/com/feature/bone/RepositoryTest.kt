@@ -4,6 +4,8 @@ import android.database.SQLException
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.core.data.fetchWithCacheFallback
+import com.hfad.palamarchuksuperapp.core.data.mapApiException
+import com.hfad.palamarchuksuperapp.core.data.tryApiRequest
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.R
@@ -242,7 +244,12 @@ class OrdersRepositoryImplTestSub {
         val remoteOrders = listOf(testOrder)
         val dbException = SQLException("Database write error")
 
-        coEvery { orderApi.getOrdersWithRange(from, to) } returns remoteOrders.map { it.toDto() }
+        coEvery {
+            orderApi.getOrdersWithRange(
+                from,
+                to
+            )
+        } returns remoteOrders.map { it.toDto() }
         coEvery { orderDao.insertOrIgnoreOrders(any()) } throws dbException
         coEvery { orderDao.ordersInRange(from, to) } returns emptyList()
 
@@ -313,40 +320,31 @@ class OrdersRepositoryImplTestSub {
     }
 
     @Test
-    fun `softRefreshStatistic returns success when remote fetch succeeds`() = runTest {
+    fun `refreshStatistic returns success when remote fetch succeeds`() = runTest {
         val remoteStatistics = testOrderStatistics
 
-        coEvery { orderApi.getOrderStatistics() } returns remoteStatistics
-        coEvery { orderDao.insertOrIgnoreOrderStatistic(remoteStatistics) } just Runs
-        coEvery { orderDao.getOrderStatistics() } returns testOrderStatistics
+        coEvery { orderApi.getOrderStatistics() } returns testOrderStatistics
+        coEvery { orderDao.insertOrUpdateStatistic(testOrderStatistics) } just Runs
 
-        val result = repository.softRefreshStatistic()
+        val result = repository.refreshStatistic()
 
         assertTrue(result is AppResult.Success)
         result as AppResult.Success
         assertEquals(testOrderStatistics, result.data)
-        coVerify { orderApi.getOrderStatistics() }
-        coVerify { orderDao.insertOrIgnoreOrderStatistic(remoteStatistics) }
-        coVerify { orderDao.getOrderStatistics() }
+        coVerify { orderDao.insertOrUpdateStatistic(remoteStatistics) }
     }
 
     @Test
-    fun `softRefreshStatistic returns error with fallback when remote fails`() = runTest {
-        val apiException = RuntimeException("Network error")
-        val localStatistics = testOrderStatistics
+    fun `refreshStatistic returns error when remote fails`() = runTest {
+        val runtimeException = RuntimeException("Network error")
+        coEvery { orderApi.getOrderStatistics() } throws runtimeException
 
-        coEvery { orderApi.getOrderStatistics() } throws apiException
-        coEvery { orderDao.getOrderStatistics() } returns localStatistics
-
-
-        val result = repository.softRefreshStatistic()
+        val result = repository.refreshStatistic()
 
         assertTrue(result is AppResult.Error)
         result as AppResult.Error
-        assertEquals(testOrderStatistics, result.data)
-        assertNotNull(result.error)
-        coVerify { orderApi.getOrderStatistics() }
-        coVerify { orderDao.getOrderStatistics() }
+        assertEquals(runtimeException, result.error.cause)
+        coVerify(exactly = 0) { orderDao.insertOrUpdateStatistic(any()) }
     }
 
     @Test
