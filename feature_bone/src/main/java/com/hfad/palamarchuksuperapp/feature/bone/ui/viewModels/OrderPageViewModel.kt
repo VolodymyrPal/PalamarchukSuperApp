@@ -3,6 +3,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.hfad.palamarchuksuperapp.core.domain.AppError
+import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
@@ -35,10 +36,16 @@ class OrderPageViewModel @Inject constructor(
 
     val orderPaging = ordersRepository.pagingOrders(null).cachedIn(viewModelScope)
 
-    private val statisticFlow: Flow<OrderStatistics> = ordersRepository.orderStatistics
+    private val statisticFlow: Flow<AppResult<OrderStatistics, AppError>> = ordersRepository.orderStatistics
 
     override val uiState: StateFlow<OrderPageState> =
         _dataFlow.combine(statisticFlow) { orders, orderMetrics ->
+            val orderMetrics = if (orderMetrics is AppResult.Success) {
+                orderMetrics.data
+            } else {
+                _errorFlow.emit((orderMetrics as AppResult.Error).error)
+                OrderStatistics()
+            }
             OrderPageState(
                 orderMetrics = orderMetrics
             )
