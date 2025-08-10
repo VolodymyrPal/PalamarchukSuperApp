@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.map
 import java.util.Date
 import javax.inject.Inject
 
-@OptIn(DelicateCoroutinesApi::class)
 class OrdersRepositoryImpl @Inject constructor(
     private val boneDatabase: BoneDatabase,
     private val orderApi: OrderApi,
