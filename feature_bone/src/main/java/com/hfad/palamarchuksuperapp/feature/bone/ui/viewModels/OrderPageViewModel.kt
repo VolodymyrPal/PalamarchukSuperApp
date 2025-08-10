@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.hfad.palamarchuksuperapp.core.domain.AppError
@@ -9,6 +10,7 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -34,12 +37,14 @@ class OrderPageViewModel @Inject constructor(
         emptyList()
     )
 
+    private val orderStatusFilter: MutableStateFlow<OrderStatus?> = MutableStateFlow(null)
+
     val orderPaging = ordersRepository.pagingOrders(null).cachedIn(viewModelScope)
 
     private val statisticFlow: Flow<AppResult<OrderStatistics, AppError>> = ordersRepository.orderStatistics
 
     override val uiState: StateFlow<OrderPageState> =
-        _dataFlow.combine(statisticFlow) { orders, orderMetrics ->
+        combine(_dataFlow, statisticFlow, orderStatusFilter) { orders, orderMetrics, status ->
             val orderMetrics = if (orderMetrics is AppResult.Success) {
                 orderMetrics.data
             } else {
@@ -47,7 +52,8 @@ class OrderPageViewModel @Inject constructor(
                 OrderStatistics()
             }
             OrderPageState(
-                orderMetrics = orderMetrics
+                orderMetrics = orderMetrics,
+                orderStatusFilter = status,
             )
         }.onStart {
             ordersRepository.refreshStatistic()
@@ -59,7 +65,20 @@ class OrderPageViewModel @Inject constructor(
 
 
     override fun event(event: OrderPageEvent) {
+        when (event) {
+            is OrderPageEvent.LoadOrders -> {
 
+            }
+
+            is OrderPageEvent.RefreshOrders -> {
+
+            }
+
+            is OrderPageEvent.FilterOrderStatus -> {
+                Log.d("OrderPageViewModel", "FilterOrderStatus: ${event.status}")
+                orderStatusFilter.update { event.status }
+            }
+        }
     }
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
@@ -69,6 +88,7 @@ class OrderPageViewModel @Inject constructor(
     sealed class OrderPageEvent : BaseEvent {
         data class LoadOrders(val clientId: Int) : OrderPageEvent()
         data class RefreshOrders(val clientId: Int) : OrderPageEvent()
+        data class FilterOrderStatus(val status: OrderStatus?) : OrderPageEvent()
     }
 
     sealed class OrderPageEffect : BaseEffect {

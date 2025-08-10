@@ -348,6 +348,22 @@ class OrdersRepositoryImplTestSub {
     }
 
     @Test
+    fun `refreshStatistic returns error even when database insert fails`() = runTest {
+        val remoteStatistics = testOrderStatistics
+        val dbException = SQLException("Database write error")
+
+        coEvery { orderApi.getOrderStatistics() } returns remoteStatistics
+
+        coEvery { orderDao.insertOrUpdateStatistic(remoteStatistics) } throws dbException
+
+        val result = repository.refreshStatistic()
+
+        assertTrue(result is AppResult.Error)
+        result as AppResult.Error
+        assertEquals(dbException, result.error.cause)
+    }
+
+    @Test
     fun `softRefreshStatistic returns success with remote data when database fails to store`() =
         runTest {
             val remoteStatistics = testOrderStatistics
