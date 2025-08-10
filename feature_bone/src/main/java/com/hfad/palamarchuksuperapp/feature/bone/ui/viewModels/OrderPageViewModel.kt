@@ -34,12 +34,14 @@ class OrderPageViewModel @Inject constructor(
         emptyList()
     )
 
+    private val orderStatusFilter: MutableStateFlow<OrderStatus?> = MutableStateFlow(null)
+
     val orderPaging = ordersRepository.pagingOrders(null).cachedIn(viewModelScope)
 
     private val statisticFlow: Flow<AppResult<OrderStatistics, AppError>> = ordersRepository.orderStatistics
 
     override val uiState: StateFlow<OrderPageState> =
-        _dataFlow.combine(statisticFlow) { orders, orderMetrics ->
+        combine(_dataFlow, statisticFlow, orderStatusFilter) { orders, orderMetrics, status ->
             val orderMetrics = if (orderMetrics is AppResult.Success) {
                 orderMetrics.data
             } else {
@@ -47,7 +49,8 @@ class OrderPageViewModel @Inject constructor(
                 OrderStatistics()
             }
             OrderPageState(
-                orderMetrics = orderMetrics
+                orderMetrics = orderMetrics,
+                orderStatusFilter = status,
             )
         }.onStart {
             ordersRepository.refreshStatistic()
