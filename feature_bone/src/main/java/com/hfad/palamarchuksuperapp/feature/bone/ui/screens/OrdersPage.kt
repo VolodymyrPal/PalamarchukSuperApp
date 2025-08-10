@@ -1,8 +1,21 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +27,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -31,7 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -48,11 +65,14 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.compose.FeatureTheme
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appEditOutlinedTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
@@ -103,17 +123,173 @@ fun OrdersPage(
             )
         }
         item {
-            val isVisible = orderPaging.loadState.refresh == LoadState.Loading
-            val alphaAnim by animateFloatAsState(if (isVisible) 1f else 0f)
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .height(2.dp)
-                    .graphicsLayer(alpha = alphaAnim),
-                color = MaterialTheme.colorScheme.onSurface,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                gapSize = 1.dp
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(0.9f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val lookIcon = remember { Icons.Default.Search }
+                val searchText = remember { mutableStateOf("") }
+
+                AppOutlinedTextField(
+                    modifier = Modifier
+                        .weight(1f),
+                    value = searchText.value,
+                    onValueChange = { searchText.value = it },
+                    outlinedTextConfig = appEditOutlinedTextConfig(
+                        leadingIcon = {
+                            Icon(
+                                imageVector = lookIcon,
+                                contentDescription = "Filter",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        trailingIcon = {
+                            val isLoading = orderPaging.loadState.refresh == LoadState.Loading
+
+                            AnimatedContent(
+                                targetState = isLoading,
+                                transitionSpec = {
+                                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
+                                },
+                                label = "loading_or_send_icon"
+                            ) { loading ->
+                                if (loading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    IconButton(
+                                        modifier = Modifier.size(28.dp),
+                                        onClick = {
+                                            orderPaging.refresh()
+                                            searchText.value = ""
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.Send,
+                                            contentDescription = "Отправить",
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    )
+                )
+
+                val statusIcon = remember(state.value.orderStatusFilter) {
+                    when (state.value.orderStatusFilter) {
+                        OrderStatus.DONE -> Icons.Default.Check
+                        else -> Icons.Default.Menu
+                    }
+                }
+
+                AnimatedContent(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    targetState = statusIcon,
+                    transitionSpec = {
+                        (fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + scaleIn(
+                            initialScale = 0.8f,
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        ) + slideInVertically(
+                            initialOffsetY = { it / 4 },
+                            animationSpec = tween(
+                                durationMillis = 300,
+                                easing = FastOutSlowInEasing
+                            )
+                        )).togetherWith(
+                            fadeOut(
+                                animationSpec = tween(
+                                    durationMillis = 200,
+                                    easing = FastOutLinearInEasing
+                                )
+                            ) + scaleOut(
+                                targetScale = 1.2f,
+                                animationSpec = tween(
+                                    durationMillis = 200,
+                                    easing = FastOutLinearInEasing
+                                )
+                            ) + slideOutVertically(
+                                targetOffsetY = { -it / 4 },
+                                animationSpec = tween(
+                                    durationMillis = 200,
+                                    easing = FastOutLinearInEasing
+                                )
+                            )
+                        )
+                    },
+                    label = "status_filter_icon_animation"
+                ) { targetIcon ->
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(
+                                animateColorAsState(
+                                    targetValue = when (state.value.orderStatusFilter) {
+                                        OrderStatus.DONE -> MaterialTheme.colorScheme.primaryContainer
+                                        else -> MaterialTheme.colorScheme.surfaceVariant
+                                    },
+                                    animationSpec = tween(
+                                        durationMillis = 300,
+                                        easing = FastOutSlowInEasing
+                                    ),
+                                    label = "background_color_animation"
+                                ).value
+                            )
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = {
+                                    val nextStatus = when (state.value.orderStatusFilter) {
+                                        OrderStatus.DONE -> null
+                                        else -> OrderStatus.DONE
+                                    }
+                                    event(
+                                        OrderPageViewModel.OrderPageEvent.FilterOrderStatus(
+                                            nextStatus
+                                        )
+                                    )
+                                }
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = targetIcon,
+                            contentDescription = when (state.value.orderStatusFilter) {
+                                OrderStatus.DONE -> "Фильтр: завершенные заказы"
+                                else -> "Фильтр заказов"
+                            },
+                            tint = animateColorAsState(
+                                targetValue = when (state.value.orderStatusFilter) {
+                                    OrderStatus.DONE -> MaterialTheme.colorScheme.onPrimaryContainer
+                                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                                animationSpec = tween(
+                                    durationMillis = 300,
+                                    easing = FastOutSlowInEasing
+                                ),
+                                label = "icon_color_animation"
+                            ).value,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
         }
 
         items(
@@ -125,7 +301,10 @@ fun OrdersPage(
                 OrderCard(
                     modifier = Modifier
                         .padding(start = 12.dp, end = 12.dp, top = 6.dp)
-                        .animatedScaleIn(),
+                        .animatedScaleIn(
+//                            fromScale = 1f,
+//                            toScale = 1.1f
+                        ),
                     order = item,
                     initialStatus = StepperStatus.entries.random(),
                     internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
