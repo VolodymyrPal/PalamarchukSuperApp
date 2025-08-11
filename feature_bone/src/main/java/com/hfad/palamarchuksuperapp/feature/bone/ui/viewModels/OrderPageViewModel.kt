@@ -42,13 +42,24 @@ class OrderPageViewModel @Inject constructor(
     )
 
     private val orderStatusFilter: MutableStateFlow<OrderStatus?> = MutableStateFlow(null)
+    private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
-    val orderPaging = ordersRepository.pagingOrders(null).cachedIn(viewModelScope)
+    val orderPaging: Flow<PagingData<Order>> =
+        combine(orderStatusFilter, searchQuery) { status, query ->
+            status to query
+        }
+            .debounce(500)
+            .distinctUntilChanged()
+            .flatMapLatest { (status, query) ->
+                Log.d("OrdersRepositoryImpl", "$query, $status")
+                ordersRepository.pagingOrders(status, query).cachedIn(viewModelScope)
+            }
 
     private val statisticFlow: Flow<AppResult<OrderStatistics, AppError>> = ordersRepository.orderStatistics
 
     override val uiState: StateFlow<OrderPageState> =
-        combine(_dataFlow, statisticFlow, orderStatusFilter) { orders, orderMetrics, status ->
+        combine(_dataFlow, statisticFlow, orderStatusFilter, searchQuery
+        ) { orders, orderMetrics, status, query ->
             val orderMetrics = if (orderMetrics is AppResult.Success) {
                 orderMetrics.data
             } else {
