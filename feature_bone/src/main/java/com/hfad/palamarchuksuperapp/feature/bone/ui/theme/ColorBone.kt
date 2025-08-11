@@ -37,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 val primaryLight = Color(0xFF1A1A1A)
 val onPrimaryLight = Color(0xFFFFFFFF)
-val primaryContainerLight = Color(0xFFE8E8E8)  // Чуть темнее для контраста
+val primaryContainerLight = Color(0xFFCCCCCC)  // Чуть темнее для контраста
 val onPrimaryContainerLight = Color(0xFF1A1A1A)
 
 val secondaryLight = Color(0xFF0055FF)
@@ -60,7 +60,7 @@ val onBackgroundLight = Color(0xFF1A1A1A)
 val surfaceLight = Color(0xFFF0F0F0)            // Более заметный серый
 val onSurfaceLight = Color(0xFF1A1A1A)
 
-val surfaceVariantLight = Color(0xFFE0E0E0)     // Более контрастный
+val surfaceVariantLight = Color(0xFFE0E0E0)     // Более контрастный  gsfdlkgjsdfl;kgjds;fkl
 val onSurfaceVariantLight = Color(0xFF1A1A1A)
 val outlineLight = Color(0xFFC0C0C0)            // Чуть темнее для видимости
 val outlineVariantLight = Color(0xFFE8E8E8)     // Более заметный
