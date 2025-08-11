@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import android.database.SQLException
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -39,11 +40,12 @@ class OrdersRepositoryImpl @Inject constructor(
 
 
     @OptIn(ExperimentalPagingApi::class)
-    private val pagerCache = mutableMapOf<OrderStatus?, Flow<PagingData<Order>>>()
+    private val pagerCache = mutableMapOf< Pair<OrderStatus?, String>, Flow<PagingData<Order>>>()
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun pagingOrders(status: OrderStatus?): Flow<PagingData<Order>> {
-        return pagerCache.getOrPut(status) {
+    override fun pagingOrders(status: OrderStatus?, query: String): Flow<PagingData<Order>> {
+        val key = status to query
+        return pagerCache.getOrPut(key) {
             Pager(
                 config = PagingConfig(pageSize = 20, enablePlaceholders = true),
                 remoteMediator = OrderRemoteMediator(
@@ -52,7 +54,7 @@ class OrdersRepositoryImpl @Inject constructor(
                     status = status,
                 ),
                 pagingSourceFactory = {
-                    orderDao.getOrdersWithServices(status)
+                    orderDao.getOrdersWithServices(status, query)
                 },
             ).flow.map { pagingData ->
                 pagingData.map { orderEntityWithServices ->
