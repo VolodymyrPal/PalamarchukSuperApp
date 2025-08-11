@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -133,9 +132,12 @@ fun OrdersPage(
 
                 AppOutlinedTextField(
                     modifier = Modifier
-                        .weight(1f),
-                    value = searchText.value,
-                    onValueChange = { searchText.value = it },
+                        .weight(1f)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                    value = state.value.searchQuery,
+                    onValueChange = { event(OrderPageViewModel.OrderPageEvent.Search(it)) },
                     outlinedTextConfig = appEditOutlinedTextConfig(
                         leadingIcon = {
                             Icon(
@@ -183,12 +185,13 @@ fun OrdersPage(
                     )
                 )
 
-                val statusIcon = remember(state.value.orderStatusFilter) {
-                    when (state.value.orderStatusFilter) {
-                        OrderStatus.DONE -> Icons.Default.Check
-                        else -> Icons.Default.Menu
-                    }
-                }
+//                val statusIcon = remember(state.value.orderStatusFilter) {
+//                    when (state.value.orderStatusFilter) {
+//                        OrderStatus.DONE -> Icons.Default.Check
+//                        else -> Icons.Default.Menu
+//                    }
+//                }
+                val statusIcon = Icons.Default.Check
 
                 AnimatedContent(
                     modifier = Modifier.padding(horizontal = 8.dp),

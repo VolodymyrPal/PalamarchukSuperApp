@@ -15,5 +15,5 @@ interface OrdersRepository {
     suspend fun refreshStatistic() : AppResult<OrderStatistics, AppError>
 
     val orderStatistics: Flow<AppResult<OrderStatistics, AppError>>
-    fun pagingOrders(status: OrderStatus?): Flow<PagingData<Order>>
+    fun pagingOrders(status: OrderStatus?, query: String): Flow<PagingData<Order>>
 }

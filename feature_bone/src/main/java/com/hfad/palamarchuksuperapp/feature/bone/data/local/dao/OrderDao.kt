@@ -2,13 +2,13 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.local.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_ORDERS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_REMOTE_KEYS
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_SERVICE_ORDERS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_STATISTICS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
@@ -23,8 +23,29 @@ import java.util.Date
 interface OrderDao {
 
     @Transaction
-    @Query("SELECT * FROM $DATABASE_ORDERS WHERE :orderStatus IS NULL OR status = :orderStatus")
-    fun getOrdersWithServices(orderStatus: OrderStatus?): PagingSource<Int, OrderEntityWithServices>
+    @Query(
+        "SELECT DISTINCT o.* FROM $DATABASE_ORDERS o " +
+                "LEFT JOIN $DATABASE_SERVICE_ORDERS s ON o.id = s.orderId " +
+                "WHERE (:orderStatus IS NULL OR o.status = :orderStatus) " +
+                "AND (:query IS NULL OR :query = '' OR " +
+                "   LOWER(CAST(o.num AS TEXT)) LIKE '%' || LOWER(:query) || '%' OR " +
+                "   LOWER(o.destinationPoint) LIKE '%' || LOWER(:query) || '%' OR " +
+                "   LOWER(o.containerNumber) LIKE '%' || LOWER(:query) || '%' OR " +
+                "   LOWER(o.departurePoint) LIKE '%' || LOWER(:query) || '%' OR " +
+                //   "   CAST(o.sum AS TEXT) LIKE '%' || :query || '%' OR " + TODO if sum needed in search
+                //   "   LOWER(o.currency) LIKE '%' || LOWER(:query) || '%' OR " + TODO if currency needed in search
+                "   LOWER(o.cargo) LIKE '%' || LOWER(:query) || '%' OR " +
+                "   LOWER(o.status) LIKE '%' || LOWER(:query) || '%' " + // Remove trailing OR
+                ")"
+    )
+    fun getOrdersWithServices(
+        orderStatus: OrderStatus?,
+        query: String?,
+    ): PagingSource<Int, OrderEntityWithServices>
+
+    //                "   CAST(o.sum AS TEXT) LIKE '%' || :query || '%' OR " + TODO if sum needed in search
+//                "   LOWER(o.currency) LIKE '%' || LOWER(:query) || '%' OR " + TODO if currency needed in search
+
 
     @Transaction
     @Query("SELECT * FROM $DATABASE_ORDERS WHERE arrivalDate BETWEEN :from AND :to")
