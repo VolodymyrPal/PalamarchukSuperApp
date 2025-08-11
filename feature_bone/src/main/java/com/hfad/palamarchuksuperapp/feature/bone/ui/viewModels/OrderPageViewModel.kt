@@ -2,6 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
@@ -18,6 +19,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -54,6 +58,7 @@ class OrderPageViewModel @Inject constructor(
             OrderPageState(
                 orderMetrics = orderMetrics,
                 orderStatusFilter = status,
+                searchQuery = query
             )
         }.onStart {
             ordersRepository.refreshStatistic()
@@ -75,8 +80,12 @@ class OrderPageViewModel @Inject constructor(
             }
 
             is OrderPageEvent.FilterOrderStatus -> {
-                Log.d("OrderPageViewModel", "FilterOrderStatus: ${event.status}")
                 orderStatusFilter.update { event.status }
+            }
+
+            is OrderPageEvent.Search -> {
+                Log.d("OrderPageViewModel", "Search query: ${event.query}")
+                searchQuery.update { event.query }
             }
         }
     }
@@ -89,6 +98,7 @@ class OrderPageViewModel @Inject constructor(
         data class LoadOrders(val clientId: Int) : OrderPageEvent()
         data class RefreshOrders(val clientId: Int) : OrderPageEvent()
         data class FilterOrderStatus(val status: OrderStatus?) : OrderPageEvent()
+        data class Search(val query: String) : OrderPageEvent()
     }
 
     sealed class OrderPageEffect : BaseEffect {
