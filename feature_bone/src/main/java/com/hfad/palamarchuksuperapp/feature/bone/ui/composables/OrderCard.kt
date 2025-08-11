@@ -79,18 +79,18 @@ fun OrderCard(
     val orderStatus = remember { mutableStateOf(initialStatus) }
     val currentStepCount = remember { mutableIntStateOf(currentStep) }
 
-    val statusColor = when (orderStatus.value) {
-        StepperStatus.DONE -> statusColor(Status.DONE)
-        StepperStatus.IN_PROGRESS -> statusColor(Status.IN_PROGRESS)
-        StepperStatus.CREATED -> statusColor(Status.CREATED)
-        StepperStatus.CANCELED -> statusColor(Status.CANCELED)
+    val statusColor = when (order.status) {
+        OrderStatus.DONE -> statusColor(Status.DONE)
+        OrderStatus.IN_PROGRESS -> statusColor(Status.IN_PROGRESS)
+        OrderStatus.CREATED -> statusColor(Status.CREATED)
+        OrderStatus.CALCULATED -> statusColor(Status.CANCELED)
     }
 
-    val statusText = when (orderStatus.value) {
-        StepperStatus.DONE -> R.string.order_status_done
-        StepperStatus.IN_PROGRESS -> R.string.order_status_in_progress
-        StepperStatus.CREATED -> R.string.order_status_created
-        StepperStatus.CANCELED -> R.string.order_status_canceled
+    val statusText = when (order.status) {
+        OrderStatus.DONE -> R.string.order_status_done
+        OrderStatus.IN_PROGRESS -> R.string.order_status_in_progress
+        OrderStatus.CREATED -> R.string.order_status_created
+        OrderStatus.CALCULATED -> R.string.order_status_calculated
     }
     val interactionSource = remember { MutableInteractionSource() }
     Card(
