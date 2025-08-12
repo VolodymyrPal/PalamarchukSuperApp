@@ -162,7 +162,7 @@ fun BoneScreen(
                     )
                 }
             ) {
-                tabs.forEachIndexed { index, title ->
+                tabs.forEachIndexed { index, tab ->
                     val tooltipState = rememberTooltipState(isPersistent = false)
                     TooltipBox(
                         positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(12.dp),
@@ -170,16 +170,16 @@ fun BoneScreen(
                             RichTooltip(
                                 caretSize = TooltipDefaults.caretSize,
                                 title = {
-                                    Text(title)
+                                    Text(tab.tooltipTitle)
                                 },
                                 colors = TooltipDefaults.richTooltipColors(
-                                    containerColor = colorScheme.secondaryContainer,
-                                    contentColor = colorScheme.secondary,
+                                    containerColor = colorScheme.surface,
+                                    contentColor = colorScheme.onSurface,
                                 ),
                                 tonalElevation = 0.dp,
                                 shadowElevation = 5.dp
                             ) {
-                                Text("This is the main content of the rich tooltip") //Add additional information
+                                Text(tab.tooltipDescription) //Add additional information
                             }
                         },
                         state = tooltipState,
@@ -188,7 +188,7 @@ fun BoneScreen(
                             modifier = Modifier.clip(RoundedCornerShape(4.dp)),
                             text = {
                                 AppText(
-                                    value = title,
+                                    value = tab.title,
                                     appTextConfig = appTextConfig(
                                         textAlign = TextAlign.Center
                                     ),
