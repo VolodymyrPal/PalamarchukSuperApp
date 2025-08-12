@@ -101,12 +101,27 @@ fun BoneScreen(
     ),
 ) {
 
-    val tabs = listOf(
-        stringResource(R.string.orders),
-        stringResource(R.string.payment),
-        stringResource(R.string.sales),
-        stringResource(R.string.balance),
-        "Settings"
+    val tabs = listOf<BoneTab>(
+        BoneTab(
+            title = stringResource(R.string.orders),
+            tooltipTitle = stringResource(R.string.order_page_tooltip),
+            tooltipDescription = stringResource(R.string.order_page_tooltip_description)
+        ),
+        BoneTab(
+            title = stringResource(R.string.payment),
+            tooltipTitle = stringResource(R.string.payment_page_tooltip),
+            tooltipDescription = stringResource(R.string.payment_page_tooltip_description)
+        ),
+        BoneTab(
+            title = stringResource(R.string.sales),
+            tooltipTitle = stringResource(R.string.sales_page_tooltip),
+            tooltipDescription = stringResource(R.string.sales_page_tooltip_description)
+        ),
+        BoneTab(
+            title = stringResource(R.string.balance),
+            tooltipTitle = stringResource(R.string.balance_page_tooltip),
+            tooltipDescription = stringResource(R.string.balance_page_tooltip_description)
+        ),
     )
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
     val coroutineScope = rememberCoroutineScope()
@@ -147,7 +162,7 @@ fun BoneScreen(
                     )
                 }
             ) {
-                tabs.forEachIndexed { index, title ->
+                tabs.forEachIndexed { index, tab ->
                     val tooltipState = rememberTooltipState(isPersistent = false)
                     TooltipBox(
                         positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(12.dp),
@@ -155,16 +170,16 @@ fun BoneScreen(
                             RichTooltip(
                                 caretSize = TooltipDefaults.caretSize,
                                 title = {
-                                    Text(title)
+                                    Text(tab.tooltipTitle)
                                 },
                                 colors = TooltipDefaults.richTooltipColors(
-                                    containerColor = colorScheme.secondaryContainer,
-                                    contentColor = colorScheme.secondary,
+                                    containerColor = colorScheme.surface,
+                                    contentColor = colorScheme.onSurface,
                                 ),
                                 tonalElevation = 0.dp,
                                 shadowElevation = 5.dp
                             ) {
-                                Text("This is the main content of the rich tooltip") //Add additional information
+                                Text(tab.tooltipDescription) //Add additional information
                             }
                         },
                         state = tooltipState,
@@ -173,7 +188,7 @@ fun BoneScreen(
                             modifier = Modifier.clip(RoundedCornerShape(4.dp)),
                             text = {
                                 AppText(
-                                    value = title,
+                                    value = tab.title,
                                     appTextConfig = appTextConfig(
                                         textAlign = TextAlign.Center
                                     ),
@@ -271,6 +286,12 @@ fun BoneScreen(
         }
     }
 }
+
+data class BoneTab(
+    val title: String,
+    val tooltipTitle: String,
+    val tooltipDescription: String,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview

@@ -75,10 +75,10 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.random.Random
 
 
 @Composable
@@ -185,12 +185,6 @@ fun OrdersPage(
                     )
                 )
 
-//                val statusIcon = remember(state.value.orderStatusFilter) {
-//                    when (state.value.orderStatusFilter) {
-//                        OrderStatus.DONE -> Icons.Default.Check
-//                        else -> Icons.Default.Menu
-//                    }
-//                }
                 val statusIcon = Icons.Default.Check
 
                 AnimatedContent(
@@ -244,8 +238,8 @@ fun OrdersPage(
                             .background(
                                 animateColorAsState(
                                     targetValue = when (state.value.orderStatusFilter) {
-                                        OrderStatus.DONE -> MaterialTheme.colorScheme.primaryContainer
-                                        else -> MaterialTheme.colorScheme.surfaceVariant
+                                        OrderStatus.DONE -> MaterialTheme.colorScheme.surfaceVariant
+                                        else -> Color.Transparent
                                     },
                                     animationSpec = tween(
                                         durationMillis = 300,
@@ -279,8 +273,8 @@ fun OrdersPage(
                             },
                             tint = animateColorAsState(
                                 targetValue = when (state.value.orderStatusFilter) {
-                                    OrderStatus.DONE -> MaterialTheme.colorScheme.onPrimaryContainer
-                                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                                    OrderStatus.DONE -> MaterialTheme.colorScheme.onSurfaceVariant
+                                    else -> MaterialTheme.colorScheme.outline
                                 },
                                 animationSpec = tween(
                                     durationMillis = 300,
@@ -304,12 +298,9 @@ fun OrdersPage(
                 OrderCard(
                     modifier = Modifier
                         .padding(start = 12.dp, end = 12.dp, top = 6.dp)
-                        .animatedScaleIn(
-//                            fromScale = 1f,
-//                            toScale = 1.1f
-                        ),
+                        .animatedScaleIn(),
                     order = item,
-                    initialStatus = StepperStatus.entries.random(),
+                    currentStep = Random.nextInt(7), //TODO better logic for current step
                     internalPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
                 )
             }

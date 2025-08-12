@@ -25,7 +25,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 fun FeatureTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     customTheme: Int = 0,
     content: @Composable () -> Unit,
 ) {

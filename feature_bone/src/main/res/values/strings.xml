@@ -71,6 +71,14 @@
     <string name="password">Password</string>
     <string name="order_num">Order № %1$d</string>
     <string name="order_status_canceled">Canceled</string>
+    <string name="order_page_tooltip">List of all orders.</string>
+    <string name="payment_page_tooltip">List of all payments.</string>
+    <string name="sales_page_tooltip">List of all sales</string>
+    <string name="balance_page_tooltip">Operations and Summarized balance</string>
+    <string name="order_page_tooltip_description">Page provides overview of your orders. Use the search bar to find specific orders by keywords, also filter icon allows you to quickly view orders based on status \"Done\"</string>
+    <string name="payment_page_tooltip_description">Page provides overview of your payments. Use the search bar to find specific payments by keywords</string>
+    <string name="sales_page_tooltip_description">Page provides overview of your sales. Use the search bar to find specific sales by keywords</string>
+    <string name="balance_page_tooltip_description">Page provides overview of your balance. Use the search bar to find specific balance by keywords</string>
 
 
 </resources>

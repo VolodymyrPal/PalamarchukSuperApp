@@ -70,14 +70,11 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.theme.appRippleEffect
 fun OrderCard(
     modifier: Modifier = Modifier,
     order: Order,
-    initialStatus: StepperStatus = StepperStatus.IN_PROGRESS,
     currentStep: Int = 2,
     initialExpanded: Boolean = false,
     internalPadding: PaddingValues = PaddingValues(),
 ) {
     val expanded = remember { mutableStateOf(initialExpanded) }
-    val orderStatus = remember { mutableStateOf(initialStatus) }
-    val currentStepCount = remember { mutableIntStateOf(currentStep) }
 
     val statusColor = when (order.status) {
         OrderStatus.DONE -> statusColor(Status.DONE)
@@ -184,7 +181,7 @@ fun OrderCard(
                         .fillMaxWidth()
                         .height(86.dp),
                     listOfSteps = serviceOrderLists.subList(0, 7),
-                    currentStep = currentStepCount.value,
+                    currentStep = currentStep,
                     roundCorner = 0.3f
                 )
             }
