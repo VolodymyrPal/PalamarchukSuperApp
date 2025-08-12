@@ -101,12 +101,27 @@ fun BoneScreen(
     ),
 ) {
 
-    val tabs = listOf(
-        stringResource(R.string.orders),
-        stringResource(R.string.payment),
-        stringResource(R.string.sales),
-        stringResource(R.string.balance),
-        "Settings"
+    val tabs = listOf<BoneTab>(
+        BoneTab(
+            title = stringResource(R.string.orders),
+            tooltipTitle = stringResource(R.string.order_page_tooltip),
+            tooltipDescription = stringResource(R.string.order_page_tooltip_description)
+        ),
+        BoneTab(
+            title = stringResource(R.string.payment),
+            tooltipTitle = stringResource(R.string.payment_page_tooltip),
+            tooltipDescription = stringResource(R.string.payment_page_tooltip_description)
+        ),
+        BoneTab(
+            title = stringResource(R.string.sales),
+            tooltipTitle = stringResource(R.string.sales_page_tooltip),
+            tooltipDescription = stringResource(R.string.sales_page_tooltip_description)
+        ),
+        BoneTab(
+            title = stringResource(R.string.balance),
+            tooltipTitle = stringResource(R.string.balance_page_tooltip),
+            tooltipDescription = stringResource(R.string.balance_page_tooltip_description)
+        ),
     )
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
     val coroutineScope = rememberCoroutineScope()
@@ -271,6 +286,12 @@ fun BoneScreen(
         }
     }
 }
+
+data class BoneTab(
+    val title: String,
+    val tooltipTitle: String,
+    val tooltipDescription: String,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
