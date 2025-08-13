@@ -5,7 +5,7 @@ import com.hfad.palamarchuksuperapp.core.data.withSqlErrorHandling
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.ExchangeOrderDao
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.ExchangeOrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.ExchangeOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateExchangeOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.typeApi
@@ -13,7 +13,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.ExchangeRepos
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.util.Date
-import javax.inject.Inject
 
 class ExchangeRepositoryImpl // @Inject constructor
     (
