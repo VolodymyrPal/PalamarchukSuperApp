@@ -167,6 +167,21 @@ fun PaymentOrderDto.toDomain(): PaymentOrder = PaymentOrder(
     versionHash = versionHash
 )
 
+fun PaymentOrderDto.toEntity(): PaymentOrderEntity = PaymentOrderEntity(
+    id = id,
+    factory = factory,
+    productType = productType,
+    paymentDate = paymentDate,
+    dueDate = dueDate,
+    status = status,
+    commission = commission,
+    transactionType = transactionType,
+    billingDate = billingDate,
+    paymentSum = amountCurrency.amount,
+    amountCurrency = amountCurrency.currency,
+    versionHash = versionHash
+)
+
 fun PaymentOrder.toDto(): PaymentOrderDto = PaymentOrderDto(
     id = id,
     factory = factory,
@@ -181,9 +196,6 @@ fun PaymentOrder.toDto(): PaymentOrderDto = PaymentOrderDto(
     paymentPrice = paymentPrice,
     versionHash = versionHash
 )
-
-
-
 
 // SaleOrder
 fun SaleOrderEntity.toDomain(order: Order? = null): SaleOrder = SaleOrder(
@@ -244,6 +256,26 @@ fun SaleOrderDto.toDomain(): SaleOrder = SaleOrder(
     versionHash = versionHash
 )
 
+fun SaleOrderDto.toEntity(): SaleOrderEntity = SaleOrderEntity(
+    id = id,
+    productName = productName,
+    cargoCategory = cargoCategory,
+    customerName = customerName,
+    status = status,
+    requestDate = requestDate,
+    documentDate = documentDate,
+    companyName = companyName,
+    commissionPercent = commissionPercent,
+    prepayment = prepayment,
+    orderId = null, // DTO doesn't have orderId, it has order object
+    vat = vat,
+    sum = amountCurrency.amount,
+    currency = amountCurrency.currency,
+    billingDate = billingDate,
+    transactionType = transactionType,
+    versionHash = versionHash
+)
+
 fun SaleOrder.toDto(): SaleOrderDto = SaleOrderDto(
     id = id,
     productName = productName,
@@ -299,6 +331,19 @@ fun ExchangeOrderDto.toDomain(): ExchangeOrder = ExchangeOrder(
     versionHash = versionHash
 )
 
+fun ExchangeOrderDto.toEntity(): ExchangeOrderEntity = ExchangeOrderEntity(
+    id = id,
+    sumToExchange = amountToExchange.amount,
+    currencyToChange = amountToExchange.currency,
+    typeToChange = typeToChange,
+    date = date,
+    transactionType = transactionType,
+    exchangedSum = amountCurrency.amount,
+    exchangedCurrency = amountCurrency.currency,
+    billingDate = billingDate,
+    versionHash = versionHash
+)
+
 fun ExchangeOrder.toDto(): ExchangeOrderDto = ExchangeOrderDto(
     amountToExchange = amountToExchange,
     typeToChange = typeToChange,
@@ -345,6 +390,18 @@ fun CashPaymentOrderDto.toDomain(): CashPaymentOrder = CashPaymentOrder(
     versionHash = versionHash
 )
 
+fun CashPaymentOrderDto.toEntity(): CashPaymentOrderEntity = CashPaymentOrderEntity(
+    id = id,
+    paymentNum = paymentNum,
+    paymentSum = paymentSum,
+    paymentDateCreation = paymentDateCreation,
+    billingDate = billingDate,
+    transactionType = transactionType,
+    amount = amountCurrency.amount,
+    currency = amountCurrency.currency,
+    versionHash = versionHash
+)
+
 fun CashPaymentOrder.toDto(): CashPaymentOrderDto = CashPaymentOrderDto(
     id = id,
     paymentNum = paymentNum,
@@ -354,4 +411,67 @@ fun CashPaymentOrder.toDto(): CashPaymentOrderDto = CashPaymentOrderDto(
     transactionType = transactionType,
     amountCurrency = amountCurrency,
     versionHash = versionHash
+)
+
+// Statistics mappings
+fun SalesStatisticsEntity.toDomain(): SalesStatistics = SalesStatistics(
+    totalSalesAmount = AmountCurrency(totalSalesAmountCurrency, totalSalesAmount),
+    totalSalesNdsAmount = AmountCurrency(totalSalesNdsAmountCurrency, totalSalesNdsAmount),
+    totalBuyers = totalBuyers
+)
+
+fun SalesStatistics.toEntity(): SalesStatisticsEntity = SalesStatisticsEntity(
+    id = 1,
+    totalSalesAmount = totalSalesAmount.amount,
+    totalSalesAmountCurrency = totalSalesAmount.currency,
+    totalSalesNdsAmount = totalSalesNdsAmount.amount,
+    totalSalesNdsAmountCurrency = totalSalesNdsAmount.currency,
+    totalBuyers = totalBuyers
+)
+
+fun PaymentStatisticEntity.toDomain(): PaymentStatistic = PaymentStatistic(
+    totalPayment = totalPayment,
+    totalReceiver = totalReceiver,
+    daysToSend = daysToSend,
+    paymentsByCurrency = emptyList() // TODO: Parse JSON string
+)
+
+fun PaymentStatistic.toEntity(): PaymentStatisticEntity = PaymentStatisticEntity(
+    id = 1,
+    totalPayment = totalPayment,
+    totalReceiver = totalReceiver,
+    daysToSend = daysToSend,
+    paymentsByCurrencyJson = "" // TODO: Convert to JSON string
+)
+
+fun OrderStatisticsEntity.toDomain(): OrderStatistics = OrderStatistics(
+    inProgressOrders = inProgressOrders,
+    completedOrders = completedOrders,
+    totalOrderWeight = totalOrderWeight
+)
+
+fun OrderStatistics.toEntity(): OrderStatisticsEntity = OrderStatisticsEntity(
+    id = 1,
+    inProgressOrders = inProgressOrders,
+    completedOrders = completedOrders,
+    totalOrderWeight = totalOrderWeight
+)
+
+fun OrderStatisticsDto.toDomain(): OrderStatistics = OrderStatistics(
+    inProgressOrders = inProgressOrders,
+    completedOrders = completedOrders,
+    totalOrderWeight = totalOrderWeight
+)
+
+fun OrderStatistics.toDto(): OrderStatisticsDto = OrderStatisticsDto(
+    inProgressOrders = inProgressOrders,
+    completedOrders = completedOrders,
+    totalOrderWeight = totalOrderWeight
+)
+
+fun OrderStatisticsDto.toEntity(): OrderStatisticsEntity = OrderStatisticsEntity(
+    id = 1,
+    inProgressOrders = inProgressOrders,
+    completedOrders = completedOrders,
+    totalOrderWeight = totalOrderWeight
 ) 
