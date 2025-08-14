@@ -9,13 +9,21 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFac
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApiTestImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.PaymentApiTestImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.SaleApiTestImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.CryptoServiceKeystoreImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.OrdersRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.PaymentsRepositoryImpl
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SalesRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentOrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentsRepository
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SaleOrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SalesRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ClearAllDatabaseUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LoginWithCredentialsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCaseImpl
@@ -29,6 +37,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.RefreshTokenUse
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SalesPageViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentsPageViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.MapKey
@@ -96,6 +106,14 @@ abstract class RepositoryModule {
 
     @FeatureScope
     @Binds
+    abstract fun bindSalesRepository(salesRepositoryImpl: SalesRepositoryImpl): SalesRepository
+
+    @FeatureScope
+    @Binds
+    abstract fun bindPaymentsRepository(paymentsRepositoryImpl: PaymentsRepositoryImpl): PaymentsRepository
+
+    @FeatureScope
+    @Binds
     abstract fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 
     @FeatureScope
@@ -105,6 +123,14 @@ abstract class RepositoryModule {
     @FeatureScope
     @Binds
     abstract fun bindOrderApi (orderApiTestImpl: OrderApiTestImpl) : OrderApi
+
+    @FeatureScope
+    @Binds
+    abstract fun bindSaleApi (saleApiTestImpl: SaleApiTestImpl) : SaleOrderApi
+
+    @FeatureScope
+    @Binds
+    abstract fun bindPaymentApi (paymentApiTestImpl: PaymentApiTestImpl) : PaymentOrderApi
 }
 
 @Module
@@ -186,7 +212,17 @@ abstract class ViewModelsModule {
     @Binds
     @IntoMap
     @ViewModelKey(OrderPageViewModel::class)
-    abstract fun bindSkillsViewModel(viewModel: OrderPageViewModel): ViewModel
+    abstract fun bindOrderPageViewModel(viewModel: OrderPageViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SalesPageViewModel::class)
+    abstract fun bindSalesPageViewModel(viewModel: SalesPageViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PaymentsPageViewModel::class)
+    abstract fun bindPaymentsPageViewModel(viewModel: PaymentsPageViewModel): ViewModel
 
     @Binds
     @IntoMap

@@ -1,15 +1,19 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.repository
 
+import androidx.paging.PagingData
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 interface SalesRepository {
-    val saleOrders: AppResult<Flow<List<SaleOrder>>, AppError>
-    val salesStatistics : AppResult<Flow<SalesStatistics>, AppError>
-    suspend fun getSaleOrderById(id: Int): AppResult<SaleOrder, AppError>
-    suspend fun softRefreshSaleOrders()
-    suspend fun hardRefreshSaleOrders()
+    suspend fun salesInRange(from: Date, to: Date): AppResult<List<SaleOrder>, AppError>
+    suspend fun getSaleOrderById(id: Int): AppResult<SaleOrder?, AppError>
+    suspend fun refreshStatistic(): AppResult<SalesStatistics, AppError>
+
+    val salesStatistics: Flow<AppResult<SalesStatistics, AppError>>
+    fun pagingSales(status: SaleStatus?, query: String): Flow<PagingData<SaleOrder>>
 }
