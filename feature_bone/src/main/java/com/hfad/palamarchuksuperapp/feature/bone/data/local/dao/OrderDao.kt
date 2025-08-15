@@ -7,14 +7,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_ORDERS
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_REMOTE_KEYS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_SERVICE_ORDERS
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_STATISTICS
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_ORDER_STATISTICS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderStatisticsEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
@@ -43,10 +41,6 @@ interface OrderDao {
         query: String?,
     ): PagingSource<Int, OrderEntityWithServices>
 
-    //                "   CAST(o.sum AS TEXT) LIKE '%' || :query || '%' OR " + TODO if sum needed in search
-//                "   LOWER(o.currency) LIKE '%' || LOWER(:query) || '%' OR " + TODO if currency needed in search
-
-
     @Transaction
     @Query("SELECT * FROM $DATABASE_ORDERS WHERE arrivalDate BETWEEN :from AND :to")
     suspend fun ordersInRange(from: Date, to: Date): List<OrderEntityWithServices>
@@ -73,35 +67,18 @@ interface OrderDao {
     @Query("DELETE FROM $DATABASE_ORDERS WHERE :status IS NULL OR status = :status")
     suspend fun deleteOrdersByStatus(status: OrderStatus?)
 
-    @Query("DELETE FROM $DATABASE_STATISTICS")
+    @Query("DELETE FROM $DATABASE_ORDER_STATISTICS")
     suspend fun clearOrderStatistics()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateStatistic(statistic: OrderStatistics)
+    suspend fun insertOrUpdateStatistic(statistic: OrderStatisticsEntity)
 
-    @Query("SELECT * FROM $DATABASE_STATISTICS WHERE id = 1")
-    fun getStatistic(): Flow<OrderStatistics?>
+    @Query("SELECT * FROM $DATABASE_ORDER_STATISTICS WHERE id = 1")
+    fun getStatistic(): Flow<OrderStatisticsEntity?>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertOrder(order: OrderEntity)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertServices(services: List<ServiceOrderEntity>)
-}
-
-@Dao
-interface RemoteKeysDao {
-
-    @Query("SELECT * FROM $DATABASE_REMOTE_KEYS WHERE id = :orderId AND `filter` = :filterStatus")
-    suspend fun remoteKeysOrderId(orderId: Int, filterStatus: OrderStatus?): OrderRemoteKeys?
-
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
-    suspend fun insertAll(keys: List<OrderRemoteKeys>)
-
-    @Query("DELETE FROM $DATABASE_REMOTE_KEYS where `filter` = :status")
-    suspend fun clearRemoteKeysByStatus(status: OrderStatus?)
-
-    @Query("DELETE FROM $DATABASE_REMOTE_KEYS")
-    suspend fun clearAllRemoteKeys()
-
 }
