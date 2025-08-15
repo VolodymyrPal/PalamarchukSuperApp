@@ -17,6 +17,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
+// TODO change all dao class to update existed objects
 @Dao
 interface OrderDao {
 
@@ -76,9 +77,9 @@ interface OrderDao {
     @Query("SELECT * FROM $DATABASE_ORDER_STATISTICS WHERE id = 1")
     fun getStatistic(): Flow<OrderStatisticsEntity?>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrder(order: OrderEntity)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertServices(services: List<ServiceOrderEntity>)
 }
