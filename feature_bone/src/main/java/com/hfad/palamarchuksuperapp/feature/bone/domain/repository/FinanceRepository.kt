@@ -8,6 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface FinanceRepository {
-    fun operationsFromTo(from: Date, to: Date): AppResult<Flow<List<TypedTransaction>>, AppError>
-    val statistic: AppResult<Flow<FinanceStatistics>, AppError>
+    suspend fun operationsInRange(from: Date, to: Date): AppResult<List<TypedTransaction>, AppError>
+    val financeStatistics: Flow<AppResult<FinanceStatistics, AppError>>
 }
