@@ -105,12 +105,12 @@ class OrdersRepositoryImpl @Inject constructor(
         val statisticApi = tryApiRequest { orderApi.getOrderStatistics() }
         return if (statisticApi is AppResult.Success) {
             val dbCall = withSqlErrorHandling {
-                orderDao.insertOrUpdateStatistic(statisticApi.data)
+                orderDao.insertOrUpdateStatistic(statisticApi.data.toEntity())
             }
             if (dbCall is AppResult.Error) {
-                return AppResult.Error(dbCall.error, data = statisticApi.data)
+                return AppResult.Error(dbCall.error, data = statisticApi.data.toDomain())
             }
-            AppResult.Success(statisticApi.data)
+            AppResult.Success(statisticApi.data.toDomain())
         } else {
             statisticApi as AppResult.Error
             AppResult.Error(statisticApi.error)
@@ -119,7 +119,7 @@ class OrdersRepositoryImpl @Inject constructor(
 
     override val orderStatistics: Flow<AppResult<OrderStatistics, AppError>> =
         orderDao.getStatistic().map {
-            AppResult.Success<OrderStatistics, AppError>(it ?: OrderStatistics())
+            AppResult.Success<OrderStatistics, AppError>(it?.toDomain() ?: OrderStatistics())
         }.catch { e ->
             if (e is SQLException) {
                 AppResult.Error<OrderStatistics, AppError>(mapSQLException(e))
