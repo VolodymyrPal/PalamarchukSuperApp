@@ -250,9 +250,9 @@ fun StepProgressionBar(
                 }
 
                 val day = String.format("%02d", index + 1) //TODO Test only
-                val text = "${day}.06.25"
+                val text = "${day}.08"
 
-                val fontSize = (stepRadius / 2f).coerceIn(10.sp.toPx(), 18.sp.toPx())
+                val fontSize = (stepRadius / 2f).coerceIn(12.sp.toPx(), 22.sp.toPx())
                 val adaptiveTextStyle = textStyle.copy(
                     fontSize = fontSize.toSp(),
                     fontWeight = Bold,

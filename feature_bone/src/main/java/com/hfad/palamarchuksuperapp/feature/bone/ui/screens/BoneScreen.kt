@@ -279,8 +279,8 @@ fun BoneScreen(
         ) { page ->
             when (page) {
                 0 -> OrdersPageRoot()
-                1 -> PaymentsPage()
-                2 -> SalesPage()
+                1 -> PaymentsPageRoot()
+                2 -> SalesPageRoot()
                 3 -> FinancePage()
             }
         }
