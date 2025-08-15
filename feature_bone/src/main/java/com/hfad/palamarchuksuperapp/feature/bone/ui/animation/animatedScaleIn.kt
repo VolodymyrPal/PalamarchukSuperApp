@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 
 fun Modifier.animatedScaleIn(
     durationMillis: Int = 300,
-    delayMillis: Int = 25,
+    delayMillis: Int = 0,
     easing: Easing = FastOutSlowInEasing,
     fromScale: Float = 0.7f,
     toScale: Float = 1f,
