@@ -6,9 +6,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_REMOTE_KEYS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_SALES
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.OrderRemoteKeys
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.PaymentRemoteKeys
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.SaleRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.OrderRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.PaymentRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.SaleRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
