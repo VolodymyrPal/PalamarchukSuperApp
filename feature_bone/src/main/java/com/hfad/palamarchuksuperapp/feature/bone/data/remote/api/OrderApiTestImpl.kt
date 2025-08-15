@@ -1,8 +1,8 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.remote.api
 
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderStatisticsDto
 import com.hfad.palamarchuksuperapp.feature.bone.data.toDto
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
@@ -23,8 +23,8 @@ class OrderApiTestImpl @Inject constructor() : OrderApi {
 
     override suspend fun getOrder(id: Int): OrderDto? = null
     override suspend fun getOrdersWithRange(from: Date, to: Date): List<OrderDto> = emptyList()
-    override suspend fun getOrderStatistics(): OrderStatistics {
+    override suspend fun getOrderStatistics(): OrderStatisticsDto {
         delay(1500)
-        return generateOrderStatistic()
+        return generateOrderStatistic().toDto()
     }
 }
