@@ -51,11 +51,3 @@ abstract class BoneDatabase : RoomDatabase() {
 //    abstract fun generalDao(): GeneralDao
 //    abstract fun serviceOrderDao(): ServiceOrderDao
 }
-
-@Entity(tableName = "remote_order_keys")
-data class OrderRemoteKeys(
-    @PrimaryKey val id: Int,
-    val filter: OrderStatus?,
-    val prevKey: Int?,
-    val nextKey: Int?,
-)
