@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_EXCHANGES
@@ -12,13 +13,13 @@ import java.util.Date
 data class ExchangeOrderEntity(
     @PrimaryKey
     val id: Int,
-    val sumToExchange: Float,
-    val currencyToChange: Currency,
+    @Embedded (prefix = "amountTo_")
+    val amountToExchange: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0f),
     val typeToChange: TransactionType = TransactionType.DEBIT,
     val date: Date,
     val transactionType: TransactionType = TransactionType.CREDIT,
-    val exchangedSum: Float,
-    val exchangedCurrency: Currency,
+    @Embedded (prefix = "amountFrom_")
+    val amountFromExchange: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0f),
     val billingDate: Date,
     val versionHash: String = "",
 )
