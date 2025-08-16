@@ -1,7 +1,9 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.database
 
 const val DATABASE_ORDERS = "orders"
-const val DATABASE_REMOTE_KEYS = "remote_order_keys"
+const val DATABASE_REMOTE_KEYS_ORDER = "remote_order_keys"
+const val DATABASE_REMOVE_KEYS_SALES = "remote_sale_keys"
+const val DATABASE_REMOVE_KEYS_PAYMENT = "remote_payment_keys"
 const val DATABASE_PAYMENTS = "payment_order"
 const val DATABASE_CASH_PAYMENTS = "cash_payments"
 const val DATABASE_EXCHANGES = "exchange_order"

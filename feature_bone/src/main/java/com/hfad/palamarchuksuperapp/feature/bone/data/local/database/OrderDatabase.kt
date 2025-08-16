@@ -8,18 +8,19 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.PaymentOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.RemoteKeysDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.SaleOrderDao
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.AmountCurrencyListConverter
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.CashPaymentOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ExchangeOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderStatisticsEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentOrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentStatisticEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SaleOrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SalesStatisticsEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.OrderRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.PaymentRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.SaleRemoteKeys
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.OrderStatisticsEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.PaymentStatisticEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.SalesStatisticsEntity
 
 @Database(
     entities = [
@@ -39,7 +40,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.SaleRe
     version = 2,
     exportSchema = true
 )
-@TypeConverters(DateConverter::class)
+@TypeConverters(DateConverter::class, AmountCurrencyListConverter::class)
 abstract class BoneDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun remoteKeysDao(): RemoteKeysDao

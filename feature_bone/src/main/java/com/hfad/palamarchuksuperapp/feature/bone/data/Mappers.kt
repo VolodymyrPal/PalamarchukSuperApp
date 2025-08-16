@@ -1,8 +1,34 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data
 
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.*
-import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.*
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.*
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.AmountCurrencyEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.CashPaymentOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ExchangeOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SaleOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.OrderStatisticsEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.PaymentStatisticEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.SalesStatisticsEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.CashPaymentOrderDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.ExchangeOrderDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderStatisticsDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.PaymentOrderDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.PaymentStatisticDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.SaleOrderDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.SalesStatisticsDto
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
 
 fun OrderEntityWithServices.toDomain(): Order = Order(
     id = order.id,
@@ -16,7 +42,7 @@ fun OrderEntityWithServices.toDomain(): Order = Order(
     departurePoint = order.departurePoint,
     cargo = order.cargo,
     manager = order.manager,
-    amountCurrency = AmountCurrency(order.currency, order.sum),
+    amountCurrency = order.amountCurrency.toDomain(),
     billingDate = order.billingDate,
     transactionType = order.transactionType,
     versionHash = order.versionHash
@@ -34,8 +60,7 @@ fun Order.toEntity(): OrderEntityWithServices = OrderEntityWithServices(
         departurePoint = departurePoint,
         cargo = cargo,
         manager = manager,
-        sum = amountCurrency.amount,
-        currency = amountCurrency.currency,
+        amountCurrency = amountCurrency.toEntity(),
         billingDate = billingDate,
         transactionType = transactionType,
         versionHash = versionHash
@@ -73,8 +98,7 @@ fun OrderDto.toEntity(): OrderEntityWithServices = OrderEntityWithServices(
         departurePoint = departurePoint,
         cargo = cargo,
         manager = manager,
-        sum = amountCurrency.amount,
-        currency = amountCurrency.currency,
+        amountCurrency = amountCurrency.toEntity(),
         billingDate = billingDate,
         transactionType = transactionType,
         versionHash = versionHash
@@ -132,8 +156,7 @@ fun PaymentOrderEntity.toDomain(): PaymentOrder = PaymentOrder(
     commission = commission,
     transactionType = transactionType,
     billingDate = billingDate,
-    amountCurrency = AmountCurrency(amountCurrency, paymentSum),
-    paymentPrice = AmountCurrency(amountCurrency, paymentSum),
+    amountCurrency = amountCurrency.toDomain(),
     versionHash = versionHash
 )
 
@@ -147,8 +170,7 @@ fun PaymentOrder.toEntity(): PaymentOrderEntity = PaymentOrderEntity(
     commission = commission,
     transactionType = transactionType,
     billingDate = billingDate,
-    paymentSum = amountCurrency.amount,
-    amountCurrency = amountCurrency.currency,
+    amountCurrency = amountCurrency.toEntity(),
     versionHash = versionHash
 )
 
@@ -177,8 +199,7 @@ fun PaymentOrderDto.toEntity(): PaymentOrderEntity = PaymentOrderEntity(
     commission = commission,
     transactionType = transactionType,
     billingDate = billingDate,
-    paymentSum = amountCurrency.amount,
-    amountCurrency = amountCurrency.currency,
+    amountCurrency = amountCurrency.toEntity(),
     versionHash = versionHash
 )
 
@@ -211,7 +232,7 @@ fun SaleOrderEntity.toDomain(order: Order? = null): SaleOrder = SaleOrder(
     prepayment = prepayment,
     order = order,
     vat = vat,
-    amountCurrency = AmountCurrency(currency, sum),
+    amountCurrency = amountCurrency.toDomain(),
     billingDate = billingDate,
     transactionType = transactionType,
     versionHash = versionHash
@@ -230,8 +251,7 @@ fun SaleOrder.toEntity(orderId: Int? = null): SaleOrderEntity = SaleOrderEntity(
     prepayment = prepayment,
     orderId = orderId,
     vat = vat,
-    sum = amountCurrency.amount,
-    currency = amountCurrency.currency,
+    amountCurrency = amountCurrency.toEntity(),
     billingDate = billingDate,
     transactionType = transactionType,
     versionHash = versionHash
@@ -269,8 +289,7 @@ fun SaleOrderDto.toEntity(): SaleOrderEntity = SaleOrderEntity(
     prepayment = prepayment,
     orderId = null, // DTO doesn't have orderId, it has order object
     vat = vat,
-    sum = amountCurrency.amount,
-    currency = amountCurrency.currency,
+    amountCurrency = amountCurrency.toEntity(),
     billingDate = billingDate,
     transactionType = transactionType,
     versionHash = versionHash
@@ -297,11 +316,11 @@ fun SaleOrder.toDto(): SaleOrderDto = SaleOrderDto(
 
 // ExchangeOrder
 fun ExchangeOrderEntity.toDomain(): ExchangeOrder = ExchangeOrder(
-    amountToExchange = AmountCurrency(currencyToChange, sumToExchange),
+    amountToExchange = amountToExchange.toDomain(),
     typeToChange = typeToChange,
     date = date,
     transactionType = transactionType,
-    amountCurrency = AmountCurrency(exchangedCurrency, exchangedSum),
+    amountCurrency = amountFromExchange.toDomain(),
     billingDate = billingDate,
     id = id,
     versionHash = versionHash
@@ -309,13 +328,11 @@ fun ExchangeOrderEntity.toDomain(): ExchangeOrder = ExchangeOrder(
 
 fun ExchangeOrder.toEntity(): ExchangeOrderEntity = ExchangeOrderEntity(
     id = id,
-    sumToExchange = amountToExchange.amount,
-    currencyToChange = amountToExchange.currency,
+    amountToExchange = amountToExchange.toEntity(),
     typeToChange = typeToChange,
     date = date,
     transactionType = transactionType,
-    exchangedSum = amountCurrency.amount,
-    exchangedCurrency = amountCurrency.currency,
+    amountFromExchange = amountCurrency.toEntity(),
     billingDate = billingDate,
     versionHash = versionHash
 )
@@ -333,13 +350,11 @@ fun ExchangeOrderDto.toDomain(): ExchangeOrder = ExchangeOrder(
 
 fun ExchangeOrderDto.toEntity(): ExchangeOrderEntity = ExchangeOrderEntity(
     id = id,
-    sumToExchange = amountToExchange.amount,
-    currencyToChange = amountToExchange.currency,
+    amountToExchange = amountToExchange.toEntity(),
     typeToChange = typeToChange,
     date = date,
     transactionType = transactionType,
-    exchangedSum = amountCurrency.amount,
-    exchangedCurrency = amountCurrency.currency,
+    amountFromExchange = amountCurrency.toEntity(),
     billingDate = billingDate,
     versionHash = versionHash
 )
@@ -363,7 +378,7 @@ fun CashPaymentOrderEntity.toDomain(): CashPaymentOrder = CashPaymentOrder(
     paymentDateCreation = paymentDateCreation,
     billingDate = billingDate,
     transactionType = transactionType,
-    amountCurrency = AmountCurrency(currency, amount),
+    amountCurrency = amountCurrency.toDomain(),
     versionHash = versionHash
 )
 
@@ -374,8 +389,7 @@ fun CashPaymentOrder.toEntity(): CashPaymentOrderEntity = CashPaymentOrderEntity
     paymentDateCreation = paymentDateCreation,
     billingDate = billingDate,
     transactionType = transactionType,
-    amount = amountCurrency.amount,
-    currency = amountCurrency.currency,
+    amountCurrency = amountCurrency.toEntity(),
     versionHash = versionHash
 )
 
@@ -397,8 +411,7 @@ fun CashPaymentOrderDto.toEntity(): CashPaymentOrderEntity = CashPaymentOrderEnt
     paymentDateCreation = paymentDateCreation,
     billingDate = billingDate,
     transactionType = transactionType,
-    amount = amountCurrency.amount,
-    currency = amountCurrency.currency,
+    amountCurrency = amountCurrency.toEntity(),
     versionHash = versionHash
 )
 
@@ -415,17 +428,22 @@ fun CashPaymentOrder.toDto(): CashPaymentOrderDto = CashPaymentOrderDto(
 
 // Statistics mappings
 fun SalesStatisticsEntity.toDomain(): SalesStatistics = SalesStatistics(
-    totalSalesAmount = AmountCurrency(totalSalesAmountCurrency, totalSalesAmount),
-    totalSalesNdsAmount = AmountCurrency(totalSalesNdsAmountCurrency, totalSalesNdsAmount),
+    totalSalesAmount = totalSalesAmount.toDomain(),
+    totalSalesNdsAmount = totalSalesNdsAmount.toDomain(),
     totalBuyers = totalBuyers
 )
 
 fun SalesStatistics.toEntity(): SalesStatisticsEntity = SalesStatisticsEntity(
     id = 1,
-    totalSalesAmount = totalSalesAmount.amount,
-    totalSalesAmountCurrency = totalSalesAmount.currency,
-    totalSalesNdsAmount = totalSalesNdsAmount.amount,
-    totalSalesNdsAmountCurrency = totalSalesNdsAmount.currency,
+    totalSalesAmount = totalSalesAmount.toEntity(),
+    totalSalesNdsAmount = totalSalesNdsAmount.toEntity(),
+    totalBuyers = totalBuyers
+)
+
+fun SalesStatisticsDto.toEntity(): SalesStatisticsEntity = SalesStatisticsEntity(
+    id = 1,
+    totalSalesAmount = totalSalesAmount.toEntity(),
+    totalSalesNdsAmount = totalSalesNdsAmount.toEntity(),
     totalBuyers = totalBuyers
 )
 
@@ -433,7 +451,7 @@ fun PaymentStatisticEntity.toDomain(): PaymentStatistic = PaymentStatistic(
     totalPayment = totalPayment,
     totalReceiver = totalReceiver,
     daysToSend = daysToSend,
-    paymentsByCurrency = emptyList() // TODO: Parse JSON string
+    paymentsByCurrency = paymentsByCurrency.map { it.toDomain() }
 )
 
 fun PaymentStatistic.toEntity(): PaymentStatisticEntity = PaymentStatisticEntity(
@@ -441,7 +459,14 @@ fun PaymentStatistic.toEntity(): PaymentStatisticEntity = PaymentStatisticEntity
     totalPayment = totalPayment,
     totalReceiver = totalReceiver,
     daysToSend = daysToSend,
-    paymentsByCurrencyJson = "" // TODO: Convert to JSON string
+    paymentsByCurrency = paymentsByCurrency.map { it.toEntity() }
+)
+
+fun PaymentStatisticDto.toDomain(): PaymentStatistic = PaymentStatistic(
+    totalPayment = totalPayment,
+    totalReceiver = totalReceiver,
+    daysToSend = daysToSend,
+    paymentsByCurrency = paymentsByCurrencyJson
 )
 
 fun OrderStatisticsEntity.toDomain(): OrderStatistics = OrderStatistics(
@@ -474,4 +499,14 @@ fun OrderStatisticsDto.toEntity(): OrderStatisticsEntity = OrderStatisticsEntity
     inProgressOrders = inProgressOrders,
     completedOrders = completedOrders,
     totalOrderWeight = totalOrderWeight
-) 
+)
+
+fun AmountCurrency.toEntity(): AmountCurrencyEntity = AmountCurrencyEntity(
+    amount = amount,
+    currency = currency
+)
+
+fun AmountCurrencyEntity.toDomain(): AmountCurrency = AmountCurrency(
+    amount = amount,
+    currency = currency
+)
