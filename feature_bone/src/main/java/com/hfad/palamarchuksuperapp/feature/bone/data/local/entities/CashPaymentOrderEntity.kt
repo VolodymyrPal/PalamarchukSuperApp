@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_CASH_PAYMENTS
@@ -16,7 +17,7 @@ data class CashPaymentOrderEntity(
     val paymentDateCreation: Date,
     val billingDate: Date,
     val transactionType: TransactionType = TransactionType.CREDIT,
-    val amount : Float = 0f,
-    val currency: Currency = Currency.USD,
+    @Embedded (prefix = "amount_")
+    val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0f),
     val versionHash: String = "",
 )
