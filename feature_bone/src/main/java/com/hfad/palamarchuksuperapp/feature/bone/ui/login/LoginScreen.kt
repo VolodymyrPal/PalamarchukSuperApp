@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -103,16 +104,16 @@ fun LoginScreenRoot(
         context as FragmentActivity,
         onSuccess = {
             viewModel.event(LoginScreenViewModel.Event.LoginButtonClicked)
-            Log.d("BiometricAuth", "Аутентификация успешна")
         },
         onError = { errorCode, message ->
             Toast.makeText(
-                context, "Ошибка аутентификации: $message", Toast.LENGTH_SHORT
+                context, context.getString(R.string.biometric_authentication_error_errorcode_message, errorCode, message), Toast.LENGTH_SHORT
             ).show()
         },
         onFailed = {
             Toast.makeText(
-                context, "Аутентификация не удалась. Попробуйте снова.", Toast.LENGTH_SHORT
+                context,
+                context.getString(R.string.biometric_authentication_failed), Toast.LENGTH_SHORT //TODO
             ).show()
         }
     )
