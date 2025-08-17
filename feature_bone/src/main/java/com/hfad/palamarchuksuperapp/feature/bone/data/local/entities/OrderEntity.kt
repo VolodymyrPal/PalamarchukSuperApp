@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey

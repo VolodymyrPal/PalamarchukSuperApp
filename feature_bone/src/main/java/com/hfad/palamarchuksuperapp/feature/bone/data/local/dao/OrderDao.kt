@@ -11,7 +11,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_SE
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_ORDER_STATISTICS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderStatisticsEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.OrderStatisticsEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import kotlinx.coroutines.flow.Flow

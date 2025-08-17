@@ -8,7 +8,7 @@ import androidx.room.Query
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_PAYMENTS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_PAYMENTS_STATISTICS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentOrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentStatisticEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.PaymentStatisticEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
