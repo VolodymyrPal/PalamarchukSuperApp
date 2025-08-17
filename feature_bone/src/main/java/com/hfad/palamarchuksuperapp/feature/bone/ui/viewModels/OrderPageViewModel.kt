@@ -12,7 +12,8 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,35 +31,29 @@ import kotlin.random.Random
 
 class OrderPageViewModel @Inject constructor(
     private val ordersRepository: OrdersRepository,
+    userRepository: AuthRepository,
 ) : GenericViewModel<OrderPageState, OrderPageViewModel.OrderPageEvent, OrderPageViewModel.OrderPageEffect>() {
 
-    override val _dataFlow: StateFlow<List<Order>> = flow {
-        emit(generateOrderItems())
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        emptyList()
-    )
+    override val _dataFlow: Flow<UserSession> = userRepository.currentSession
 
     private val orderStatusFilter: MutableStateFlow<OrderStatus?> = MutableStateFlow(null)
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
     val orderPaging: Flow<PagingData<Order>> =
-        combine(orderStatusFilter, searchQuery) { status, query ->
-            status to query
-        }
-            .debounce(500)
+        combine(orderStatusFilter, searchQuery) { status, query -> status to query }
             .distinctUntilChanged()
+            .debounce(500)
             .flatMapLatest { (status, query) ->
-                Log.d("OrdersRepositoryImpl", "$query, $status")
                 ordersRepository.pagingOrders(status, query).cachedIn(viewModelScope)
             }
 
-    private val statisticFlow: Flow<AppResult<OrderStatistics, AppError>> = ordersRepository.orderStatistics
+    private val statisticFlow: Flow<AppResult<OrderStatistics, AppError>> =
+        ordersRepository.orderStatistics
 
     override val uiState: StateFlow<OrderPageState> =
-        combine(_dataFlow, statisticFlow, orderStatusFilter, searchQuery
-        ) { orders, orderMetrics, status, query ->
+        combine(
+            _dataFlow, statisticFlow, orderStatusFilter, searchQuery
+        ) { userSession, orderMetrics, status, query ->
             val orderMetrics = if (orderMetrics is AppResult.Success) {
                 orderMetrics.data
             } else {
