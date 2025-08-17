@@ -2,7 +2,7 @@ package com.hfad.palamarchuksuperapp.feature.bone.domain.repository
 
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl.UserSession
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
