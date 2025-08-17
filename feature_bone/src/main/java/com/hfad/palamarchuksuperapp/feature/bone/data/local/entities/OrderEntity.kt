@@ -30,8 +30,6 @@ data class OrderEntity(
     val manager: String,
     @Embedded(prefix = "amount_")
     val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0f),
-//    val sum: Float = 0f,
-//    val currency: Currency = Currency.USD,
     val billingDate: Date,
     val transactionType: TransactionType = TransactionType.DEBIT,
     val versionHash: String = "",
