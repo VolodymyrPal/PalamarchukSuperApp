@@ -1,8 +1,9 @@
-package com.hfad.palamarchuksuperapp.feature.bone.data.local.entities
+package com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_PAYMENTS_STATISTICS
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.AmountCurrencyEntity
 
 @Entity(tableName = DATABASE_PAYMENTS_STATISTICS)
 data class PaymentStatisticEntity(
@@ -11,5 +12,5 @@ data class PaymentStatisticEntity(
     val totalPayment: Int = 0,
     val totalReceiver: Int = 0,
     val daysToSend: Int = 0,
-    val paymentsByCurrencyJson: String = "", // JSON string for List<AmountCurrency>
+    val paymentsByCurrency: List<AmountCurrencyEntity> = emptyList(),
 )
