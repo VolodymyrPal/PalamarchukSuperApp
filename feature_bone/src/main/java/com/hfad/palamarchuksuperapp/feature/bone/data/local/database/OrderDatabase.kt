@@ -9,8 +9,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.PaymentOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.RemoteKeysDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.SaleOrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.AmountCurrencyListConverter
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.CashPaymentOrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ExchangeOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SaleOrderEntity
@@ -24,21 +22,27 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.
 
 @Database(
     entities = [
+        // Order
         OrderEntity::class,
-        OrderRemoteKeys::class,
-        OrderStatisticsEntity::class,
         ServiceOrderEntity::class,
+        OrderStatisticsEntity::class,
+        OrderRemoteKeys::class,
+
+        // Sale
         SaleOrderEntity::class,
-        SaleRemoteKeys::class,
         SalesStatisticsEntity::class,
+        SaleRemoteKeys::class,
+
+        // Order
         PaymentOrderEntity::class,
-        PaymentRemoteKeys::class,
         PaymentStatisticEntity::class,
-        ExchangeOrderEntity::class,
-        CashPaymentOrderEntity::class,
+        PaymentRemoteKeys::class,
+
+//        ExchangeOrderEntity::class,
+//        CashPaymentOrderEntity::class,
     ],
-    version = 2,
-    exportSchema = true
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(DateConverter::class, AmountCurrencyListConverter::class)
 abstract class BoneDatabase : RoomDatabase() {

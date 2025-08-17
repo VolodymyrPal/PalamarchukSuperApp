@@ -1,16 +1,15 @@
 package com.feature.bone
 
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
@@ -61,8 +60,8 @@ class ObserveLoginStatusUseCaseImplTest {
         rememberSession: Boolean,
         loginTimestamp: Date,
         userStatus: LogStatus,
-    ): AuthRepositoryImpl.UserSession {
-        return AuthRepositoryImpl.UserSession(
+    ): UserSession {
+        return UserSession(
             username = "",
             accessToken = "",
             refreshToken = "",
@@ -105,7 +104,7 @@ class ObserveLoginStatusUseCaseImplTest {
 
     @Test
     fun `unremembered active session returns LOGGED_IN`() = runTest {
-        val session = AuthRepositoryImpl.UserSession(
+        val session = UserSession(
             username = "",
             accessToken = "",
             refreshToken = "",

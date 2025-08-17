@@ -9,6 +9,7 @@ import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureClient
 import com.hfad.palamarchuksuperapp.feature.bone.di.FeatureScope
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
 import com.hfad.palamarchuksuperapp.feature.bone.ui.screens.userSession
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -150,16 +150,6 @@ class AuthRepositoryImpl @Inject constructor(
         return userSession
     }
 
-
-    @Serializable
-    data class UserSession(
-        val username: String,
-        val accessToken: String,
-        val refreshToken: String,
-        val rememberSession: Boolean,
-        val userStatus: LogStatus,
-        @Serializable(with = DateAsLongSerializer::class) val loginTimestamp: Date,
-    )
 
     companion object {
         private val ENCRYPTED_SESSION_KEY = stringPreferencesKey("encrypted_session")

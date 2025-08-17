@@ -1,8 +1,8 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl
 
-import com.hfad.palamarchuksuperapp.feature.bone.data.repository.AuthRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.LogStatus
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
 import jakarta.inject.Inject
@@ -22,7 +22,7 @@ class ObserveLoginStatusUseCaseImpl @Inject constructor(
         .mapLatest { session -> determineLoginStatus(session) }
         .distinctUntilChanged()
 
-    private fun determineLoginStatus(session: AuthRepositoryImpl.UserSession): LogStatus {
+    private fun determineLoginStatus(session: UserSession): LogStatus {
 
         if (session.userStatus == LogStatus.NOT_LOGGED) {
             return LogStatus.NOT_LOGGED

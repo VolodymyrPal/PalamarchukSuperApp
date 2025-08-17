@@ -8,7 +8,7 @@ import androidx.room.Query
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_SALES
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_SALES_STATISTICS
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SaleOrderEntity
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SalesStatisticsEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.SalesStatisticsEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import kotlinx.coroutines.flow.Flow
 import java.util.Date

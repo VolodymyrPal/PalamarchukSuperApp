@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -38,8 +39,8 @@ data class SaleOrderEntity(
     val prepayment: Boolean,
     val orderId: Int? = null,
     val vat: Float = 0.20f,
-    val sum: Float = 0.0f,
-    val currency: Currency = Currency.UAH,
+    @Embedded (prefix = "amountCurrency_")
+    val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(currency = Currency.UAH, amount = 0.0f),
     val billingDate: Date = Date(),
     val transactionType: TransactionType = TransactionType.DEBIT,
     val versionHash: String = "",

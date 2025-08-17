@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
-@Entity
 data class AmountCurrencyEntity(
     val currency: Currency,
     val amount: Float,

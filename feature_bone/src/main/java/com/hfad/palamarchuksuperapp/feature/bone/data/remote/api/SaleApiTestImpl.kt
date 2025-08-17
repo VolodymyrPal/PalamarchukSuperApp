@@ -11,7 +11,9 @@ import kotlinx.coroutines.delay
 import java.util.Date
 import javax.inject.Inject
 
-class SaleApiTestImpl @Inject constructor() : SaleOrderApi {
+class SaleApiTestImpl @Inject constructor(
+
+) : SaleOrderApi {
     override suspend fun getSalesByPage(
         page: Int,
         size: Int,

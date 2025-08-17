@@ -79,6 +79,9 @@
     <string name="payment_page_tooltip_description">Page provides overview of your payments. Use the search bar to find specific payments by keywords</string>
     <string name="sales_page_tooltip_description">Page provides overview of your sales. Use the search bar to find specific sales by keywords</string>
     <string name="balance_page_tooltip_description">Page provides overview of your balance. Use the search bar to find specific balance by keywords</string>
+    <string name="biometric_authentication_successful">Authentication successful!</string>
+    <string name="biometric_authentication_error_errorcode_message">Authentication error: errorCode=%1$d, message=%2$s</string>
+    <string name="biometric_authentication_failed">Authentication Failed. Try again</string>
 
 
 </resources>

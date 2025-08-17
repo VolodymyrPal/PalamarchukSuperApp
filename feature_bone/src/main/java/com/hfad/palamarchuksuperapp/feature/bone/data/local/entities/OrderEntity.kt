@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.local.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -29,8 +30,6 @@ data class OrderEntity(
     val manager: String,
     @Embedded(prefix = "amount_")
     val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0f),
-//    val sum: Float = 0f,
-//    val currency: Currency = Currency.USD,
     val billingDate: Date,
     val transactionType: TransactionType = TransactionType.DEBIT,
     val versionHash: String = "",

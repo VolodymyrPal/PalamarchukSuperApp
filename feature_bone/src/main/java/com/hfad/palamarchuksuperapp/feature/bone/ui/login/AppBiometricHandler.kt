@@ -10,6 +10,7 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.hfad.palamarchuksuperapp.feature.bone.R
 
 class AppBiometricHandler(
     private val context: Context,
@@ -62,20 +63,25 @@ class AppBiometricHandler(
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
-                    Log.d(TAG, "Аутентификация успешна")
-                    Toast.makeText(context, "Аутентификация успешна!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.biometric_authentication_successful), Toast.LENGTH_SHORT).show()
                     onSuccess()
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
-                    Log.e(TAG, "Ошибка аутентификации: errorCode=$errorCode, message=$errString")
+                    Log.e(TAG,
+                        context.getString(
+                            R.string.biometric_authentication_error_errorcode_message,
+                            errorCode,
+                            errString
+                        ))
                     onError(errorCode, errString.toString())
                 }
 
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
-                    Log.w(TAG, "Аутентификация не удалась")
+                    Log.w(TAG, "Authentication failed")
                     onFailed()
                 }
             }

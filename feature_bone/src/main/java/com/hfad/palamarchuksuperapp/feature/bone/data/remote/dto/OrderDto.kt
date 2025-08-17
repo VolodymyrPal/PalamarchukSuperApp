@@ -1,6 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto
 
-import androidx.room.PrimaryKey
+
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CargoType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
@@ -11,7 +11,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import java.util.Date
 
 data class OrderDto(
-    @PrimaryKey
     val id: Int,
     val businessEntityNum: Int,
     val num: Int,

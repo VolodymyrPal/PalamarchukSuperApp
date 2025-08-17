@@ -349,7 +349,7 @@ fun PaymentsStatisticsCard(
                 color = MaterialTheme.colorScheme.secondary
             )
 
-            val gridItems = remember { paymentStatistic.paymentsByCurrency }
+            val gridItems = paymentStatistic.paymentsByCurrency
 
             EqualWidthFlowRow(
                 modifier = Modifier

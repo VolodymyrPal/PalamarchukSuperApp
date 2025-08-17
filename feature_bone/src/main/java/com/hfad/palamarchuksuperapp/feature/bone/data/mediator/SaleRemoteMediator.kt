@@ -56,7 +56,7 @@ class SaleRemoteMediator(
                         id = it.id,
                         prevKey = if (page == 1) null else page - 1,
                         nextKey = if (endReached) null else page + 1,
-                        filter = status
+                        status = status
                     )
                 }
                 if (loadType == LoadType.REFRESH) {
