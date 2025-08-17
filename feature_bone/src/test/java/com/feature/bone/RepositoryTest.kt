@@ -4,21 +4,23 @@ import android.database.SQLException
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.core.data.fetchWithCacheFallback
-import com.hfad.palamarchuksuperapp.core.data.mapApiException
-import com.hfad.palamarchuksuperapp.core.data.tryApiRequest
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.OrderDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.dao.RemoteKeysDao
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.AmountCurrencyEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.OrderStatisticsEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto.OrderStatisticsDto
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.OrdersRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.toDto
+import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
@@ -98,8 +100,10 @@ class OrdersRepositoryImplTestSub {
             departurePoint = "Test Departure",
             cargo = "Test Cargo",
             manager = "Test Manager",
-            sum = 100.0f,
-            currency = Currency.USD,
+            amountCurrency = AmountCurrencyEntity(
+                currency = Currency.USD,
+                amount = 100.0f
+            ),
             billingDate = testDate,
             transactionType = TransactionType.DEBIT,
             versionHash = "testHash123"
@@ -147,7 +151,13 @@ class OrdersRepositoryImplTestSub {
         versionHash = "testHash123"
     )
 
-    private val testOrderStatistics = OrderStatistics(
+    private val testOrderStatisticsEntity = OrderStatisticsEntity(
+        totalOrders = 10,
+        inProgressOrders = 3,
+        completedOrders = 7
+    )
+
+    private val testOrderStatisticsDto = OrderStatisticsDto(
         totalOrders = 10,
         inProgressOrders = 3,
         completedOrders = 7
@@ -160,7 +170,7 @@ class OrdersRepositoryImplTestSub {
         Dispatchers.setMain(testDispatcher)
         every { boneDatabase.orderDao() } returns orderDao
         every { boneDatabase.remoteKeysDao() } returns remoteKeysDao
-        every { orderDao.getStatistic() } returns flowOf(testOrderStatistics)
+        every { orderDao.getStatistic() } returns flowOf(testOrderStatisticsEntity)
         repository = OrdersRepositoryImpl(boneDatabase, orderApi)
 
         val transactionLambda = slot<suspend () -> R>()
@@ -185,14 +195,14 @@ class OrdersRepositoryImplTestSub {
                 nextKey = null
             )
         }
-        every { orderDao.getOrdersWithServices(status) } returns pagingSource
+        every { orderDao.getOrdersWithServices(status, query = "") } returns pagingSource
 
-        val resultFlow = repository.pagingOrders(status)
+        val resultFlow = repository.pagingOrders(status, "")
         assertNotNull(resultFlow)
 
         resultFlow.first()
 
-        verify { orderDao.getOrdersWithServices(status) }
+        verify { orderDao.getOrdersWithServices(status, "") }
     }
 
     @Test
@@ -321,16 +331,16 @@ class OrdersRepositoryImplTestSub {
 
     @Test
     fun `refreshStatistic returns success when remote fetch succeeds`() = runTest {
-        val remoteStatistics = testOrderStatistics
+        val remoteStatistics = testOrderStatisticsEntity
 
-        coEvery { orderApi.getOrderStatistics() } returns testOrderStatistics
-        coEvery { orderDao.insertOrUpdateStatistic(testOrderStatistics) } just Runs
+        coEvery { orderApi.getOrderStatistics() } returns testOrderStatisticsDto
+        coEvery { orderDao.insertOrUpdateStatistic(testOrderStatisticsEntity) } just Runs
 
         val result = repository.refreshStatistic()
 
         assertTrue(result is AppResult.Success)
         result as AppResult.Success
-        assertEquals(testOrderStatistics, result.data)
+        assertEquals(testOrderStatisticsEntity, result.data.toEntity())
         coVerify { orderDao.insertOrUpdateStatistic(remoteStatistics) }
     }
 
@@ -349,12 +359,12 @@ class OrdersRepositoryImplTestSub {
 
     @Test
     fun `refreshStatistic returns error even when database insert fails`() = runTest {
-        val remoteStatistics = testOrderStatistics
+        val remoteStatistics = testOrderStatisticsDto
         val dbException = SQLException("Database write error")
 
         coEvery { orderApi.getOrderStatistics() } returns remoteStatistics
 
-        coEvery { orderDao.insertOrUpdateStatistic(remoteStatistics) } throws dbException
+        coEvery { orderDao.insertOrUpdateStatistic(remoteStatistics.toEntity()) } throws dbException
 
         val result = repository.refreshStatistic()
 
@@ -366,7 +376,7 @@ class OrdersRepositoryImplTestSub {
     @Test
     fun `softRefreshStatistic returns success with remote data when database fails to store`() =
         runTest {
-            val remoteStatistics = testOrderStatistics
+            val remoteStatistics = testOrderStatisticsDto
             val dbException = SQLException("Database write error")
 
             coEvery { orderApi.getOrderStatistics() } returns remoteStatistics
@@ -377,7 +387,7 @@ class OrdersRepositoryImplTestSub {
 
             assertTrue(result is AppResult.Success)
             result as AppResult.Success
-            assertEquals(remoteStatistics, result.data)
+            assertEquals(remoteStatistics, result.data.toDto())
 //            assertNotNull(result.error)
 //            assertTrue(result.error is AppError.DatabaseError)
 //            coVerify { orderApi.getOrderStatistics() }
