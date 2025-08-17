@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface SalesRepository {
-    suspend fun salesInRange(from: Date, to: Date): AppResult<List<SaleOrder>, AppError>
+    suspend fun saleOrdersInRange(from: Date, to: Date): AppResult<List<SaleOrder>, AppError>
     suspend fun getSaleOrderById(id: Int): AppResult<SaleOrder?, AppError>
     suspend fun refreshStatistic(): AppResult<SalesStatistics, AppError>
 
