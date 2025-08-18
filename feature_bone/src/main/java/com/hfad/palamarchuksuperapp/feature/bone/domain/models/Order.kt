@@ -36,8 +36,11 @@ data class Order(
         }
 }
 
-enum class OrderStatus {
-    CREATED, CALCULATED, IN_PROGRESS, DONE
+enum class OrderStatus (val displayName: String) {
+    CREATED ("Created"),
+    CALCULATED ("Calculated"),
+    IN_PROGRESS ("In progress"),
+    DONE ("Done") //TODO ResString
 }
 
 enum class CargoType {
