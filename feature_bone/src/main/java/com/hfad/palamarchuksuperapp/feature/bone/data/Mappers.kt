@@ -470,6 +470,7 @@ fun PaymentStatisticDto.toDomain(): PaymentStatistic = PaymentStatistic(
 )
 
 fun OrderStatisticsEntity.toDomain(): OrderStatistics = OrderStatistics(
+    totalOrders = totalOrders,
     inProgressOrders = inProgressOrders,
     completedOrders = completedOrders,
     totalOrderWeight = totalOrderWeight
@@ -477,18 +478,21 @@ fun OrderStatisticsEntity.toDomain(): OrderStatistics = OrderStatistics(
 
 fun OrderStatistics.toEntity(): OrderStatisticsEntity = OrderStatisticsEntity(
     id = 1,
+    totalOrders = totalOrders,
     inProgressOrders = inProgressOrders,
     completedOrders = completedOrders,
     totalOrderWeight = totalOrderWeight
 )
 
 fun OrderStatisticsDto.toDomain(): OrderStatistics = OrderStatistics(
+    totalOrders = totalOrders,
     inProgressOrders = inProgressOrders,
     completedOrders = completedOrders,
     totalOrderWeight = totalOrderWeight
 )
 
 fun OrderStatistics.toDto(): OrderStatisticsDto = OrderStatisticsDto(
+    totalOrders = totalOrders,
     inProgressOrders = inProgressOrders,
     completedOrders = completedOrders,
     totalOrderWeight = totalOrderWeight
@@ -496,6 +500,7 @@ fun OrderStatistics.toDto(): OrderStatisticsDto = OrderStatisticsDto(
 
 fun OrderStatisticsDto.toEntity(): OrderStatisticsEntity = OrderStatisticsEntity(
     id = 1,
+    totalOrders = totalOrders,
     inProgressOrders = inProgressOrders,
     completedOrders = completedOrders,
     totalOrderWeight = totalOrderWeight

@@ -1,21 +1,22 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,21 +28,31 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -71,6 +82,7 @@ import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
@@ -101,6 +113,7 @@ internal fun OrdersPageRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersPage(
     modifier: Modifier = Modifier,
@@ -109,6 +122,8 @@ fun OrdersPage(
     state: State<OrderPageState>,
     orderPaging: LazyPagingItems<Order>,
 ) {
+    val shownQuery = remember { mutableIntStateOf(99) }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -118,172 +133,202 @@ fun OrdersPage(
         item {
             OrderStatisticCard(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 6.dp),
-                state = state,
+                state = state.value.orderMetrics,
             )
         }
+
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val lookIcon = remember { Icons.Default.Search }
-                val searchText = remember { mutableStateOf("") }
+                TitleQueryField(
+                    modifier = Modifier,
+                    sectionIcon = Icons.Default.Search,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 0) 99 else 0
+                    },
+                    expanded = shownQuery.intValue == 0
+                )
 
-                AppOutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                    value = state.value.searchQuery,
-                    onValueChange = { event(OrderPageViewModel.OrderPageEvent.Search(it)) },
-                    outlinedTextConfig = appEditOutlinedTextConfig(
-                        leadingIcon = {
-                            Icon(
-                                imageVector = lookIcon,
-                                contentDescription = "Filter",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(20.dp)
+                TitleQueryField(
+                    modifier = Modifier,
+                    sectionIcon = Icons.Default.DateRange,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
+                    },
+                    expanded = shownQuery.intValue == 1
+                )
+                TitleQueryField(
+                    modifier = Modifier,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
+                    },
+                    expanded = shownQuery.intValue == 2,
+                    sectionIcon = Icons.Default.Check
+                )
+            }
+        }
+
+        item {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 0,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    AppOutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                             )
-                        },
-                        trailingIcon = {
-                            val isLoading = orderPaging.loadState.refresh == LoadState.Loading
+                            .padding(4.dp),
+                        value = state.value.searchQuery,
+                        onValueChange = { event(OrderPageViewModel.OrderPageEvent.Search(it)) },
+                        outlinedTextConfig = appEditOutlinedTextConfig(
+                            trailingIcon = {
+                                val isLoading = orderPaging.loadState.refresh == LoadState.Loading
 
-                            AnimatedContent(
-                                targetState = isLoading,
-                                transitionSpec = {
-                                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
-                                },
-                                label = "loading_or_send_icon"
-                            ) { loading ->
-                                if (loading) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(20.dp),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                        strokeWidth = 2.dp
-                                    )
-                                } else {
-                                    IconButton(
-                                        modifier = Modifier.size(28.dp),
-                                        onClick = {
-                                            orderPaging.refresh()
-                                            searchText.value = ""
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.Send,
-                                            contentDescription = "Отправить",
-                                            tint = MaterialTheme.colorScheme.onSurface,
-                                            modifier = Modifier.size(20.dp)
+                                AnimatedContent(
+                                    targetState = isLoading,
+                                    transitionSpec = {
+                                        fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
+                                    },
+                                    label = "loading_or_send_icon"
+                                ) { loading ->
+                                    if (loading) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(20.dp),
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                            strokeWidth = 2.dp
                                         )
+                                    } else {
+                                        IconButton(
+                                            modifier = Modifier.size(28.dp),
+                                            onClick = {
+                                                orderPaging.refresh()
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.AutoMirrored.Filled.Send,
+                                                contentDescription = "Отправить",
+                                                tint = MaterialTheme.colorScheme.onSurface,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        }
+                        )
                     )
-                )
+                }
 
-                val statusIcon = Icons.Default.Check
-
-                AnimatedContent(
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    targetState = statusIcon,
-                    transitionSpec = {
-                        (fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + scaleIn(
-                            initialScale = 0.8f,
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + slideInVertically(
-                            initialOffsetY = { it / 4 },
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        )).togetherWith(
-                            fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 200,
-                                    easing = FastOutLinearInEasing
-                                )
-                            ) + scaleOut(
-                                targetScale = 1.2f,
-                                animationSpec = tween(
-                                    durationMillis = 200,
-                                    easing = FastOutLinearInEasing
-                                )
-                            ) + slideOutVertically(
-                                targetOffsetY = { -it / 4 },
-                                animationSpec = tween(
-                                    durationMillis = 200,
-                                    easing = FastOutLinearInEasing
-                                )
-                            )
-                        )
-                    },
-                    label = "status_filter_icon_animation"
-                ) { targetIcon ->
-                    Box(
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 1,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    Row(
                         modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(
-                                animateColorAsState(
-                                    targetValue = when (state.value.orderStatusFilter) {
-                                        OrderStatus.DONE -> MaterialTheme.colorScheme.surfaceVariant
-                                        else -> Color.Transparent
-                                    },
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = FastOutSlowInEasing
-                                    ),
-                                    label = "background_color_animation"
-                                ).value
-                            )
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {
-                                    val nextStatus = when (state.value.orderStatusFilter) {
-                                        OrderStatus.DONE -> null
-                                        else -> OrderStatus.DONE
-                                    }
-                                    event(
-                                        OrderPageViewModel.OrderPageEvent.FilterOrderStatus(
-                                            nextStatus
-                                        )
-                                    )
-                                }
-                            ),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth(0.9f)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = targetIcon,
-                            contentDescription = when (state.value.orderStatusFilter) {
-                                OrderStatus.DONE -> "Фильтр: завершенные заказы"
-                                else -> "Фильтр заказов"
-                            },
-                            tint = animateColorAsState(
-                                targetValue = when (state.value.orderStatusFilter) {
-                                    OrderStatus.DONE -> MaterialTheme.colorScheme.onSurfaceVariant
-                                    else -> MaterialTheme.colorScheme.outline
-                                },
-                                animationSpec = tween(
-                                    durationMillis = 300,
-                                    easing = FastOutSlowInEasing
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    // Обработка клика - открыть календарь "от"
+                                }
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                 ),
-                                label = "icon_color_animation"
-                            ).value,
-                            modifier = Modifier.size(20.dp)
+                            value = "12.03.2023",
+                            onValueChange = { },
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
+                                textAlign = TextAlign.Center,
+                            ),
+                            outlinedTextConfig = appEditOutlinedTextConfig()
                         )
+
+                        Text(
+                            text = "—",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.surfaceVariant
+                        )
+
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    // Обработка клика - открыть календарь "до"
+                                }
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                ),
+                            value = "12.04.2023",
+                            onValueChange = { },
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
+                                textAlign = TextAlign.Center,
+                            ),
+                            outlinedTextConfig = appEditOutlinedTextConfig()
+                        )
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 2,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(OrderStatus.entries.toTypedArray()) { status ->
+                            FilterChip(
+                                onClick = {
+                                    event.invoke(
+                                        OrderPageViewModel.OrderPageEvent.FilterOrderStatus(
+                                            status.takeIf { it != state.value.orderStatusFilter }
+                                        )
+                                    ) //TODO add different classes check for status with list
+                                },
+                                label = {
+                                    Text(text = status.displayName)
+                                },
+                                selected = status == state.value.orderStatusFilter,
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -297,7 +342,7 @@ fun OrdersPage(
             if (item != null) {
                 OrderCard(
                     modifier = Modifier
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp)
+                        .padding(start = 12.dp, end = 12.dp, top = 0.dp)
                         .animatedScaleIn(),
                     order = item,
                     currentStep = Random.nextInt(7), //TODO better logic for current step
@@ -309,11 +354,66 @@ fun OrdersPage(
 }
 
 @Composable
+fun TitleQueryField(
+    modifier: Modifier = Modifier,
+    sectionIcon: ImageVector = Icons.Default.ArrowDropDown,
+    expanded: Boolean = false,
+    onClick: () -> Unit,
+) {
+    SectionTitleIcon(
+        title = stringResource(R.string.order_statistic_title),
+        icon = sectionIcon,
+        modifier = Modifier
+            .size(36.dp)
+            .clip(CircleShape)
+            .clickable { onClick() }
+            .background(
+                animateColorAsState(
+                    targetValue = when (expanded) {
+                        true -> MaterialTheme.colorScheme.surfaceVariant
+                        else -> Color.Transparent
+                    },
+                    animationSpec = tween(
+                        durationMillis = 200,
+                        easing = FastOutSlowInEasing
+                    ),
+                    label = "background_color_animation"
+                ).value
+            )
+            .padding(4.dp),
+        tint = animateColorAsState(
+            targetValue = when (expanded) {
+                true -> MaterialTheme.colorScheme.onSurfaceVariant
+                else -> MaterialTheme.colorScheme.outline
+            },
+            animationSpec = tween(
+                durationMillis = 200,
+                easing = FastOutSlowInEasing
+            ),
+            label = "icon_color_animation"
+        ).value
+    )
+}
+
+@Composable
+fun SectionTitleIcon(
+    modifier: Modifier = Modifier,
+    title: String,
+    icon: ImageVector = Icons.Default.ArrowDropDown,
+    tint: Color = MaterialTheme.colorScheme.outline,
+) {
+    Icon(
+        modifier = modifier,
+        imageVector = icon,
+        contentDescription = title,
+        tint = tint
+    )
+}
+
+@Composable
 private fun OrderStatisticCard(
     modifier: Modifier = Modifier,
-    state: State<OrderPageState> = remember {
-        mutableStateOf(OrderPageState())
-    },
+    state: OrderStatistics = OrderStatistics(),
 ) {
     Card(
         modifier = modifier,
@@ -348,7 +448,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = inProgress,
-                    value = state.value.orderMetrics.inProgressOrders,
+                    value = state.inProgressOrders,
                     label = inWork,
                     color = Color.Red
                 )
@@ -357,7 +457,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = Icons.Default.Check,
-                    value = state.value.orderMetrics.completedOrders,
+                    value = state.completedOrders,
                     label = completed,
                     color = Color(0xFF55940E)
                 )
@@ -367,7 +467,7 @@ private fun OrderStatisticCard(
                 OrderStat(
                     modifier = Modifier.weight(0.3f),
                     icon = weightPainter,
-                    value = state.value.orderMetrics.totalOrderWeight,
+                    value = state.totalOrderWeight,
                     label = finishFull,
                     color = Color.Blue
                 )
@@ -391,7 +491,7 @@ private fun OrderStatisticCard(
                     ), color = MaterialTheme.colorScheme.primary
                 )
                 AnimatedValueText(
-                    value = state.value.orderMetrics.totalOrderWeight,
+                    value = state.totalOrderWeight,
                     textStyle = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
