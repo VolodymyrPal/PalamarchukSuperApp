@@ -317,7 +317,7 @@ fun OrdersPage(
                                         OrderPageViewModel.OrderPageEvent.FilterOrderStatus(
                                             status.takeIf { it != state.value.orderStatusFilter }
                                         )
-                                    )
+                                    ) //TODO add different classes check for status with list
                                 },
                                 label = {
                                     Text(text = status.displayName)
