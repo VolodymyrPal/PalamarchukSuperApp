@@ -1,5 +1,6 @@
 package com.feature.bone
 
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.AmountCurrencyEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
@@ -25,7 +26,7 @@ class OrderMappersTest {
     private fun createServiceOrderEntity(
         id: Int = 1,
         orderId: Int? = null,
-        serviceType: ServiceType = ServiceType.OTHER
+        serviceType: ServiceType = ServiceType.OTHER,
     ) = ServiceOrderEntity(
         id = id,
         orderId = orderId,
@@ -39,7 +40,7 @@ class OrderMappersTest {
     private fun createServiceOrder(
         id: Int = 1,
         orderId: Int? = null,
-        serviceType: ServiceType = ServiceType.OTHER
+        serviceType: ServiceType = ServiceType.OTHER,
     ) = ServiceOrder(
         id = id,
         orderId = orderId,
@@ -61,8 +62,7 @@ class OrderMappersTest {
         departurePoint = "London",
         cargo = "Electronics",
         manager = "John Doe",
-        sum = 1000.0f,
-        currency = Currency.USD,
+        amountCurrency = AmountCurrencyEntity(Currency.USD, 1000.0f),
         billingDate = Date(),
         transactionType = TransactionType.DEBIT,
         versionHash = "hash123"
@@ -86,23 +86,24 @@ class OrderMappersTest {
         versionHash = "hash123"
     )
 
-    private fun createOrderDto(id: Int = 1, serviceList: List<ServiceOrder> = emptyList()) = OrderDto(
-        id = id,
-        businessEntityNum = 123,
-        num = 456,
-        serviceList = serviceList,
-        status = OrderStatus.CREATED,
-        destinationPoint = "New York",
-        arrivalDate = Date(),
-        containerNumber = "CONT123",
-        departurePoint = "London",
-        cargo = "Electronics",
-        manager = "John Doe",
-        amountCurrency = AmountCurrency(Currency.USD, 1000.0f),
-        billingDate = Date(),
-        transactionType = TransactionType.DEBIT,
-        versionHash = "hash123"
-    )
+    private fun createOrderDto(id: Int = 1, serviceList: List<ServiceOrder> = emptyList()) =
+        OrderDto(
+            id = id,
+            businessEntityNum = 123,
+            num = 456,
+            serviceList = serviceList,
+            status = OrderStatus.CREATED,
+            destinationPoint = "New York",
+            arrivalDate = Date(),
+            containerNumber = "CONT123",
+            departurePoint = "London",
+            cargo = "Electronics",
+            manager = "John Doe",
+            amountCurrency = AmountCurrency(Currency.USD, 1000.0f),
+            billingDate = Date(),
+            transactionType = TransactionType.DEBIT,
+            versionHash = "hash123"
+        )
 
     @Test
     fun `ServiceOrderEntity toDomain maps correctly`() {
@@ -135,10 +136,14 @@ class OrderMappersTest {
     @Test
     fun `ServiceOrder toEntity maps correctly using its own orderId when explicit is null`() {
         val domain = createServiceOrder(id = 5, orderId = 20)
-        val entity = domain.toEntity(orderId = null) // Передаем null, должен использоваться orderId из домена
+        val entity =
+            domain.toEntity(orderId = null) // Передаем null, должен использоваться orderId из домена
 
         assertEquals(domain.id, entity.id)
-        assertEquals(domain.orderId, entity.orderId) // Должен использоваться orderId из ServiceOrder
+        assertEquals(
+            domain.orderId,
+            entity.orderId
+        ) // Должен использоваться orderId из ServiceOrder
         assertEquals(domain.fullTransport, entity.fullTransport)
         assertEquals(domain.serviceType, entity.serviceType)
         assertEquals(domain.price, entity.price)
@@ -149,8 +154,10 @@ class OrderMappersTest {
 
     @Test
     fun `OrderEntityWithServices toDomain maps correctly`() {
-        val serviceEntity1 = createServiceOrderEntity(id = 101, orderId = 1, serviceType = ServiceType.AIR_FREIGHT)
-        val serviceEntity2 = createServiceOrderEntity(id = 102, orderId = 1, serviceType = ServiceType.CUSTOMS)
+        val serviceEntity1 =
+            createServiceOrderEntity(id = 101, orderId = 1, serviceType = ServiceType.AIR_FREIGHT)
+        val serviceEntity2 =
+            createServiceOrderEntity(id = 102, orderId = 1, serviceType = ServiceType.CUSTOMS)
 
         val orderEntity = createOrderEntity(id = 1)
         val orderEntityWithServices = OrderEntityWithServices(
@@ -170,8 +177,7 @@ class OrderMappersTest {
         assertEquals(orderEntity.departurePoint, domain.departurePoint)
         assertEquals(orderEntity.cargo, domain.cargo)
         assertEquals(orderEntity.manager, domain.manager)
-        assertEquals(orderEntity.sum, domain.amountCurrency.amount)
-        assertEquals(orderEntity.currency, domain.amountCurrency.currency)
+        assertEquals(orderEntity.amountCurrency, domain.amountCurrency.toEntity())
         assertEquals(orderEntity.billingDate, domain.billingDate)
         assertEquals(orderEntity.transactionType, domain.transactionType)
         assertEquals(orderEntity.versionHash, domain.versionHash)
@@ -202,8 +208,7 @@ class OrderMappersTest {
         assertEquals(order.departurePoint, entityWithServices.order.departurePoint)
         assertEquals(order.cargo, entityWithServices.order.cargo)
         assertEquals(order.manager, entityWithServices.order.manager)
-        assertEquals(order.amountCurrency.amount, entityWithServices.order.sum)
-        assertEquals(order.amountCurrency.currency, entityWithServices.order.currency)
+        assertEquals(order.amountCurrency.toEntity(), entityWithServices.order.amountCurrency)
         assertEquals(order.billingDate, entityWithServices.order.billingDate)
         assertEquals(order.transactionType, entityWithServices.order.transactionType)
         assertEquals(order.versionHash, entityWithServices.order.versionHash)
@@ -211,10 +216,16 @@ class OrderMappersTest {
         assertEquals(2, entityWithServices.services.size)
 
         assertEquals(serviceDomain1.id, entityWithServices.services[0].id)
-        assertEquals(order.id, entityWithServices.services[0].orderId) // orderId должен быть установлен
+        assertEquals(
+            order.id,
+            entityWithServices.services[0].orderId
+        ) // orderId должен быть установлен
         assertEquals(serviceDomain1.serviceType, entityWithServices.services[0].serviceType)
         assertEquals(serviceDomain2.id, entityWithServices.services[1].id)
-        assertEquals(order.id, entityWithServices.services[1].orderId) // orderId должен быть установлен
+        assertEquals(
+            order.id,
+            entityWithServices.services[1].orderId
+        ) // orderId должен быть установлен
         assertEquals(serviceDomain2.serviceType, entityWithServices.services[1].serviceType)
     }
 
@@ -261,8 +272,7 @@ class OrderMappersTest {
         assertEquals(orderDto.departurePoint, entityWithServices.order.departurePoint)
         assertEquals(orderDto.cargo, entityWithServices.order.cargo)
         assertEquals(orderDto.manager, entityWithServices.order.manager)
-        assertEquals(orderDto.amountCurrency.amount, entityWithServices.order.sum)
-        assertEquals(orderDto.amountCurrency.currency, entityWithServices.order.currency)
+        assertEquals(orderDto.amountCurrency.toEntity(), entityWithServices.order.amountCurrency)
         assertEquals(orderDto.billingDate, entityWithServices.order.billingDate)
         assertEquals(orderDto.transactionType, entityWithServices.order.transactionType)
         assertEquals(orderDto.versionHash, entityWithServices.order.versionHash)
@@ -270,10 +280,16 @@ class OrderMappersTest {
         assertEquals(2, entityWithServices.services.size)
 
         assertEquals(serviceDomain1.id, entityWithServices.services[0].id)
-        assertEquals(orderDto.id, entityWithServices.services[0].orderId) // orderId должен быть установлен
+        assertEquals(
+            orderDto.id,
+            entityWithServices.services[0].orderId
+        ) // orderId должен быть установлен
         assertEquals(serviceDomain1.serviceType, entityWithServices.services[0].serviceType)
         assertEquals(serviceDomain2.id, entityWithServices.services[1].id)
-        assertEquals(orderDto.id, entityWithServices.services[1].orderId) // orderId должен быть установлен
+        assertEquals(
+            orderDto.id,
+            entityWithServices.services[1].orderId
+        ) // orderId должен быть установлен
         assertEquals(serviceDomain2.serviceType, entityWithServices.services[1].serviceType)
     }
 
