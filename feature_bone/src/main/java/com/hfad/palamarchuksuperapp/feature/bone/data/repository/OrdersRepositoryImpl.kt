@@ -38,10 +38,11 @@ class OrdersRepositoryImpl @Inject constructor(
 
 
     @OptIn(ExperimentalPagingApi::class)
-    private val pagerCache = mutableMapOf< Pair<OrderStatus?, String>, Flow<PagingData<Order>>>()
+    private val pagerCache =
+        mutableMapOf<Pair<List<OrderStatus>, String>, Flow<PagingData<Order>>>()
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun pagingOrders(status: OrderStatus?, query: String): Flow<PagingData<Order>> {
+    override fun pagingOrders(status: List<OrderStatus>, query: String): Flow<PagingData<Order>> {
         val key = status to query
         return pagerCache.getOrPut(key) {
             Pager(
@@ -49,16 +50,18 @@ class OrdersRepositoryImpl @Inject constructor(
                 remoteMediator = OrderRemoteMediator(
                     orderApi = orderApi,
                     database = boneDatabase,
-                    status = status,
+                    statusList = status,
                 ),
                 pagingSourceFactory = {
-                    orderDao.getOrdersWithServices(status, query)
+                    orderDao.getOrdersWithServices(status.takeIf { it.isNotEmpty() }, query)
                 },
-            ).flow.map { pagingData ->
-                pagingData.map { orderEntityWithServices ->
-                    orderEntityWithServices.toDomain()
+            )
+                .flow
+                .map { pagingData ->
+                    pagingData.map { orderEntityWithServices ->
+                        orderEntityWithServices.toDomain()
+                    }
                 }
-            }
         }
     }
 
