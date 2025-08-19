@@ -17,11 +17,13 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentOrderA
 class PaymentRemoteMediator(
     private val paymentApi: PaymentOrderApi,
     private val database: BoneDatabase,
-    private val status: PaymentStatus?,
+    private val status: List<PaymentStatus>,
 ) : RemoteMediator<Int, PaymentOrderEntity>() {
 
     val paymentDao = database.paymentOrderDao()
     val remoteKeysDao = database.remoteKeysDao()
+
+    private val statusFilter: String = status.joinToString(",") { it.name }
 
     override suspend fun initialize(): InitializeAction {
         return InitializeAction.LAUNCH_INITIAL_REFRESH //TODO add logic for refresh
@@ -40,7 +42,7 @@ class PaymentRemoteMediator(
             LoadType.APPEND -> {
                 val lastItem = state.lastItemOrNull()
                 if (lastItem == null) return MediatorResult.Success(endOfPaginationReached = false)
-                val keys = database.remoteKeysDao().remoteKeysPaymentId(lastItem.id, status)
+                val keys = database.remoteKeysDao().remoteKeysPaymentId(lastItem.id, statusFilter)
                 keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
         }
@@ -56,7 +58,7 @@ class PaymentRemoteMediator(
                         id = it.id,
                         prevKey = if (page == 1) null else page - 1,
                         nextKey = if (endReached) null else page + 1,
-                        status = status
+                        status = statusFilter
                     )
                 }
                 if (loadType == LoadType.REFRESH) {

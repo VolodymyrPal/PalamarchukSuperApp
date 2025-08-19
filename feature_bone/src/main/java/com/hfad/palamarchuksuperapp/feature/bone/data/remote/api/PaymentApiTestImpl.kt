@@ -17,7 +17,7 @@ class PaymentApiTestImpl @Inject constructor(
     override suspend fun getPaymentsByPage(
         page: Int,
         size: Int,
-        status: PaymentStatus?,
+        status: List<PaymentStatus>,
     ): List<PaymentOrderDto> {
         delay(1500) //TODO
         return generatePaymentOrderItems().map { it.toDto() }

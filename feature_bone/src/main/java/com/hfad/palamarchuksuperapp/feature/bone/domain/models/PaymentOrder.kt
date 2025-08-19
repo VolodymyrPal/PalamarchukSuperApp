@@ -24,8 +24,10 @@ data class PaymentOrder(
     val fullPrice: AmountCurrency get() = amountCurrency + amountCurrency * commission + paymentPrice
 }
 
-enum class PaymentStatus {
-    PAID, PENDING, OVERDUE
+enum class PaymentStatus (
+    val displayName: String
+) {
+    PAID ("Paid"), PENDING ("Pending"), OVERDUE ("Overdue")
 }
 
 internal fun generatePaymentOrderSample() : PaymentOrder {

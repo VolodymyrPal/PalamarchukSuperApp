@@ -1,21 +1,20 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,34 +24,37 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
@@ -78,11 +80,13 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.EqualWidthFlowRow
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentsPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentsPageViewModel
 
@@ -114,6 +118,8 @@ fun PaymentsPage(
     state: State<PaymentsPageState>,
     paymentsPaging: LazyPagingItems<PaymentOrder>,
 ) {
+    val shownQuery = remember { mutableIntStateOf(99) }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -124,173 +130,190 @@ fun PaymentsPage(
             PaymentsStatisticsCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 25.dp),
+                    .padding(start = 12.dp, end = 12.dp, top = 12.dp),
                 paymentStatistic = state.value.paymentStatistic
             )
         }
         item {
+            val isLoading = paymentsPaging.loadState.refresh == LoadState.Loading
+
+            AnimatedContent(
+                targetState = isLoading,
+                transitionSpec = {
+                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
+                },
+                label = "loading_or_send_icon"
+            ) { loading ->
+                if (loading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(1.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+            }
+        }
+
+        item {
             Row(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val lookIcon = remember { Icons.Default.Search }
-                val searchText = remember { mutableStateOf("") }
-
-                AppOutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                    value = state.value.searchQuery,
-                    onValueChange = { event(PaymentsPageViewModel.PaymentsPageEvent.Search(it)) },
-                    outlinedTextConfig = appEditOutlinedTextConfig(
-                        leadingIcon = {
-                            Icon(
-                                imageVector = lookIcon,
-                                contentDescription = "Filter",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        },
-                        trailingIcon = {
-                            val isLoading = paymentsPaging.loadState.refresh == LoadState.Loading
-
-                            AnimatedContent(
-                                targetState = isLoading,
-                                transitionSpec = {
-                                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
-                                },
-                                label = "loading_or_send_icon"
-                            ) { loading ->
-                                if (loading) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(20.dp),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                        strokeWidth = 2.dp
-                                    )
-                                } else {
-                                    IconButton(
-                                        modifier = Modifier.size(28.dp),
-                                        onClick = {
-                                            paymentsPaging.refresh()
-                                            searchText.value = ""
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.Send,
-                                            contentDescription = "Отправить",
-                                            tint = MaterialTheme.colorScheme.onSurface,
-                                            modifier = Modifier.size(20.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    )
+                TitleQueryField(
+                    modifier = Modifier,
+                    sectionIcon = Icons.Default.Search,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 0) 99 else 0
+                    },
+                    expanded = shownQuery.intValue == 0
                 )
 
-                val statusIcon = Icons.Default.Check
-
-                AnimatedContent(
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    targetState = statusIcon,
-                    transitionSpec = {
-                        (fadeIn(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + scaleIn(
-                            initialScale = 0.8f,
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        ) + slideInVertically(
-                            initialOffsetY = { it / 4 },
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = FastOutSlowInEasing
-                            )
-                        )).togetherWith(
-                            fadeOut(
-                                animationSpec = tween(
-                                    durationMillis = 200,
-                                    easing = FastOutLinearInEasing
-                                )
-                            ) + scaleOut(
-                                targetScale = 1.2f,
-                                animationSpec = tween(
-                                    durationMillis = 200,
-                                    easing = FastOutLinearInEasing
-                                )
-                            ) + slideOutVertically(
-                                targetOffsetY = { -it / 4 },
-                                animationSpec = tween(
-                                    durationMillis = 200,
-                                    easing = FastOutLinearInEasing
-                                )
-                            )
-                        )
+                TitleQueryField(
+                    modifier = Modifier,
+                    sectionIcon = Icons.Default.DateRange,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
                     },
-                    label = "status_filter_icon_animation"
-                ) { targetIcon ->
-                    Box(
+                    expanded = shownQuery.intValue == 1
+                )
+
+                TitleQueryField(
+                    modifier = Modifier,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
+                    },
+                    expanded = shownQuery.intValue == 2,
+                    sectionIcon = Icons.Default.Check
+                )
+            }
+        }
+
+        item {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 0,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    AppOutlinedTextField(
                         modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
+                            .fillMaxWidth(0.9f)
                             .background(
-                                animateColorAsState(
-                                    targetValue = when (state.value.paymentStatusFilter) {
-                                        PaymentStatus.PAID -> MaterialTheme.colorScheme.surfaceVariant
-                                        else -> Color.Transparent
-                                    },
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = FastOutSlowInEasing
-                                    ),
-                                    label = "background_color_animation"
-                                ).value
+                                color = MaterialTheme.colorScheme.surfaceVariant,
                             )
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {
-                                    val nextStatus = when (state.value.paymentStatusFilter) {
-                                        PaymentStatus.PAID -> null
-                                        else -> PaymentStatus.PAID
-                                    }
-                                    event(
-                                        PaymentsPageViewModel.PaymentsPageEvent.FilterPaymentStatus(
-                                            nextStatus
-                                        )
-                                    )
-                                }
-                            ),
-                        contentAlignment = Alignment.Center
+                            .padding(4.dp),
+                        value = state.value.searchQuery,
+                        onValueChange = { event(PaymentsPageViewModel.PaymentsPageEvent.Search(it)) },
+                        placeholderRes = R.string.orders_query_example,
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 1,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = targetIcon,
-                            contentDescription = when (state.value.paymentStatusFilter) {
-                                PaymentStatus.PAID -> "Фильтр: оплаченные платежи"
-                                else -> "Фильтр платежей"
-                            },
-                            tint = animateColorAsState(
-                                targetValue = when (state.value.paymentStatusFilter) {
-                                    PaymentStatus.PAID -> MaterialTheme.colorScheme.onSurfaceVariant
-                                    else -> MaterialTheme.colorScheme.outline
-                                },
-                                animationSpec = tween(
-                                    durationMillis = 300,
-                                    easing = FastOutSlowInEasing
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    // Обработка клика - открыть календарь "от"
+                                }
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
                                 ),
-                                label = "icon_color_animation"
-                            ).value,
-                            modifier = Modifier.size(20.dp)
+                            value = "12.03.2023",
+                            onValueChange = { },
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
+                                textAlign = TextAlign.Center,
+                            ),
+                            outlinedTextConfig = appEditOutlinedTextConfig()
                         )
+
+                        Text(
+                            text = "—",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.surfaceVariant
+                        )
+
+                        AppOutlinedTextField(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    // Обработка клика - открыть календарь "до"
+                                }
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                ),
+                            value = "12.04.2023",
+                            onValueChange = { },
+                            textStyle = MaterialTheme.typography.bodySmall.copy(
+                                textAlign = TextAlign.Center,
+                            ),
+                            outlinedTextConfig = appEditOutlinedTextConfig()
+                        )
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 2,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    LazyRow(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = MaterialTheme.shapes.extraSmall
+                            )
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(PaymentStatus.entries.toTypedArray()) { status ->
+                            FilterChip(
+                                onClick = {
+                                    event.invoke(
+                                        PaymentsPageViewModel.PaymentsPageEvent.FilterPaymentStatus(
+                                            status
+                                        )
+                                    ) //TODO add different classes check for status with list
+                                },
+                                label = {
+                                    Text(text = status.displayName)
+                                },
+                                selected = state.value.paymentStatusFilter.contains(status),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -304,7 +327,7 @@ fun PaymentsPage(
             if (item != null) {
                 PaymentCard(
                     modifier = Modifier
-                        .padding(start = 12.dp, end = 12.dp, top = 6.dp)
+                        .padding(start = 12.dp, end = 12.dp)
                         .animatedScaleIn(),
                     payment = item,
                     internalPadding = PaddingValues(horizontal = 20.dp, vertical = 25.dp)

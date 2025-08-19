@@ -15,5 +15,5 @@ interface PaymentsRepository {
     suspend fun refreshStatistic(): AppResult<PaymentStatistic, AppError>
 
     val paymentStatistics: Flow<AppResult<PaymentStatistic, AppError>>
-    fun pagingPayments(status: PaymentStatus?, query: String): Flow<PagingData<PaymentOrder>>
+    fun pagingPayments(status: List<PaymentStatus>, query: String): Flow<PagingData<PaymentOrder>>
 }

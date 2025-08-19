@@ -6,6 +6,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 
 data class PaymentsPageState(
     val paymentStatistic: PaymentStatistic = PaymentStatistic(),
-    val paymentStatusFilter: PaymentStatus? = null,
+    val paymentStatusFilter: List<PaymentStatus> = emptyList(),
     val searchQuery: String = "",
 ) : ScreenState

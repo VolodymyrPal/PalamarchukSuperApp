@@ -37,10 +37,14 @@ class PaymentsRepositoryImpl @Inject constructor(
     private val paymentDao = boneDatabase.paymentOrderDao()
 
     @OptIn(ExperimentalPagingApi::class)
-    private val pagerCache = mutableMapOf<Pair<PaymentStatus?, String>, Flow<PagingData<PaymentOrder>>>()
+    private val pagerCache =
+        mutableMapOf<Pair<List<PaymentStatus>, String>, Flow<PagingData<PaymentOrder>>>()
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun pagingPayments(status: PaymentStatus?, query: String): Flow<PagingData<PaymentOrder>> {
+    override fun pagingPayments(
+        status: List<PaymentStatus>,
+        query: String,
+    ): Flow<PagingData<PaymentOrder>> {
         val key = status to query
         return pagerCache.getOrPut(key) {
             Pager(
@@ -51,7 +55,7 @@ class PaymentsRepositoryImpl @Inject constructor(
                     status = status,
                 ),
                 pagingSourceFactory = {
-                    paymentDao.getPaymentsWithPaging(status, query)
+                    paymentDao.getPaymentsWithPaging(status.takeIf { it.isNotEmpty() }, query)
                 },
             ).flow.map { pagingData ->
                 pagingData.map { paymentEntity ->
