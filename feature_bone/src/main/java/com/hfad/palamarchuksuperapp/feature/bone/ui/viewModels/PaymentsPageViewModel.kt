@@ -13,7 +13,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentsRepository
 import kotlinx.coroutines.flow.Flow
@@ -24,12 +23,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import kotlin.random.Random
 
 class PaymentsPageViewModel @Inject constructor (
     private val paymentsRepository: PaymentsRepository,
@@ -38,7 +35,9 @@ class PaymentsPageViewModel @Inject constructor (
 
     override val _dataFlow: Flow<UserSession> = userRepository.currentSession
 
-    private val paymentStatusFilter: MutableStateFlow<PaymentStatus?> = MutableStateFlow(null)
+    private val paymentStatusFilter: MutableStateFlow<List<PaymentStatus>> =
+        MutableStateFlow(emptyList())
+
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
     val paymentsPaging: Flow<PagingData<PaymentOrder>> =
@@ -87,7 +86,16 @@ class PaymentsPageViewModel @Inject constructor (
             }
 
             is PaymentsPageEvent.FilterPaymentStatus -> {
-                paymentStatusFilter.update { event.status }
+                paymentStatusFilter.update {
+                    val existedStatuses = it.toMutableList()
+                    if (event.status in existedStatuses) {
+                        existedStatuses.remove(event.status)
+                        return@update existedStatuses
+                    } else {
+                        existedStatuses.add(event.status)
+                        return@update existedStatuses
+                    }
+                }
             }
 
             is PaymentsPageEvent.Search -> {
@@ -103,7 +111,7 @@ class PaymentsPageViewModel @Inject constructor (
     sealed class PaymentsPageEvent : BaseEvent {
         data class LoadPayments(val clientId: Int) : PaymentsPageEvent()
         data class RefreshPayments(val clientId: Int) : PaymentsPageEvent()
-        data class FilterPaymentStatus(val status: PaymentStatus?) : PaymentsPageEvent()
+        data class FilterPaymentStatus(val status: PaymentStatus) : PaymentsPageEvent()
         data class Search(val query: String) : PaymentsPageEvent()
     }
 

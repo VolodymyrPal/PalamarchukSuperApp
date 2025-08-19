@@ -25,7 +25,7 @@ interface OrderDao {
     @Query(
         "SELECT DISTINCT o.* FROM $DATABASE_ORDERS o " +
                 "LEFT JOIN $DATABASE_SERVICE_ORDERS s ON o.id = s.orderId " +
-                "WHERE (:orderStatus IS NULL OR o.status = :orderStatus) " +
+                "WHERE (COALESCE(:statuses, '') = '' OR o.status IN (:statuses)) " +
                 "AND (:query IS NULL OR :query = '' OR " +
                 "   LOWER(CAST(o.num AS TEXT)) LIKE '%' || LOWER(:query) || '%' OR " +
                 "   LOWER(o.destinationPoint) LIKE '%' || LOWER(:query) || '%' OR " +
@@ -38,7 +38,7 @@ interface OrderDao {
                 ")"
     )
     fun getOrdersWithServices(
-        orderStatus: OrderStatus?,
+        statuses: List<OrderStatus>?,
         query: String?,
     ): PagingSource<Int, OrderEntityWithServices>
 

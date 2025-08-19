@@ -6,7 +6,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 import java.util.Date
 
 interface SaleOrderApi {
-    suspend fun getSalesByPage(page: Int, size: Int, status: SaleStatus?): List<SaleOrderDto>
+    suspend fun getSalesByPage(page: Int, size: Int, status: List<SaleStatus>): List<SaleOrderDto>
     suspend fun getSaleOrder(id: Int): SaleOrderDto?
     suspend fun getSalesWithRange(from: Date, to: Date): List<SaleOrderDto>
     suspend fun getSalesStatistics(): SalesStatistics

@@ -17,11 +17,13 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SaleOrderApi
 class SaleRemoteMediator(
     private val saleApi: SaleOrderApi,
     private val database: BoneDatabase,
-    private val status: SaleStatus?,
+    private val statusList: List<SaleStatus>,
 ) : RemoteMediator<Int, SaleOrderEntity>() {
 
     val saleDao = database.saleOrderDao()
     val remoteKeysDao = database.remoteKeysDao()
+
+    private val status: String = statusList.joinToString(",") { it.name }
 
     override suspend fun initialize(): InitializeAction {
         return InitializeAction.LAUNCH_INITIAL_REFRESH //TODO better refresh logic
@@ -47,7 +49,7 @@ class SaleRemoteMediator(
         Log.d("SaleRemoteMediator", "Page: $page")
 
         try {
-            val response = saleApi.getSalesByPage(page, state.config.pageSize, status)
+            val response = saleApi.getSalesByPage(page, state.config.pageSize, statusList)
             val endReached = response.size < state.config.pageSize
 
             database.withTransaction {

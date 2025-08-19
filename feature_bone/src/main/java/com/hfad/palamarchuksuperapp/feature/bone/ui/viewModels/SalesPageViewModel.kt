@@ -23,21 +23,19 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import kotlin.random.Random
 
 class SalesPageViewModel @Inject constructor(
     private val salesRepository: SalesRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : GenericViewModel<SalesPageState, SalesPageViewModel.SalesPageEvent, SalesPageViewModel.SalesPageEffect>() {
 
     override val _dataFlow: Flow<UserSession> = authRepository.currentSession
 
-    private val saleStatusFilter: MutableStateFlow<SaleStatus?> = MutableStateFlow(null)
+    private val saleStatusFilter: MutableStateFlow<List<SaleStatus>> = MutableStateFlow(emptyList())
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
     val salesPaging: Flow<PagingData<SaleOrder>> =
@@ -50,10 +48,12 @@ class SalesPageViewModel @Inject constructor(
                 salesRepository.pagingSales(status, query).cachedIn(viewModelScope)
             }
 
-    private val statisticFlow: Flow<AppResult<SalesStatistics, AppError>> = salesRepository.salesStatistics
+    private val statisticFlow: Flow<AppResult<SalesStatistics, AppError>> =
+        salesRepository.salesStatistics
 
     override val uiState: StateFlow<SalesPageState> =
-        combine(_dataFlow, statisticFlow, saleStatusFilter, searchQuery
+        combine(
+            _dataFlow, statisticFlow, saleStatusFilter, searchQuery
         ) { userSession, salesMetrics, status, query ->
             val salesMetrics = if (salesMetrics is AppResult.Success) {
                 salesMetrics.data
@@ -85,7 +85,16 @@ class SalesPageViewModel @Inject constructor(
             }
 
             is SalesPageEvent.FilterSaleStatus -> {
-                saleStatusFilter.update { event.status }
+                saleStatusFilter.update {
+                    val existedStatuses = it.toMutableList()
+                    if (event.status in existedStatuses) {
+                        existedStatuses.remove(event.status)
+                        return@update existedStatuses
+                    } else {
+                        existedStatuses.add(event.status)
+                        return@update existedStatuses
+                    }
+                }
             }
 
             is SalesPageEvent.Search -> {
@@ -101,7 +110,7 @@ class SalesPageViewModel @Inject constructor(
     sealed class SalesPageEvent : BaseEvent {
         data class LoadSales(val clientId: Int) : SalesPageEvent()
         data class RefreshSales(val clientId: Int) : SalesPageEvent()
-        data class FilterSaleStatus(val status: SaleStatus?) : SalesPageEvent()
+        data class FilterSaleStatus(val status: SaleStatus) : SalesPageEvent()
         data class Search(val query: String) : SalesPageEvent()
     }
 

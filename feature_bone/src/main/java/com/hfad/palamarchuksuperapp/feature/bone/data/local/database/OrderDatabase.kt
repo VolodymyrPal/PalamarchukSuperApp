@@ -41,7 +41,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.
 //        ExchangeOrderEntity::class,
 //        CashPaymentOrderEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class, AmountCurrencyListConverter::class)

@@ -6,6 +6,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 
 data class SalesPageState(
     val salesStatistics: SalesStatistics = SalesStatistics(),
-    val saleStatusFilter: SaleStatus? = null,
+    val saleStatusFilter: List<SaleStatus> = emptyList(),
     val searchQuery: String = "",
 ) : ScreenState

@@ -18,27 +18,27 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 interface RemoteKeysDao {
 
     // Order Remote Keys
-    @Query("SELECT * FROM $DATABASE_REMOTE_KEYS_ORDER WHERE id = :orderId AND status = :filterStatus")
-    suspend fun remoteKeysOrderId(orderId: Int, filterStatus: OrderStatus?): OrderRemoteKeys?
+    @Query("SELECT * FROM $DATABASE_REMOTE_KEYS_ORDER WHERE id = :orderId AND statusFilter = :filterStatus")
+    suspend fun remoteKeysOrderId(orderId: Int, filterStatus: String): OrderRemoteKeys?
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAll(keys: List<OrderRemoteKeys>)
 
-    @Query("DELETE FROM $DATABASE_REMOTE_KEYS_ORDER where status = :status")
-    suspend fun clearRemoteKeysByStatus(status: OrderStatus?)
+    @Query("DELETE FROM $DATABASE_REMOTE_KEYS_ORDER where statusFilter = :status")
+    suspend fun clearRemoteKeysByStatus(status: String)
 
     @Query("DELETE FROM $DATABASE_REMOTE_KEYS_ORDER")
     suspend fun clearAllRemoteKeys()
 
     //     Sales Remote Keys
     @Query("SELECT * FROM $DATABASE_REMOVE_KEYS_SALES WHERE id = :saleId AND `status` = :filterStatus")
-    suspend fun remoteKeysSaleId(saleId: Int, filterStatus: SaleStatus?): SaleRemoteKeys?
+    suspend fun remoteKeysSaleId(saleId: Int, filterStatus: String): SaleRemoteKeys?
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAllSaleKeys(keys: List<SaleRemoteKeys>)
 
     @Query("DELETE FROM $DATABASE_REMOVE_KEYS_SALES where status = :status")
-    suspend fun clearSaleRemoteKeysByStatus(status: SaleStatus?)
+    suspend fun clearSaleRemoteKeysByStatus(status: String)
 
     @Query("DELETE FROM $DATABASE_REMOVE_KEYS_SALES")
     suspend fun clearAllSaleRemoteKeys()
@@ -47,14 +47,14 @@ interface RemoteKeysDao {
     @Query("SELECT * FROM $DATABASE_REMOVE_KEYS_PAYMENT WHERE id = :paymentId AND status = :filterStatus")
     suspend fun remoteKeysPaymentId(
         paymentId: Int,
-        filterStatus: PaymentStatus?,
+        filterStatus: String,
     ): PaymentRemoteKeys?
 
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun insertAllPaymentKeys(keys: List<PaymentRemoteKeys>)
 
     @Query("DELETE FROM $DATABASE_REMOVE_KEYS_PAYMENT where status = :status")
-    suspend fun clearPaymentRemoteKeysByStatus(status: PaymentStatus?)
+    suspend fun clearPaymentRemoteKeysByStatus(status: String)
 
     @Query("DELETE FROM $DATABASE_REMOVE_KEYS_PAYMENT")
     suspend fun clearAllPaymentRemoteKeys()

@@ -17,7 +17,7 @@ class SaleApiTestImpl @Inject constructor(
     override suspend fun getSalesByPage(
         page: Int,
         size: Int,
-        status: SaleStatus?,
+        status: List<SaleStatus>,
     ): List<SaleOrderDto> {
         delay(1500) //TODO
         return generateSaleOrderItems().map { it.toDto() }

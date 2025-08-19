@@ -19,7 +19,7 @@ interface PaymentOrderDao {
 
     @Query(
         "SELECT * FROM $DATABASE_PAYMENTS " +
-                "WHERE (:paymentStatus IS NULL OR status = :paymentStatus) " +
+                "WHERE (COALESCE(:paymentStatus, '') = '' OR status IN (:paymentStatus)) " +
                 "AND (:query IS NULL OR :query = '' OR " +
                 "   LOWER(CAST(id AS TEXT)) LIKE '%' || LOWER(:query) || '%' OR " +
                 "   LOWER(factory) LIKE '%' || LOWER(:query) || '%' OR " +
@@ -28,7 +28,7 @@ interface PaymentOrderDao {
                 ")"
     )
     fun getPaymentsWithPaging(
-        paymentStatus: PaymentStatus?,
+        paymentStatus: List<PaymentStatus>?,
         query: String?,
     ): PagingSource<Int, PaymentOrderEntity>
 

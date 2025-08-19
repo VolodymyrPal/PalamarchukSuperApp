@@ -32,9 +32,19 @@ fun Modifier.animatedScaleIn(
         label = "scale_in"
     )
 
+    val alpha by animateFloatAsState(
+        targetValue = if (started) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 500,
+            delayMillis = delayMillis,
+            easing = easing
+        ),
+        label = "alpha_in"
+    )
+
     LaunchedEffect(Unit) {
         started = true
     }
 
-    this.graphicsLayer(scaleX = scale, scaleY = scale)
+    this.graphicsLayer(scaleX = scale, scaleY = scale, alpha = alpha)
 }

@@ -82,6 +82,7 @@
     <string name="biometric_authentication_successful">Authentication successful!</string>
     <string name="biometric_authentication_error_errorcode_message">Authentication error: errorCode=%1$d, message=%2$s</string>
     <string name="biometric_authentication_failed">Authentication Failed. Try again</string>
+    <string name="orders_query_example">ex: Kyiv, 46855, container number</string>
 
 
 </resources>
