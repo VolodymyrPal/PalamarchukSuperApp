@@ -36,7 +36,8 @@ class OrderPageViewModel @Inject constructor(
 
     override val _dataFlow: Flow<UserSession> = userRepository.currentSession
 
-    private val orderStatusFilter: MutableStateFlow<OrderStatus?> = MutableStateFlow(null)
+    private val orderStatusFilter: MutableStateFlow<List<OrderStatus>> =
+        MutableStateFlow(emptyList())
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
     val orderPaging: Flow<PagingData<Order>> =
@@ -85,7 +86,16 @@ class OrderPageViewModel @Inject constructor(
             }
 
             is OrderPageEvent.FilterOrderStatus -> {
-                orderStatusFilter.update { event.status }
+                orderStatusFilter.update {
+                    val existedStatuses = it.toMutableList()
+                    if (event.status in existedStatuses) {
+                        existedStatuses.remove(event.status)
+                        return@update existedStatuses
+                    } else {
+                        existedStatuses.add(event.status)
+                        return@update existedStatuses
+                    }
+                }
             }
 
             is OrderPageEvent.Search -> {
@@ -102,7 +112,7 @@ class OrderPageViewModel @Inject constructor(
     sealed class OrderPageEvent : BaseEvent {
         data class LoadOrders(val clientId: Int) : OrderPageEvent()
         data class RefreshOrders(val clientId: Int) : OrderPageEvent()
-        data class FilterOrderStatus(val status: OrderStatus?) : OrderPageEvent()
+        data class FilterOrderStatus(val status: OrderStatus) : OrderPageEvent()
         data class Search(val query: String) : OrderPageEvent()
     }
 
