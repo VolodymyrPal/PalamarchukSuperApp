@@ -19,7 +19,7 @@ interface SaleOrderDao {
 
     @Query(
         "SELECT * FROM $DATABASE_SALES " +
-                "WHERE (:saleStatus IS NULL OR status = :saleStatus) " +
+                "WHERE (COALESCE(:saleStatus, '') = '' OR status IN (:saleStatus)) " +
                 "AND (:query IS NULL OR :query = '' OR " +
                 "   LOWER(CAST(id AS TEXT)) LIKE '%' || LOWER(:query) || '%' OR " +
                 "   LOWER(productName) LIKE '%' || LOWER(:query) || '%' OR " +
@@ -30,7 +30,7 @@ interface SaleOrderDao {
                 ")"
     )
     fun getSalesWithPaging(
-        saleStatus: SaleStatus?,
+        saleStatus: List<SaleStatus>?,
         query: String?,
     ): PagingSource<Int, SaleOrderEntity>
 

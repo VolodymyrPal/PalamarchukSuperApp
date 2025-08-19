@@ -15,5 +15,5 @@ interface SalesRepository {
     suspend fun refreshStatistic(): AppResult<SalesStatistics, AppError>
 
     val salesStatistics: Flow<AppResult<SalesStatistics, AppError>>
-    fun pagingSales(status: SaleStatus?, query: String): Flow<PagingData<SaleOrder>>
+    fun pagingSales(status: List<SaleStatus>, query: String): Flow<PagingData<SaleOrder>>
 }

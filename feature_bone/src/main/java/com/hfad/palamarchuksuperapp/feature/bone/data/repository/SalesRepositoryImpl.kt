@@ -1,6 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.repository
 
 import android.database.SQLException
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -36,20 +37,22 @@ class SalesRepositoryImpl @Inject constructor(
 
     private val saleDao = boneDatabase.saleOrderDao()
 
-    private val pagerCache = mutableMapOf<Pair<SaleStatus?, String>, Flow<PagingData<SaleOrder>>>()
+    private val pagerCache =
+        mutableMapOf<Pair<List<SaleStatus>, String>, Flow<PagingData<SaleOrder>>>()
 
-    override fun pagingSales(status: SaleStatus?, query: String): Flow<PagingData<SaleOrder>> {
+    override fun pagingSales(status: List<SaleStatus>, query: String): Flow<PagingData<SaleOrder>> {
         val key = status to query
         return pagerCache.getOrPut(key) {
+            Log.d("SalesRepositoryImpl", "pagingSales: status: $status, query: $query")
             Pager(
                 config = PagingConfig(pageSize = 20, enablePlaceholders = true),
                 remoteMediator = SaleRemoteMediator(
                     saleApi = saleApi,
                     database = boneDatabase,
-                    status = status,
+                    statusList = status,
                 ),
                 pagingSourceFactory = {
-                    saleDao.getSalesWithPaging(status, query)
+                    saleDao.getSalesWithPaging(status.takeIf { it.isNotEmpty() }, query)
                 },
             ).flow.map { pagingData ->
                 pagingData.map { saleEntity ->

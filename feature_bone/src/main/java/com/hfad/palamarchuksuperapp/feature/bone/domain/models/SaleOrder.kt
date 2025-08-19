@@ -24,8 +24,14 @@ data class SaleOrder(
     override val type: String = getType()
 }
 
-enum class SaleStatus {
-    CREATED, IN_PROGRESS, DOCUMENT_PROCEED, COMPLETED, CANCELED
+enum class SaleStatus (
+    val displayName: String
+) {
+    CREATED ("Created"),  //TODO ADD STRING RES
+    IN_PROGRESS ("In progress"),
+    DOCUMENT_PROCEED ("Document proceed"),
+    COMPLETED ("Completed"),
+    CANCELED ("Canceled")
 }
 
 fun generateSaleOrder(): SaleOrder = SaleOrder(
