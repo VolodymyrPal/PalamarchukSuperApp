@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.data.mediator
 
-import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -17,14 +16,16 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 class OrderRemoteMediator(
     private val database: BoneDatabase,
     private val orderApi: OrderApi,
-    private val status: OrderStatus?,
+    private val statusList: List<OrderStatus>,
 ) : RemoteMediator<Int, OrderEntityWithServices>() {
 
     val orderDao = database.orderDao()
     val remoteKeysDao = database.remoteKeysDao()
 
+    private val statusFilter: String = statusList.joinToString(",") { it.name }
+
     override suspend fun initialize(): InitializeAction {
-        return InitializeAction.LAUNCH_INITIAL_REFRESH
+        return InitializeAction.LAUNCH_INITIAL_REFRESH //TODO need better refresh logic to remove frequent requests
     }
 
     override suspend fun load(
@@ -32,19 +33,16 @@ class OrderRemoteMediator(
         state: PagingState<Int, OrderEntityWithServices>,
     ): MediatorResult {
 
-        Log.d("OrderRemoteMediator", "loadType: $loadType")
-
         val page = when (loadType) {
             LoadType.REFRESH -> 1
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.APPEND -> {
                 val lastItem = state.lastItemOrNull()
                 if (lastItem == null) return MediatorResult.Success(endOfPaginationReached = false)
-                val keys = database.remoteKeysDao().remoteKeysOrderId(lastItem.order.id, status)
+                val keys = database.remoteKeysDao().remoteKeysOrderId(lastItem.order.id, statusFilter)
                 keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
         }
-        Log.d("OrderRemoteMediator", "Page: $page")
 
         try {
             val response = orderApi.getOrdersByPage(page, state.config.pageSize, statusList)
@@ -56,7 +54,7 @@ class OrderRemoteMediator(
                         id = it.id,
                         prevKey = if (page == 1) null else page - 1,
                         nextKey = if (endReached) null else page + 1,
-                        status = status
+                        statusFilter = statusFilter
                     )
                 }
                 if (loadType == LoadType.REFRESH) {

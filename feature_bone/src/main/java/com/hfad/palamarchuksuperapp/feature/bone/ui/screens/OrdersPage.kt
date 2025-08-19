@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -47,6 +48,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -132,9 +134,31 @@ fun OrdersPage(
     ) {
         item {
             OrderStatisticCard(
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 6.dp),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp),
                 state = state.value.orderMetrics,
             )
+        }
+
+        item {
+            val isLoading = orderPaging.loadState.refresh == LoadState.Loading
+
+            AnimatedContent(
+                targetState = isLoading,
+                transitionSpec = {
+                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
+                },
+                label = "loading_or_send_icon"
+            ) { loading ->
+                if (loading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(1.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+            }
         }
 
         item {
@@ -160,6 +184,7 @@ fun OrdersPage(
                     },
                     expanded = shownQuery.intValue == 1
                 )
+
                 TitleQueryField(
                     modifier = Modifier,
                     onClick = {
@@ -194,42 +219,7 @@ fun OrdersPage(
                             .padding(4.dp),
                         value = state.value.searchQuery,
                         onValueChange = { event(OrderPageViewModel.OrderPageEvent.Search(it)) },
-                        outlinedTextConfig = appEditOutlinedTextConfig(
-                            trailingIcon = {
-                                val isLoading = orderPaging.loadState.refresh == LoadState.Loading
-
-                                AnimatedContent(
-                                    targetState = isLoading,
-                                    transitionSpec = {
-                                        fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
-                                    },
-                                    label = "loading_or_send_icon"
-                                ) { loading ->
-                                    if (loading) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(20.dp),
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                            strokeWidth = 2.dp
-                                        )
-                                    } else {
-                                        IconButton(
-                                            modifier = Modifier.size(28.dp),
-                                            onClick = {
-                                                orderPaging.refresh()
-                                            }
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.AutoMirrored.Filled.Send,
-                                                contentDescription = "Отправить",
-                                                tint = MaterialTheme.colorScheme.onSurface,
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        )
+                        placeholderRes = R.string.orders_query_example,
                     )
                 }
 
@@ -302,10 +292,10 @@ fun OrdersPage(
                 ) {
                     LazyRow(
                         modifier = Modifier
-                            .fillMaxWidth(0.9f)
+                            .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(8.dp)
+                                shape = MaterialTheme.shapes.extraSmall
                             )
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -315,14 +305,14 @@ fun OrdersPage(
                                 onClick = {
                                     event.invoke(
                                         OrderPageViewModel.OrderPageEvent.FilterOrderStatus(
-                                            status.takeIf { it != state.value.orderStatusFilter }
+                                            status
                                         )
                                     ) //TODO add different classes check for status with list
                                 },
                                 label = {
                                     Text(text = status.displayName)
                                 },
-                                selected = status == state.value.orderStatusFilter,
+                                selected = state.value.orderStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary
@@ -342,7 +332,7 @@ fun OrdersPage(
             if (item != null) {
                 OrderCard(
                     modifier = Modifier
-                        .padding(start = 12.dp, end = 12.dp, top = 0.dp)
+                        .padding(start = 12.dp, end = 12.dp)
                         .animatedScaleIn(),
                     order = item,
                     currentStep = Random.nextInt(7), //TODO better logic for current step
