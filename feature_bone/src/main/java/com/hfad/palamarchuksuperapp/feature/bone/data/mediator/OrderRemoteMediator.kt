@@ -47,7 +47,7 @@ class OrderRemoteMediator(
         Log.d("OrderRemoteMediator", "Page: $page")
 
         try {
-            val response = orderApi.getOrdersByPage(page, state.config.pageSize, status)
+            val response = orderApi.getOrdersByPage(page, state.config.pageSize, statusList)
             val endReached = response.size < state.config.pageSize
 
             database.withTransaction {

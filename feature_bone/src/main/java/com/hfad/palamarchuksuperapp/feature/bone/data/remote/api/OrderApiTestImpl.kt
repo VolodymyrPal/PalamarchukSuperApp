@@ -15,7 +15,7 @@ class OrderApiTestImpl @Inject constructor() : OrderApi {
     override suspend fun getOrdersByPage(
         page: Int,
         size: Int,
-        status: OrderStatus?,
+        status: List<OrderStatus>,
     ): List<OrderDto> {
         delay(1500) //TODO
         return generateOrderItems().map { it.toDto() }
