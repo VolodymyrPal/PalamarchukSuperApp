@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import java.util.Date
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -40,12 +41,19 @@ class OrderPageViewModel @Inject constructor(
         MutableStateFlow(emptyList())
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
+    private val dateRange: MutableStateFlow<Pair<Date, Date>> =
+        MutableStateFlow(Pair(Date(), Date()))
+
+
     val orderPaging: Flow<PagingData<Order>> =
         combine(orderStatusFilter, searchQuery) { status, query -> status to query }
             .distinctUntilChanged()
             .debounce(500)
             .flatMapLatest { (status, query) ->
                 ordersRepository.pagingOrders(status, query).cachedIn(viewModelScope)
+//                    .map {
+//                        it.filter { it.billingDate >= dateRange.value.first && it.billingDate <= dateRange.value.second }
+//                    }
             }
 
     private val statisticFlow: Flow<AppResult<OrderStatistics, AppError>> =
@@ -54,7 +62,7 @@ class OrderPageViewModel @Inject constructor(
     override val uiState: StateFlow<OrderPageState> =
         combine(
             _dataFlow, statisticFlow, orderStatusFilter, searchQuery
-        ) { userSession, orderMetrics, status, query ->
+        ) { userSession, orderMetrics, orders, query ->
             val orderMetrics = if (orderMetrics is AppResult.Success) {
                 orderMetrics.data
             } else {
@@ -63,7 +71,7 @@ class OrderPageViewModel @Inject constructor(
             }
             OrderPageState(
                 orderMetrics = orderMetrics,
-                orderStatusFilter = status,
+                orderStatusFilter = orders,
                 searchQuery = query
             )
         }.onStart {

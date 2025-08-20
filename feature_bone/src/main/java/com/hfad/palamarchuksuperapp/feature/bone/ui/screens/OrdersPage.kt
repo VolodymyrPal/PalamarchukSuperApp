@@ -281,6 +281,14 @@ fun OrdersPage(
                     }
                 }
 
+                val scope = rememberCoroutineScope()
+                val listState = rememberLazyListState()
+
+                val hScroll = rememberScrollableState { delta ->
+                    scope.launch { listState.scrollBy(-delta) }
+                    delta
+                }
+
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 2,
                     enter = fadeIn(animationSpec = tween(300)) +
@@ -292,13 +300,22 @@ fun OrdersPage(
                 ) {
                     LazyRow(
                         modifier = Modifier
-                            .wrapContentWidth()
+                            .fillMaxWidth(0.9f)
+                            .scrollable(
+                                state = hScroll,
+                                orientation = Orientation.Horizontal,
+                                flingBehavior = ScrollableDefaults.flingBehavior(),
+                                reverseDirection = false
+                            )
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = MaterialTheme.shapes.extraSmall
                             )
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            ,
+                        userScrollEnabled = false,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        state = listState
                     ) {
                         items(OrderStatus.entries.toTypedArray()) { status ->
                             FilterChip(
