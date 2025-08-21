@@ -143,15 +143,15 @@ private fun IOSWheelPicker(
     selectedIndex: Int,
     onSelectionChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    itemHeight: Dp = 26.dp,
+    itemHeight: Dp = 40.dp,
     visibleItemCount: Int = 3,
+    catchSwing: Boolean = false
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
 
     val itemHeightPx = with(density) { itemHeight.toPx() }
-
 
     // Корректная инициализация позиции с учетом добавочных элементов
     LaunchedEffect(selectedIndex, items.size) {
@@ -203,22 +203,25 @@ private fun IOSWheelPicker(
         modifier = modifier
             .height(itemHeight * visibleItemCount)
     ) {
+        val scrollModifier = if (catchSwing) {
+            val vScroll = rememberScrollableState { delta ->
+                scope.launch { listState.scrollBy(-delta) }
+                delta
+            }
 
-        // Фоновая подсветка для выбранного элемента
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(itemHeight)
-                .align(Alignment.Center)
-                .background(
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
-                    RoundedCornerShape(16.dp)
-                )
-        )
+            Modifier.scrollable(
+                state = vScroll,
+                orientation = Orientation.Vertical,
+                flingBehavior = ScrollableDefaults.flingBehavior(),
+                reverseDirection = false
+            )
+        } else {
+            Modifier
+        }
 
         LazyColumn(
             state = listState,
-            modifier = Modifier
+            modifier = scrollModifier
                 .fillMaxSize()
 //                .drawWithContent {
 //                    drawContent()
