@@ -57,7 +57,7 @@ fun AppText(
 }
 
 @Composable
-fun defaultAppTextColor() = LocalContentColor.current ?: MaterialTheme.colorScheme.onSurface
+fun defaultAppTextColor() = LocalContentColor.current ?: MaterialTheme.colorScheme.onBackground
 
 @Composable
 @Suppress("LongParameterList", "FunctionNaming")
