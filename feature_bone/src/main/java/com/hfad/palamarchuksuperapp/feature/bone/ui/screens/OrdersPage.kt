@@ -234,6 +234,7 @@ fun OrdersPage(
                             slideOutVertically(animationSpec = tween(250)) { -it } +
                             shrinkVertically(animationSpec = tween(250))
                 ) {
+                    val date1 = remember { mutableStateOf(Date()) }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
@@ -242,8 +243,8 @@ fun OrdersPage(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IOSDatePicker(
-                            selectedDate = Date(),
-                            onDateChanged = { },
+                            selectedDate = date1.value,
+                            onDateChanged = { date1.value = it },
                             modifier = Modifier
                                 .weight(1f)
                                 .background(
@@ -258,9 +259,11 @@ fun OrdersPage(
                             color = MaterialTheme.colorScheme.surfaceVariant
                         )
 
+                        val date = remember { mutableStateOf(Date()) }
+
                         IOSDatePicker(
-                            selectedDate = Date(),
-                            onDateChanged = { },
+                            selectedDate = date.value,
+                            onDateChanged = { date.value = it },
                             modifier = Modifier
                                 .weight(1f)
                                 .background(
