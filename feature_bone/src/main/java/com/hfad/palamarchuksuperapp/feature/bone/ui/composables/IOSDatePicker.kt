@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
+import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -21,15 +22,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +38,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -47,22 +51,22 @@ import kotlin.math.abs
 @Composable
 fun IOSDatePicker(
     modifier: Modifier = Modifier,
-    selectedDate: Date = Date(),
+    selectedDate: Date,
     onDateChanged: (Date) -> Unit,
     minYear: Int = 2020,
     maxYear: Int = 2026,
     locale: Locale = Locale.getDefault(),
     catchSwing: Boolean = false,
 ) {
-    //Actual date with Calendar
-    val calendar = Calendar.getInstance().apply { time = selectedDate }
-
+    val calendar = remember(selectedDate) {
+        Calendar.getInstance().apply { time = selectedDate }
+    }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Day wheel
+        // День
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         val currentDayMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
@@ -70,8 +74,7 @@ fun IOSDatePicker(
             items = (1..daysInMonth).map { it.toString() },
             selectedIndex = currentDayMonth - 1,
             onSelectionChanged = { index ->
-                val newCalendar = Calendar.getInstance().apply {
-                    time = selectedDate
+                val newCalendar = calendar.apply {
                     set(Calendar.DAY_OF_MONTH, index + 1)
                 }
                 onDateChanged(newCalendar.time)
@@ -80,50 +83,40 @@ fun IOSDatePicker(
             catchSwing = catchSwing
         )
 
-        // Month wheel
+        // Месяц
         val monthFormat = SimpleDateFormat("MMM", locale)
         val monthsToShow = (0..11).map { monthIndex ->
             val tempCalendar = Calendar.getInstance()
             tempCalendar.set(Calendar.MONTH, monthIndex)
-            monthFormat.format(tempCalendar.time).replaceFirstChar {
-                it.uppercase(locale)
-            }
+            monthFormat.format(tempCalendar.time).replaceFirstChar { it.uppercase(locale) }
         }
-
         IOSWheelPicker(
             items = monthsToShow,
             selectedIndex = calendar.get(Calendar.MONTH),
             onSelectionChanged = { index ->
-                val currentCalendar = Calendar.getInstance().apply { time = selectedDate }
-                val newCalendar = Calendar.getInstance().apply {
-                    time = selectedDate
+                val newDate = calendar.apply {
                     set(Calendar.MONTH, index)
-                    // Убедимся, что день не превышает максимальное значение для нового месяца
                     val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
                     if (get(Calendar.DAY_OF_MONTH) > maxDayInMonth) {
                         set(Calendar.DAY_OF_MONTH, maxDayInMonth)
                     }
                 }
-                onDateChanged(newCalendar.time)
+                onDateChanged(newDate.time)
             },
             modifier = Modifier.weight(0.4f),
             catchSwing = catchSwing
         )
 
-        // Year wheel
+        // Год
         val years = (minYear..maxYear).toList()
         val currentYear = calendar.get(Calendar.YEAR)
         val yearIndex = years.indexOf(currentYear)
-
         IOSWheelPicker(
             items = years.map { it.toString() },
             selectedIndex = if (yearIndex >= 0) yearIndex else 0,
             onSelectionChanged = { index ->
-                val newYear = years[index]
-                val newCalendar = Calendar.getInstance().apply {
-                    time = selectedDate
-                    set(Calendar.YEAR, newYear)
-                    // Убедимся, что день не превышает максимальное значение для нового года
+                val newCalendar = calendar.apply {
+                    set(Calendar.YEAR, years[index])
                     val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
                     if (get(Calendar.DAY_OF_MONTH) > maxDayInMonth) {
                         set(Calendar.DAY_OF_MONTH, maxDayInMonth)
