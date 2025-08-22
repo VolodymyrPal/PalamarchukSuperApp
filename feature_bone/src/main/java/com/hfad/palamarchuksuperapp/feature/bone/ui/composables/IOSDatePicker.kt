@@ -138,17 +138,14 @@ private fun IOSWheelPicker(
     modifier: Modifier = Modifier,
     itemHeight: Dp = 40.dp,
     visibleItemCount: Int = 3,
-    catchSwing: Boolean = false
+    catchSwing: Boolean = false,
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val density = LocalDensity.current
 
-    val itemHeightPx = with(density) { itemHeight.toPx() }
 
-    // Корректная инициализация позиции с учетом добавочных элементов
     LaunchedEffect(selectedIndex, items.size) {
-        val targetIndex = selectedIndex + 1 // +1 из-за верхнего Spacer
+        val targetIndex = selectedIndex + 1
         if (listState.firstVisibleItemIndex != targetIndex - 1) {
             listState.scrollToItem(
                 index = maxOf(0, targetIndex - 1),
@@ -157,151 +154,83 @@ private fun IOSWheelPicker(
         }
     }
 
-    // Отслеживание изменений скролла
-    LaunchedEffect(listState.isScrollInProgress) {
-        if (!listState.isScrollInProgress) {
-            val layoutInfo = listState.layoutInfo
-            val viewportCenter = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.height / 2
-
-            // Находим элемент ближайший к центру (исключая Spacer элементы)
-            val centerItem = layoutInfo.visibleItemsInfo
-                .filter { it.index > 0 && it.index <= items.size } // Исключаем Spacer элементы
-                .minByOrNull { item ->
-                    abs(viewportCenter - (item.offset + item.size / 2))
-                }
-
-            centerItem?.let { item ->
-                val actualIndex = item.index - 1 // -1 из-за верхнего Spacer
-                val clampedIndex = actualIndex.coerceIn(0, items.size - 1)
-
-                if (clampedIndex != selectedIndex) {
-                    onSelectionChanged(clampedIndex)
-                }
-
-                // Плавно прокручиваем к точной позиции
-                scope.launch {
-                    listState.animateScrollToItem(
-                        index = maxOf(
-                            0,
-                            clampedIndex
-                        ), // Прокручиваем к самому элементу, не учитывая Spacer
-                        scrollOffset = 0
-                    )
-                }
+    val centerIndex by remember {
+        derivedStateOf {
+            listState.layoutInfo.run {
+                val viewportCenter = viewportStartOffset + viewportSize.height / 2
+                visibleItemsInfo
+                    .minWithOrNull(compareBy { abs(viewportCenter - (it.offset + it.size / 2)) })
+                    ?.let { it.index - 1 }
             }
         }
     }
 
-    Box(
-        modifier = modifier
-            .height(itemHeight * visibleItemCount)
-    ) {
-        val scrollModifier = if (catchSwing) {
-            val vScroll = rememberScrollableState { delta ->
-                scope.launch { listState.scrollBy(-delta) }
-                delta
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .filter { //TODO sometimes scroll bugged for endless one
+                Log.d("IOSWheelPicker", "isScrollInProgress: $it")
+                !it
+            } // ждём окончания скролла
+            .collect {
+                listState.animateScrollToItem(centerIndex ?: 0, scrollOffset = 0)
+                if (centerIndex != selectedIndex) {
+                    onSelectionChanged(centerIndex ?: 0)
+                }
             }
+    }
 
-            Modifier.scrollable(
-                state = vScroll,
-                orientation = Orientation.Vertical,
-                flingBehavior = ScrollableDefaults.flingBehavior(),
-                reverseDirection = false
-            )
-        } else {
-            Modifier
+    val scrollModifier = if (catchSwing) {
+        val vScroll = rememberScrollableState { delta ->
+            scope.launch { listState.scrollBy(-delta) }
+            delta
         }
 
-        LazyColumn(
-            state = listState,
-            modifier = scrollModifier
-                .fillMaxSize()
-//                .drawWithContent {
-//                    drawContent()
-//
-//                    // Градиентная маска сверху и снизу
-//                    val fadeHeight = itemHeightPx * 0.6f
-//
-//                    drawRect(
-//                        brush = Brush.verticalGradient(
-//                            colors = listOf(
-//                                Color.White,
-//                                Color.Transparent
-//                            ),
-//                            startY = 0f,
-//                            endY = fadeHeight
-//                        ),
-//                        size = size.copy(height = fadeHeight)
-//                    )
-//
-//                    drawRect(
-//                        brush = Brush.verticalGradient(
-//                            colors = listOf(
-//                                Color.Transparent,
-//                                Color.White
-//                            ),
-//                            startY = size.height - fadeHeight,
-//                            endY = size.height
-//                        ),
-//                        topLeft = Offset(0f, size.height - fadeHeight),
-//                        size = size.copy(height = fadeHeight)
-//                    )
-//                }
-        ) {
-            // Верхний Spacer для центрирования
-            item {
-                Spacer(modifier = Modifier.height(itemHeight))
+        modifier.scrollable(
+            state = vScroll,
+            orientation = Orientation.Vertical,
+            flingBehavior = ScrollableDefaults.flingBehavior(),
+            reverseDirection = false
+        )
+    } else {
+        modifier
+    }
+
+    LazyColumn(
+        state = listState,
+        modifier = scrollModifier
+            .height(itemHeight * visibleItemCount)
+            .fadingEdge(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Spacer to show first item in center
+        item {
+            Spacer(modifier = Modifier.height(itemHeight))
+        }
+
+        items(items.size) { index ->
+
+            Box(
+                modifier = Modifier
+                    .height(itemHeight)
+                    .fillMaxSize()
+            ) {
+                AppText(
+                    value = items[index],
+                    appTextConfig = appTextConfig(
+                        fontSize = if (centerIndex == index) 18.sp else 16.sp,
+                        fontWeight = if (centerIndex == index) FontWeight.SemiBold else FontWeight.Normal,
+                        textAlign = TextAlign.Center,
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(Alignment.Center),
+                )
             }
+        }
 
-            items(items.size) { index ->
-                val item = items[index]
-                val isSelected = index == selectedIndex
-
-                // Вычисляем позицию элемента относительно центра
-                val layoutInfo = listState.layoutInfo
-                val viewportCenter =
-                    layoutInfo.viewportStartOffset + layoutInfo.viewportSize.height / 2
-
-                val itemInfo = layoutInfo.visibleItemsInfo
-                    .find { it.index == index + 1 } // +1 из-за верхнего Spacer
-
-                val distance = itemInfo?.let { info ->
-                    abs(viewportCenter - (info.offset + info.size / 2)).toFloat()
-                } ?: Float.MAX_VALUE
-
-                // Более точное вычисление прозрачности
-                val alpha = when {
-                    distance == Float.MAX_VALUE -> 0.0f
-                    distance < itemHeightPx * 0.3f -> 1.0f // Центральный элемент
-                    distance < itemHeightPx * 1.2f -> 0.6f // Соседние элементы
-                    else -> 0.0f
-                }
-
-                Box(
-                    modifier = Modifier
-                        .height(itemHeight)
-                        .fillMaxWidth()
-                        .alpha(alpha),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = item,
-                        fontSize = if (isSelected && distance < itemHeightPx * 0.3f) 18.sp else 16.sp,
-                        fontWeight = if (isSelected && distance < itemHeightPx * 0.3f) FontWeight.SemiBold else FontWeight.Normal,
-                        color = if (isSelected && distance < itemHeightPx * 0.3f) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        },
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            // Нижний Spacer для центрирования
-            item {
-                Spacer(modifier = Modifier.height(itemHeight))
-            }
+        // Spacer to show last item in center
+        item {
+            Spacer(modifier = Modifier.height(itemHeight))
         }
     }
 }
