@@ -58,9 +58,26 @@ fun IOSDatePicker(
     locale: Locale = Locale.getDefault(),
     catchSwing: Boolean = false,
 ) {
-    val calendar = remember(selectedDate) {
-        Calendar.getInstance().apply { time = selectedDate }
+    val calendar = remember {
+        mutableStateOf(
+            Calendar.getInstance().apply {
+                time = selectedDate
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+            }
+        )
     }
+
+    val currentYear = calendar.value.get(Calendar.YEAR)
+    val currentMonth = calendar.value.get(Calendar.MONTH)
+
+    val daysInMonth = Calendar.getInstance().apply {
+        set(Calendar.YEAR, currentYear)
+        set(Calendar.MONTH, currentMonth)
+        set(Calendar.DAY_OF_MONTH, 1)
+    }.getActualMaximum(Calendar.DAY_OF_MONTH)
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
