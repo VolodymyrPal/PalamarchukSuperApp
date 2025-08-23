@@ -245,17 +245,16 @@ private fun IOSWheelPicker(
         }
     }
 
-    LaunchedEffect(listState) {
+    LaunchedEffect(listState, selectedIndex) {
         snapshotFlow { listState.isScrollInProgress }
-            .filter { //TODO sometimes scroll bugged for endless one
-                Log.d("IOSWheelPicker", "isScrollInProgress: $it")
+            .filter {
                 !it
-            } // ждём окончания скролла
+            }
             .collect {
-                listState.animateScrollToItem(centerIndex ?: 0, scrollOffset = 0)
                 if (centerIndex != selectedIndex) {
                     onSelectionChanged(centerIndex ?: 0)
                 }
+                listState.scrollToItem(centerIndex ?: 0, scrollOffset = 0)
             }
     }
 
@@ -339,7 +338,8 @@ fun DatePickerExample() {
                 IOSDatePicker(
                     selectedDate = selectedDate,
                     onDateChanged = { selectedDate = it },
-                    modifier = Modifier.fillMaxWidth(0.5f)
+                    modifier = Modifier.fillMaxWidth(0.5f),
+//                    minDate = Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 5) }
                 )
             }
         }
