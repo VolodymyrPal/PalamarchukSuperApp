@@ -84,16 +84,41 @@ fun IOSDatePicker(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // День
-        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val currentDayMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        val minDay = if (
+            currentYear == minDate.get(Calendar.YEAR) &&
+            currentMonth == minDate.get(Calendar.MONTH)
+        ) {
+            minDate.get(Calendar.DAY_OF_MONTH)
+        } else 1
+        Log.d("Min date:", "${minDay}")
+
+        val maxDay = if (
+            currentYear == maxDate.get(Calendar.YEAR) &&
+            currentMonth == maxDate.get(Calendar.MONTH)
+        ) {
+            maxDate.get(Calendar.DAY_OF_MONTH)
+        } else {
+            daysInMonth
+        }
+        Log.d("Max day:", "${maxDay}")
+
+        val currentDayMonth = calendar.value.get(Calendar.DAY_OF_MONTH)
+        val effectiveDay = currentDayMonth.coerceIn(minDay, maxDay)
+
+        val selectedIndex = (effectiveDay - minDay)
+        val days = (minDay..maxDay).map { it.toString() }
 
         IOSWheelPicker(
-            items = (1..daysInMonth).map { it.toString() },
-            selectedIndex = currentDayMonth - 1,
+            items = days,
+            selectedIndex = selectedIndex,
             onSelectionChanged = { index ->
-                val newCalendar = calendar.apply {
-                    set(Calendar.DAY_OF_MONTH, index + 1)
+                Log.d("Index:", "${minDay}")
+                val pickedDay = (minDay + index).coerceIn(minDay, maxDay)
+                Log.d("Picked day:", pickedDay.toString())
+                val newCalendar = calendar.value.apply {
+                    set(Calendar.DAY_OF_MONTH, pickedDay)
                 }
+
                 onDateChanged(newCalendar.time)
             },
             modifier = Modifier.weight(0.3f),
