@@ -125,28 +125,52 @@ fun IOSDatePicker(
             catchSwing = catchSwing
         )
 
+
         // Месяц
         val monthFormat = SimpleDateFormat("MMM", locale)
-        val monthsToShow = (0..11).map { monthIndex ->
+
+        val minMonth = if (currentYear == minDate.get(Calendar.YEAR)) {
+            minDate.get(Calendar.MONTH)
+        } else 0
+
+        val maxMonth = if (currentYear == maxDate.get(Calendar.YEAR)) {
+            maxDate.get(Calendar.MONTH)
+        } else 11
+
+        val monthsToShow = (minMonth..maxMonth).map { monthIndex ->
             val tempCalendar = Calendar.getInstance()
             tempCalendar.set(Calendar.MONTH, monthIndex)
-            monthFormat.format(tempCalendar.time).replaceFirstChar { it.uppercase(locale) }
+            monthFormat.format(tempCalendar.time)
+                .replaceFirstChar { it.uppercase(locale) }
+                .trimEnd('.')
         }
+
+        val selectedMonthIndex = (calendar.value.get(Calendar.MONTH) - minMonth).coerceAtLeast(0)
+
         IOSWheelPicker(
             items = monthsToShow,
-            selectedIndex = calendar.get(Calendar.MONTH),
+            selectedIndex = selectedMonthIndex,
             onSelectionChanged = { index ->
-                val newDate = calendar.apply {
-                    set(Calendar.MONTH, index)
+                val rememberedDay = calendar.value.get(Calendar.DAY_OF_MONTH)
+                val newCalendar = calendar.value.apply {
+                    set(Calendar.DAY_OF_MONTH, 1)
+                    set(Calendar.MONTH, index + minMonth)
+                    set(Calendar.MONTH, index + minMonth)
+
                     val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
-                    if (get(Calendar.DAY_OF_MONTH) > maxDayInMonth) {
-                        set(Calendar.DAY_OF_MONTH, maxDayInMonth)
-                    }
+                    set(Calendar.DAY_OF_MONTH, rememberedDay.coerceAtMost(maxDayInMonth))
                 }
-                onDateChanged(newDate.time)
+
+                if (newCalendar.before(minDate)) {
+                    newCalendar.time = minDate.time
+                } else if (newCalendar.after(maxDate)) {
+                    newCalendar.time = maxDate.time
+                }
+
+                onDateChanged(newCalendar.time)
             },
             modifier = Modifier.weight(0.4f),
-            catchSwing = catchSwing
+            catchSwing = catchSwing,
         )
 
         // Год
