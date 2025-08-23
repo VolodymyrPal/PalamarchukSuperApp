@@ -174,26 +174,41 @@ fun IOSDatePicker(
         )
 
         // Год
+        val minYear = minDate.get(Calendar.YEAR)
+        val maxYear = maxDate.get(Calendar.YEAR)
+
         val years = (minYear..maxYear).toList()
-        val currentYear = calendar.get(Calendar.YEAR)
-        val yearIndex = years.indexOf(currentYear)
+        val selectedYearIndex = (calendar.value.get(Calendar.YEAR) - minYear).coerceAtLeast(0)
+
+        val yearsToShow = years.map { it.toString() }
+
         IOSWheelPicker(
-            items = years.map { it.toString() },
-            selectedIndex = if (yearIndex >= 0) yearIndex else 0,
+            items = yearsToShow,
+            selectedIndex = selectedYearIndex,
             onSelectionChanged = { index ->
-                val newCalendar = calendar.apply {
+                val newCalendar = calendar.value.apply {
                     set(Calendar.YEAR, years[index])
                     val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
                     if (get(Calendar.DAY_OF_MONTH) > maxDayInMonth) {
                         set(Calendar.DAY_OF_MONTH, maxDayInMonth)
                     }
                 }
+
+                if (newCalendar.before(minDate)) {
+                    newCalendar.time = minDate.time
+                } else if (newCalendar.after(maxDate)) {
+                    newCalendar.time = maxDate.time
+                }
+
                 onDateChanged(newCalendar.time)
+
             },
             modifier = Modifier.weight(0.5f),
-            catchSwing = catchSwing
+            catchSwing = catchSwing,
         )
     }
+    Log.d("Remembered selected date: ", "${selectedDate}")
+
 }
 
 @Composable
@@ -208,7 +223,6 @@ private fun IOSWheelPicker(
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-
 
     LaunchedEffect(selectedIndex, items.size) {
         val targetIndex = selectedIndex + 1
