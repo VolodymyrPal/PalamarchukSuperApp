@@ -53,8 +53,8 @@ fun IOSDatePicker(
     modifier: Modifier = Modifier,
     selectedDate: Date,
     onDateChanged: (Date) -> Unit,
-    minYear: Int = 2020,
-    maxYear: Int = 2026,
+    minDate: Calendar = Calendar.getInstance().apply { add(Calendar.YEAR, -4) },
+    maxDate: Calendar = Calendar.getInstance().apply { add(Calendar.YEAR, +1) },
     locale: Locale = Locale.getDefault(),
     catchSwing: Boolean = false,
 ) {
