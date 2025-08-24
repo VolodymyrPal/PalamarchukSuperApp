@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
-import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -193,11 +192,10 @@ private fun IOSWheelPicker(
     }
 }
 
-// Пример использования
 @Composable
 @Preview
 fun DatePickerExample() {
-    var selectedDate by remember { mutableStateOf(Date()) }
+    val selectedDate = remember { mutableStateOf(Calendar.getInstance()) }
     FeatureTheme(
         darkTheme = true
     ) {
@@ -209,18 +207,198 @@ fun DatePickerExample() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Выбранная дата: ${selectedDate}",
+                    text = "Выбранная дата: ${selectedDate.value.time}",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
+                val datePickerState = rememberDatePickerState(
+                    initialDate = selectedDate.value
+                )
 
                 IOSDatePicker(
-                    selectedDate = selectedDate,
-                    onDateChanged = { selectedDate = it },
+                    state = datePickerState,
+                    onDateChanged = { selectedDate.value = it },
                     modifier = Modifier.fillMaxWidth(0.5f),
-//                    minDate = Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 5) }
                 )
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun DatePickerExampleOne() {
+
+    val datePickerState = rememberDatePickerState(
+        initialDate = Calendar.getInstance(),
+        minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -2) },
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+    )
+
+    var selectedDateText by remember { mutableStateOf("") }
+
+    val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
+
+    LaunchedEffect(datePickerState.selectedDate) {
+        selectedDateText = dateFormat.format(datePickerState.selectedDate.value.time)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Выбранная дата: $selectedDateText",
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+        IOSDatePicker(
+            state = datePickerState,
+            onDateChanged = { newDate ->
+
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = {
+                    datePickerState.updateDate(Calendar.getInstance())
+                }
+            ) {
+                Text("Сегодня")
+            }
+
+            Button(
+                onClick = {
+                    val weekAgo = Calendar.getInstance().apply {
+                        add(Calendar.WEEK_OF_YEAR, -1)
+                    }
+                    datePickerState.updateDate(weekAgo)
+                }
+            ) {
+                Text("Неделю назад")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Информация о состоянии:",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text("Год: ${datePickerState.currentYear.value}")
+                Text("Месяц: ${datePickerState.currentMonth.value + 1}")
+                Text("День: ${datePickerState.currentDay.value}")
+                Text("Доступные дни: ${datePickerState.dayRange.value}")
+                Text("Доступные месяцы: ${datePickerState.monthRange.value.first + 1}-${datePickerState.monthRange.value.last + 1}")
+                Text("Доступные годы: ${datePickerState.yearRange.value}")
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun MultiDatePickerExample() {
+    val startDateState = rememberDatePickerState(
+        initialDate = Calendar.getInstance(),
+        minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -1) },
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+    )
+
+    val endDateState = rememberDatePickerState(
+        initialDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 7) },
+        minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -1) },
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+    )
+
+    val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Text(
+            text = "Выбор периода",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Дата начала: ${dateFormat.format(startDateState.selectedDate.value.time)}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                IOSDatePicker(
+                    state = startDateState,
+                    onDateChanged = { newStartDate ->
+                        if (newStartDate.after(endDateState.selectedDate.value)) {
+                            val newEndDate = Calendar.getInstance().apply {
+                                time = newStartDate.time
+                                add(Calendar.DAY_OF_YEAR, 1)
+                            }
+                            endDateState.updateDate(newEndDate)
+                        }
+                    }
+                )
+            }
+        }
+
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Дата окончания: ${dateFormat.format(endDateState.selectedDate.value.time)}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                IOSDatePicker(
+                    state = endDateState,
+                    onDateChanged = { newEndDate ->
+                        if (newEndDate.before(startDateState.selectedDate.value)) {
+                            val newStartDate = Calendar.getInstance().apply {
+                                time = newEndDate.time
+                                add(Calendar.DAY_OF_YEAR, -1)
+                            }
+                            startDateState.updateDate(newStartDate)
+                        }
+                    }
+                )
+            }
+        }
+
+        val daysDifference by remember {
+            derivedStateOf {
+                val diffInMillis =
+                    endDateState.selectedDate.value.timeInMillis - startDateState.selectedDate.value.timeInMillis
+                (diffInMillis / (1000 * 60 * 60 * 24)).toInt() + 1
+            }
+        }
+
+        Text(
+            text = "Период: $daysDifference дн.",
+            style = MaterialTheme.typography.titleLarge
+        )
     }
 }
