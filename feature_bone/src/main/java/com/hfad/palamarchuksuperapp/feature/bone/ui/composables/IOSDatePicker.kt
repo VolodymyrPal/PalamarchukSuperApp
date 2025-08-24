@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,171 +46,58 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 
 @Composable
 fun IOSDatePicker(
     modifier: Modifier = Modifier,
-    selectedDate: Date,
-    onDateChanged: (Date) -> Unit,
-    minDate: Calendar = Calendar.getInstance().apply { add(Calendar.YEAR, -4) },
-    maxDate: Calendar = Calendar.getInstance().apply { add(Calendar.YEAR, +1) },
-    locale: Locale = Locale.getDefault(),
+    state: DatePickerState,
+    onDateChanged: (Calendar) -> Unit,
     catchSwing: Boolean = false,
 ) {
-    val calendar = remember {
-        mutableStateOf(
-            Calendar.getInstance().apply {
-                time = selectedDate
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-            }
-        )
-    }
-
-    val currentYear = calendar.value.get(Calendar.YEAR)
-    val currentMonth = calendar.value.get(Calendar.MONTH)
-
-    val daysInMonth = Calendar.getInstance().apply {
-        set(Calendar.YEAR, currentYear)
-        set(Calendar.MONTH, currentMonth)
-        set(Calendar.DAY_OF_MONTH, 1)
-    }.getActualMaximum(Calendar.DAY_OF_MONTH)
-
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // День
-        val minDay = if (
-            currentYear == minDate.get(Calendar.YEAR) &&
-            currentMonth == minDate.get(Calendar.MONTH)
-        ) {
-            minDate.get(Calendar.DAY_OF_MONTH)
-        } else 1
-        Log.d("Min date:", "${minDay}")
-
-        val maxDay = if (
-            currentYear == maxDate.get(Calendar.YEAR) &&
-            currentMonth == maxDate.get(Calendar.MONTH)
-        ) {
-            maxDate.get(Calendar.DAY_OF_MONTH)
-        } else {
-            daysInMonth
-        }
-        Log.d("Max day:", "${maxDay}")
-
-        val currentDayMonth = calendar.value.get(Calendar.DAY_OF_MONTH)
-        val effectiveDay = currentDayMonth.coerceIn(minDay, maxDay)
-
-        val selectedIndex = (effectiveDay - minDay)
-        val days = (minDay..maxDay).map { it.toString() }
-
+        // Day
         IOSWheelPicker(
-            items = days,
-            selectedIndex = selectedIndex,
+            items = state.dayItems.value,
+            selectedIndex = state.selectedDayIndex.value,
             onSelectionChanged = { index ->
-                Log.d("Index:", "${minDay}")
-                val pickedDay = (minDay + index).coerceIn(minDay, maxDay)
-                Log.d("Picked day:", pickedDay.toString())
-                val newCalendar = calendar.value.apply {
-                    set(Calendar.DAY_OF_MONTH, pickedDay)
-                }
-
-                onDateChanged(newCalendar.time)
+                state.updateDay(index)
+                onDateChanged(state.selectedDate.value)
             },
             modifier = Modifier.weight(0.3f),
-            catchSwing = catchSwing
-        )
+            catchSwing = catchSwing,
 
+            )
 
-        // Месяц
-        val monthFormat = SimpleDateFormat("MMM", locale)
-
-        val minMonth = if (currentYear == minDate.get(Calendar.YEAR)) {
-            minDate.get(Calendar.MONTH)
-        } else 0
-
-        val maxMonth = if (currentYear == maxDate.get(Calendar.YEAR)) {
-            maxDate.get(Calendar.MONTH)
-        } else 11
-
-        val monthsToShow = (minMonth..maxMonth).map { monthIndex ->
-            val tempCalendar = Calendar.getInstance()
-            tempCalendar.set(Calendar.MONTH, monthIndex)
-            monthFormat.format(tempCalendar.time)
-                .replaceFirstChar { it.uppercase(locale) }
-                .trimEnd('.')
-        }
-
-        val selectedMonthIndex = (calendar.value.get(Calendar.MONTH) - minMonth).coerceAtLeast(0)
-
+        // Month
         IOSWheelPicker(
-            items = monthsToShow,
-            selectedIndex = selectedMonthIndex,
+            items = state.monthItems.value,
+            selectedIndex = state.selectedMonthIndex.value,
             onSelectionChanged = { index ->
-                val rememberedDay = calendar.value.get(Calendar.DAY_OF_MONTH)
-                val newCalendar = calendar.value.apply {
-                    set(Calendar.DAY_OF_MONTH, 1)
-                    set(Calendar.MONTH, index + minMonth)
-                    set(Calendar.MONTH, index + minMonth)
-
-                    val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
-                    set(Calendar.DAY_OF_MONTH, rememberedDay.coerceAtMost(maxDayInMonth))
-                }
-
-                if (newCalendar.before(minDate)) {
-                    newCalendar.time = minDate.time
-                } else if (newCalendar.after(maxDate)) {
-                    newCalendar.time = maxDate.time
-                }
-
-                onDateChanged(newCalendar.time)
+                state.updateMonth(index)
+                onDateChanged(state.selectedDate.value)
             },
             modifier = Modifier.weight(0.4f),
             catchSwing = catchSwing,
         )
 
-        // Год
-        val minYear = minDate.get(Calendar.YEAR)
-        val maxYear = maxDate.get(Calendar.YEAR)
-
-        val years = (minYear..maxYear).toList()
-        val selectedYearIndex = (calendar.value.get(Calendar.YEAR) - minYear).coerceAtLeast(0)
-
-        val yearsToShow = years.map { it.toString() }
-
+        // Year
         IOSWheelPicker(
-            items = yearsToShow,
-            selectedIndex = selectedYearIndex,
+            items = state.yearItems.value,
+            selectedIndex = state.selectedYearIndex.value,
             onSelectionChanged = { index ->
-                val newCalendar = calendar.value.apply {
-                    set(Calendar.YEAR, years[index])
-                    val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
-                    if (get(Calendar.DAY_OF_MONTH) > maxDayInMonth) {
-                        set(Calendar.DAY_OF_MONTH, maxDayInMonth)
-                    }
-                }
-
-                if (newCalendar.before(minDate)) {
-                    newCalendar.time = minDate.time
-                } else if (newCalendar.after(maxDate)) {
-                    newCalendar.time = maxDate.time
-                }
-
-                onDateChanged(newCalendar.time)
-
+                state.updateYear(index)
+                onDateChanged(state.selectedDate.value)
             },
             modifier = Modifier.weight(0.5f),
             catchSwing = catchSwing,
         )
     }
-    Log.d("Remembered selected date: ", "${selectedDate}")
-
 }
 
 @Composable
