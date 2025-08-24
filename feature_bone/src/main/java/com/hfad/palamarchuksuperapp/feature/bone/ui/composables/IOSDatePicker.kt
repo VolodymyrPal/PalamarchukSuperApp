@@ -114,13 +114,8 @@ private fun IOSWheelPicker(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(selectedIndex, items.size) {
-        val targetIndex = selectedIndex + 1
-        if (listState.firstVisibleItemIndex != targetIndex - 1) {
-            listState.scrollToItem(
-                index = maxOf(0, targetIndex - 1),
-                scrollOffset = 0
-            )
-        }
+        val target = (selectedIndex).coerceIn(0, items.lastIndex + 1)
+        listState.animateScrollToItem(index = maxOf(0, target), scrollOffset = 0)
     }
 
     val centerIndex by remember {
@@ -134,16 +129,13 @@ private fun IOSWheelPicker(
         }
     }
 
-    LaunchedEffect(listState, selectedIndex) {
+    LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }
-            .filter {
-                !it
-            }
+            .filter { !it }
             .collect {
-                if (centerIndex != selectedIndex) {
-                    onSelectionChanged(centerIndex ?: 0)
+                if (centerIndex != null) {
+                    onSelectionChanged(centerIndex!!)
                 }
-                listState.scrollToItem(centerIndex ?: 0, scrollOffset = 0)
             }
     }
 
@@ -171,7 +163,6 @@ private fun IOSWheelPicker(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Spacer to show first item in center
         item {
             Spacer(modifier = Modifier.height(itemHeight))
         }
@@ -196,7 +187,6 @@ private fun IOSWheelPicker(
             }
         }
 
-        // Spacer to show last item in center
         item {
             Spacer(modifier = Modifier.height(itemHeight))
         }
