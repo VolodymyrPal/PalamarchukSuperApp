@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
-import android.util.Log
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -17,6 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,171 +45,58 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import kotlin.math.abs
 
 @Composable
 fun IOSDatePicker(
     modifier: Modifier = Modifier,
-    selectedDate: Date,
-    onDateChanged: (Date) -> Unit,
-    minDate: Calendar = Calendar.getInstance().apply { add(Calendar.YEAR, -4) },
-    maxDate: Calendar = Calendar.getInstance().apply { add(Calendar.YEAR, +1) },
-    locale: Locale = Locale.getDefault(),
+    state: DatePickerState,
+    onDateChanged: (Calendar) -> Unit,
     catchSwing: Boolean = false,
 ) {
-    val calendar = remember {
-        mutableStateOf(
-            Calendar.getInstance().apply {
-                time = selectedDate
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-            }
-        )
-    }
-
-    val currentYear = calendar.value.get(Calendar.YEAR)
-    val currentMonth = calendar.value.get(Calendar.MONTH)
-
-    val daysInMonth = Calendar.getInstance().apply {
-        set(Calendar.YEAR, currentYear)
-        set(Calendar.MONTH, currentMonth)
-        set(Calendar.DAY_OF_MONTH, 1)
-    }.getActualMaximum(Calendar.DAY_OF_MONTH)
-
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // День
-        val minDay = if (
-            currentYear == minDate.get(Calendar.YEAR) &&
-            currentMonth == minDate.get(Calendar.MONTH)
-        ) {
-            minDate.get(Calendar.DAY_OF_MONTH)
-        } else 1
-        Log.d("Min date:", "${minDay}")
-
-        val maxDay = if (
-            currentYear == maxDate.get(Calendar.YEAR) &&
-            currentMonth == maxDate.get(Calendar.MONTH)
-        ) {
-            maxDate.get(Calendar.DAY_OF_MONTH)
-        } else {
-            daysInMonth
-        }
-        Log.d("Max day:", "${maxDay}")
-
-        val currentDayMonth = calendar.value.get(Calendar.DAY_OF_MONTH)
-        val effectiveDay = currentDayMonth.coerceIn(minDay, maxDay)
-
-        val selectedIndex = (effectiveDay - minDay)
-        val days = (minDay..maxDay).map { it.toString() }
-
+        // Day
         IOSWheelPicker(
-            items = days,
-            selectedIndex = selectedIndex,
+            items = state.dayItems.value,
+            selectedIndex = state.selectedDayIndex.value,
             onSelectionChanged = { index ->
-                Log.d("Index:", "${minDay}")
-                val pickedDay = (minDay + index).coerceIn(minDay, maxDay)
-                Log.d("Picked day:", pickedDay.toString())
-                val newCalendar = calendar.value.apply {
-                    set(Calendar.DAY_OF_MONTH, pickedDay)
-                }
-
-                onDateChanged(newCalendar.time)
+                state.updateDay(index)
+                onDateChanged(state.selectedDate.value)
             },
             modifier = Modifier.weight(0.3f),
-            catchSwing = catchSwing
-        )
+            catchSwing = catchSwing,
 
+            )
 
-        // Месяц
-        val monthFormat = SimpleDateFormat("MMM", locale)
-
-        val minMonth = if (currentYear == minDate.get(Calendar.YEAR)) {
-            minDate.get(Calendar.MONTH)
-        } else 0
-
-        val maxMonth = if (currentYear == maxDate.get(Calendar.YEAR)) {
-            maxDate.get(Calendar.MONTH)
-        } else 11
-
-        val monthsToShow = (minMonth..maxMonth).map { monthIndex ->
-            val tempCalendar = Calendar.getInstance()
-            tempCalendar.set(Calendar.MONTH, monthIndex)
-            monthFormat.format(tempCalendar.time)
-                .replaceFirstChar { it.uppercase(locale) }
-                .trimEnd('.')
-        }
-
-        val selectedMonthIndex = (calendar.value.get(Calendar.MONTH) - minMonth).coerceAtLeast(0)
-
+        // Month
         IOSWheelPicker(
-            items = monthsToShow,
-            selectedIndex = selectedMonthIndex,
+            items = state.monthItems.value,
+            selectedIndex = state.selectedMonthIndex.value,
             onSelectionChanged = { index ->
-                val rememberedDay = calendar.value.get(Calendar.DAY_OF_MONTH)
-                val newCalendar = calendar.value.apply {
-                    set(Calendar.DAY_OF_MONTH, 1)
-                    set(Calendar.MONTH, index + minMonth)
-                    set(Calendar.MONTH, index + minMonth)
-
-                    val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
-                    set(Calendar.DAY_OF_MONTH, rememberedDay.coerceAtMost(maxDayInMonth))
-                }
-
-                if (newCalendar.before(minDate)) {
-                    newCalendar.time = minDate.time
-                } else if (newCalendar.after(maxDate)) {
-                    newCalendar.time = maxDate.time
-                }
-
-                onDateChanged(newCalendar.time)
+                state.updateMonth(index)
+                onDateChanged(state.selectedDate.value)
             },
             modifier = Modifier.weight(0.4f),
             catchSwing = catchSwing,
         )
 
-        // Год
-        val minYear = minDate.get(Calendar.YEAR)
-        val maxYear = maxDate.get(Calendar.YEAR)
-
-        val years = (minYear..maxYear).toList()
-        val selectedYearIndex = (calendar.value.get(Calendar.YEAR) - minYear).coerceAtLeast(0)
-
-        val yearsToShow = years.map { it.toString() }
-
+        // Year
         IOSWheelPicker(
-            items = yearsToShow,
-            selectedIndex = selectedYearIndex,
+            items = state.yearItems.value,
+            selectedIndex = state.selectedYearIndex.value,
             onSelectionChanged = { index ->
-                val newCalendar = calendar.value.apply {
-                    set(Calendar.YEAR, years[index])
-                    val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
-                    if (get(Calendar.DAY_OF_MONTH) > maxDayInMonth) {
-                        set(Calendar.DAY_OF_MONTH, maxDayInMonth)
-                    }
-                }
-
-                if (newCalendar.before(minDate)) {
-                    newCalendar.time = minDate.time
-                } else if (newCalendar.after(maxDate)) {
-                    newCalendar.time = maxDate.time
-                }
-
-                onDateChanged(newCalendar.time)
-
+                state.updateYear(index)
+                onDateChanged(state.selectedDate.value)
             },
             modifier = Modifier.weight(0.5f),
             catchSwing = catchSwing,
         )
     }
-    Log.d("Remembered selected date: ", "${selectedDate}")
-
 }
 
 @Composable
@@ -225,13 +113,8 @@ private fun IOSWheelPicker(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(selectedIndex, items.size) {
-        val targetIndex = selectedIndex + 1
-        if (listState.firstVisibleItemIndex != targetIndex - 1) {
-            listState.scrollToItem(
-                index = maxOf(0, targetIndex - 1),
-                scrollOffset = 0
-            )
-        }
+        val target = (selectedIndex).coerceIn(0, items.lastIndex + 1)
+        listState.animateScrollToItem(index = maxOf(0, target), scrollOffset = 0)
     }
 
     val centerIndex by remember {
@@ -245,16 +128,13 @@ private fun IOSWheelPicker(
         }
     }
 
-    LaunchedEffect(listState, selectedIndex) {
+    LaunchedEffect(listState) {
         snapshotFlow { listState.isScrollInProgress }
-            .filter {
-                !it
-            }
+            .filter { !it }
             .collect {
-                if (centerIndex != selectedIndex) {
-                    onSelectionChanged(centerIndex ?: 0)
+                if (centerIndex != null) {
+                    onSelectionChanged(centerIndex!!)
                 }
-                listState.scrollToItem(centerIndex ?: 0, scrollOffset = 0)
             }
     }
 
@@ -282,7 +162,6 @@ private fun IOSWheelPicker(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Spacer to show first item in center
         item {
             Spacer(modifier = Modifier.height(itemHeight))
         }
@@ -307,18 +186,16 @@ private fun IOSWheelPicker(
             }
         }
 
-        // Spacer to show last item in center
         item {
             Spacer(modifier = Modifier.height(itemHeight))
         }
     }
 }
 
-// Пример использования
 @Composable
 @Preview
 fun DatePickerExample() {
-    var selectedDate by remember { mutableStateOf(Date()) }
+    val selectedDate = remember { mutableStateOf(Calendar.getInstance()) }
     FeatureTheme(
         darkTheme = true
     ) {
@@ -330,18 +207,198 @@ fun DatePickerExample() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Выбранная дата: ${selectedDate}",
+                    text = "Выбранная дата: ${selectedDate.value.time}",
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
+                val datePickerState = rememberDatePickerState(
+                    initialDate = selectedDate.value
+                )
 
                 IOSDatePicker(
-                    selectedDate = selectedDate,
-                    onDateChanged = { selectedDate = it },
+                    state = datePickerState,
+                    onDateChanged = { selectedDate.value = it },
                     modifier = Modifier.fillMaxWidth(0.5f),
-//                    minDate = Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 5) }
                 )
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun DatePickerExampleOne() {
+
+    val datePickerState = rememberDatePickerState(
+        initialDate = Calendar.getInstance(),
+        minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -2) },
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+    )
+
+    var selectedDateText by remember { mutableStateOf("") }
+
+    val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
+
+    LaunchedEffect(datePickerState.selectedDate) {
+        selectedDateText = dateFormat.format(datePickerState.selectedDate.value.time)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Выбранная дата: $selectedDateText",
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+        IOSDatePicker(
+            state = datePickerState,
+            onDateChanged = { newDate ->
+
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = {
+                    datePickerState.updateDate(Calendar.getInstance())
+                }
+            ) {
+                Text("Сегодня")
+            }
+
+            Button(
+                onClick = {
+                    val weekAgo = Calendar.getInstance().apply {
+                        add(Calendar.WEEK_OF_YEAR, -1)
+                    }
+                    datePickerState.updateDate(weekAgo)
+                }
+            ) {
+                Text("Неделю назад")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "Информация о состоянии:",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text("Год: ${datePickerState.currentYear.value}")
+                Text("Месяц: ${datePickerState.currentMonth.value + 1}")
+                Text("День: ${datePickerState.currentDay.value}")
+                Text("Доступные дни: ${datePickerState.dayRange.value}")
+                Text("Доступные месяцы: ${datePickerState.monthRange.value.first + 1}-${datePickerState.monthRange.value.last + 1}")
+                Text("Доступные годы: ${datePickerState.yearRange.value}")
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun MultiDatePickerExample() {
+    val startDateState = rememberDatePickerState(
+        initialDate = Calendar.getInstance(),
+        minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -1) },
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+    )
+
+    val endDateState = rememberDatePickerState(
+        initialDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 7) },
+        minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -1) },
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+    )
+
+    val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Text(
+            text = "Выбор периода",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Дата начала: ${dateFormat.format(startDateState.selectedDate.value.time)}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                IOSDatePicker(
+                    state = startDateState,
+                    onDateChanged = { newStartDate ->
+                        if (newStartDate.after(endDateState.selectedDate.value)) {
+                            val newEndDate = Calendar.getInstance().apply {
+                                time = newStartDate.time
+                                add(Calendar.DAY_OF_YEAR, 1)
+                            }
+                            endDateState.updateDate(newEndDate)
+                        }
+                    }
+                )
+            }
+        }
+
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = "Дата окончания: ${dateFormat.format(endDateState.selectedDate.value.time)}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                IOSDatePicker(
+                    state = endDateState,
+                    onDateChanged = { newEndDate ->
+                        if (newEndDate.before(startDateState.selectedDate.value)) {
+                            val newStartDate = Calendar.getInstance().apply {
+                                time = newEndDate.time
+                                add(Calendar.DAY_OF_YEAR, -1)
+                            }
+                            startDateState.updateDate(newStartDate)
+                        }
+                    }
+                )
+            }
+        }
+
+        val daysDifference by remember {
+            derivedStateOf {
+                val diffInMillis =
+                    endDateState.selectedDate.value.timeInMillis - startDateState.selectedDate.value.timeInMillis
+                (diffInMillis / (1000 * 60 * 60 * 24)).toInt() + 1
+            }
+        }
+
+        Text(
+            text = "Период: $daysDifference дн.",
+            style = MaterialTheme.typography.titleLarge
+        )
     }
 }

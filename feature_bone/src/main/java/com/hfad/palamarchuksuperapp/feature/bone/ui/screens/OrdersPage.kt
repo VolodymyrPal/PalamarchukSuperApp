@@ -50,6 +50,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -88,11 +89,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItem
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.IOSDatePicker
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.rememberDatePickerState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.util.Date
+import java.util.Calendar
 import kotlin.random.Random
 
 
@@ -224,6 +226,22 @@ fun OrdersPage(
                     )
                 }
 
+
+                val dateStart = remember { mutableStateOf(Calendar.getInstance()) }
+                val dateEnd = remember { mutableStateOf(Calendar.getInstance()) }
+
+                val dateStartState = rememberDatePickerState(initialDate = dateStart.value)
+                val dateEndState = rememberDatePickerState(initialDate = dateEnd.value)
+
+                LaunchedEffect(dateStart.value) {
+                    dateEndState.updateMinDate(dateStart.value)
+                }
+
+                LaunchedEffect(dateEnd.value) {
+                    dateStartState.updateMaxDate(dateEnd.value)
+                }
+
+
                 //Date range field
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 1,
@@ -234,7 +252,6 @@ fun OrdersPage(
                             slideOutVertically(animationSpec = tween(250)) { -it } +
                             shrinkVertically(animationSpec = tween(250))
                 ) {
-                    val date1 = remember { mutableStateOf(Date()) }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
@@ -242,9 +259,10 @@ fun OrdersPage(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+
                         IOSDatePicker(
-                            selectedDate = date1.value,
-                            onDateChanged = { date1.value = it },
+                            state = dateStartState,
+                            onDateChanged = { dateStart.value = it },
                             modifier = Modifier
                                 .weight(1f)
                                 .background(
@@ -259,17 +277,15 @@ fun OrdersPage(
                             color = MaterialTheme.colorScheme.surfaceVariant
                         )
 
-                        val date = remember { mutableStateOf(Date()) }
-
                         IOSDatePicker(
-                            selectedDate = date.value,
-                            onDateChanged = { date.value = it },
+                            state = dateEndState,
+                            onDateChanged = { dateEnd.value = it },
                             modifier = Modifier
                                 .weight(1f)
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                 ),
-                            catchSwing = true
+                            catchSwing = true,
                         )
                     }
                 }
