@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -118,7 +117,6 @@ class DatePickerState(
 
     fun updateMonth(monthIndex: Int) {
         val rememberedDay = currentDay
-        Log.d("DatePickerState", "rememberedDay: ${rememberedDay.value}")
         val newMonth = monthRange.value.first + monthIndex
 
         updateDate {
@@ -126,7 +124,6 @@ class DatePickerState(
             set(Calendar.MONTH, newMonth)
 
             val maxDayInMonth = getActualMaximum(Calendar.DAY_OF_MONTH)
-            Log.d("DatePickerState", "maxDayInMonth: $maxDayInMonth, ${rememberedDay.value}")
             set(Calendar.DAY_OF_MONTH, rememberedDay.value.coerceAtMost(maxDayInMonth))
         }
     }
@@ -146,12 +143,10 @@ class DatePickerState(
 
     fun updateDate(newCalendar: Calendar) {
         val normalizedCalendar = normalizeCalendar(newCalendar)
-        Log.d("DatePickerState", "normalizedCalendar: ${normalizedCalendar.get(Calendar.DAY_OF_MONTH)}")
         when {
             normalizedCalendar.before(_minDate) -> normalizedCalendar.time = _minDate.time
             normalizedCalendar.after(_maxDate) -> normalizedCalendar.time = _maxDate.time
         }
-        Log.d("NormalizedCalendar", "${normalizedCalendar.get(Calendar.DAY_OF_MONTH)}")
         _selectedDate.value = normalizedCalendar
 //        calendar.value = normalizedCalendar
     }
@@ -189,7 +184,6 @@ class DatePickerState(
     private inline fun updateDate(action: Calendar.() -> Unit) {
         val newCalendar = _selectedDate.value.clone() as Calendar
         newCalendar.action()
-        Log.d("NewCalendar 123: ", "${newCalendar.get(Calendar.DAY_OF_MONTH)}")
         updateDate(newCalendar)
     }
 
