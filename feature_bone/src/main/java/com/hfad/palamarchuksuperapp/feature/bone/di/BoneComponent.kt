@@ -7,7 +7,6 @@ import androidx.room.Room
 import com.hfad.palamarchuksuperapp.core.di.AppFirstAccessDetector
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModelFactory
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
-import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.OrderApiTestImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.PaymentApiTestImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.remote.api.SaleApiTestImpl
@@ -17,8 +16,10 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.repository.OrdersRepositor
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.PaymentsRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SalesRepositoryImpl
 import com.hfad.palamarchuksuperapp.feature.bone.data.repository.SessionConfig
+import com.hfad.palamarchuksuperapp.feature.bone.data.repository.TypedTransactionProvider
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.CryptoService
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentsRepository
@@ -30,21 +31,25 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCas
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.RefreshTokenUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ClearAllDatabaseUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.GetTypeTransactionOperationsUseCase
+import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.GetTypeTransactionOperationsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LoginWithCredentialsUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.RefreshTokenUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.BoneViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SalesPageViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentsPageViewModel
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SalesPageViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.MapKey
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import dagger.multibindings.IntoSet
 import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.plugins.HttpSend
@@ -80,6 +85,9 @@ internal abstract class BoneModule {
 
 @Module
 interface FeatureUseCaseModule {
+
+    @Binds
+    fun bindGetTypeTransactionOperationsUseCase(getTypeTransactionOperationsUseCase: GetTypeTransactionOperationsUseCaseImpl): GetTypeTransactionOperationsUseCase
 
     @Binds
     fun bindLoginWithCredentialsUseCase(loginWithCredentialsUseCase: LoginWithCredentialsUseCaseImpl): LoginWithCredentialsUseCase
@@ -122,15 +130,27 @@ abstract class RepositoryModule {
 
     @FeatureScope
     @Binds
-    abstract fun bindOrderApi (orderApiTestImpl: OrderApiTestImpl) : OrderApi
+    abstract fun bindOrderApi(orderApiTestImpl: OrderApiTestImpl): OrderApi
 
     @FeatureScope
     @Binds
-    abstract fun bindSaleApi (saleApiTestImpl: SaleApiTestImpl) : SaleOrderApi
+    abstract fun bindSaleApi(saleApiTestImpl: SaleApiTestImpl): SaleOrderApi
 
     @FeatureScope
     @Binds
-    abstract fun bindPaymentApi (paymentApiTestImpl: PaymentApiTestImpl) : PaymentOrderApi
+    abstract fun bindPaymentApi(paymentApiTestImpl: PaymentApiTestImpl): PaymentOrderApi
+
+    @Binds
+    @IntoSet
+    abstract fun bindOrderProviderRepository(impl: OrdersRepositoryImpl): TypedTransactionProvider
+
+    @Binds
+    @IntoSet
+    abstract fun bindPaymentsProviderRepository(impl: PaymentsRepositoryImpl): TypedTransactionProvider
+
+    @Binds
+    @IntoSet
+    abstract fun bindSalesProviderRepository(impl: SalesRepositoryImpl): TypedTransactionProvider
 }
 
 @Module
@@ -228,6 +248,11 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(LoginScreenViewModel::class)
     abstract fun bindLoginScreenViewModel(viewModel: LoginScreenViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FinancePageViewModel::class)
+    abstract fun bindFinancePageViewModel(viewModel: FinancePageViewModel): ViewModel
 
 }
 
