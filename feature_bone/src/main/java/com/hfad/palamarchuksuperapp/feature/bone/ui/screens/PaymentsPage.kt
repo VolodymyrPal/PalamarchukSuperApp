@@ -35,7 +35,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Star
@@ -55,8 +54,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -80,13 +83,11 @@ import com.hfad.palamarchuksuperapp.core.ui.theme.Status
 import com.hfad.palamarchuksuperapp.core.ui.theme.statusColor
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.EqualWidthFlowRow
-import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentsPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentsPageViewModel
 
@@ -171,14 +172,14 @@ fun PaymentsPage(
                     expanded = shownQuery.intValue == 0
                 )
 
-                TitleQueryField(
-                    modifier = Modifier,
-                    sectionIcon = Icons.Default.DateRange,
-                    onClick = {
-                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
-                    },
-                    expanded = shownQuery.intValue == 1
-                )
+//                TitleQueryField(
+//                    modifier = Modifier,
+//                    sectionIcon = Icons.Default.DateRange,
+//                    onClick = {
+//                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
+//                    },
+//                    expanded = shownQuery.intValue == 1
+//                )
 
                 TitleQueryField(
                     modifier = Modifier,
@@ -285,14 +286,28 @@ fun PaymentsPage(
                             slideOutVertically(animationSpec = tween(250)) { -it } +
                             shrinkVertically(animationSpec = tween(250))
                 ) {
+                    val scrollConnection = remember {
+                        object : NestedScrollConnection {
+                            override fun onPostScroll(
+                                consumed: Offset,
+                                available: Offset,
+                                source: NestedScrollSource,
+                            ): Offset {
+                                val horizontal = available.x
+                                return Offset(x = horizontal / 1.001f, y = 0f)
+                            }
+                        }
+                    }
                     LazyRow(
                         modifier = Modifier
+                            .fillMaxWidth(0.9f)
                             .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = MaterialTheme.shapes.extraSmall
                             )
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .nestedScroll(scrollConnection),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(PaymentStatus.entries.toTypedArray()) { status ->

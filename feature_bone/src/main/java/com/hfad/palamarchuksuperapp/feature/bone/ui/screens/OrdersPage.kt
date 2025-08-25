@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -60,8 +61,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -87,14 +92,11 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.IOSDatePicker
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.rememberDatePickerState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import java.util.Calendar
 import kotlin.random.Random
 
 
@@ -179,14 +181,14 @@ fun OrdersPage(
                     expanded = shownQuery.intValue == 0
                 )
 
-                TitleQueryField(
-                    modifier = Modifier,
-                    sectionIcon = Icons.Default.DateRange,
-                    onClick = {
-                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
-                    },
-                    expanded = shownQuery.intValue == 1
-                )
+//                TitleQueryField(
+//                    modifier = Modifier,
+//                    sectionIcon = Icons.Default.DateRange,
+//                    onClick = {
+//                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
+//                    },
+//                    expanded = shownQuery.intValue == 1
+//                )
 
                 TitleQueryField(
                     modifier = Modifier,
@@ -226,77 +228,7 @@ fun OrdersPage(
                     )
                 }
 
-
-                val dateStart = remember { mutableStateOf(Calendar.getInstance()) }
-                val dateEnd = remember { mutableStateOf(Calendar.getInstance()) }
-
-                val dateStartState = rememberDatePickerState(initialDate = dateStart.value)
-                val dateEndState = rememberDatePickerState(initialDate = dateEnd.value)
-
-                LaunchedEffect(dateStart.value) {
-                    dateEndState.updateMinDate(dateStart.value)
-                }
-
-                LaunchedEffect(dateEnd.value) {
-                    dateStartState.updateMaxDate(dateEnd.value)
-                }
-
-
-                //Date range field
-                AnimatedVisibility(
-                    visible = shownQuery.intValue == 1,
-                    enter = fadeIn(animationSpec = tween(300)) +
-                            slideInVertically(animationSpec = tween(300)) { -it } +
-                            expandVertically(animationSpec = tween(300)),
-                    exit = fadeOut(animationSpec = tween(250)) +
-                            slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        IOSDatePicker(
-                            state = dateStartState,
-                            onDateChanged = { dateStart.value = it },
-                            modifier = Modifier
-                                .weight(1f)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                ),
-                            catchSwing = true
-                        )
-
-                        Text(
-                            text = "—",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.surfaceVariant
-                        )
-
-                        IOSDatePicker(
-                            state = dateEndState,
-                            onDateChanged = { dateEnd.value = it },
-                            modifier = Modifier
-                                .weight(1f)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                ),
-                            catchSwing = true,
-                        )
-                    }
-                }
-
-                val scope = rememberCoroutineScope()
                 val listState = rememberLazyListState()
-
-                val hScroll = rememberScrollableState { delta ->
-                    scope.launch { listState.scrollBy(-delta) }
-                    delta
-                }
 
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 2,
@@ -307,15 +239,31 @@ fun OrdersPage(
                             slideOutVertically(animationSpec = tween(250)) { -it } +
                             shrinkVertically(animationSpec = tween(250))
                 ) {
+                    val scrollConnection = remember {
+                        object : NestedScrollConnection {
+                            override fun onPostScroll(
+                                consumed: Offset,
+                                available: Offset,
+                                source: NestedScrollSource,
+                            ): Offset {
+                                val horizontal = available.x
+                                return Offset(x = horizontal/1.001f, y = 0f)
+                            }
+                        }
+                    }
+
                     LazyRow(
                         modifier = Modifier
+                            .nestedScroll(scrollConnection)
                             .fillMaxWidth(0.9f)
+                            .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = MaterialTheme.shapes.extraSmall
                             )
-                            .padding(8.dp),
-                        userScrollEnabled = false,
+                            .padding(8.dp)
+                        ,
+                        userScrollEnabled = true,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         state = listState
                     ) {
