@@ -21,12 +21,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import java.util.Date
 import javax.inject.Inject
 
 class OrdersRepositoryImpl @Inject constructor(
@@ -65,11 +65,10 @@ class OrdersRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun ordersInRange(
-        from: Date,
-        to: Date,
-    ): AppResult<List<Order>, AppError> {
-
+    override suspend fun getTypedTransactionInRange(
+        from: Long,
+        to: Long
+    ): AppResult<List<TypedTransaction>, AppError> {
         return fetchWithCacheFallback(
             fetchRemote = { orderApi.getOrdersWithRange(from, to).map { it.toDomain() } },
             storeAndRead = { orders ->
