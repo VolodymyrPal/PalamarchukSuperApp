@@ -8,7 +8,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ServiceType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
-import java.util.Date
 
 data class OrderDto(
     val id: Int,
@@ -17,7 +16,7 @@ data class OrderDto(
     val serviceList: List<ServiceOrder> = emptyList(),
     val status: OrderStatus = OrderStatus.CREATED,
     val destinationPoint: String,
-    val arrivalDate: Date,
+    val arrivalDate: Long,
     val containerNumber: String = "",
     val departurePoint: String,
     val cargo: String,
@@ -26,7 +25,7 @@ data class OrderDto(
         currency = Currency.USD,
         amount = 0f
     ),
-    val billingDate: Date,
+    val billingDate: Long,
     val transactionType: TransactionType = TransactionType.DEBIT,
     val versionHash: String = ""
 ) {

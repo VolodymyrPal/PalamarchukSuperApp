@@ -20,7 +20,7 @@ data class PaymentOrderEntity(
     val status: PaymentStatus,
     val commission: Float = 0.0f,
     val transactionType: TransactionType,
-    val billingDate: Date = Date(),
+    val billingDate: Long = Date().time,
     @Embedded (prefix = "amount_")
     val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0.0f),
     val versionHash: String = "",

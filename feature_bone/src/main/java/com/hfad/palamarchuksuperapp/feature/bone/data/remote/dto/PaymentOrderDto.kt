@@ -14,7 +14,7 @@ data class PaymentOrderDto(
     val status: PaymentStatus,
     val commission: Float = 0.0f,
     val transactionType: TransactionType,
-    val billingDate: Date = Date(),
+    val billingDate: Long = Date().time,
     val amountCurrency: AmountCurrency,
     val paymentPrice: AmountCurrency = AmountCurrency(
         currency = amountCurrency.currency,
