@@ -8,7 +8,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentOr
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generatePaymentStatistic
 import kotlinx.coroutines.delay
-import java.util.Date
 import javax.inject.Inject
 
 class PaymentApiTestImpl @Inject constructor(
@@ -24,7 +23,7 @@ class PaymentApiTestImpl @Inject constructor(
     }
 
     override suspend fun getPaymentOrder(id: Int): PaymentOrderDto? = null
-    override suspend fun getPaymentsWithRange(from: Date, to: Date): List<PaymentOrderDto> = emptyList()
+    override suspend fun getPaymentsWithRange(from: Long, to: Long): List<PaymentOrderDto> = generatePaymentOrderItems().map { it.toDto() }
     override suspend fun getPaymentStatistics(): PaymentStatistic {
         delay(1500)
         return generatePaymentStatistic()
