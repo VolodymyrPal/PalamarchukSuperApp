@@ -21,12 +21,12 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatistic
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import java.util.Date
 import javax.inject.Inject
 
 class PaymentsRepositoryImpl @Inject constructor(
@@ -65,11 +65,10 @@ class PaymentsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun paymentsInRange(
-        from: Date,
-        to: Date,
-    ): AppResult<List<PaymentOrder>, AppError> {
-
+    override suspend fun getTypedTransactionInRange(
+        from: Long,
+        to: Long
+    ): AppResult<List<TypedTransaction>, AppError> {
         return fetchWithCacheFallback(
             fetchRemote = { paymentApi.getPaymentsWithRange(from, to).map { it.toDomain() } },
             storeAndRead = { payments ->

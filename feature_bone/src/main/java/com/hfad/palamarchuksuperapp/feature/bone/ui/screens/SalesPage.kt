@@ -48,9 +48,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -156,14 +160,14 @@ fun SalesPage(
                     expanded = shownQuery.intValue == 0
                 )
 
-                TitleQueryField(
-                    modifier = Modifier,
-                    sectionIcon = Icons.Default.DateRange,
-                    onClick = {
-                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
-                    },
-                    expanded = shownQuery.intValue == 1
-                )
+//                TitleQueryField(
+//                    modifier = Modifier,
+//                    sectionIcon = Icons.Default.DateRange,
+//                    onClick = {
+//                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
+//                    },
+//                    expanded = shownQuery.intValue == 1
+//                )
 
                 TitleQueryField(
                     modifier = Modifier,
@@ -270,14 +274,30 @@ fun SalesPage(
                             slideOutVertically(animationSpec = tween(250)) { -it } +
                             shrinkVertically(animationSpec = tween(250))
                 ) {
+                    val scrollConnection = remember {
+                        object : NestedScrollConnection {
+                            override fun onPostScroll(
+                                consumed: Offset,
+                                available: Offset,
+                                source: NestedScrollSource,
+                            ): Offset {
+                                val horizontal = available.x
+                                return Offset(x = horizontal/1.001f, y = 0f)
+                            }
+                        }
+                    }
                     LazyRow(
                         modifier = Modifier
+                            .fillMaxWidth(0.9f)
                             .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = MaterialTheme.shapes.extraSmall
                             )
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .nestedScroll(
+                                scrollConnection
+                            ),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(SaleStatus.entries.toTypedArray()) { status ->

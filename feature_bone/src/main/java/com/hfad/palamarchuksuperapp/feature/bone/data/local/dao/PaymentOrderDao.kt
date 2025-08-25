@@ -11,7 +11,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentOrde
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.PaymentStatisticEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 // TODO change all dao class to update existed objects
 @Dao
@@ -33,7 +32,7 @@ interface PaymentOrderDao {
     ): PagingSource<Int, PaymentOrderEntity>
 
     @Query("SELECT * FROM $DATABASE_PAYMENTS WHERE billingDate BETWEEN :from AND :to")
-    suspend fun paymentsInRange(from: Date, to: Date): List<PaymentOrderEntity>
+    suspend fun paymentsInRange(from: Long, to: Long): List<PaymentOrderEntity>
 
     @Query("SELECT * FROM $DATABASE_PAYMENTS WHERE id = :id")
     suspend fun getPaymentOrderById(id: Int): PaymentOrderEntity?

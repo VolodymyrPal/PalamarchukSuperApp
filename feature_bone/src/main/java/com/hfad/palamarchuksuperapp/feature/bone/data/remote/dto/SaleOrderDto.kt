@@ -20,7 +20,7 @@ data class SaleOrderDto(
     val order: Order? = null,
     val vat: Float = 0.20f,
     val amountCurrency: AmountCurrency,
-    val billingDate: Date = Date(),
+    val billingDate: Long = Date().time,
     val transactionType: TransactionType = TransactionType.DEBIT,
     val versionHash: String = ""
 )

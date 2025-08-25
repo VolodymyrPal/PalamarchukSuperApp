@@ -1,13 +1,21 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.screens
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,20 +25,34 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,11 +67,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.compose.FeatureTheme
 import com.example.compose.financeStatusColor
+import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppOutlinedTextField
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import com.hfad.palamarchuksuperapp.core.ui.composables.formatTrim
+import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
@@ -57,42 +83,296 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
+import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.AppWheelDatePicker
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.EqualWidthFlowRow
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ExchangeOrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ToggleableArrow
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.getNumberOfDecimalDigits
+import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.rememberDatePickerState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
+fun FinancePageRoot(
+    modifier: Modifier = Modifier,
+    viewModel: FinancePageViewModel = daggerViewModel<FinancePageViewModel>(
+        factory = LocalBoneDependencies.current.viewModelFactory
+    ),
+    navController: NavController? = LocalNavController.current,
+) {
+
+    val financeState = viewModel.uiState.collectAsStateWithLifecycle()
+
+    FinancePage(
+        modifier = modifier,
+        financeState = financeState,
+        event = viewModel::event,
+        navController = navController
+    )
+}
+
+@Composable
 fun FinancePage(
     modifier: Modifier = Modifier,
-    financeState: FinancePageState = FinancePageState(),
+    navController: NavController? = LocalNavController.current,
+    financeState: State<FinancePageState>,
+    event: (FinancePageViewModel.FinancePageEvent) -> Unit,
 ) {
+    val shownQuery = remember { mutableIntStateOf(99) }
+
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
         item {
             FinanceStatisticCard(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
-                financeState.financeStatistics
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp),
+                financeState.value.financeStatistics
             )
         }
-        items(financeState.salesItems) { item ->
+
+        item {
+            val isLoading = financeState.value.loading
+
+            AnimatedContent(
+                targetState = isLoading,
+                transitionSpec = {
+                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
+                },
+                label = "loading_or_send_icon"
+            ) { loading ->
+                if (loading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(1.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+            }
+        }
+
+        item {
+
+            AnimatedContent(
+                targetState = false,
+                transitionSpec = {
+                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
+                },
+                label = "loading_or_send_icon"
+            ) { loading ->
+                if (loading) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .height(1.dp),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TitleQueryField(
+                    modifier = Modifier,
+                    sectionIcon = Icons.Default.Search,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 0) 99 else 0
+                    },
+                    expanded = shownQuery.intValue == 0
+                )
+
+                TitleQueryField(
+                    modifier = Modifier,
+                    sectionIcon = Icons.Default.DateRange,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
+                    },
+                    expanded = shownQuery.intValue == 1
+                )
+
+                TitleQueryField(
+                    modifier = Modifier,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
+                    },
+                    expanded = shownQuery.intValue == 2,
+                    sectionIcon = Icons.Default.Check
+                )
+            }
+        }
+
+        item {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 0,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    AppOutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                            .padding(4.dp),
+                        value = financeState.value.query,
+                        onValueChange = { },// event(OrderPageViewModel.OrderPageEvent.Search(it)) },
+                        placeholderRes = R.string.orders_query_example,
+                    )
+                }
+
+
+//                val dateStart = remember { mutableStateOf(Calendar.getInstance()) }
+//                val dateEnd = remember { mutableStateOf(Calendar.getInstance()) }
+
+                val dateStartState =
+                    rememberDatePickerState(initialDate = financeState.value.startDate)
+                val dateEndState = rememberDatePickerState(initialDate = financeState.value.endDate)
+
+//                LaunchedEffect(financeState.value.startDate) {
+//                    dateEndState.updateMinDate(dateStart.value)
+//                }
+//
+//                LaunchedEffect(financeState.value.endDate) {
+//                    dateStartState.updateMaxDate(dateEnd.value)
+//                }
+
+
+                //Date range field
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 1,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        AppWheelDatePicker(
+                            state = dateStartState,
+                            onDateChanged = {
+                                event(
+                                    FinancePageViewModel.FinancePageEvent.ChangeStartDate(
+                                        it.time.time
+                                    )
+                                )
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                ),
+                            catchSwing = true
+                        )
+
+                        Text(
+                            text = "—",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.surfaceVariant
+                        )
+
+                        AppWheelDatePicker(
+                            state = dateEndState,
+                            onDateChanged = {
+                                event(
+                                    FinancePageViewModel.FinancePageEvent.ChangeEndDate(it.time.time)
+                                )
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                ),
+                            catchSwing = true,
+                        )
+                    }
+                }
+
+                val listState = rememberLazyListState()
+
+                AnimatedVisibility(
+                    visible = shownQuery.intValue == 2,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            slideInVertically(animationSpec = tween(300)) { -it } +
+                            expandVertically(animationSpec = tween(300)),
+                    exit = fadeOut(animationSpec = tween(250)) +
+                            slideOutVertically(animationSpec = tween(250)) { -it } +
+                            shrinkVertically(animationSpec = tween(250))
+                ) {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .wrapContentWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                shape = MaterialTheme.shapes.extraSmall
+                            )
+                            .padding(8.dp),
+                        userScrollEnabled = false,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        state = listState
+                    ) {
+                        items(OrderStatus.entries.toTypedArray()) { status ->
+                            FilterChip(
+                                onClick = {
+//                                    event.invoke(OrderPageViewModel.OrderPageEvent.FilterOrderStatus(status)) //TODO add different classes check for status with list
+                                },
+                                label = {
+                                    Text(text = status.displayName)
+                                },
+                                selected = false,//state.value.orderStatusFilter.contains(status),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        items(financeState.value.salesItems) { item ->
             FinanceTransactionCard(
-                transaction = item,
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp),
+                modifier = Modifier
+                    .padding(start = 12.dp, end = 12.dp)
+                    .animatedScaleIn(),
+                transaction = item
             )
         }
     }
@@ -109,11 +389,11 @@ fun FinanceStatisticCard(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         shape = MaterialTheme.shapes.extraSmall,
-//        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppText(
                 value = stringResource(R.string.currency_balance),
@@ -125,7 +405,9 @@ fun FinanceStatisticCard(
             )
 
             HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(vertical = 4.dp),
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -193,7 +475,11 @@ fun FinanceStat(
 @Composable
 fun FinancePagePreview() {
     FeatureTheme {
-        FinancePage()
+        val financeState = remember { mutableStateOf(FinancePageState()) }
+        FinancePage(
+            financeState = financeState,
+            event = {},
+        )
     }
 }
 
@@ -510,59 +796,3 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
         )
     }
 }
-
-
-//@Composable
-//fun FinanceCard(
-//    modifier: Modifier = Modifier,
-//    financeTransaction: TypedTransaction,
-//) {
-//    Card(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 16.dp),
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.surface
-//        )
-//    ) {
-//        Column(
-//            modifier = Modifier.padding(16.dp),
-//            verticalArrangement = Arrangement.spacedBy(4.dp)
-//        ) {
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.SpaceBetween
-//            ) {
-//                AppText(
-//                    value = "Транзакция #${1000 + financeTransaction.id}",
-//                    appTextConfig = appTextConfig(
-//                        textStyle = MaterialTheme.typography.titleSmall
-//                    )
-//                )
-//                AppText(
-//                    value = "${financeTransaction.id * 1500 + 5000} грн",
-//                    appTextConfig = appTextConfig(
-//                        textStyle = MaterialTheme.typography.titleSmall,
-//                    ),
-//                    color = if (financeTransaction.id % 2 == 0) MaterialTheme.colorScheme.primary else
-//                        MaterialTheme.colorScheme.error
-//                )
-//            }
-//
-//            AppText(
-//                value = "Тип: ${if (financeTransaction.id % 2 == 0) "Доход" else "Расход"}",
-//                appTextConfig = appTextConfig(
-//                    textStyle = MaterialTheme.typography.bodyMedium
-//                )
-//            )
-//
-//            AppText(
-//                value = "Дата: 10.${financeTransaction.id + 1}.2023",
-//                appTextConfig = appTextConfig(
-//                    textStyle = MaterialTheme.typography.bodySmall,
-//                ),
-//                color = MaterialTheme.colorScheme.onSurfaceVariant
-//            )
-//        }
-//    }
-//}

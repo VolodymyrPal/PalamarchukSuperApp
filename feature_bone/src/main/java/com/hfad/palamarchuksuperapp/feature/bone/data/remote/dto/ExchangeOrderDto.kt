@@ -2,14 +2,13 @@ package com.hfad.palamarchuksuperapp.feature.bone.data.remote.dto
 
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
-import java.util.Date
 
 data class ExchangeOrderDto(
     val amountToExchange: AmountCurrency,
     val typeToChange: TransactionType = TransactionType.DEBIT,
-    val date: Date,
+    val date: Long,
     val transactionType: TransactionType = TransactionType.CREDIT,
-    val billingDate: Date,
+    val billingDate: Long,
     val id: Int,
     val amountCurrency: AmountCurrency,
     val versionHash: String = "",

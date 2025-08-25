@@ -21,19 +21,19 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SaleOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SalesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
 class SalesRepositoryImpl @Inject constructor(
     private val boneDatabase: BoneDatabase,
     private val saleApi: SaleOrderApi,
-) : SalesRepository {
+) : SalesRepository, TypedTransactionProvider {
 
     private val saleDao = boneDatabase.saleOrderDao()
 
@@ -62,11 +62,10 @@ class SalesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saleOrdersInRange(
-        from: Date,
-        to: Date,
-    ): AppResult<List<SaleOrder>, AppError> {
-
+    override suspend fun getTypedTransactionInRange(
+        from: Long,
+        to: Long
+    ): AppResult<List<TypedTransaction>, AppError> {
         return fetchWithCacheFallback(
             fetchRemote = { saleApi.getSalesWithRange(from, to).map { it.toDomain() } },
             storeAndRead = { sales ->
@@ -81,6 +80,26 @@ class SalesRepositoryImpl @Inject constructor(
             }
         )
     }
+
+//    override suspend fun saleOrdersInRange(
+//        from: Date,
+//        to: Date,
+//    ): AppResult<List<SaleOrder>, AppError> {
+//
+//        return fetchWithCacheFallback(
+//            fetchRemote = { saleApi.getSalesWithRange(from, to).map { it.toDomain() } },
+//            storeAndRead = { sales ->
+//                boneDatabase.withTransaction {
+//                    saleDao.insertOrIgnoreSales(sales.map { it.toEntity() })
+//                    val localSales = saleDao.salesInRange(from, to)
+//                    localSales.map { it.toDomain() }
+//                }
+//            },
+//            fallbackFetch = {
+//                saleDao.salesInRange(from, to).map { it.toDomain() }
+//            }
+//        )
+//    }
 
     override suspend fun getSaleOrderById(id: Int): AppResult<SaleOrder?, AppError> {
 

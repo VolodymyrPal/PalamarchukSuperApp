@@ -8,7 +8,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSalesStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SaleOrderApi
 import kotlinx.coroutines.delay
-import java.util.Date
 import javax.inject.Inject
 
 class SaleApiTestImpl @Inject constructor(
@@ -24,7 +23,9 @@ class SaleApiTestImpl @Inject constructor(
     }
 
     override suspend fun getSaleOrder(id: Int): SaleOrderDto? = null
-    override suspend fun getSalesWithRange(from: Date, to: Date): List<SaleOrderDto> = emptyList()
+    override suspend fun getSalesWithRange(from: Long, to: Long): List<SaleOrderDto> =
+        generateSaleOrderItems().map { it.toDto() }
+
     override suspend fun getSalesStatistics(): SalesStatistics {
         delay(1500)
         return generateSalesStatistics()

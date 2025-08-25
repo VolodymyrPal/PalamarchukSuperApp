@@ -15,7 +15,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.ServiceOrderEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 // TODO change all dao class to update existed objects
 @Dao
@@ -44,7 +43,7 @@ interface OrderDao {
 
     @Transaction
     @Query("SELECT * FROM $DATABASE_ORDERS WHERE arrivalDate BETWEEN :from AND :to")
-    suspend fun ordersInRange(from: Date, to: Date): List<OrderEntityWithServices>
+    suspend fun ordersInRange(from: Long, to: Long): List<OrderEntityWithServices>
 
     @Transaction
     @Query("SELECT * FROM $DATABASE_ORDERS WHERE id = :id")

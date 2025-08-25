@@ -8,7 +8,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_OR
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
-import java.util.Date
 
 @Entity(
     tableName = DATABASE_ORDERS,
@@ -23,14 +22,14 @@ data class OrderEntity(
     val num: Int,
     val status: OrderStatus = OrderStatus.CREATED,
     val destinationPoint: String,
-    val arrivalDate: Date,
+    val arrivalDate: Long,
     val containerNumber: String = "",
     val departurePoint: String,
     val cargo: String,
     val manager: String,
     @Embedded(prefix = "amount_")
     val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0f),
-    val billingDate: Date,
+    val billingDate: Long,
     val transactionType: TransactionType = TransactionType.DEBIT,
     val versionHash: String = "",
 )

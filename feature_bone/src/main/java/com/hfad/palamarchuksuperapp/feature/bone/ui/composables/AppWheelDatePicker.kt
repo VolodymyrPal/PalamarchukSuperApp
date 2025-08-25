@@ -1,10 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,14 +41,13 @@ import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.abs
 
 @Composable
-fun IOSDatePicker(
+fun AppWheelDatePicker(
     modifier: Modifier = Modifier,
     state: DatePickerState,
     onDateChanged: (Calendar) -> Unit,
@@ -61,7 +59,7 @@ fun IOSDatePicker(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Day
-        IOSWheelPicker(
+        AppWheelPicker(
             items = state.dayItems.value,
             selectedIndex = state.selectedDayIndex.value,
             onSelectionChanged = { index ->
@@ -74,7 +72,7 @@ fun IOSDatePicker(
             )
 
         // Month
-        IOSWheelPicker(
+        AppWheelPicker(
             items = state.monthItems.value,
             selectedIndex = state.selectedMonthIndex.value,
             onSelectionChanged = { index ->
@@ -86,7 +84,7 @@ fun IOSDatePicker(
         )
 
         // Year
-        IOSWheelPicker(
+        AppWheelPicker(
             items = state.yearItems.value,
             selectedIndex = state.selectedYearIndex.value,
             onSelectionChanged = { index ->
@@ -100,7 +98,7 @@ fun IOSDatePicker(
 }
 
 @Composable
-private fun IOSWheelPicker(
+private fun AppWheelPicker(
     items: List<String>,
     selectedIndex: Int,
     onSelectionChanged: (Int) -> Unit,
@@ -138,30 +136,33 @@ private fun IOSWheelPicker(
             }
     }
 
-    val scrollModifier = if (catchSwing) {
-        val vScroll = rememberScrollableState { delta ->
-            scope.launch { listState.scrollBy(-delta) }
-            delta
+    val scrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                return if (catchSwing) {
+                    val vertical = available.y
+                    Offset(x = 0f, y = vertical/1.05f)
+                } else {
+                    return super.onPostScroll(consumed, available, source)
+                }
+            }
         }
-
-        modifier.scrollable(
-            state = vScroll,
-            orientation = Orientation.Vertical,
-            flingBehavior = ScrollableDefaults.flingBehavior(),
-            reverseDirection = false
-        )
-    } else {
-        modifier
     }
 
     LazyColumn(
         state = listState,
-        modifier = scrollModifier
+        modifier = modifier
             .height(itemHeight * visibleItemCount)
+            .nestedScroll(scrollConnection)
             .fadingEdge(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         item {
             Spacer(modifier = Modifier.height(itemHeight))
         }
@@ -215,7 +216,7 @@ fun DatePickerExample() {
                     initialDate = selectedDate.value
                 )
 
-                IOSDatePicker(
+                AppWheelDatePicker(
                     state = datePickerState,
                     onDateChanged = { selectedDate.value = it },
                     modifier = Modifier.fillMaxWidth(0.5f),
@@ -255,7 +256,7 @@ fun DatePickerExampleOne() {
             style = MaterialTheme.typography.headlineSmall
         )
 
-        IOSDatePicker(
+        AppWheelDatePicker(
             state = datePickerState,
             onDateChanged = { newDate ->
 
@@ -349,7 +350,7 @@ fun MultiDatePickerExample() {
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                IOSDatePicker(
+                AppWheelDatePicker(
                     state = startDateState,
                     onDateChanged = { newStartDate ->
                         if (newStartDate.after(endDateState.selectedDate.value)) {
@@ -373,7 +374,7 @@ fun MultiDatePickerExample() {
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                IOSDatePicker(
+                AppWheelDatePicker(
                     state = endDateState,
                     onDateChanged = { newEndDate ->
                         if (newEndDate.before(startDateState.selectedDate.value)) {

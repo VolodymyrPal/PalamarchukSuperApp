@@ -281,7 +281,7 @@ fun BoneScreen(
                 0 -> OrdersPageRoot()
                 1 -> PaymentsPageRoot()
                 2 -> SalesPageRoot()
-                3 -> FinancePage()
+                3 -> FinancePageRoot()
             }
         }
     }

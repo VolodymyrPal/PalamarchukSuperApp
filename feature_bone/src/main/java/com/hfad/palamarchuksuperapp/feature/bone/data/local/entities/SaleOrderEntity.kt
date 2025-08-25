@@ -41,7 +41,7 @@ data class SaleOrderEntity(
     val vat: Float = 0.20f,
     @Embedded (prefix = "amountCurrency_")
     val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(currency = Currency.UAH, amount = 0.0f),
-    val billingDate: Date = Date(),
+    val billingDate: Long = Date().time,
     val transactionType: TransactionType = TransactionType.DEBIT,
     val versionHash: String = "",
 )

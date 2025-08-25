@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.DATABASE_CASH_PAYMENTS
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
-import java.util.Date
 
 @Entity(tableName = DATABASE_CASH_PAYMENTS)
 data class CashPaymentOrderEntity(
@@ -14,8 +13,8 @@ data class CashPaymentOrderEntity(
     val id: Int,
     val paymentNum: Int,
     val paymentSum: Float,
-    val paymentDateCreation: Date,
-    val billingDate: Date,
+    val paymentDateCreation: Long,
+    val billingDate: Long,
     val transactionType: TransactionType = TransactionType.CREDIT,
     @Embedded (prefix = "amount_")
     val amountCurrency: AmountCurrencyEntity = AmountCurrencyEntity(Currency.USD, 0f),

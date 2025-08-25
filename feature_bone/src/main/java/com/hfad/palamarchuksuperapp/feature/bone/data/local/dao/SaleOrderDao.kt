@@ -11,7 +11,6 @@ import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SaleOrderEn
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.statistics.SalesStatisticsEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 // TODO change all dao class to update existed objects
 @Dao
@@ -35,7 +34,7 @@ interface SaleOrderDao {
     ): PagingSource<Int, SaleOrderEntity>
 
     @Query("SELECT * FROM $DATABASE_SALES WHERE billingDate BETWEEN :from AND :to")
-    suspend fun salesInRange(from: Date, to: Date): List<SaleOrderEntity>
+    suspend fun salesInRange(from: Long, to: Long): List<SaleOrderEntity>
 
     @Query("SELECT * FROM $DATABASE_SALES WHERE id = :id")
     suspend fun getSaleOrderById(id: Int): SaleOrderEntity?
