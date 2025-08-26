@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
@@ -8,9 +9,10 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.GetTypeTransactionOperationsUseCase
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,19 +22,17 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class FinancePageViewModel @Inject constructor(
     private val userRepository: AuthRepository,
     private val getTypeTransactionOperationsUseCase: GetTypeTransactionOperationsUseCase,
-) : GenericViewModel<FinancePageState, FinancePageViewModel.FinancePageEvent, FinancePageViewModel.FinancePageEffect>() {
-
-    init {
-        viewModelScope.launch { getTypeTransactionOperationsUseCase() }
-    }
-
-    override val _dataFlow: Flow<UserSession> = flow { }
+) : GenericViewModel<FinancePageState, FinancePageEvent, FinancePageEffect>() {
+    override val _dataFlow: Flow<AppResult<List<TypedTransaction>, AppError>> =
+        flow {
+            val data = getTypeTransactionOperationsUseCase()
+            emit(data)
+            Log.d("FinancePageViewModel", "Data: $data")
+        }
 
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
 
@@ -40,31 +40,30 @@ class FinancePageViewModel @Inject constructor(
     private val endDate: MutableStateFlow<Long> = MutableStateFlow(0)
 
     private val statisticFlow: Flow<AppResult<FinanceStatistics, AppError>> =
-        flow { emit(AppResult.Success(FinanceStatistics())) } //paymentsRepository.paymentStatistics
+        flow { emit(AppResult.Success(FinanceStatistics())) } // paymentsRepository.paymentStatistics
 
     override val uiState: StateFlow<FinancePageState> =
         combine(
-            _dataFlow, statisticFlow, searchQuery
+            _dataFlow,
+            statisticFlow,
+            searchQuery,
         ) { data, statistics, query ->
 
-            FinancePageState(
-            )
+            FinancePageState()
         }.onStart {
 //            paymentsRepository.refreshStatistic()
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            FinancePageState()
+            FinancePageState(),
         )
 
     override fun event(event: FinancePageEvent) {
         when (event) {
             is FinancePageEvent.LoadPayments -> {
-
             }
 
             is FinancePageEvent.RefreshPayments -> {
-
             }
 
             is FinancePageEvent.FilterPaymentStatus -> {
@@ -86,17 +85,36 @@ class FinancePageViewModel @Inject constructor(
 
     override val _errorFlow: MutableStateFlow<AppError?> = MutableStateFlow(null)
     override val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+}
 
-    sealed class FinancePageEvent : BaseEvent {
-        data class LoadPayments(val clientId: Int) : FinancePageEvent()
-        data class RefreshPayments(val clientId: Int) : FinancePageEvent()
-        data class FilterPaymentStatus(val status: PaymentStatus) : FinancePageEvent()
-        data class Search(val query: String) : FinancePageEvent()
-        data class ChangeStartDate(val startDate: Long) : FinancePageEvent()
-        data class ChangeEndDate(val endDate: Long) : FinancePageEvent()
-    }
+sealed class FinancePageEvent : BaseEvent {
+    data class LoadPayments(
+        val clientId: Int,
+    ) : FinancePageEvent()
 
-    sealed class FinancePageEffect : BaseEffect {
-        data class ShowPayment(val paymentId: Int) : FinancePageEffect()
-    }
+    data class RefreshPayments(
+        val clientId: Int,
+    ) : FinancePageEvent()
+
+    data class FilterPaymentStatus(
+        val status: PaymentStatus,
+    ) : FinancePageEvent()
+
+    data class Search(
+        val query: String,
+    ) : FinancePageEvent()
+
+    data class ChangeStartDate(
+        val startDate: Long,
+    ) : FinancePageEvent()
+
+    data class ChangeEndDate(
+        val endDate: Long,
+    ) : FinancePageEvent()
+}
+
+sealed class FinancePageEffect : BaseEffect {
+    data class ShowPayment(
+        val paymentId: Int,
+    ) : FinancePageEffect()
 }
