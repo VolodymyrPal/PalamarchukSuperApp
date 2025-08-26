@@ -18,11 +18,11 @@ data class Order(
     val manager: String,
     override val amountCurrency: AmountCurrency = AmountCurrency(
         currency = Currency.USD,
-        amount = 0f
+        amount = 0f,
     ),
     override val billingDate: Date,
     override val transactionType: TransactionType = TransactionType.DEBIT,
-    override val versionHash: String = ""
+    override val versionHash: String = "",
 ) : TypedTransaction {
     override val type: String = getType()
     val cargoType: CargoType
@@ -36,18 +36,21 @@ data class Order(
         }
 }
 
-enum class OrderStatus (val displayName: String) {
-    CREATED ("Created"),
-    CALCULATED ("Calculated"),
-    IN_PROGRESS ("In progress"),
-    DONE ("Done") //TODO ResString
+enum class OrderStatus(val displayName: String) {
+    CREATED("Created"),
+    CALCULATED("Calculated"),
+    IN_PROGRESS("In progress"),
+    DONE("Done"), // TODO ResString
 }
 
 enum class CargoType {
-    ANY, CONTAINER, TRUCK, AIR
+    ANY,
+    CONTAINER,
+    TRUCK,
+    AIR,
 }
 
-fun generateOrder(): Order { //TODO for test only
+fun generateOrder(): Order { // TODO for test only
     val serviceScenarios = listOf(
         ServiceScenario.NonEuropeContainer.WithFreight.scenario,
         ServiceScenario.ChinaEuropeContainer.scenario,
@@ -57,9 +60,9 @@ fun generateOrder(): Order { //TODO for test only
             listOf(
                 ServiceType.AIR_FREIGHT,
                 ServiceType.FORWARDING,
-                ServiceType.CUSTOMS
-            )
-        ).scenario
+                ServiceType.CUSTOMS,
+            ),
+        ).scenario,
     )
     val selectedScenario = serviceScenarios.random()
     val serviceOrders = selectedScenario.mapIndexed { serviceIndex, serviceType ->
@@ -81,22 +84,21 @@ fun generateOrder(): Order { //TODO for test only
         status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)],
         amountCurrency = AmountCurrency(
             currency = Currency.USD,
-            amount = 12200f
+            amount = 12200f,
         ),
         num = Random.Default.nextInt(44000, 50000),
         destinationPoint = "Тест: Киев",
-        arrivalDate = Date(1747785600000L),// "20.05.2025",
+        arrivalDate = Date(1747785600000L), // "20.05.2025",
         containerNumber = "Тест: 40HC-7865425",
         departurePoint = "Тест: Гонконг",
         cargo = "Тест: Мебель",
         manager = "Тест: VP +3806338875",
-        billingDate = Date()
+        billingDate = Date(),
         // cargoType будет определен автоматически на основе serviceList в data class
     )
-
 }
 
-fun generateOrderItems(): List<Order> { //TODO for test only
+fun generateOrderItems(): List<Order> { // TODO for test only
     val serviceScenarios = listOf(
         ServiceScenario.NonEuropeContainer.WithFreight.scenario,
         ServiceScenario.ChinaEuropeContainer.scenario,
@@ -106,9 +108,9 @@ fun generateOrderItems(): List<Order> { //TODO for test only
             listOf(
                 ServiceType.AIR_FREIGHT,
                 ServiceType.FORWARDING,
-                ServiceType.CUSTOMS
-            )
-        ).scenario
+                ServiceType.CUSTOMS,
+            ),
+        ).scenario,
     )
 
     return List(10) { index ->
@@ -131,17 +133,17 @@ fun generateOrderItems(): List<Order> { //TODO for test only
             status = OrderStatus.entries[Random.nextInt(OrderStatus.entries.size)],
             amountCurrency = AmountCurrency(
                 currency = Currency.USD,
-                amount = 12200f
+                amount = 12200f,
             ),
             num = Random.Default.nextInt(44000, 50000),
             destinationPoint = "Тест: Киев",
-            arrivalDate = Date(1747785600000L),// "20.05.2025",
+            arrivalDate = Date(1747785600000L), // "20.05.2025",
             containerNumber = "Тест: 40HC-7865425",
             departurePoint = "Тест: Гонконг",
             cargo = "Тест: Мебель",
             businessEntityNum = Random.Default.nextInt(2001, 8300),
             manager = "Тест: VP +3806338875",
-            billingDate = Date()
+            billingDate = Date(),
             // cargoType будет определен автоматически на основе serviceList в data class
         )
     }

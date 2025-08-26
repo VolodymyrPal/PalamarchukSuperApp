@@ -6,11 +6,11 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.OrderRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.OrderEntityWithServices
-import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.OrderRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 
 @OptIn(ExperimentalPagingApi::class)
 class OrderRemoteMediator(
@@ -18,28 +18,27 @@ class OrderRemoteMediator(
     private val orderApi: OrderApi,
     private val statusList: List<OrderStatus>,
 ) : RemoteMediator<Int, OrderEntityWithServices>() {
-
     val orderDao = database.orderDao()
     val remoteKeysDao = database.remoteKeysDao()
 
     private val statusFilter: String = statusList.joinToString(",") { it.name }
 
     override suspend fun initialize(): InitializeAction {
-        return InitializeAction.LAUNCH_INITIAL_REFRESH //TODO need better refresh logic to remove frequent requests
+        return InitializeAction.LAUNCH_INITIAL_REFRESH // TODO need better refresh logic to remove frequent requests
     }
 
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, OrderEntityWithServices>,
     ): MediatorResult {
-
         val page = when (loadType) {
             LoadType.REFRESH -> 1
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.APPEND -> {
                 val lastItem = state.lastItemOrNull()
                 if (lastItem == null) return MediatorResult.Success(endOfPaginationReached = false)
-                val keys = database.remoteKeysDao().remoteKeysOrderId(lastItem.order.id, statusFilter)
+                val keys =
+                    database.remoteKeysDao().remoteKeysOrderId(lastItem.order.id, statusFilter)
                 keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
         }
@@ -54,14 +53,14 @@ class OrderRemoteMediator(
                         id = it.id,
                         prevKey = if (page == 1) null else page - 1,
                         nextKey = if (endReached) null else page + 1,
-                        statusFilter = statusFilter
+                        statusFilter = statusFilter,
                     )
                 }
                 if (loadType == LoadType.REFRESH) {
 //                    orderDao.deleteOrdersByStatus(status) //TODO for testing
 //                    remoteKeysDao.clearRemoteKeysByStatus(status)
                 }
-                orderDao.insertOrIgnoreOrders(response.map { it.toEntity() }) //TODO
+                orderDao.insertOrIgnoreOrders(response.map { it.toEntity() }) // TODO
                 remoteKeysDao.insertAll(keys)
             }
 

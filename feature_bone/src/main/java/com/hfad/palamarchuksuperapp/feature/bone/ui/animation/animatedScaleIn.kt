@@ -17,7 +17,7 @@ fun Modifier.animatedScaleIn(
     durationMillis: Int = 300,
     delayMillis: Int = 0,
     easing: Easing = FastOutSlowInEasing,
-    fromScale: Float = 0.7f,
+    fromScale: Float = 1f, //TODO for testing purposes (0.7f)
     toScale: Float = 1f,
 ): Modifier = composed {
     var started by remember { mutableStateOf(false) }
@@ -27,19 +27,19 @@ fun Modifier.animatedScaleIn(
         animationSpec = tween(
             durationMillis = durationMillis,
             delayMillis = delayMillis,
-            easing = easing
+            easing = easing,
         ),
-        label = "scale_in"
+        label = "scale_in",
     )
 
     val alpha by animateFloatAsState(
-        targetValue = if (started) 1f else 0f,
+        targetValue = if (started) 1f else 1f, //TODO for testing purposes (else 0f)
         animationSpec = tween(
             durationMillis = 500,
             delayMillis = delayMillis,
-            easing = easing
+            easing = easing,
         ),
-        label = "alpha_in"
+        label = "alpha_in",
     )
 
     LaunchedEffect(Unit) {

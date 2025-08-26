@@ -38,7 +38,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -88,6 +87,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateSaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.AppWheelDatePicker
@@ -98,6 +98,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.SaleCard
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.ToggleableArrow
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.getNumberOfDecimalDigits
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.rememberDatePickerState
+import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageEvent
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.FinancePageViewModel
 import java.text.SimpleDateFormat
@@ -107,18 +108,17 @@ import java.util.Locale
 fun FinancePageRoot(
     modifier: Modifier = Modifier,
     viewModel: FinancePageViewModel = daggerViewModel<FinancePageViewModel>(
-        factory = LocalBoneDependencies.current.viewModelFactory
+        factory = LocalBoneDependencies.current.viewModelFactory,
     ),
     navController: NavController? = LocalNavController.current,
 ) {
-
     val financeState = viewModel.uiState.collectAsStateWithLifecycle()
 
     FinancePage(
         modifier = modifier,
         financeState = financeState,
         event = viewModel::event,
-        navController = navController
+        navController = navController,
     )
 }
 
@@ -127,7 +127,7 @@ fun FinancePage(
     modifier: Modifier = Modifier,
     navController: NavController? = LocalNavController.current,
     financeState: State<FinancePageState>,
-    event: (FinancePageViewModel.FinancePageEvent) -> Unit,
+    event: (FinancePageEvent) -> Unit,
 ) {
     val shownQuery = remember { mutableIntStateOf(99) }
 
@@ -140,7 +140,7 @@ fun FinancePage(
         item {
             FinanceStatisticCard(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp),
-                financeState.value.financeStatistics
+                financeState.value.financeStatistics,
             )
         }
 
@@ -152,7 +152,7 @@ fun FinancePage(
                 transitionSpec = {
                     fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
                 },
-                label = "loading_or_send_icon"
+                label = "loading_or_send_icon",
             ) { loading ->
                 if (loading) {
                     LinearProgressIndicator(
@@ -167,13 +167,12 @@ fun FinancePage(
         }
 
         item {
-
             AnimatedContent(
                 targetState = false,
                 transitionSpec = {
                     fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
                 },
-                label = "loading_or_send_icon"
+                label = "loading_or_send_icon",
             ) { loading ->
                 if (loading) {
                     LinearProgressIndicator(
@@ -191,7 +190,7 @@ fun FinancePage(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 TitleQueryField(
                     modifier = Modifier,
@@ -199,7 +198,7 @@ fun FinancePage(
                     onClick = {
                         shownQuery.intValue = if (shownQuery.intValue == 0) 99 else 0
                     },
-                    expanded = shownQuery.intValue == 0
+                    expanded = shownQuery.intValue == 0,
                 )
 
                 TitleQueryField(
@@ -208,24 +207,24 @@ fun FinancePage(
                     onClick = {
                         shownQuery.intValue = if (shownQuery.intValue == 1) 99 else 1
                     },
-                    expanded = shownQuery.intValue == 1
+                    expanded = shownQuery.intValue == 1,
                 )
 
-                TitleQueryField(
-                    modifier = Modifier,
-                    onClick = {
-                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
-                    },
-                    expanded = shownQuery.intValue == 2,
-                    sectionIcon = Icons.Default.Check
-                )
+//                TitleQueryField(
+//                    modifier = Modifier,
+//                    onClick = {
+//                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
+//                    },
+//                    expanded = shownQuery.intValue == 2,
+//                    sectionIcon = Icons.Default.Check
+//                )
             }
         }
 
         item {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 0,
@@ -234,7 +233,7 @@ fun FinancePage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     AppOutlinedTextField(
                         modifier = Modifier
@@ -244,11 +243,10 @@ fun FinancePage(
                             )
                             .padding(4.dp),
                         value = financeState.value.query,
-                        onValueChange = { },// event(OrderPageViewModel.OrderPageEvent.Search(it)) },
+                        onValueChange = { }, // event(FinanceViewModelEvent.Search(it)) },
                         placeholderRes = R.string.orders_query_example,
                     )
                 }
-
 
 //                val dateStart = remember { mutableStateOf(Calendar.getInstance()) }
 //                val dateEnd = remember { mutableStateOf(Calendar.getInstance()) }
@@ -265,8 +263,7 @@ fun FinancePage(
 //                    dateStartState.updateMaxDate(dateEnd.value)
 //                }
 
-
-                //Date range field
+                // Date range field
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 1,
                     enter = fadeIn(animationSpec = tween(300)) +
@@ -274,23 +271,22 @@ fun FinancePage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-
                         AppWheelDatePicker(
                             state = dateStartState,
                             onDateChanged = {
                                 event(
-                                    FinancePageViewModel.FinancePageEvent.ChangeStartDate(
-                                        it.time.time
-                                    )
+                                    FinancePageEvent.ChangeStartDate(
+                                        it.time.time,
+                                    ),
                                 )
                             },
                             modifier = Modifier
@@ -298,20 +294,22 @@ fun FinancePage(
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                 ),
-                            catchSwing = true
+                            catchSwing = true,
                         )
 
                         Text(
                             text = "—",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.surfaceVariant
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                         )
 
                         AppWheelDatePicker(
                             state = dateEndState,
                             onDateChanged = {
                                 event(
-                                    FinancePageViewModel.FinancePageEvent.ChangeEndDate(it.time.time)
+                                    FinancePageEvent.ChangeEndDate(
+                                        it.time.time,
+                                    ),
                                 )
                             },
                             modifier = Modifier
@@ -333,7 +331,7 @@ fun FinancePage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     LazyRow(
                         modifier = Modifier
@@ -341,12 +339,12 @@ fun FinancePage(
                             .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = MaterialTheme.shapes.extraSmall
+                                shape = MaterialTheme.shapes.extraSmall,
                             )
                             .padding(8.dp),
                         userScrollEnabled = false,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState
+                        state = listState,
                     ) {
                         items(OrderStatus.entries.toTypedArray()) { status ->
                             FilterChip(
@@ -356,11 +354,11 @@ fun FinancePage(
                                 label = {
                                     Text(text = status.displayName)
                                 },
-                                selected = false,//state.value.orderStatusFilter.contains(status),
+                                selected = false, // state.value.orderStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                )
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
                             )
                         }
                     }
@@ -372,7 +370,7 @@ fun FinancePage(
                 modifier = Modifier
                     .padding(start = 12.dp, end = 12.dp)
                     .animatedScaleIn(),
-                transaction = item
+                transaction = item,
             )
         }
     }
@@ -386,22 +384,22 @@ fun FinanceStatisticCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
         shape = MaterialTheme.shapes.extraSmall,
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AppText(
                 value = stringResource(R.string.currency_balance),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             HorizontalDivider(
@@ -409,7 +407,7 @@ fun FinanceStatisticCard(
                     .fillMaxWidth(0.9f)
                     .padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
 
             val gridItems = listOf(
@@ -421,12 +419,12 @@ fun FinanceStatisticCard(
             EqualWidthFlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
             ) {
                 gridItems.forEachIndexed { index, currencyAmount ->
                     FinanceStat(
                         amountCurrency = currencyAmount,
-                        modifier = Modifier.wrapContentSize()
+                        modifier = Modifier.wrapContentSize(),
                     )
                 }
             }
@@ -443,20 +441,20 @@ fun FinanceStat(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Box(
             modifier = Modifier
                 .size(48.dp, 36.dp)
                 .clip(shape = MaterialTheme.shapes.extraSmall),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             val painter = painterResource(amountCurrency.currencyCountry)
             Image(
                 painter,
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
-                modifier = Modifier.matchParentSize()
+                modifier = Modifier.matchParentSize(),
             )
         }
 
@@ -465,8 +463,8 @@ fun FinanceStat(
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            )
+                textAlign = TextAlign.Center,
+            ),
         )
     }
 }
@@ -475,10 +473,17 @@ fun FinanceStat(
 @Composable
 fun FinancePagePreview() {
     FeatureTheme {
-        val financeState = remember { mutableStateOf(FinancePageState()) }
+        val financeState = remember {
+            mutableStateOf(
+                FinancePageState(
+                    salesItems = generateOrderItems(),
+                ),
+            )
+        }
         FinancePage(
             financeState = financeState,
             event = {},
+            navController = null,
         )
     }
 }
@@ -488,7 +493,7 @@ fun FinancePagePreview() {
 fun FinanceTransactionCardPreview() {
     FeatureTheme {
         FinanceTransactionCard(
-            transaction = generateSaleOrder()
+            transaction = generateSaleOrder(),
         )
     }
 }
@@ -510,30 +515,30 @@ fun FinanceTransactionCard(
             .clickable(
                 onClick = { isExpanded.value = !isExpanded.value },
                 indication = null,
-                interactionSource = interactionSource
+                interactionSource = interactionSource,
             ),
         shape = RoundedCornerShape(2.dp),
         border = BorderStroke(1.dp, colorScheme.secondary),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.surface,
-            contentColor = colorScheme.onSurface
+            contentColor = colorScheme.onSurface,
         ),
-//        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+        //        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
+            verticalArrangement = Arrangement.SpaceEvenly,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     modifier = Modifier.weight(0.8f),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Icon(
                         painter = painterResource(uiTransaction.iconRes),
@@ -541,45 +546,45 @@ fun FinanceTransactionCard(
                         modifier = Modifier
                             .padding(8.dp)
                             .size(24.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                     AppText(
                         value = "${uiTransaction.transactionName} №${uiTransaction.id}",
                         appTextConfig = appTextConfig(
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         ),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
 
                 BaseDescription(
                     modifier = Modifier.padding(bottom = 4.dp),
-                    uiTransaction = uiTransaction
+                    uiTransaction = uiTransaction,
                 )
             }
             AnimatedVisibility(
                 visible = isExpanded.value,
                 enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
+                exit = shrinkVertically() + fadeOut(),
             ) {
                 Column(
                     modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
                 ) {
                     HorizontalDivider(
                         color = colorScheme.onSurface.copy(alpha = 0.1f),
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 8.dp),
                     )
 
                     Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         when (transaction) {
                             is Order -> {
                                 OrderCard(
                                     order = transaction,
-                                    internalPadding = PaddingValues(8.dp)
+                                    internalPadding = PaddingValues(8.dp),
                                 )
                             }
 
@@ -592,21 +597,21 @@ fun FinanceTransactionCard(
                             is SaleOrder -> {
                                 SaleCard(
                                     saleItem = transaction,
-                                    internalPadding = PaddingValues(8.dp)
+                                    internalPadding = PaddingValues(8.dp),
                                 )
                             }
 
                             is PaymentOrder -> {
                                 PaymentCard(
                                     payment = transaction,
-                                    internalPadding = PaddingValues(8.dp)
+                                    internalPadding = PaddingValues(8.dp),
                                 )
                             }
 
                             is ExchangeOrder -> {
                                 ExchangeOrderCard(
                                     exchangeOrder = transaction,
-                                    internalPadding = PaddingValues(8.dp)
+                                    internalPadding = PaddingValues(8.dp),
                                 )
                             }
                         }
@@ -622,17 +627,17 @@ fun FinanceTransactionCard(
                     .clickable(
                         onClick = { isExpanded.value = !isExpanded.value },
                         indication = null,
-                        interactionSource = interactionSource
+                        interactionSource = interactionSource,
                     ),
             ) {
                 AppText(
                     value = uiTransaction.date,
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     ),
                     color = colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier
+                    modifier = Modifier,
                 )
 //                Icon(
 //                    Icons.Filled.KeyboardArrowDown,
@@ -652,10 +657,10 @@ fun FinanceTransactionCard(
                     value = uiTransaction.date,
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     ),
                     color = colorScheme.onSurface.copy(alpha = 0.7f),
-                    modifier = Modifier
+                    modifier = Modifier,
                 )
             }
         }
@@ -671,7 +676,7 @@ fun BaseDescription(
         Column(
             modifier = modifier,
             horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             if (uiTransaction.additionalAmount != null) {
                 val additionalValue =
@@ -684,10 +689,10 @@ fun BaseDescription(
                     value = additionalValue,
                     appTextConfig = appTextConfig(
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     ),
                     modifier = Modifier.padding(4.dp),
-                    color = uiTransaction.additionalColor
+                    color = uiTransaction.additionalColor,
                 )
             }
             val value = if (uiTransaction.transactionType == TransactionType.CREDIT) {
@@ -699,10 +704,10 @@ fun BaseDescription(
                 value = value,
                 appTextConfig = appTextConfig(
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 ),
                 modifier = Modifier.padding(4.dp),
-                color = uiTransaction.color
+                color = uiTransaction.color,
             )
         }
     }
@@ -730,7 +735,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
-                this.billingDate
+                this.billingDate,
             ),
             id = this.id.toString(),
             transactionName = stringResource(R.string.order),
@@ -744,7 +749,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
-                this.billingDate
+                this.billingDate,
             ),
             additionalType = this.typeToChange,
             additionalAmount = this.amountToExchange,
@@ -761,7 +766,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
-                this.billingDate
+                this.billingDate,
             ),
             id = this.id.toString(),
             transactionName = stringResource(R.string.cashPayment),
@@ -775,7 +780,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
-                this.billingDate
+                this.billingDate,
             ),
             id = this.id.toString(),
             transactionName = stringResource(R.string.sale),
@@ -789,7 +794,7 @@ fun TypedTransaction.toUiModel(): TransactionUiModel = when (this) {
             transactionType = this.transactionType,
             amountText = this.amountCurrency,
             date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
-                this.billingDate
+                this.billingDate,
             ),
             id = this.id.toString(),
             transactionName = stringResource(R.string.payment),
