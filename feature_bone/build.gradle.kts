@@ -6,7 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
-    id("de.mannodermaus.android-junit5") version "1.13.0.0"
+    id("de.mannodermaus.android-junit5") version "1.13.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
 }
 
 android {
@@ -29,7 +30,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -70,6 +71,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.14.3")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
+    ktlintRuleset("io.nlopez.compose.rules:ktlint:0.4.27")
 
 //    testImplementation(libs.bundles.test)
 //    testRuntimeOnly(libs.junit.platform.launcher)
