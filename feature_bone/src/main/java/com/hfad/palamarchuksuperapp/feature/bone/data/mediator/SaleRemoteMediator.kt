@@ -7,8 +7,8 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.SaleRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.SaleOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.SaleRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SaleOrderApi
@@ -19,21 +19,19 @@ class SaleRemoteMediator(
     private val database: BoneDatabase,
     private val statusList: List<SaleStatus>,
 ) : RemoteMediator<Int, SaleOrderEntity>() {
-
     val saleDao = database.saleOrderDao()
     val remoteKeysDao = database.remoteKeysDao()
 
     private val status: String = statusList.joinToString(",") { it.name }
 
     override suspend fun initialize(): InitializeAction {
-        return InitializeAction.LAUNCH_INITIAL_REFRESH //TODO better refresh logic
+        return InitializeAction.LAUNCH_INITIAL_REFRESH // TODO better refresh logic
     }
 
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, SaleOrderEntity>,
     ): MediatorResult {
-
         Log.d("SaleRemoteMediator", "loadType: $loadType")
 
         val page = when (loadType) {
@@ -58,7 +56,7 @@ class SaleRemoteMediator(
                         id = it.id,
                         prevKey = if (page == 1) null else page - 1,
                         nextKey = if (endReached) null else page + 1,
-                        status = status
+                        status = status,
                     )
                 }
                 if (loadType == LoadType.REFRESH) {

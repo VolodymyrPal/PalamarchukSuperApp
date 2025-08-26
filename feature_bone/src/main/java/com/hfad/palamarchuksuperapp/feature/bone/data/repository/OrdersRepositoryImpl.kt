@@ -24,18 +24,16 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 class OrdersRepositoryImpl @Inject constructor(
     private val boneDatabase: BoneDatabase,
     private val orderApi: OrderApi,
 ) : OrdersRepository {
-
     private val orderDao = boneDatabase.orderDao()
-
 
     @OptIn(ExperimentalPagingApi::class)
     private val pagerCache =
@@ -55,8 +53,7 @@ class OrdersRepositoryImpl @Inject constructor(
                 pagingSourceFactory = {
                     orderDao.getOrdersWithServices(status.takeIf { it.isNotEmpty() }, query)
                 },
-            )
-                .flow
+            ).flow
                 .map { pagingData ->
                     pagingData.map { orderEntityWithServices ->
                         orderEntityWithServices.toDomain()
@@ -67,9 +64,9 @@ class OrdersRepositoryImpl @Inject constructor(
 
     override suspend fun getTypedTransactionInRange(
         from: Long,
-        to: Long
-    ): AppResult<List<TypedTransaction>, AppError> {
-        return fetchWithCacheFallback(
+        to: Long,
+    ): AppResult<List<TypedTransaction>, AppError> =
+        fetchWithCacheFallback(
             fetchRemote = { orderApi.getOrdersWithRange(from, to).map { it.toDomain() } },
             storeAndRead = { orders ->
                 boneDatabase.withTransaction {
@@ -81,13 +78,11 @@ class OrdersRepositoryImpl @Inject constructor(
             },
             fallbackFetch = {
                 orderDao.ordersInRange(from, to).map { it.toDomain() }
-            }
+            },
         )
-    }
 
-    override suspend fun getOrderById(id: Int): AppResult<Order?, AppError> {
-
-        return fetchWithCacheFallback(
+    override suspend fun getOrderById(id: Int): AppResult<Order?, AppError> =
+        fetchWithCacheFallback(
             fetchRemote = { orderApi.getOrder(id)?.toDomain() },
             storeAndRead = {
                 boneDatabase.withTransaction {
@@ -97,9 +92,8 @@ class OrdersRepositoryImpl @Inject constructor(
             },
             fallbackFetch = {
                 orderDao.getOrderById(id)?.toDomain()
-            }
+            },
         )
-    }
 
     override suspend fun refreshStatistic(): AppResult<OrderStatistics, AppError> {
         val statisticApi = tryApiRequest { orderApi.getOrderStatistics() }
@@ -127,8 +121,8 @@ class OrdersRepositoryImpl @Inject constructor(
                 AppResult.Error<OrderStatistics, AppError>(
                     AppError.CustomError(
                         "Unknown error",
-                        cause = e
-                    )
+                        cause = e,
+                    ),
                 )
             }
         }

@@ -24,23 +24,25 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SalesStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SaleOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SalesRepository
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
 class SalesRepositoryImpl @Inject constructor(
     private val boneDatabase: BoneDatabase,
     private val saleApi: SaleOrderApi,
 ) : SalesRepository, TypedTransactionProvider {
-
     private val saleDao = boneDatabase.saleOrderDao()
 
     private val pagerCache =
         mutableMapOf<Pair<List<SaleStatus>, String>, Flow<PagingData<SaleOrder>>>()
 
-    override fun pagingSales(status: List<SaleStatus>, query: String): Flow<PagingData<SaleOrder>> {
+    override fun pagingSales(
+        status: List<SaleStatus>,
+        query: String,
+    ): Flow<PagingData<SaleOrder>> {
         val key = status to query
         return pagerCache.getOrPut(key) {
             Log.d("SalesRepositoryImpl", "pagingSales: status: $status, query: $query")
@@ -64,9 +66,9 @@ class SalesRepositoryImpl @Inject constructor(
 
     override suspend fun getTypedTransactionInRange(
         from: Long,
-        to: Long
-    ): AppResult<List<TypedTransaction>, AppError> {
-        return fetchWithCacheFallback(
+        to: Long,
+    ): AppResult<List<TypedTransaction>, AppError> =
+        fetchWithCacheFallback(
             fetchRemote = { saleApi.getSalesWithRange(from, to).map { it.toDomain() } },
             storeAndRead = { sales ->
                 boneDatabase.withTransaction {
@@ -77,9 +79,8 @@ class SalesRepositoryImpl @Inject constructor(
             },
             fallbackFetch = {
                 saleDao.salesInRange(from, to).map { it.toDomain() }
-            }
+            },
         )
-    }
 
 //    override suspend fun saleOrdersInRange(
 //        from: Date,
@@ -101,9 +102,8 @@ class SalesRepositoryImpl @Inject constructor(
 //        )
 //    }
 
-    override suspend fun getSaleOrderById(id: Int): AppResult<SaleOrder?, AppError> {
-
-        return fetchWithCacheFallback(
+    override suspend fun getSaleOrderById(id: Int): AppResult<SaleOrder?, AppError> =
+        fetchWithCacheFallback(
             fetchRemote = { saleApi.getSaleOrder(id)?.toDomain() },
             storeAndRead = {
                 boneDatabase.withTransaction {
@@ -113,9 +113,8 @@ class SalesRepositoryImpl @Inject constructor(
             },
             fallbackFetch = {
                 saleDao.getSaleOrderById(id)?.toDomain()
-            }
+            },
         )
-    }
 
     override suspend fun refreshStatistic(): AppResult<SalesStatistics, AppError> {
         val statisticApi = tryApiRequest { saleApi.getSalesStatistics() }
@@ -143,8 +142,8 @@ class SalesRepositoryImpl @Inject constructor(
                 AppResult.Error<SalesStatistics, AppError>(
                     AppError.CustomError(
                         "Unknown error",
-                        cause = e
-                    )
+                        cause = e,
+                    ),
                 )
             }
         }

@@ -26,13 +26,13 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentsRepos
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SaleOrderApi
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.SalesRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ClearAllDatabaseUseCaseImpl
+import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.GetTypeTransactionOperationsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LoginWithCredentialsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.LogoutUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.ObserveLoginStatusUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.useCaseImpl.RefreshTokenUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ClearAllDatabaseUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.GetTypeTransactionOperationsUseCase
-import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.GetTypeTransactionOperationsUseCaseImpl
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LoginWithCredentialsUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.LogoutUseCase
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.ObserveLoginStatusUseCase
@@ -54,30 +54,40 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.plugin
-import kotlinx.coroutines.delay
 import javax.inject.Qualifier
 import javax.inject.Scope
 import kotlin.reflect.KClass
+import kotlinx.coroutines.delay
 
 @FeatureScope
 @Component(
-    dependencies = [BoneDeps::class], modules = [BoneModule::class]
+    dependencies = [BoneDeps::class],
+    modules = [BoneModule::class],
 )
 internal interface BoneComponent : BoneDeps {
-
     val viewModelFactory: ViewModelProvider.Factory
     override val context: Context
+
     override fun getFeatureHttpClient(): HttpClient
+
     override val appFirstAccessDetector: AppFirstAccessDetector
 
     @Component.Builder
     interface Builder {
         fun deps(boneDeps: BoneDeps): Builder
+
         fun build(): BoneComponent
     }
 }
 
-@Module(includes = [RepositoryModule::class, ViewModelsModule::class, DifferentClasses::class, FeatureUseCaseModule::class])
+@Module(
+    includes = [
+        RepositoryModule::class,
+        ViewModelsModule::class,
+        DifferentClasses::class,
+        FeatureUseCaseModule::class,
+    ],
+)
 internal abstract class BoneModule {
     @Binds
     abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
@@ -85,29 +95,35 @@ internal abstract class BoneModule {
 
 @Module
 interface FeatureUseCaseModule {
+    @Binds
+    fun bindGetTypeTransactionOperationsUseCase(
+        getTypeTransactionOperationsUseCase: GetTypeTransactionOperationsUseCaseImpl,
+    ): GetTypeTransactionOperationsUseCase
 
     @Binds
-    fun bindGetTypeTransactionOperationsUseCase(getTypeTransactionOperationsUseCase: GetTypeTransactionOperationsUseCaseImpl): GetTypeTransactionOperationsUseCase
-
-    @Binds
-    fun bindLoginWithCredentialsUseCase(loginWithCredentialsUseCase: LoginWithCredentialsUseCaseImpl): LoginWithCredentialsUseCase
+    fun bindLoginWithCredentialsUseCase(
+        loginWithCredentialsUseCase: LoginWithCredentialsUseCaseImpl,
+    ): LoginWithCredentialsUseCase
 
     @Binds
     fun bindLogoutUseCase(logoutUseCase: LogoutUseCaseImpl): LogoutUseCase
 
     @Binds
-    fun bindObserveLoginStatusUseCase(observeLoginStatusUseCase: ObserveLoginStatusUseCaseImpl): ObserveLoginStatusUseCase
+    fun bindObserveLoginStatusUseCase(
+        observeLoginStatusUseCase: ObserveLoginStatusUseCaseImpl,
+    ): ObserveLoginStatusUseCase
 
     @Binds
     fun bindRefreshTokenUseCase(refreshTokenUseCase: RefreshTokenUseCaseImpl): RefreshTokenUseCase
 
     @Binds
-    fun bindClearAllDatabaseUseCaseImpl(clearAllDatabaseUseCase: ClearAllDatabaseUseCaseImpl): ClearAllDatabaseUseCase
+    fun bindClearAllDatabaseUseCaseImpl(
+        clearAllDatabaseUseCase: ClearAllDatabaseUseCaseImpl,
+    ): ClearAllDatabaseUseCase
 }
 
 @Module
 abstract class RepositoryModule {
-
     @FeatureScope
     @Binds
     abstract fun bindOrderRepository(orderRepositoryImpl: OrdersRepositoryImpl): OrdersRepository
@@ -118,7 +134,9 @@ abstract class RepositoryModule {
 
     @FeatureScope
     @Binds
-    abstract fun bindPaymentsRepository(paymentsRepositoryImpl: PaymentsRepositoryImpl): PaymentsRepository
+    abstract fun bindPaymentsRepository(
+        paymentsRepositoryImpl: PaymentsRepositoryImpl,
+    ): PaymentsRepository
 
     @FeatureScope
     @Binds
@@ -126,7 +144,9 @@ abstract class RepositoryModule {
 
     @FeatureScope
     @Binds
-    abstract fun bindSecretRepository(secretRepositoryImpl: CryptoServiceKeystoreImpl): CryptoService
+    abstract fun bindSecretRepository(
+        secretRepositoryImpl: CryptoServiceKeystoreImpl,
+    ): CryptoService
 
     @FeatureScope
     @Binds
@@ -146,7 +166,9 @@ abstract class RepositoryModule {
 
     @Binds
     @IntoSet
-    abstract fun bindPaymentsProviderRepository(impl: PaymentsRepositoryImpl): TypedTransactionProvider
+    abstract fun bindPaymentsProviderRepository(
+        impl: PaymentsRepositoryImpl,
+    ): TypedTransactionProvider
 
     @Binds
     @IntoSet
@@ -155,29 +177,24 @@ abstract class RepositoryModule {
 
 @Module
 internal object DifferentClasses {
-
     @FeatureScope
     @Provides
-    fun provideMessageChatDB(context: Context): BoneDatabase {
-        return Room.databaseBuilder(
+    fun provideMessageChatDB(context: Context): BoneDatabase =
+        Room.databaseBuilder(
             context = context.applicationContext,
             klass = BoneDatabase::class.java,
-            name = "bone_db"
-        ).fallbackToDestructiveMigration(true) //TODO Don't forget to remove this in production
+            name = "bone_db",
+        )
+            .fallbackToDestructiveMigration(true) // TODO Don't forget to remove this in production
             .build()
-    }
 
     @Provides
-    fun provideSessionConfig(): SessionConfig {
-        return SessionConfig()
-    }
+    fun provideSessionConfig(): SessionConfig = SessionConfig()
 
     @Provides
     @FeatureClient
     @FeatureScope
-    fun provideHttpClient(
-        httpClient: HttpClient,
-    ): HttpClient {
+    fun provideHttpClient(httpClient: HttpClient): HttpClient {
         return httpClient.also { client ->
             client.plugin(HttpSend).intercept { request ->
 
@@ -223,7 +240,6 @@ internal object DifferentClasses {
 
 @Module
 abstract class ViewModelsModule {
-
     @Binds
     @IntoMap
     @ViewModelKey(BoneViewModel::class)
@@ -253,16 +269,15 @@ abstract class ViewModelsModule {
     @IntoMap
     @ViewModelKey(FinancePageViewModel::class)
     abstract fun bindFinancePageViewModel(viewModel: FinancePageViewModel): ViewModel
-
 }
-
 
 interface BoneDeps {
     val context: Context
+
     fun getFeatureHttpClient(): HttpClient
+
     val appFirstAccessDetector: AppFirstAccessDetector
 }
-
 
 @Retention(AnnotationRetention.RUNTIME)
 @Scope

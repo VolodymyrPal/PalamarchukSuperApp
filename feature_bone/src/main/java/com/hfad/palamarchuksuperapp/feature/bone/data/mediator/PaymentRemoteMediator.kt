@@ -7,8 +7,8 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.database.BoneDatabase
-import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.PaymentRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.PaymentOrderEntity
+import com.hfad.palamarchuksuperapp.feature.bone.data.local.entities.keys.PaymentRemoteKeys
 import com.hfad.palamarchuksuperapp.feature.bone.data.toEntity
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.PaymentOrderApi
@@ -19,22 +19,20 @@ class PaymentRemoteMediator(
     private val database: BoneDatabase,
     private val status: List<PaymentStatus>,
 ) : RemoteMediator<Int, PaymentOrderEntity>() {
-
     val paymentDao = database.paymentOrderDao()
     val remoteKeysDao = database.remoteKeysDao()
 
     private val statusFilter: String = status.joinToString(",") { it.name }
 
     override suspend fun initialize(): InitializeAction {
-        return InitializeAction.LAUNCH_INITIAL_REFRESH //TODO add logic for refresh
+        return InitializeAction.LAUNCH_INITIAL_REFRESH // TODO add logic for refresh
     }
 
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, PaymentOrderEntity>,
     ): MediatorResult {
-
-        Log.d("PaymentRemoteMediator", "loadType: $loadType") //TODO
+        Log.d("PaymentRemoteMediator", "loadType: $loadType") // TODO
 
         val page = when (loadType) {
             LoadType.REFRESH -> 1
@@ -46,7 +44,7 @@ class PaymentRemoteMediator(
                 keys?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
         }
-        Log.d("PaymentRemoteMediator", "Page: $page") //TODO
+        Log.d("PaymentRemoteMediator", "Page: $page") // TODO
 
         try {
             val response = paymentApi.getPaymentsByPage(page, state.config.pageSize, status)
@@ -58,7 +56,7 @@ class PaymentRemoteMediator(
                         id = it.id,
                         prevKey = if (page == 1) null else page - 1,
                         nextKey = if (endReached) null else page + 1,
-                        status = statusFilter
+                        status = statusFilter,
                     )
                 }
                 if (loadType == LoadType.REFRESH) {
