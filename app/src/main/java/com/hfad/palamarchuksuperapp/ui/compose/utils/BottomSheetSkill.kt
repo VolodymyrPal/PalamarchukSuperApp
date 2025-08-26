@@ -48,23 +48,20 @@ import androidx.compose.ui.unit.dp
 import com.hfad.palamarchuksuperapp.data.dtos.SkillEntity
 import com.hfad.palamarchuksuperapp.domain.models.Skill
 
-
 @Suppress("detekt.FunctionNaming", "detekt.UnusedParameter", "detekt.LongMethod")
 @OptIn(
     ExperimentalMaterial3Api::class,
-    ExperimentalComposeUiApi::class
+    ExperimentalComposeUiApi::class,
 )
 @Composable
 fun BottomSheetSkill(
-    //TODO: it do not using in app due to bugged behavior
+    // TODO: it do not using in app due to bugged behavior
     modifier: Modifier = Modifier,
     onEvent: (skill: Skill) -> Unit = {},
     sheetState: SheetState = rememberModalBottomSheetState(),
     onDismiss: () -> Unit,
     skill: Skill = Skill(skillEntity = SkillEntity()),
 ) {
-
-
     val localFocusManager = LocalFocusManager.current
     val focusRequesterName = remember { FocusRequester() }
     val focusRequesterDescription = remember { FocusRequester() }
@@ -81,20 +78,18 @@ fun BottomSheetSkill(
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.primaryContainer
+            color = MaterialTheme.colorScheme.primaryContainer,
         ) {
             Column(
                 modifier = Modifier,
                 verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 var textName by remember {
                     mutableStateOf(
-                        skill.skillEntity.name
+                        skill.skillEntity.name,
                     )
                 }
-
-
 
                 OutlinedHintText(
                     modifier = Modifier
@@ -112,14 +107,14 @@ fun BottomSheetSkill(
                     keyboardActions = KeyboardActions(
                         onNext = {
                             focusRequesterDescription.requestFocus()
-                            //localFocusManager.moveFocus(FocusDirection.Down)
-                        }
-                    )
+                            // localFocusManager.moveFocus(FocusDirection.Down)
+                        },
+                    ),
                 )
 
                 var textDescription by remember {
                     mutableStateOf(
-                        skill.skillEntity.description
+                        skill.skillEntity.description,
                     )
                 }
                 OutlinedHintText(
@@ -138,12 +133,13 @@ fun BottomSheetSkill(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             localFocusManager.moveFocus(FocusDirection.Exit)
-                        })
+                        },
+                    ),
                 )
 
                 val textDate by remember {
                     mutableStateOf(
-                        skill.skillEntity.date
+                        skill.skillEntity.date,
                     )
                 }
                 OutlinedHintText(
@@ -152,7 +148,7 @@ fun BottomSheetSkill(
                     onValueChange = { },
                     hintText = "Date",
                     label = "Date",
-                    placeholder = "Date"
+                    placeholder = "Date",
                 )
 
                 Button(
@@ -164,9 +160,9 @@ fun BottomSheetSkill(
                                     uuid = skill.skillEntity.uuid,
                                     description = textDescription,
                                     name = textName,
-                                    date = textDate
+                                    date = textDate,
                                 ),
-                            )
+                            ),
                         )
                         onDismiss()
                     },
@@ -177,7 +173,6 @@ fun BottomSheetSkill(
         }
     }
 }
-
 
 @Suppress("detekt.FunctionNaming", "detekt.UnusedParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -191,7 +186,7 @@ fun MyBottomSheetPreview() {
     "detekt.FunctionNaming",
     "detekt.UnusedParameter",
     "detekt.LongParameterList",
-    "detekt.LongMethod"
+    "detekt.LongMethod",
 )
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -230,7 +225,6 @@ fun OutlinedHintText(
     var focusable by remember { mutableStateOf(false) }
 
     CompositionLocalProvider {
-
         BasicTextField(
             value = value,
             modifier = modifier
@@ -266,10 +260,14 @@ fun OutlinedHintText(
                         )
                     },
                     placeholder = {
-                        if (focusable) Text(
-                            text = hintText,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        )
+                        if (focusable) {
+                            Text(
+                                text = hintText,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                    alpha = 0.5f,
+                                ),
+                            )
+                        }
                     },
                     leadingIcon = leadingIcon,
                     trailingIcon = trailingIcon,
@@ -287,11 +285,11 @@ fun OutlinedHintText(
                             isError,
                             interactionSource,
                             colors,
-                            shape
+                            shape,
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 }

@@ -95,7 +95,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.PaymentsPageViewM
 internal fun PaymentsPageRoot(
     modifier: Modifier = Modifier,
     viewModel: PaymentsPageViewModel = daggerViewModel<PaymentsPageViewModel>(
-        factory = LocalBoneDependencies.current.viewModelFactory
+        factory = LocalBoneDependencies.current.viewModelFactory,
     ),
     navController: NavController? = LocalNavController.current,
 ) {
@@ -107,7 +107,7 @@ internal fun PaymentsPageRoot(
         navController = navController,
         event = viewModel::event,
         state = paymentsPageState,
-        paymentsPaging = paymentsPaging
+        paymentsPaging = paymentsPaging,
     )
 }
 
@@ -132,7 +132,7 @@ fun PaymentsPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 12.dp, top = 12.dp),
-                paymentStatistic = state.value.paymentStatistic
+                paymentStatistic = state.value.paymentStatistic,
             )
         }
         item {
@@ -143,7 +143,7 @@ fun PaymentsPage(
                 transitionSpec = {
                     fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
                 },
-                label = "loading_or_send_icon"
+                label = "loading_or_send_icon",
             ) { loading ->
                 if (loading) {
                     LinearProgressIndicator(
@@ -161,7 +161,7 @@ fun PaymentsPage(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 TitleQueryField(
                     modifier = Modifier,
@@ -169,7 +169,7 @@ fun PaymentsPage(
                     onClick = {
                         shownQuery.intValue = if (shownQuery.intValue == 0) 99 else 0
                     },
-                    expanded = shownQuery.intValue == 0
+                    expanded = shownQuery.intValue == 0,
                 )
 
 //                TitleQueryField(
@@ -187,7 +187,7 @@ fun PaymentsPage(
                         shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
                     },
                     expanded = shownQuery.intValue == 2,
-                    sectionIcon = Icons.Default.Check
+                    sectionIcon = Icons.Default.Check,
                 )
             }
         }
@@ -195,7 +195,7 @@ fun PaymentsPage(
         item {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 0,
@@ -204,7 +204,7 @@ fun PaymentsPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     AppOutlinedTextField(
                         modifier = Modifier
@@ -214,7 +214,9 @@ fun PaymentsPage(
                             )
                             .padding(4.dp),
                         value = state.value.searchQuery,
-                        onValueChange = { event(PaymentsPageViewModel.PaymentsPageEvent.Search(it)) },
+                        onValueChange = {
+                            event(PaymentsPageViewModel.PaymentsPageEvent.Search(it))
+                        },
                         placeholderRes = R.string.orders_query_example,
                     )
                 }
@@ -226,14 +228,14 @@ fun PaymentsPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         AppOutlinedTextField(
                             modifier = Modifier
@@ -249,13 +251,13 @@ fun PaymentsPage(
                             textStyle = MaterialTheme.typography.bodySmall.copy(
                                 textAlign = TextAlign.Center,
                             ),
-                            outlinedTextConfig = appEditOutlinedTextConfig()
+                            outlinedTextConfig = appEditOutlinedTextConfig(),
                         )
 
                         Text(
                             text = "—",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.surfaceVariant
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                         )
 
                         AppOutlinedTextField(
@@ -272,7 +274,7 @@ fun PaymentsPage(
                             textStyle = MaterialTheme.typography.bodySmall.copy(
                                 textAlign = TextAlign.Center,
                             ),
-                            outlinedTextConfig = appEditOutlinedTextConfig()
+                            outlinedTextConfig = appEditOutlinedTextConfig(),
                         )
                     }
                 }
@@ -284,7 +286,7 @@ fun PaymentsPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     val scrollConnection = remember {
                         object : NestedScrollConnection {
@@ -304,7 +306,7 @@ fun PaymentsPage(
                             .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = MaterialTheme.shapes.extraSmall
+                                shape = MaterialTheme.shapes.extraSmall,
                             )
                             .padding(8.dp)
                             .nestedScroll(scrollConnection),
@@ -315,9 +317,9 @@ fun PaymentsPage(
                                 onClick = {
                                     event.invoke(
                                         PaymentsPageViewModel.PaymentsPageEvent.FilterPaymentStatus(
-                                            status
-                                        )
-                                    ) //TODO add different classes check for status with list
+                                            status,
+                                        ),
+                                    ) // TODO add different classes check for status with list
                                 },
                                 label = {
                                     Text(text = status.displayName)
@@ -325,8 +327,8 @@ fun PaymentsPage(
                                 selected = state.value.paymentStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                )
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
                             )
                         }
                     }
@@ -336,7 +338,7 @@ fun PaymentsPage(
 
         items(
             paymentsPaging.itemCount,
-            key = paymentsPaging.itemKey { it.id }
+            key = paymentsPaging.itemKey { it.id },
         ) { index ->
             val item = paymentsPaging[index]
             if (item != null) {
@@ -345,7 +347,7 @@ fun PaymentsPage(
                         .padding(start = 12.dp, end = 12.dp)
                         .animatedScaleIn(),
                     payment = item,
-                    internalPadding = PaddingValues(horizontal = 20.dp, vertical = 25.dp)
+                    internalPadding = PaddingValues(horizontal = 20.dp, vertical = 25.dp),
                 )
             }
         }
@@ -360,23 +362,23 @@ fun PaymentsStatisticsCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
         shape = MaterialTheme.shapes.extraSmall,
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AppText(
                 value = stringResource(R.string.payment_statistic_title),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
 
             HorizontalDivider(
@@ -384,7 +386,7 @@ fun PaymentsStatisticsCard(
                     .fillMaxWidth(0.9f)
                     .padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
 
             val gridItems = paymentStatistic.paymentsByCurrency
@@ -392,12 +394,12 @@ fun PaymentsStatisticsCard(
             EqualWidthFlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 4.dp)
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
             ) {
                 gridItems.forEach { currencyAmount ->
                     CurrencyStat(
                         modifier = Modifier.width(IntrinsicSize.Max),
-                        amountCurrency = currencyAmount
+                        amountCurrency = currencyAmount,
                     )
                 }
             }
@@ -407,26 +409,26 @@ fun PaymentsStatisticsCard(
                     .fillMaxWidth(0.9f)
                     .padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 StatItem(
                     modifier = Modifier,
                     title = stringResource(R.string.total_payment),
                     value = paymentStatistic.totalPayment.toString(),
-                    icon = rememberVectorPainter(Icons.Outlined.Star)
+                    icon = rememberVectorPainter(Icons.Outlined.Star),
                 )
 
                 StatItem(
                     modifier = Modifier,
                     title = stringResource(R.string.factory_payment_amount),
                     value = "${paymentStatistic.totalReceiver}",
-                    icon = painterResource(R.drawable.truck)
+                    icon = painterResource(R.drawable.truck),
                 )
 
                 StatItem(
@@ -448,22 +450,22 @@ fun CurrencyStat(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Box(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.small)
                 .background(amountCurrency.color.copy(alpha = 0.1f))
-                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .padding(horizontal = 12.dp, vertical = 6.dp),
         ) {
             AppText(
                 value = amountCurrency.currency.toString(),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 ),
                 color = amountCurrency.color,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
             )
         }
 
@@ -471,8 +473,8 @@ fun CurrencyStat(
             value = amountCurrency.amount.formatTrim() + " " + amountCurrency.iconChar,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+                fontWeight = FontWeight.SemiBold,
+            ),
         )
     }
 }
@@ -487,19 +489,19 @@ fun StatItem(
     Row(
         modifier = modifier.width(100.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         Icon(
             painter = icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
+            modifier = Modifier,
         )
 
         Column(
             modifier = Modifier
                 .padding(vertical = 2.dp),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             AppText(
                 modifier = Modifier
@@ -511,7 +513,7 @@ fun StatItem(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 ),
             )
 
@@ -554,7 +556,7 @@ fun PaymentCard(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ),
         shape = MaterialTheme.shapes.extraSmall,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
@@ -562,35 +564,35 @@ fun PaymentCard(
         Column(
             modifier = Modifier.padding(internalPadding),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AppText(
                     value = stringResource(R.string.payment_payment_card_title, payment.id),
                     appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleSmall
+                        textStyle = MaterialTheme.typography.titleSmall,
                     ),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
 
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
                         .background(statusColor.copy(alpha = 0.1f))
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                        .padding(horizontal = 12.dp, vertical = 4.dp),
                 ) {
                     AppText(
                         modifier = Modifier.padding(8.dp),
                         value = statusText,
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
                         ),
-                        color = statusColor
+                        color = statusColor,
                     )
                 }
             }
@@ -598,14 +600,14 @@ fun PaymentCard(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
             ) {
                 SelectionContainer {
                     AppText(
                         value = payment.fullPrice.amount.formatTrim(),
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         ),
                     )
                 }
@@ -616,15 +618,15 @@ fun PaymentCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
                         .background(payment.amountCurrency.color.copy(alpha = 0.1f))
-                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
                 ) {
                     AppText(
                         value = payment.amountCurrency.currency.toString(),
                         appTextConfig = appTextConfig(
                             textStyle = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
                         ),
-                        color = payment.amountCurrency.color
+                        color = payment.amountCurrency.color,
                     )
                 }
             }
@@ -634,7 +636,7 @@ fun PaymentCard(
                     .fillMaxWidth(0.9f)
                     .padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
 
             AppIconInfoField(
@@ -645,7 +647,7 @@ fun PaymentCard(
                 description = payment.factory,
                 cardColors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                )
+                ),
             )
 
             AppIconInfoField(
@@ -656,7 +658,7 @@ fun PaymentCard(
                 description = payment.productType,
                 cardColors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                )
+                ),
             )
 
             AppIconInfoField(
@@ -667,7 +669,7 @@ fun PaymentCard(
                 description = "${payment.amountCurrency.amount.formatTrim()} ${payment.fullPrice.iconChar}",
                 cardColors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                )
+                ),
             )
 
             val paymentCommission = StringBuilder().apply {
@@ -686,7 +688,7 @@ fun PaymentCard(
                 description = paymentCommission,
                 cardColors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                )
+                ),
             )
 
             HorizontalDivider(
@@ -694,27 +696,27 @@ fun PaymentCard(
                     .fillMaxWidth(0.9f)
                     .padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
 
             // Dates
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column {
                     AppText(
                         value = "Дата платежа:",
                         appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodySmall
+                            textStyle = MaterialTheme.typography.bodySmall,
                         ),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
 
                     AppText(
                         value = payment.paymentDate,
                         appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
+                            textStyle = MaterialTheme.typography.bodyMedium,
                         ),
                     )
                 }
@@ -723,18 +725,21 @@ fun PaymentCard(
                     AppText(
                         value = "Срок оплаты:",
                         appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodySmall
+                            textStyle = MaterialTheme.typography.bodySmall,
                         ),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
 
                     AppText(
                         value = payment.dueDate,
                         appTextConfig = appTextConfig(
-                            textStyle = MaterialTheme.typography.bodyMedium
+                            textStyle = MaterialTheme.typography.bodyMedium,
                         ),
-                        color = if (payment.status == PaymentStatus.OVERDUE)
-                            MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                        color = if (payment.status == PaymentStatus.OVERDUE) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
                     )
                 }
             }

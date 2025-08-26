@@ -17,8 +17,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +36,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -51,13 +48,11 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -93,18 +88,17 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateOrderItems
 import com.hfad.palamarchuksuperapp.feature.bone.ui.animation.animatedScaleIn
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.OrderCard
-import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.rememberDatePickerState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageState
 import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.OrderPageViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.random.Random
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @Composable
 internal fun OrdersPageRoot(
     modifier: Modifier = Modifier,
     viewModel: OrderPageViewModel = daggerViewModel<OrderPageViewModel>(
-        factory = LocalBoneDependencies.current.viewModelFactory
+        factory = LocalBoneDependencies.current.viewModelFactory,
     ),
     navController: NavController? = LocalNavController.current,
 ) {
@@ -116,7 +110,7 @@ internal fun OrdersPageRoot(
         navController = navController,
         event = viewModel::event,
         state = orderPageState,
-        orderPaging = orderPaging
+        orderPaging = orderPaging,
     )
 }
 
@@ -152,7 +146,7 @@ fun OrdersPage(
                 transitionSpec = {
                     fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
                 },
-                label = "loading_or_send_icon"
+                label = "loading_or_send_icon",
             ) { loading ->
                 if (loading) {
                     LinearProgressIndicator(
@@ -170,7 +164,7 @@ fun OrdersPage(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 TitleQueryField(
                     modifier = Modifier,
@@ -178,7 +172,7 @@ fun OrdersPage(
                     onClick = {
                         shownQuery.intValue = if (shownQuery.intValue == 0) 99 else 0
                     },
-                    expanded = shownQuery.intValue == 0
+                    expanded = shownQuery.intValue == 0,
                 )
 
 //                TitleQueryField(
@@ -196,7 +190,7 @@ fun OrdersPage(
                         shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
                     },
                     expanded = shownQuery.intValue == 2,
-                    sectionIcon = Icons.Default.Check
+                    sectionIcon = Icons.Default.Check,
                 )
             }
         }
@@ -204,7 +198,7 @@ fun OrdersPage(
         item {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 0,
@@ -213,7 +207,7 @@ fun OrdersPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     AppOutlinedTextField(
                         modifier = Modifier
@@ -237,7 +231,7 @@ fun OrdersPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     val scrollConnection = remember {
                         object : NestedScrollConnection {
@@ -247,7 +241,7 @@ fun OrdersPage(
                                 source: NestedScrollSource,
                             ): Offset {
                                 val horizontal = available.x
-                                return Offset(x = horizontal/1.001f, y = 0f)
+                                return Offset(x = horizontal / 1.001f, y = 0f)
                             }
                         }
                     }
@@ -259,21 +253,20 @@ fun OrdersPage(
                             .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = MaterialTheme.shapes.extraSmall
+                                shape = MaterialTheme.shapes.extraSmall,
                             )
-                            .padding(8.dp)
-                        ,
+                            .padding(8.dp),
                         userScrollEnabled = true,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState
+                        state = listState,
                     ) {
                         items(OrderStatus.entries.toTypedArray()) { status ->
                             FilterChip(
                                 onClick = {
                                     event.invoke(
                                         OrderPageViewModel.OrderPageEvent.FilterOrderStatus(
-                                            status
-                                        )
+                                            status,
+                                        ),
                                     ) //TODO add different classes check for status with list
                                 },
                                 label = {
@@ -282,8 +275,8 @@ fun OrdersPage(
                                 selected = state.value.orderStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                )
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
                             )
                         }
                     }
@@ -293,7 +286,7 @@ fun OrdersPage(
 
         items(
             orderPaging.itemCount,
-            key = orderPaging.itemKey { it.id }
+            key = orderPaging.itemKey { it.id },
         ) { index ->
             val item = orderPaging[index]
             if (item != null) {
@@ -332,10 +325,10 @@ fun TitleQueryField(
                     },
                     animationSpec = tween(
                         durationMillis = 200,
-                        easing = FastOutSlowInEasing
+                        easing = FastOutSlowInEasing,
                     ),
-                    label = "background_color_animation"
-                ).value
+                    label = "background_color_animation",
+                ).value,
             )
             .padding(4.dp),
         tint = animateColorAsState(
@@ -345,10 +338,10 @@ fun TitleQueryField(
             },
             animationSpec = tween(
                 durationMillis = 200,
-                easing = FastOutSlowInEasing
+                easing = FastOutSlowInEasing,
             ),
-            label = "icon_color_animation"
-        ).value
+            label = "icon_color_animation",
+        ).value,
     )
 }
 
@@ -363,7 +356,7 @@ fun SectionTitleIcon(
         modifier = modifier,
         imageVector = icon,
         contentDescription = title,
-        tint = tint
+        tint = tint,
     )
 }
 
@@ -375,29 +368,31 @@ private fun OrderStatisticCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
-        shape = MaterialTheme.shapes.extraSmall
+        shape = MaterialTheme.shapes.extraSmall,
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 25.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             val title = stringResource(R.string.order_statistic_title)
             AppText(
-                value = title, appTextConfig = appTextConfig(
-                    textStyle = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center
-                ), modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary
+                value = title,
+                appTextConfig = appTextConfig(
+                    textStyle = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center,
+                ),
+                modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary,
             )
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 val inProgress = ImageVector.vectorResource(R.drawable.in_progress)
 
@@ -407,7 +402,7 @@ private fun OrderStatisticCard(
                     icon = inProgress,
                     value = state.inProgressOrders,
                     label = inWork,
-                    color = Color.Red
+                    color = Color.Red,
                 )
 
                 val completed = stringResource(R.string.completed)
@@ -416,7 +411,7 @@ private fun OrderStatisticCard(
                     icon = Icons.Default.Check,
                     value = state.completedOrders,
                     label = completed,
-                    color = Color(0xFF55940E)
+                    color = Color(0xFF55940E),
                 )
 
                 val weightPainter = ImageVector.vectorResource(R.drawable.kilogram)
@@ -426,26 +421,28 @@ private fun OrderStatisticCard(
                     icon = weightPainter,
                     value = state.totalOrderWeight,
                     label = finishFull,
-                    color = Color.Blue
+                    color = Color.Blue,
                 )
             }
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
 
             val sumOrderTitle = stringResource(R.string.sum_orders)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AppText(
-                    value = "$sumOrderTitle ", appTextConfig = appTextConfig(
-                        textStyle = MaterialTheme.typography.titleMedium
-                    ), color = MaterialTheme.colorScheme.primary
+                    value = "$sumOrderTitle ",
+                    appTextConfig = appTextConfig(
+                        textStyle = MaterialTheme.typography.titleMedium,
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 AnimatedValueText(
                     value = state.totalOrderWeight,
@@ -453,7 +450,7 @@ private fun OrderStatisticCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     isInteger = true,
-                    suffix = ""
+                    suffix = "",
                 )
             }
         }
@@ -471,19 +468,20 @@ private fun OrderStat(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Box(
             modifier = Modifier
                 .size(60.dp)
                 .clip(shape = MaterialTheme.shapes.extraSmall)
-                .background(color.copy(alpha = 0.2f)), contentAlignment = Alignment.Center
+                .background(color.copy(alpha = 0.2f)),
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = color,
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(30.dp),
             )
         }
 
@@ -493,7 +491,7 @@ private fun OrderStat(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
             isInteger = value is Int,
-            suffix = if (value is Int) "шт" else "т"
+            suffix = if (value is Int) "шт" else "т",
         )
     }
 }
@@ -512,7 +510,7 @@ fun AnimatedValueText(
     val animatedValue by animateFloatAsState(
         targetValue = currentValue,
         animationSpec = tween(durationMillis = 750), // Можно настроить анимацию
-        label = "AnimatedValueFloat"
+        label = "AnimatedValueFloat",
     )
     val displayText = if (isInteger) {
         "${animatedValue.toInt()} $suffix"
@@ -521,12 +519,14 @@ fun AnimatedValueText(
     }
 
     Box(
-        modifier = Modifier.height(24.dp), contentAlignment = Alignment.Center
+        modifier = Modifier.height(24.dp), contentAlignment = Alignment.Center,
     ) {
         AppText(
-            value = displayText, appTextConfig = appTextConfig(
-                textStyle = textStyle, fontWeight = fontWeight
-            ), color = color
+            value = displayText,
+            appTextConfig = appTextConfig(
+                textStyle = textStyle, fontWeight = fontWeight,
+            ),
+            color = color,
         )
     }
 }
@@ -534,24 +534,27 @@ fun AnimatedValueText(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun OrderCardListPreview() {
-    val pagingData = remember {
-        MutableStateFlow(
-            PagingData.from(
-                generateOrderItems()
-            )
-        )
-    }.collectAsLazyPagingItems()
-
     FeatureTheme(
-        darkTheme = false
+        darkTheme = false,
     ) {
+        val pagingData = remember {
+            MutableStateFlow(
+                PagingData.from(
+                    generateOrderItems(),
+                ),
+            )
+        }.collectAsLazyPagingItems()
+
+
         OrdersPage(
-            event = {}, state = remember {
+            event = {},
+            state = remember {
                 mutableStateOf(
-                    OrderPageState()
+                    OrderPageState(),
                 )
-            }, navController = null,
-            orderPaging = pagingData
+            },
+            navController = null,
+            orderPaging = pagingData,
         )
     }
 }
@@ -561,17 +564,17 @@ private fun OrderCardListPreview() {
 private fun OrderStatPreview() {
     Column {
         FeatureTheme(
-            darkTheme = false
+            darkTheme = false,
         ) {
             OrderStatisticCard(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
             )
         }
         FeatureTheme(
-            darkTheme = true
+            darkTheme = true,
         ) {
             OrderStatisticCard(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
             )
         }
     }
@@ -583,21 +586,23 @@ private fun OrdersPagePreview() {
     val pagingData = remember {
         MutableStateFlow(
             PagingData.from(
-                generateOrderItems()
-            )
+                generateOrderItems(),
+            ),
         )
     }.collectAsLazyPagingItems()
 
     FeatureTheme(
-        darkTheme = true
+        darkTheme = true,
     ) {
         OrdersPage(
-            event = {}, state = remember {
+            event = {},
+            state = remember {
                 mutableStateOf(
-                    OrderPageState()
+                    OrderPageState(),
                 )
-            }, navController = null,
-            orderPaging = pagingData
+            },
+            navController = null,
+            orderPaging = pagingData,
         )
     }
 }
