@@ -346,15 +346,15 @@ fun FinancePage(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         state = listState,
                     ) {
-                        items(OrderStatus.entries.toTypedArray()) { status ->
+                        items(TransactionType.entries.toTypedArray()) { status ->
                             FilterChip(
                                 onClick = {
-//                                    event.invoke(OrderPageViewModel.OrderPageEvent.FilterOrderStatus(status)) //TODO add different classes check for status with list
+                                    event.invoke(FinancePageEvent.FilterFinanceType(status))
                                 },
                                 label = {
-                                    Text(text = status.displayName)
+                                    Text(text = status.toString())
                                 },
-                                selected = false, // state.value.orderStatusFilter.contains(status),
+                                selected = financeState.value.financeTypeFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
@@ -410,18 +410,13 @@ fun FinanceStatisticCard(
                 color = MaterialTheme.colorScheme.primary,
             )
 
-            val gridItems = listOf(
-                AmountCurrency(Currency.UAH, 500f),
-                AmountCurrency(Currency.USD, 200000f),
-                AmountCurrency(Currency.EUR, 99_999_999_999f),
-                AmountCurrency(Currency.BTC, 0.00005f),
-            )
+
             EqualWidthFlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp, vertical = 4.dp),
             ) {
-                gridItems.forEachIndexed { index, currencyAmount ->
+                financeStatistics.paymentsList.forEachIndexed { index, currencyAmount ->
                     FinanceStat(
                         amountCurrency = currencyAmount,
                         modifier = Modifier.wrapContentSize(),
@@ -459,6 +454,7 @@ fun FinanceStat(
         }
 
         AppText(
+            modifier = Modifier.width(IntrinsicSize.Max),
             value = amountCurrency.amount.formatTrim(numOfDigit) + " " + amountCurrency.iconChar,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,
