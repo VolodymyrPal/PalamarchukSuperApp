@@ -229,20 +229,9 @@ fun FinancePage(
                     )
                 }
 
-//                val dateStart = remember { mutableStateOf(Calendar.getInstance()) }
-//                val dateEnd = remember { mutableStateOf(Calendar.getInstance()) }
-
                 val dateStartState =
                     rememberDatePickerState(initialDate = financeState.value.startDate)
-                val dateEndState = rememberDatePickerState(initialDate = financeState.value.endDate)
-
-//                LaunchedEffect(financeState.value.startDate) {
-//                    dateEndState.updateMinDate(dateStart.value)
-//                }
-//
-//                LaunchedEffect(financeState.value.endDate) {
-//                    dateStartState.updateMaxDate(dateEnd.value)
-//                }
+                val dateEndState = rememberDatePickerState(initialDate = dateStartState.minDate)
 
                 // Date range field
                 AnimatedVisibility(
@@ -269,6 +258,7 @@ fun FinancePage(
                                         it.time.time,
                                     ),
                                 )
+                                dateEndState.updateMinDate(it)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -292,6 +282,7 @@ fun FinancePage(
                                         it.time.time,
                                     ),
                                 )
+                                dateStartState.updateMaxDate(it)
                             },
                             modifier = Modifier
                                 .weight(1f)
