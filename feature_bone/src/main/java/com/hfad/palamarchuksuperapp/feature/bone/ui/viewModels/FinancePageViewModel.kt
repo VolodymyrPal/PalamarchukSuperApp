@@ -1,6 +1,5 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.hfad.palamarchuksuperapp.core.domain.AppError
 import com.hfad.palamarchuksuperapp.core.domain.AppResult
@@ -8,8 +7,10 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEffect
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.BaseEvent
 import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.GenericViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistics
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentStatus
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TypedTransaction
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateExchangeOrderItems
+import com.hfad.palamarchuksuperapp.feature.bone.domain.models.generateFinanceStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.usecases.GetTypeTransactionOperationsUseCase
 import javax.inject.Inject
@@ -31,25 +32,41 @@ class FinancePageViewModel @Inject constructor(
         flow {
             val data = getTypeTransactionOperationsUseCase()
             emit(data)
-            Log.d("FinancePageViewModel", "Data: $data")
         }
 
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
+    private val financeType: MutableStateFlow<List<TransactionType>> = MutableStateFlow(
+        TransactionType.entries,
+    )
 
     private val startDate: MutableStateFlow<Long> = MutableStateFlow(0)
     private val endDate: MutableStateFlow<Long> = MutableStateFlow(0)
 
     private val statisticFlow: Flow<AppResult<FinanceStatistics, AppError>> =
-        flow { emit(AppResult.Success(FinanceStatistics())) } // paymentsRepository.paymentStatistics
+        flow { emit(AppResult.Success(generateFinanceStatistics())) } // paymentsRepository.paymentStatistics
 
     override val uiState: StateFlow<FinancePageState> =
         combine(
             _dataFlow,
             statisticFlow,
             searchQuery,
-        ) { data, statistics, query ->
-
-            FinancePageState()
+            financeType,
+        ) { data, statistics, query, transactionTypes ->
+            if (data is AppResult.Success) {
+                val data = data.data.toMutableList().also {
+                    it.addAll(generateExchangeOrderItems())
+                }.shuffled()
+                FinancePageState(
+                    salesItems = data.filter { transactionTypes.contains(it.transactionType) },
+                    financeTypeFilter = transactionTypes,
+                    query = query,
+                    financeStatistics = if (statistics is AppResult.Success) statistics.data else FinanceStatistics(),
+                )
+            } else {
+                FinancePageState(
+                    salesItems = emptyList(),
+                )
+            }
         }.onStart {
 //            paymentsRepository.refreshStatistic()
         }.stateIn(
