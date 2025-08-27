@@ -1,5 +1,6 @@
 package com.hfad.palamarchuksuperapp.feature.bone.ui.composables
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,11 +41,11 @@ import androidx.compose.ui.unit.sp
 import com.example.compose.FeatureTheme
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.AppText
 import com.hfad.palamarchuksuperapp.core.ui.composables.basic.appTextConfig
-import kotlinx.coroutines.flow.filter
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.abs
+import kotlinx.coroutines.flow.filter
 
 @Composable
 fun AppWheelDatePicker(
@@ -56,7 +57,7 @@ fun AppWheelDatePicker(
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         // Day
         AppWheelPicker(
@@ -110,9 +111,14 @@ private fun AppWheelPicker(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(selectedIndex, items.size) {
+    LaunchedEffect(selectedIndex) {
         val target = (selectedIndex).coerceIn(0, items.lastIndex + 1)
         listState.animateScrollToItem(index = maxOf(0, target), scrollOffset = 0)
+    }
+
+    LaunchedEffect(items.size) {
+        val target = (selectedIndex).coerceIn(0, items.lastIndex + 1)
+        listState.scrollToItem(index = maxOf(0, target), scrollOffset = 0)
     }
 
     val centerIndex by remember {
@@ -145,7 +151,7 @@ private fun AppWheelPicker(
             ): Offset {
                 return if (catchSwing) {
                     val vertical = available.y
-                    Offset(x = 0f, y = vertical/1.05f)
+                    Offset(x = 0f, y = vertical / 1.05f)
                 } else {
                     return super.onPostScroll(consumed, available, source)
                 }
@@ -160,7 +166,7 @@ private fun AppWheelPicker(
             .nestedScroll(scrollConnection)
             .fadingEdge(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
 
         item {
@@ -172,7 +178,7 @@ private fun AppWheelPicker(
             Box(
                 modifier = Modifier
                     .height(itemHeight)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 AppText(
                     value = items[index],
@@ -198,22 +204,22 @@ private fun AppWheelPicker(
 fun DatePickerExample() {
     val selectedDate = remember { mutableStateOf(Calendar.getInstance()) }
     FeatureTheme(
-        darkTheme = true
+        darkTheme = true,
     ) {
         Surface {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = "Выбранная дата: ${selectedDate.value.time}",
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 24.dp),
                 )
                 val datePickerState = rememberDatePickerState(
-                    initialDate = selectedDate.value
+                    initialDate = selectedDate.value,
                 )
 
                 AppWheelDatePicker(
@@ -233,7 +239,7 @@ fun DatePickerExampleOne() {
     val datePickerState = rememberDatePickerState(
         initialDate = Calendar.getInstance(),
         minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -2) },
-        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) },
     )
 
     var selectedDateText by remember { mutableStateOf("") }
@@ -249,11 +255,11 @@ fun DatePickerExampleOne() {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
             text = "Выбранная дата: $selectedDateText",
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
         )
 
         AppWheelDatePicker(
@@ -261,18 +267,18 @@ fun DatePickerExampleOne() {
             onDateChanged = { newDate ->
 
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Button(
                 onClick = {
                     datePickerState.updateDate(Calendar.getInstance())
-                }
+                },
             ) {
                 Text("Сегодня")
             }
@@ -283,7 +289,7 @@ fun DatePickerExampleOne() {
                         add(Calendar.WEEK_OF_YEAR, -1)
                     }
                     datePickerState.updateDate(weekAgo)
-                }
+                },
             ) {
                 Text("Неделю назад")
             }
@@ -292,15 +298,15 @@ fun DatePickerExampleOne() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
                     text = "Информация о состоянии:",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Text("Год: ${datePickerState.currentYear.value}")
                 Text("Месяц: ${datePickerState.currentMonth.value + 1}")
@@ -319,13 +325,13 @@ fun MultiDatePickerExample() {
     val startDateState = rememberDatePickerState(
         initialDate = Calendar.getInstance(),
         minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -1) },
-        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) },
     )
 
     val endDateState = rememberDatePickerState(
         initialDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 7) },
         minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -1) },
-        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) }
+        maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, +1) },
     )
 
     val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
@@ -334,20 +340,20 @@ fun MultiDatePickerExample() {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         Text(
             text = "Выбор периода",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
         )
 
         Card {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Text(
                     text = "Дата начала: ${dateFormat.format(startDateState.selectedDate.value.time)}",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 AppWheelDatePicker(
@@ -360,18 +366,18 @@ fun MultiDatePickerExample() {
                             }
                             endDateState.updateDate(newEndDate)
                         }
-                    }
+                    },
                 )
             }
         }
 
         Card {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Text(
                     text = "Дата окончания: ${dateFormat.format(endDateState.selectedDate.value.time)}",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 AppWheelDatePicker(
@@ -384,7 +390,7 @@ fun MultiDatePickerExample() {
                             }
                             startDateState.updateDate(newStartDate)
                         }
-                    }
+                    },
                 )
             }
         }
@@ -399,7 +405,7 @@ fun MultiDatePickerExample() {
 
         Text(
             text = "Период: $daysDifference дн.",
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
         )
     }
 }
