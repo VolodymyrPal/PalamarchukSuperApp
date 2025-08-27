@@ -66,7 +66,17 @@ class FinancePageViewModel @Inject constructor(
             is FinancePageEvent.RefreshPayments -> {
             }
 
-            is FinancePageEvent.FilterPaymentStatus -> {
+            is FinancePageEvent.FilterFinanceType -> {
+                financeType.update {
+                    val existedStatuses = it.toMutableList()
+                    if (event.status in existedStatuses) {
+                        existedStatuses.remove(event.status)
+                        return@update existedStatuses
+                    } else {
+                        existedStatuses.add(event.status)
+                        return@update existedStatuses
+                    }
+                }
             }
 
             is FinancePageEvent.Search -> {
@@ -96,8 +106,8 @@ sealed class FinancePageEvent : BaseEvent {
         val clientId: Int,
     ) : FinancePageEvent()
 
-    data class FilterPaymentStatus(
-        val status: PaymentStatus,
+    data class FilterFinanceType(
+        val status: TransactionType,
     ) : FinancePageEvent()
 
     data class Search(
