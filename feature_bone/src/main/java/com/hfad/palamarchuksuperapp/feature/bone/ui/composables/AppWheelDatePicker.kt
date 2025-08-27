@@ -199,6 +199,159 @@ private fun AppWheelPicker(
     }
 }
 
+
+@Composable
+private fun AppDayWheelPicker(
+    modifier: Modifier = Modifier,
+    daysRange: IntRange = 1..31,
+    startRestriction: Int = 0,
+    endRestriction: Int = 32,
+    selectedDay: Int,
+    onSelectionChanged: (Int) -> Unit,
+    itemHeight: Dp = 40.dp,
+    visibleItemCount: Int = 3,
+    catchSwing: Boolean = false,
+) {
+    val listState = rememberLazyListState()
+
+    val listToDisplay by remember(daysRange, startRestriction, endRestriction) {
+        derivedStateOf {
+            val range = daysRange.filter { it in startRestriction..endRestriction }
+            range
+        }
+    }
+
+    LaunchedEffect(selectedDay) {
+
+        if (listToDisplay.isEmpty()) return@LaunchedEffect
+
+        val targetIndex = listToDisplay.indexOf(selectedDay).takeIf { it >= 0 }
+            ?: listToDisplay.indexOfFirst { it >= selectedDay }.takeIf { it >= 0 }
+            ?: listToDisplay.lastIndex
+
+        listState.animateScrollToItem(
+            index = targetIndex, // +1 из-за верхнего Spacer
+            scrollOffset = 0,
+        )
+    }
+    LaunchedEffect(listToDisplay) {
+        if (listToDisplay.isEmpty()) return@LaunchedEffect
+
+        val targetIndex = listToDisplay.indexOf(selectedDay).takeIf { it >= 0 }
+            ?: listToDisplay.indexOfFirst { it >= selectedDay }.takeIf { it >= 0 }
+            ?: listToDisplay.lastIndex
+
+        listState.scrollToItem(
+            index = targetIndex, // +1 из-за верхнего Spacer
+            scrollOffset = 0,
+        )
+    }
+
+    LaunchedEffect(
+        listState,
+        listToDisplay,
+    )
+    {
+        val centerIndex = derivedStateOf {
+            listState.layoutInfo.run {
+                if (visibleItemsInfo.isEmpty()) return@run null
+
+                val viewportCenter = viewportStartOffset + viewportSize.height / 2
+
+                val itemsInfo = visibleItemsInfo
+                    .minByOrNull { abs(viewportCenter - (it.offset + it.size / 2)) }
+                    ?.let { it.index - 1 } // -1 из-за верхнего Spacer
+                    ?.coerceIn(
+                        0,
+                        listToDisplay.lastIndex,
+                    )
+                itemsInfo
+            }
+        }
+
+        val currentCenterDay = centerIndex.value?.let { index ->
+            if (index in listToDisplay.indices) listToDisplay[index] else 0
+        }
+
+
+        snapshotFlow { listState.isScrollInProgress }
+            .filter { !it }
+            .collect {
+                if (centerIndex.value != null) {
+                    onSelectionChanged(centerIndex.value!!)
+                }
+            }
+    }
+
+    val scrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                return if (catchSwing) {
+                    val vertical = available.y
+                    Offset(x = 0f, y = vertical / 1.05f)
+                } else {
+                    return super.onPostScroll(consumed, available, source)
+                }
+            }
+        }
+    }
+
+    LazyColumn(
+        state = listState,
+        modifier = modifier
+            .height(itemHeight * visibleItemCount)
+            .nestedScroll(scrollConnection)
+            .fadingEdge(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+
+        item {
+            Spacer(modifier = Modifier.height(itemHeight))
+        }
+
+        items(
+            listToDisplay.size,
+            key = { it },
+        ) { index ->
+
+            val day = listToDisplay[index]
+            val isSelected = day == selectedDay
+
+            if (day in listToDisplay) {
+
+                Box(
+                    modifier = Modifier
+                        .height(itemHeight)
+                        .fillMaxSize()
+                        .clickable {
+                            onSelectionChanged(day)
+                        },
+                ) {
+                    AppText(
+                        value = listToDisplay[index].toString(),
+                        appTextConfig = appTextConfig(
+                            fontSize = if (isSelected) 18.sp else 16.sp,
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                            textAlign = TextAlign.Center,
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(itemHeight))
+        }
+    }
+}
+
 @Composable
 @Preview
 fun DatePickerExample() {
