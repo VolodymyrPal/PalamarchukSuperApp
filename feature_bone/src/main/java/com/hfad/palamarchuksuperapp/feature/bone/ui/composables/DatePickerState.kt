@@ -42,7 +42,7 @@ class DatePickerState(
         normalizeCalendar(initialDate).apply {
             if (before(_minDate)) time = _minDate.time
             if (after(_maxDate)) time = _maxDate.time
-        }
+        },
     )
     val selectedDate = _selectedDate
 
@@ -55,6 +55,7 @@ class DatePickerState(
     val yearRange = derivedStateOf {
         _minDate.get(Calendar.YEAR).._maxDate.get(Calendar.YEAR)
     }
+
     val monthRange = derivedStateOf {
         val minMonth = if (currentYear.value == _minDate.get(Calendar.YEAR)) {
             _minDate.get(Calendar.MONTH)
@@ -66,6 +67,7 @@ class DatePickerState(
 
         minMonth..maxMonth
     }
+
     val dayRange = derivedStateOf {
         val minDay = if (
             currentYear.value == _minDate.get(Calendar.YEAR) &&
@@ -216,9 +218,9 @@ class DatePickerState(
                     initialDate = Calendar.getInstance().apply { timeInMillis = it },
                     minDate = minDate,
                     maxDate = maxDate,
-                    locale = locale
+                    locale = locale,
                 )
-            }
+            },
         )
     }
 }
@@ -248,7 +250,7 @@ fun rememberDatePickerState(
             initialDate = initialDate,
             minDate = minDate,
             maxDate = maxDate,
-            locale = locale
+            locale = locale,
         )
     }
 }
@@ -276,14 +278,14 @@ fun rememberDatePickerStateSavable(
         saver = DatePickerState.Saver(
             minDate = minDate,
             maxDate = maxDate,
-            locale = locale
-        )
+            locale = locale,
+        ),
     ) {
         DatePickerState(
             initialDate = initialDate,
             minDate = minDate,
             maxDate = maxDate,
-            locale = locale
+            locale = locale,
         )
     }
 }
