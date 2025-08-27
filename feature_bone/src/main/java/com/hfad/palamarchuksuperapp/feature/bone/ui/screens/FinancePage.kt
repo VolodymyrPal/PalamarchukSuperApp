@@ -21,6 +21,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +40,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -78,11 +81,9 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
@@ -167,26 +168,6 @@ fun FinancePage(
         }
 
         item {
-            AnimatedContent(
-                targetState = false,
-                transitionSpec = {
-                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
-                },
-                label = "loading_or_send_icon",
-            ) { loading ->
-                if (loading) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .height(1.dp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                }
-            }
-        }
-
-        item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -210,14 +191,14 @@ fun FinancePage(
                     expanded = shownQuery.intValue == 1,
                 )
 
-//                TitleQueryField(
-//                    modifier = Modifier,
-//                    onClick = {
-//                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
-//                    },
-//                    expanded = shownQuery.intValue == 2,
-//                    sectionIcon = Icons.Default.Check
-//                )
+                TitleQueryField(
+                    modifier = Modifier,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
+                    },
+                    expanded = shownQuery.intValue == 2,
+                    sectionIcon = Icons.Default.Check,
+                )
             }
         }
 
