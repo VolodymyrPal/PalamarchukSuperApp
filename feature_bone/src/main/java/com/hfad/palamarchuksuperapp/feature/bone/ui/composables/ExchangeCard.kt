@@ -46,7 +46,7 @@ fun ExchangeOrderCard(
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ),
         shape = MaterialTheme.shapes.extraSmall,
 //        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -55,18 +55,18 @@ fun ExchangeOrderCard(
         Column(
             modifier = Modifier.padding(internalPadding),
             verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AppText(
                     value = stringResource(R.string.exchange_card_title, exchangeOrder.id),
-                    appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.titleSmall)
+                    appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.titleSmall),
                 )
 
                 Icon(
@@ -75,7 +75,7 @@ fun ExchangeOrderCard(
                         .size(24.dp),
                     painter = painterResource(id = R.drawable.exchange_icon),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
 
@@ -84,33 +84,33 @@ fun ExchangeOrderCard(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AppText(
                     value = "${exchangeOrder.amountToExchange.amount.formatTrim()} ${exchangeOrder.amountToExchange.iconChar}",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.End,
                     ),
                     color = exchangeOrder.amountToExchange.color,
-                    modifier = Modifier.weight(0.4f)
+                    modifier = Modifier.weight(0.4f),
                 )
 
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 )
 
                 AppText(
                     value = "${exchangeOrder.amountCurrency.amount.formatTrim()} ${exchangeOrder.amountCurrency.iconChar}",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     ),
                     color = exchangeOrder.amountCurrency.color,
-                    modifier = Modifier.weight(0.4f)
+                    modifier = Modifier.weight(0.4f),
                 )
             }
 
@@ -118,7 +118,7 @@ fun ExchangeOrderCard(
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AppText(
                     modifier = Modifier.weight(0.4f),
@@ -130,37 +130,37 @@ fun ExchangeOrderCard(
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.End,
                     ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 AppText(
                     value = " = ",
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
                     ),
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 AppText(
                     modifier = Modifier.weight(0.4f),
                     value = exchangeOrder.exchangeRate.formatTrim(baseNumOfDigit),
                     appTextConfig = appTextConfig(
                         textStyle = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
                     ),
                 )
             }
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(
                     verticalArrangement = Arrangement.SpaceAround,
@@ -168,26 +168,26 @@ fun ExchangeOrderCard(
                     AppText(
                         value = stringResource(R.string.exchange_request_date),
                         appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodySmall),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     AppText(
                         value = exchangeOrder.date.formatLegacy(),
-                        appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodyMedium)
+                        appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodyMedium),
                     )
                 }
 
                 Column(
                     horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.SpaceAround
+                    verticalArrangement = Arrangement.SpaceAround,
                 ) {
                     AppText(
                         value = stringResource(R.string.exchange_billing_date),
                         appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodySmall),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     AppText(
                         value = exchangeOrder.billingDate.formatLegacy(),
-                        appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodyMedium)
+                        appTextConfig = appTextConfig(textStyle = MaterialTheme.typography.bodyMedium),
                     )
                 }
             }
@@ -198,7 +198,7 @@ fun ExchangeOrderCard(
 internal fun getNumberOfDecimalDigits(
     currency: Currency,
     btcDigits: Int = 10,
-    baseDigits: Int = 4,
+    baseDigits: Int = 2,
 ): Int {
     return when (currency) {
         Currency.BTC -> btcDigits
@@ -215,7 +215,7 @@ fun Date.formatLegacy(locale: Locale = Locale.getDefault()): String {
 @Composable
 fun ExchangeOrdersCardPreview() {
     FeatureTheme {
-        Column (
+        Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             generateExchangeOrderItems().forEach {
@@ -230,10 +230,10 @@ fun ExchangeOrdersCardPreview() {
 @Preview
 @Composable
 fun ExchangeOrdersCardNightPreview() {
-    FeatureTheme (
-        darkTheme = true
+    FeatureTheme(
+        darkTheme = true,
     ) {
-        Column (
+        Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             generateExchangeOrderItems().forEach {

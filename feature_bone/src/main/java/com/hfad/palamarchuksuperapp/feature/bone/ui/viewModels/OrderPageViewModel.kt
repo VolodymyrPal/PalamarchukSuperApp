@@ -15,6 +15,9 @@ import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.UserSession
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.AuthRepository
 import com.hfad.palamarchuksuperapp.feature.bone.domain.repository.OrdersRepository
+import java.util.Date
+import javax.inject.Inject
+import kotlin.random.Random
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,9 +29,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import java.util.Date
-import javax.inject.Inject
-import kotlin.random.Random
 
 class OrderPageViewModel @Inject constructor(
     private val ordersRepository: OrdersRepository,
@@ -61,7 +61,7 @@ class OrderPageViewModel @Inject constructor(
 
     override val uiState: StateFlow<OrderPageState> =
         combine(
-            _dataFlow, statisticFlow, orderStatusFilter, searchQuery
+            _dataFlow, statisticFlow, orderStatusFilter, searchQuery,
         ) { userSession, orderMetrics, orders, query ->
             val orderMetrics = if (orderMetrics is AppResult.Success) {
                 orderMetrics.data
@@ -72,14 +72,14 @@ class OrderPageViewModel @Inject constructor(
             OrderPageState(
                 orderMetrics = orderMetrics,
                 orderStatusFilter = orders,
-                searchQuery = query
+                searchQuery = query,
             )
         }.onStart {
             ordersRepository.refreshStatistic()
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            OrderPageState()
+            OrderPageState(),
         )
 
 
@@ -136,6 +136,6 @@ internal fun generateOrderStatistic(): OrderStatistics {
         totalOrders = Random.nextInt(20, 30),
         completedOrders = Random.nextInt(5, 15),
         inProgressOrders = Random.nextInt(1, 5),
-        totalOrderWeight = Random.nextInt(10, 20) + (Random.nextFloat() * 100).toInt() / 100f
+        totalOrderWeight = Random.nextInt(10, 20) + (Random.nextFloat() * 100).toInt() / 100f,
     )
 }

@@ -77,16 +77,16 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
 import javax.inject.Scope
 import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 
 @AppScope
 @Component(
     dependencies = [CoreComponent::class],
-    modules = [AppModule::class]
+    modules = [AppModule::class],
 )
 interface AppComponent : BoneDeps {
     fun inject(mainActivity: MainActivity)
@@ -111,8 +111,10 @@ interface AppComponent : BoneDeps {
 
 
 @Module(
-    includes = [DatabaseModule::class, ViewModelsModule::class, NetworkModule::class,
-        AiModelHandlerModule::class, UseCaseModule::class, RepositoryModule::class]
+    includes = [
+        DatabaseModule::class, ViewModelsModule::class, NetworkModule::class,
+        AiModelHandlerModule::class, UseCaseModule::class, RepositoryModule::class,
+    ],
 )
 object AppModule {
     @IoDispatcher
@@ -194,7 +196,6 @@ interface UseCaseModule {
 @Module
 abstract class ViewModelsModule {
 
-
     @Binds
     abstract fun bindViewModelFactory(factory: GenericViewModelFactory): ViewModelProvider.Factory
 
@@ -242,7 +243,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context = context.applicationContext,
             klass = MessageChatDatabase::class.java,
-            name = DATABASE_MESSAGE_CHAT
+            name = DATABASE_MESSAGE_CHAT,
         ).fallbackToDestructiveMigration(true) //TODO Don't forget to remove this in production
             .build()
     }
@@ -268,7 +269,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context = context.applicationContext,
             klass = StoreDatabase::class.java,
-            name = DATABASE_MAIN_ENTITY_PRODUCT
+            name = DATABASE_MAIN_ENTITY_PRODUCT,
         ).fallbackToDestructiveMigration() //TODO Don't forget to remove this in production
             .build()
     }
@@ -285,7 +286,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context = context.applicationContext,
             klass = SkillsDatabase::class.java,
-            name = DATABASE_PROJECT_NAME
+            name = DATABASE_PROJECT_NAME,
         )
             .fallbackToDestructiveMigration() //TODO Don't forget to remove this in production
             .createFromAsset("newDatabase.db")
@@ -339,7 +340,7 @@ annotation class MainDispatcher
 @Target(
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,
-    AnnotationTarget.PROPERTY_SETTER
+    AnnotationTarget.PROPERTY_SETTER,
 )
 @Retention(AnnotationRetention.RUNTIME)
 @MapKey

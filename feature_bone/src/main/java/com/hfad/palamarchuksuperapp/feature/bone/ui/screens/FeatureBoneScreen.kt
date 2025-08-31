@@ -33,8 +33,8 @@ import com.hfad.palamarchuksuperapp.feature.bone.di.BoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.di.BoneDeps
 import com.hfad.palamarchuksuperapp.feature.bone.di.DaggerBoneComponent
 import com.hfad.palamarchuksuperapp.feature.bone.ui.login.LoginScreenRoot
-import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
+import kotlinx.serialization.Serializable
 
 class BoneFeature(
     featureDependencies: BoneDeps,
@@ -50,7 +50,7 @@ class BoneFeature(
         modifier: Modifier,
     ) {
         val navController = rememberNavController()
-        SharedTransitionLayout { //TODO
+        SharedTransitionLayout {
             CompositionLocalProvider(
                 LocalNavController provides navController,
                 LocalSharedTransitionScope provides this, //TODO
@@ -60,8 +60,8 @@ class BoneFeature(
                         pressedAlpha = 0.7f,
                         focusedAlpha = 0.4f,
                         hoveredAlpha = 0.2f,
-                        draggedAlpha = 0.3f
-                    )
+                        draggedAlpha = 0.3f,
+                    ),
                 ),
                 LocalBoneDependencies provides component,
             ) {
@@ -69,7 +69,7 @@ class BoneFeature(
                     NavHost(
                         startDestination = homeRoute,
                         navController = navController,
-                        route = FeatureBoneRoutes.BaseFeatureNav::class
+                        route = FeatureBoneRoutes.BaseFeatureNav::class,
                     ) {
                         composable<FeatureBoneRoutes.BoneScreen> {
                             CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
@@ -186,7 +186,7 @@ internal inline fun <reified T : Any> NavGraphBuilder.featureComposable(
             LocalBoneDependencies provides component,
             LocalNavController provides navController,
             LocalNavAnimatedVisibilityScope provides this,
-            LocalSharedTransitionScope provides sharedTransitionScope
+            LocalSharedTransitionScope provides sharedTransitionScope,
         ) {
             content(navBackStackEntry)
         }

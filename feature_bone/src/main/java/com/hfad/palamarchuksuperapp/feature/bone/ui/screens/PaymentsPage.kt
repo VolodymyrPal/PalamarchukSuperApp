@@ -18,6 +18,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,8 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -300,19 +299,20 @@ fun PaymentsPage(
                             }
                         }
                     }
-                    LazyRow(
+                    FlowRow(
                         modifier = Modifier
+                            .nestedScroll(scrollConnection)
                             .fillMaxWidth(0.9f)
                             .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 shape = MaterialTheme.shapes.extraSmall,
                             )
-                            .padding(8.dp)
-                            .nestedScroll(scrollConnection),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        items(PaymentStatus.entries.toTypedArray()) { status ->
+                        PaymentStatus.entries.toTypedArray().forEach { status ->
                             FilterChip(
                                 onClick = {
                                     event.invoke(
@@ -322,7 +322,7 @@ fun PaymentsPage(
                                     ) // TODO add different classes check for status with list
                                 },
                                 label = {
-                                    Text(text = status.displayName)
+                                    Text(text = stringResource(status.nameStringRes))
                                 },
                                 selected = state.value.paymentStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
@@ -547,9 +547,9 @@ fun PaymentCard(
     }
 
     val statusText = when (payment.status) {
-        PaymentStatus.PAID -> stringResource(R.string.payment_paid)
-        PaymentStatus.PENDING -> stringResource(R.string.payment_pending)
-        PaymentStatus.OVERDUE -> stringResource(R.string.payment_overdue)
+        PaymentStatus.PAID -> stringResource(R.string.payment_status_paid)
+        PaymentStatus.PENDING -> stringResource(R.string.payment_status_pending)
+        PaymentStatus.OVERDUE -> stringResource(R.string.payment_status_overdue)
     }
 
     Card(

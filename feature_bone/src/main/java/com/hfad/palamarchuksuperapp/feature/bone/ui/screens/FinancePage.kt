@@ -21,6 +21,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,16 +30,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -78,11 +81,9 @@ import com.hfad.palamarchuksuperapp.core.ui.genericViewModel.daggerViewModel
 import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.AmountCurrency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.CashPaymentOrder
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Currency
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.ExchangeOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.FinanceStatistics
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.Order
-import com.hfad.palamarchuksuperapp.feature.bone.domain.models.OrderStatus
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.PaymentOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.SaleOrder
 import com.hfad.palamarchuksuperapp.feature.bone.domain.models.TransactionType
@@ -167,26 +168,6 @@ fun FinancePage(
         }
 
         item {
-            AnimatedContent(
-                targetState = false,
-                transitionSpec = {
-                    fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
-                },
-                label = "loading_or_send_icon",
-            ) { loading ->
-                if (loading) {
-                    LinearProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .height(1.dp),
-                        color = MaterialTheme.colorScheme.onSurface,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
-                }
-            }
-        }
-
-        item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
@@ -210,14 +191,14 @@ fun FinancePage(
                     expanded = shownQuery.intValue == 1,
                 )
 
-//                TitleQueryField(
-//                    modifier = Modifier,
-//                    onClick = {
-//                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
-//                    },
-//                    expanded = shownQuery.intValue == 2,
-//                    sectionIcon = Icons.Default.Check
-//                )
+                TitleQueryField(
+                    modifier = Modifier,
+                    onClick = {
+                        shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
+                    },
+                    expanded = shownQuery.intValue == 2,
+                    sectionIcon = Icons.Default.Check,
+                )
             }
         }
 
@@ -248,20 +229,9 @@ fun FinancePage(
                     )
                 }
 
-//                val dateStart = remember { mutableStateOf(Calendar.getInstance()) }
-//                val dateEnd = remember { mutableStateOf(Calendar.getInstance()) }
-
                 val dateStartState =
                     rememberDatePickerState(initialDate = financeState.value.startDate)
-                val dateEndState = rememberDatePickerState(initialDate = financeState.value.endDate)
-
-//                LaunchedEffect(financeState.value.startDate) {
-//                    dateEndState.updateMinDate(dateStart.value)
-//                }
-//
-//                LaunchedEffect(financeState.value.endDate) {
-//                    dateStartState.updateMaxDate(dateEnd.value)
-//                }
+                val dateEndState = rememberDatePickerState(initialDate = dateStartState.minDate)
 
                 // Date range field
                 AnimatedVisibility(
@@ -288,6 +258,7 @@ fun FinancePage(
                                         it.time.time,
                                     ),
                                 )
+                                dateEndState.updateMinDate(it)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -311,6 +282,7 @@ fun FinancePage(
                                         it.time.time,
                                     ),
                                 )
+                                dateStartState.updateMaxDate(it)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -333,7 +305,7 @@ fun FinancePage(
                             slideOutVertically(animationSpec = tween(250)) { -it } +
                             shrinkVertically(animationSpec = tween(250)),
                 ) {
-                    LazyRow(
+                    FlowRow(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .wrapContentWidth()
@@ -342,19 +314,18 @@ fun FinancePage(
                                 shape = MaterialTheme.shapes.extraSmall,
                             )
                             .padding(8.dp),
-                        userScrollEnabled = false,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        items(OrderStatus.entries.toTypedArray()) { status ->
+                        TransactionType.entries.toTypedArray().forEach { status ->
                             FilterChip(
                                 onClick = {
-//                                    event.invoke(OrderPageViewModel.OrderPageEvent.FilterOrderStatus(status)) //TODO add different classes check for status with list
+                                    event.invoke(FinancePageEvent.FilterFinanceType(status))
                                 },
                                 label = {
-                                    Text(text = status.displayName)
+                                    Text(text = stringResource(status.nameStringRes))
                                 },
-                                selected = false, // state.value.orderStatusFilter.contains(status),
+                                selected = financeState.value.financeTypeFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
@@ -410,18 +381,13 @@ fun FinanceStatisticCard(
                 color = MaterialTheme.colorScheme.primary,
             )
 
-            val gridItems = listOf(
-                AmountCurrency(Currency.UAH, 500f),
-                AmountCurrency(Currency.USD, 200000f),
-                AmountCurrency(Currency.EUR, 99_999_999_999f),
-                AmountCurrency(Currency.BTC, 0.00005f),
-            )
+
             EqualWidthFlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp, vertical = 4.dp),
             ) {
-                gridItems.forEachIndexed { index, currencyAmount ->
+                financeStatistics.paymentsList.forEachIndexed { index, currencyAmount ->
                     FinanceStat(
                         amountCurrency = currencyAmount,
                         modifier = Modifier.wrapContentSize(),
@@ -459,6 +425,7 @@ fun FinanceStat(
         }
 
         AppText(
+            modifier = Modifier.width(IntrinsicSize.Max),
             value = amountCurrency.amount.formatTrim(numOfDigit) + " " + amountCurrency.iconChar,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodyLarge,

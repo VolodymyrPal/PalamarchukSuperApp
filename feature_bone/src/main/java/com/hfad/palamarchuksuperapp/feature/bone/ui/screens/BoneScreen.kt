@@ -82,7 +82,7 @@ fun BoneScreenRoot(
                 this.rememberSharedContentState("bone"),
                 animatedContentScope,
             ),
-            navController = navController
+            navController = navController,
         )
     }
 }
@@ -90,14 +90,14 @@ fun BoneScreenRoot(
 @OptIn(
     ExperimentalFoundationApi::class,
     ExperimentalMaterial3Api::class,
-    ExperimentalSharedTransitionApi::class
+    ExperimentalSharedTransitionApi::class,
 )
 @Composable
 fun BoneScreen(
     modifier: Modifier = Modifier,
     navController: NavController? = null,
     boneViewModel: BoneViewModel = daggerViewModel<BoneViewModel>(
-        factory = LocalBoneDependencies.current.viewModelFactory
+        factory = LocalBoneDependencies.current.viewModelFactory,
     ),
 ) {
 
@@ -105,22 +105,22 @@ fun BoneScreen(
         BoneTab(
             title = stringResource(R.string.orders),
             tooltipTitle = stringResource(R.string.order_page_tooltip),
-            tooltipDescription = stringResource(R.string.order_page_tooltip_description)
+            tooltipDescription = stringResource(R.string.order_page_tooltip_description),
         ),
         BoneTab(
             title = stringResource(R.string.payment),
             tooltipTitle = stringResource(R.string.payment_page_tooltip),
-            tooltipDescription = stringResource(R.string.payment_page_tooltip_description)
+            tooltipDescription = stringResource(R.string.payment_page_tooltip_description),
         ),
         BoneTab(
             title = stringResource(R.string.sales),
             tooltipTitle = stringResource(R.string.sales_page_tooltip),
-            tooltipDescription = stringResource(R.string.sales_page_tooltip_description)
+            tooltipDescription = stringResource(R.string.sales_page_tooltip_description),
         ),
         BoneTab(
             title = stringResource(R.string.balance),
             tooltipTitle = stringResource(R.string.balance_page_tooltip),
-            tooltipDescription = stringResource(R.string.balance_page_tooltip_description)
+            tooltipDescription = stringResource(R.string.balance_page_tooltip_description),
         ),
     )
     val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
@@ -155,12 +155,12 @@ fun BoneScreen(
                     TabRowDefaults.PrimaryIndicator(
                         modifier = Modifier.tabIndicatorOffset(
                             pagerState.currentPage,
-                            matchContentSize = true
+                            matchContentSize = true,
                         ),
                         color = tabColorContent,
                         width = Dp.Unspecified,
                     )
-                }
+                },
             ) {
                 tabs.forEachIndexed { index, tab ->
                     val tooltipState = rememberTooltipState(isPersistent = false)
@@ -177,7 +177,7 @@ fun BoneScreen(
                                     contentColor = colorScheme.onSurface,
                                 ),
                                 tonalElevation = 0.dp,
-                                shadowElevation = 5.dp
+                                shadowElevation = 5.dp,
                             ) {
                                 Text(tab.tooltipDescription) //Add additional information
                             }
@@ -190,7 +190,7 @@ fun BoneScreen(
                                 AppText(
                                     value = tab.title,
                                     appTextConfig = appTextConfig(
-                                        textAlign = TextAlign.Center
+                                        textAlign = TextAlign.Center,
                                     ),
                                     color = if (pagerState.currentPage == index)
                                         tabColorContent
@@ -207,7 +207,7 @@ fun BoneScreen(
                                         pagerState.animateScrollToPage(index)
                                     }
                                 }
-                            }
+                            },
                         )
                     }
                 }
@@ -221,16 +221,17 @@ fun BoneScreen(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (expanded) {
                     SmallFloatingActionButton(
                         onClick = {
                             coroutineScope.launch {
-                                val a = AuthRepositoryImpl( //TODO Test
+                                val a = AuthRepositoryImpl(
+                                    //TODO Test
                                     httpClient = httpClient,
                                     context = context,
-                                    cryptoService = CryptoServiceKeystoreImpl()
+                                    cryptoService = CryptoServiceKeystoreImpl(),
                                 )
                                 a.logout()
                                 navController?.navigate(FeatureBoneRoutes.LoginScreen) {
@@ -255,7 +256,7 @@ fun BoneScreen(
                         4.dp,
                         4.dp,
                         4.dp,
-                        4.dp
+                        4.dp,
                     ),
                     contentColor = colorScheme.onPrimary,
                     containerColor = colorScheme.primary,
@@ -263,11 +264,11 @@ fun BoneScreen(
                     Icon(
                         modifier = Modifier,
                         imageVector = if (expanded) Icons.Filled.Close else Icons.AutoMirrored.Filled.List,
-                        contentDescription = if (expanded) "Close" else "Expand"
+                        contentDescription = if (expanded) "Close" else "Expand",
                     )
                 }
             }
-        }
+        },
     ) { paddingValues ->
         HorizontalPager(
             state = pagerState,
@@ -302,7 +303,7 @@ fun BoneScreenPreview() {
             stringResource(R.string.orders),
             stringResource(R.string.payment),
             stringResource(R.string.sales),
-            stringResource(R.string.balance)
+            stringResource(R.string.balance),
         )
         val pagerState = rememberPagerState(initialPage = 0) { tabs.size }
 
@@ -315,13 +316,13 @@ fun BoneScreenPreview() {
                     selectedTabIndex = 0,
                     indicator = {
                         TabRowDefaults.PrimaryIndicator()
-                    }
+                    },
                 ) {
                     tabs.forEachIndexed { index, title ->
                         val tooltipState = rememberTooltipState(isPersistent = false)
                         TooltipBox(
                             positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(
-                                12.dp
+                                12.dp,
                             ),
                             tooltip = {
                                 RichTooltip(
@@ -334,7 +335,7 @@ fun BoneScreenPreview() {
                                         contentColor = colorScheme.secondary,
                                     ),
                                     tonalElevation = 0.dp,
-                                    shadowElevation = 5.dp
+                                    shadowElevation = 5.dp,
                                 ) {
                                     Text("This is the main content of the rich tooltip") //Add additional information
                                 }
@@ -347,14 +348,14 @@ fun BoneScreenPreview() {
                                     AppText(
                                         value = title,
                                         appTextConfig = appTextConfig(
-                                            textAlign = TextAlign.Center
-                                        )
+                                            textAlign = TextAlign.Center,
+                                        ),
                                     )
                                 },
                                 selected = false,
                                 onClick = {
 
-                                }
+                                },
                             )
                         }
                     }
@@ -371,19 +372,19 @@ fun BoneScreenPreview() {
             ) { page ->
                 val pagingData = MutableStateFlow(
                     PagingData.from(
-                        generateOrderItems()
-                    )
+                        generateOrderItems(),
+                    ),
                 ).collectAsLazyPagingItems()
                 when (page) {
                     0 -> OrdersPage(
                         event = {},
                         state = remember {
                             mutableStateOf(
-                                OrderPageState()
+                                OrderPageState(),
                             )
                         },
                         navController = null,
-                        orderPaging = pagingData
+                        orderPaging = pagingData,
                     )
                 }
             }

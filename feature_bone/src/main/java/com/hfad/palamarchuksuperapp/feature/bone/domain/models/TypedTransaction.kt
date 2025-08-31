@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
+import androidx.annotation.StringRes
+import com.hfad.palamarchuksuperapp.feature.bone.R
 import java.util.Date
 import kotlin.reflect.KClass
 
@@ -12,8 +14,11 @@ sealed interface TypedTransaction {
     val versionHash: String
 }
 
-enum class TransactionType {
-    CREDIT, DEBIT
+enum class TransactionType(
+    @StringRes val nameStringRes: Int,
+) {
+    CREDIT(R.string.credit),
+    DEBIT(R.string.debit)
 }
 
 fun TypedTransaction.getType(): String {
@@ -25,6 +30,7 @@ fun TypedTransaction.getType(): String {
         is SaleOrder -> "SaleOrder"
     }
 }
+
 fun typeApi(type: KClass<out TypedTransaction>, id: String): String {
     return when (type) {
         Order::class -> "Order:$id"

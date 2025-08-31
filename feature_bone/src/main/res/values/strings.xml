@@ -21,9 +21,9 @@
     <string name="payment_statistic_title">Payments</string>
     <string name="total_payment">Total sent</string>
     <string name="factory_payment_amount">Factories</string>
-    <string name="payment_paid">Paid</string>
-    <string name="payment_pending">Pending</string>
-    <string name="payment_overdue">Overdue</string>
+    <string name="payment_status_paid">Paid</string>
+    <string name="payment_status_pending">Pending</string>
+    <string name="payment_status_overdue">Overdue</string>
     <string name="payment_payment_card_title">Payment: %1$s</string>
     <string name="factory">Factory</string>
     <string name="summ_sales">Full amount</string>
@@ -83,6 +83,9 @@
     <string name="biometric_authentication_error_errorcode_message">Authentication error: errorCode=%1$d, message=%2$s</string>
     <string name="biometric_authentication_failed">Authentication Failed. Try again</string>
     <string name="orders_query_example">ex: Kyiv, 46855, container number</string>
+    <string name="created">Created</string>
+    <string name="credit">Credit</string>
+    <string name="debit">Debit</string>
 
 
 </resources>

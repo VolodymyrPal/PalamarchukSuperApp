@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
+import androidx.annotation.StringRes
+import com.hfad.palamarchuksuperapp.feature.bone.R
 import com.hfad.palamarchuksuperapp.feature.bone.ui.composables.StepperStatus
 import java.util.Date
 import kotlin.random.Random
@@ -36,11 +38,13 @@ data class Order(
         }
 }
 
-enum class OrderStatus(val displayName: String) {
-    CREATED("Created"),
-    CALCULATED("Calculated"),
-    IN_PROGRESS("In progress"),
-    DONE("Done"), // TODO ResString
+enum class OrderStatus(
+    @StringRes val nameStringRes: Int,
+) {
+    CREATED(R.string.order_status_created),
+    CALCULATED(R.string.order_status_calculated),
+    IN_PROGRESS(R.string.order_status_in_progress),
+    DONE(R.string.order_status_done),
 }
 
 enum class CargoType {
