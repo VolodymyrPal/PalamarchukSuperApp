@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
+import androidx.annotation.StringRes
+import com.hfad.palamarchuksuperapp.feature.bone.R
 import java.util.Date
 import kotlin.random.Random
 
@@ -19,19 +21,19 @@ data class SaleOrder(
     override val amountCurrency: AmountCurrency,
     override val billingDate: Date = Date(),
     override val transactionType: TransactionType = TransactionType.DEBIT,
-    override val versionHash: String = ""
+    override val versionHash: String = "",
 ) : TypedTransaction {
     override val type: String = getType()
 }
 
-enum class SaleStatus (
-    val displayName: String
+enum class SaleStatus(
+    @StringRes val nameStringRes: Int,
 ) {
-    CREATED ("Created"),  //TODO ADD STRING RES
-    IN_PROGRESS ("In progress"),
-    DOCUMENT_PROCEED ("Document proceed"),
-    COMPLETED ("Completed"),
-    CANCELED ("Canceled")
+    CREATED(R.string.sale_status_created),
+    IN_PROGRESS(R.string.sale_status_in_progress),
+    DOCUMENT_PROCEED(R.string.sale_status_document_proceed),
+    COMPLETED(R.string.sale_status_completed),
+    CANCELED(R.string.sale_status_canceled)
 }
 
 fun generateSaleOrder(): SaleOrder = SaleOrder(
@@ -48,9 +50,9 @@ fun generateSaleOrder(): SaleOrder = SaleOrder(
     order = generateOrder(),
     amountCurrency = AmountCurrency(
         currency = Currency.USD,
-        amount = 12200f
+        amount = 12200f,
     ),
-    vat = 0.2f
+    vat = 0.2f,
 )
 
 fun generateSaleOrderItems(): List<SaleOrder> {
@@ -69,9 +71,9 @@ fun generateSaleOrderItems(): List<SaleOrder> {
             order = generateOrder(),
             amountCurrency = AmountCurrency(
                 currency = Currency.UAH,
-                amount = 12200f
+                amount = 12200f,
             ),
-            vat = 0.2f
+            vat = 0.2f,
         ),
         SaleOrder(
             id = Random.Default.nextInt(10000, 99999),
@@ -86,9 +88,9 @@ fun generateSaleOrderItems(): List<SaleOrder> {
             prepayment = false,
             amountCurrency = AmountCurrency(
                 currency = Currency.UAH,
-                amount = 12200f
+                amount = 12200f,
             ),
-            vat = 0.2f
+            vat = 0.2f,
         ),
         SaleOrder(
             id = Random.Default.nextInt(10000, 99999),
@@ -104,9 +106,9 @@ fun generateSaleOrderItems(): List<SaleOrder> {
             order = generateOrder(),
             amountCurrency = AmountCurrency(
                 currency = Currency.UAH,
-                amount = 12200f
+                amount = 12200f,
             ),
-            vat = 0.2f
-        )
+            vat = 0.2f,
+        ),
     )
 }
