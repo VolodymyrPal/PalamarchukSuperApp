@@ -307,7 +307,7 @@ fun SalesPage(
                                     ) //TODO add different classes check for status with list
                                 },
                                 label = {
-                                    Text(text = status.displayName)
+                                    Text(text = stringResource(status.nameStringRes))
                                 },
                                 selected = state.value.saleStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(

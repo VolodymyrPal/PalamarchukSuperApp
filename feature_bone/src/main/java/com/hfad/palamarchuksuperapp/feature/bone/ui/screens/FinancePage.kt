@@ -323,7 +323,7 @@ fun FinancePage(
                                     event.invoke(FinancePageEvent.FilterFinanceType(status))
                                 },
                                 label = {
-                                    Text(text = status.displayName)
+                                    Text(text = stringResource(status.nameStringRes))
                                 },
                                 selected = financeState.value.financeTypeFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(

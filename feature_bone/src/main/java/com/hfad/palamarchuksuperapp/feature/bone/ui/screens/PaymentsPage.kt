@@ -322,7 +322,7 @@ fun PaymentsPage(
                                     ) // TODO add different classes check for status with list
                                 },
                                 label = {
-                                    Text(text = status.displayName)
+                                    Text(text = stringResource(status.nameStringRes))
                                 },
                                 selected = state.value.paymentStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
@@ -547,9 +547,9 @@ fun PaymentCard(
     }
 
     val statusText = when (payment.status) {
-        PaymentStatus.PAID -> stringResource(R.string.payment_paid)
-        PaymentStatus.PENDING -> stringResource(R.string.payment_pending)
-        PaymentStatus.OVERDUE -> stringResource(R.string.payment_overdue)
+        PaymentStatus.PAID -> stringResource(R.string.payment_status_paid)
+        PaymentStatus.PENDING -> stringResource(R.string.payment_status_pending)
+        PaymentStatus.OVERDUE -> stringResource(R.string.payment_status_overdue)
     }
 
     Card(
