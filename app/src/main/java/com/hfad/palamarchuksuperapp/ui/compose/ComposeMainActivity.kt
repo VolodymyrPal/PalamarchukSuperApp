@@ -63,7 +63,7 @@ class ComposeMainActivity : AppCompatActivity() {
             UncaughtExceptionHandler(
                 application = application,
                 defaultHandler = defaultHandler,
-            )
+            ),
         )
 
     }
@@ -120,13 +120,13 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
     SharedTransitionLayout { //TODO
         CompositionLocalProvider(
             LocalNavController provides navController,
-            LocalSharedTransitionScope provides this //TODO
+            LocalSharedTransitionScope provides this, //TODO
         ) {
             val context = LocalContext.current
             AppTheme {
                 NavHost(
                     navController = LocalNavController.current,
-                    startDestination = startDestination
+                    startDestination = startDestination,
                 ) {
                     navigation<Routes.MainScreen>(startDestination = Routes.MainScreenConstraint) {
                         composable<Routes.MainScreenConstraint> {
@@ -167,7 +167,7 @@ fun MainContent(startDestination: Routes = Routes.MainScreen) {
                         val feature = remember { BoneFeature(context.appComponent) }
                         feature.BoneScreenRooted(
                             parentNavController = LocalNavController.current,
-                            modifier = Modifier
+                            modifier = Modifier,
                         )
                     }
 
