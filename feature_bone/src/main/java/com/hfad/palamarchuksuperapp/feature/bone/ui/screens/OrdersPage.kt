@@ -20,6 +20,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,8 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -246,7 +245,7 @@ fun OrdersPage(
                         }
                     }
 
-                    LazyRow(
+                    FlowRow(
                         modifier = Modifier
                             .nestedScroll(scrollConnection)
                             .fillMaxWidth(0.9f)
@@ -256,11 +255,10 @@ fun OrdersPage(
                                 shape = MaterialTheme.shapes.extraSmall,
                             )
                             .padding(8.dp),
-                        userScrollEnabled = true,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        items(OrderStatus.entries.toTypedArray()) { status ->
+                        OrderStatus.entries.toTypedArray().forEach { status ->
                             FilterChip(
                                 onClick = {
                                     event.invoke(

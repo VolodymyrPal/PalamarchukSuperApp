@@ -17,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,11 +27,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -85,7 +83,7 @@ import com.hfad.palamarchuksuperapp.feature.bone.ui.viewModels.SalesPageViewMode
 internal fun SalesPageRoot(
     modifier: Modifier = Modifier,
     viewModel: SalesPageViewModel = daggerViewModel<SalesPageViewModel>(
-        factory = LocalBoneDependencies.current.viewModelFactory
+        factory = LocalBoneDependencies.current.viewModelFactory,
     ),
     navController: NavController? = LocalNavController.current,
 ) {
@@ -97,7 +95,7 @@ internal fun SalesPageRoot(
         navController = navController,
         event = viewModel::event,
         state = salesPageState,
-        salesPaging = salesPaging
+        salesPaging = salesPaging,
     )
 }
 
@@ -120,7 +118,7 @@ fun SalesPage(
         item {
             SalesStatisticsCard(
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp),
-                salesStatistics = state.value.salesStatistics
+                salesStatistics = state.value.salesStatistics,
             )
         }
         item {
@@ -131,7 +129,7 @@ fun SalesPage(
                 transitionSpec = {
                     fadeIn() + scaleIn() togetherWith fadeOut() + scaleOut()
                 },
-                label = "loading_or_send_icon"
+                label = "loading_or_send_icon",
             ) { loading ->
                 if (loading) {
                     LinearProgressIndicator(
@@ -149,7 +147,7 @@ fun SalesPage(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 TitleQueryField(
                     modifier = Modifier,
@@ -157,7 +155,7 @@ fun SalesPage(
                     onClick = {
                         shownQuery.intValue = if (shownQuery.intValue == 0) 99 else 0
                     },
-                    expanded = shownQuery.intValue == 0
+                    expanded = shownQuery.intValue == 0,
                 )
 
 //                TitleQueryField(
@@ -175,7 +173,7 @@ fun SalesPage(
                         shownQuery.intValue = if (shownQuery.intValue == 2) 99 else 2
                     },
                     expanded = shownQuery.intValue == 2,
-                    sectionIcon = Icons.Default.Check
+                    sectionIcon = Icons.Default.Check,
                 )
             }
         }
@@ -183,7 +181,7 @@ fun SalesPage(
         item {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AnimatedVisibility(
                     visible = shownQuery.intValue == 0,
@@ -192,7 +190,7 @@ fun SalesPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     AppOutlinedTextField(
                         modifier = Modifier
@@ -214,14 +212,14 @@ fun SalesPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .padding(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         AppOutlinedTextField(
                             modifier = Modifier
@@ -237,13 +235,13 @@ fun SalesPage(
                             textStyle = MaterialTheme.typography.bodySmall.copy(
                                 textAlign = TextAlign.Center,
                             ),
-                            outlinedTextConfig = appEditOutlinedTextConfig()
+                            outlinedTextConfig = appEditOutlinedTextConfig(),
                         )
 
                         Text(
                             text = "—",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.surfaceVariant
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                         )
 
                         AppOutlinedTextField(
@@ -260,7 +258,7 @@ fun SalesPage(
                             textStyle = MaterialTheme.typography.bodySmall.copy(
                                 textAlign = TextAlign.Center,
                             ),
-                            outlinedTextConfig = appEditOutlinedTextConfig()
+                            outlinedTextConfig = appEditOutlinedTextConfig(),
                         )
                     }
                 }
@@ -272,7 +270,7 @@ fun SalesPage(
                             expandVertically(animationSpec = tween(300)),
                     exit = fadeOut(animationSpec = tween(250)) +
                             slideOutVertically(animationSpec = tween(250)) { -it } +
-                            shrinkVertically(animationSpec = tween(250))
+                            shrinkVertically(animationSpec = tween(250)),
                 ) {
                     val scrollConnection = remember {
                         object : NestedScrollConnection {
@@ -282,31 +280,30 @@ fun SalesPage(
                                 source: NestedScrollSource,
                             ): Offset {
                                 val horizontal = available.x
-                                return Offset(x = horizontal/1.001f, y = 0f)
+                                return Offset(x = horizontal / 1.001f, y = 0f)
                             }
                         }
                     }
-                    LazyRow(
+                    FlowRow(
                         modifier = Modifier
+                            .nestedScroll(scrollConnection)
                             .fillMaxWidth(0.9f)
                             .wrapContentWidth()
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = MaterialTheme.shapes.extraSmall
+                                shape = MaterialTheme.shapes.extraSmall,
                             )
-                            .padding(8.dp)
-                            .nestedScroll(
-                                scrollConnection
-                            ),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        items(SaleStatus.entries.toTypedArray()) { status ->
+                        SaleStatus.entries.toTypedArray().forEach { status ->
                             FilterChip(
                                 onClick = {
                                     event.invoke(
                                         SalesPageViewModel.SalesPageEvent.FilterSaleStatus(
-                                            status
-                                        )
+                                            status,
+                                        ),
                                     ) //TODO add different classes check for status with list
                                 },
                                 label = {
@@ -315,8 +312,8 @@ fun SalesPage(
                                 selected = state.value.saleStatusFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                )
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
                             )
                         }
                     }
@@ -326,7 +323,7 @@ fun SalesPage(
 
         items(
             salesPaging.itemCount,
-            key = salesPaging.itemKey { it.id }
+            key = salesPaging.itemKey { it.id },
         ) { index ->
             val item = salesPaging[index]
             if (item != null) {
@@ -335,7 +332,7 @@ fun SalesPage(
                     modifier = Modifier
                         .padding(start = 12.dp, end = 12.dp, top = 6.dp)
                         .animatedScaleIn(),
-                    internalPadding = PaddingValues(horizontal = 20.dp, vertical = 25.dp)
+                    internalPadding = PaddingValues(horizontal = 20.dp, vertical = 25.dp),
                 )
             }
         }
@@ -350,23 +347,23 @@ fun SalesStatisticsCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
         shape = MaterialTheme.shapes.extraSmall,
     ) {
         Column(
             modifier = Modifier.padding(vertical = 25.dp, horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AppText(
                 value = stringResource(R.string.sales_statistics),
                 appTextConfig = appTextConfig(
                     textStyle = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
 
             HorizontalDivider(
@@ -374,12 +371,12 @@ fun SalesStatisticsCard(
                     .fillMaxWidth(0.9f)
                     .padding(vertical = 4.dp),
                 thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
+                color = MaterialTheme.colorScheme.secondary,
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 val totalAmount = salesStatistics.totalSalesAmount.amount.formatTrim(0)
                 val totalAmountStr = totalAmount + " " + salesStatistics.totalSalesAmount.iconChar
@@ -388,7 +385,7 @@ fun SalesStatisticsCard(
                     icon = painterResource(R.drawable.money_pack),
                     value = totalAmountStr,
                     label = stringResource(R.string.summ_sales),
-                    color = salesStatistics.totalSalesAmount.color
+                    color = salesStatistics.totalSalesAmount.color,
                 )
 
                 val totalSalesNds = salesStatistics.totalSalesNdsAmount.amount.formatTrim(0)
@@ -400,7 +397,7 @@ fun SalesStatisticsCard(
                     icon = rememberVectorPainter(Icons.Default.Search),
                     value = totalSalesNdsStr,
                     label = stringResource(R.string.total_nds),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
 
                 SalesStat(
@@ -408,7 +405,7 @@ fun SalesStatisticsCard(
                     icon = rememberVectorPainter(Icons.Default.Check),
                     value = salesStatistics.totalBuyers.toString(),
                     label = stringResource(R.string.total_sale_buyer),
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.secondary,
                 )
             }
         }
@@ -426,20 +423,20 @@ fun SalesStat(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Box(
             modifier = Modifier
                 .size(60.dp)
                 .clip(shape = MaterialTheme.shapes.small)
                 .background(color.copy(alpha = 0.2f)),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painter = icon,
                 contentDescription = null,
                 tint = color,
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(30.dp),
             )
         }
 
@@ -449,15 +446,15 @@ fun SalesStat(
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
+                textAlign = TextAlign.Center,
+            ),
         )
 
         AppText(
             value = label,
             appTextConfig = appTextConfig(
                 textStyle = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             ),
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
         )

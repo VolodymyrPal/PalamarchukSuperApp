@@ -21,6 +21,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -305,7 +305,7 @@ fun FinancePage(
                             slideOutVertically(animationSpec = tween(250)) { -it } +
                             shrinkVertically(animationSpec = tween(250)),
                 ) {
-                    LazyRow(
+                    FlowRow(
                         modifier = Modifier
                             .fillMaxWidth(0.9f)
                             .wrapContentWidth()
@@ -314,17 +314,16 @@ fun FinancePage(
                                 shape = MaterialTheme.shapes.extraSmall,
                             )
                             .padding(8.dp),
-                        userScrollEnabled = false,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        state = listState,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        items(TransactionType.entries.toTypedArray()) { status ->
+                        TransactionType.entries.toTypedArray().forEach { status ->
                             FilterChip(
                                 onClick = {
                                     event.invoke(FinancePageEvent.FilterFinanceType(status))
                                 },
                                 label = {
-                                    Text(text = status.toString())
+                                    Text(text = status.displayName)
                                 },
                                 selected = financeState.value.financeTypeFilter.contains(status),
                                 colors = FilterChipDefaults.filterChipColors(
