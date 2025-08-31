@@ -1,5 +1,7 @@
 package com.hfad.palamarchuksuperapp.feature.bone.domain.models
 
+import androidx.annotation.StringRes
+import com.hfad.palamarchuksuperapp.feature.bone.R
 import java.util.Date
 import kotlin.random.Random
 
@@ -16,30 +18,32 @@ data class PaymentOrder(
     override val amountCurrency: AmountCurrency,
     val paymentPrice: AmountCurrency = AmountCurrency(
         currency = amountCurrency.currency,
-        amount = 100f
+        amount = 100f,
     ),
-    override val versionHash: String = ""
+    override val versionHash: String = "",
 ) : TypedTransaction {
     override val type: String = getType()
     val fullPrice: AmountCurrency get() = amountCurrency + amountCurrency * commission + paymentPrice
 }
 
-enum class PaymentStatus (
-    val displayName: String
+enum class PaymentStatus(
+    @StringRes val nameStringRes: Int,
 ) {
-    PAID ("Paid"), PENDING ("Pending"), OVERDUE ("Overdue")
+    PAID(R.string.payment_status_paid),
+    PENDING(R.string.payment_status_pending),
+    OVERDUE(R.string.payment_status_overdue)
 }
 
-internal fun generatePaymentOrderSample() : PaymentOrder {
+internal fun generatePaymentOrderSample(): PaymentOrder {
     val factories = listOf(
         "Guangzhou Metal Works", "Berlin Precision Manufacturing",
         "Shanghai Industrial Group", "Warsaw Production Facility",
-        "Tokyo Electronics Ltd", "Mumbai Steel Plant", "Detroit Auto Parts"
+        "Tokyo Electronics Ltd", "Mumbai Steel Plant", "Detroit Auto Parts",
     )
 
     val productTypes = listOf(
         "Металлопрокат", "Электроника", "Полупроводники",
-        "Автозапчасти", "Сталь", "Микрочипы", "Сырье"
+        "Автозапчасти", "Сталь", "Микрочипы", "Сырье",
     )
     val isPaid = Random.nextInt(10) > 3
     val isOverdue = !isPaid && Random.nextInt(10) > 5
@@ -62,14 +66,14 @@ internal fun generatePaymentOrderSample() : PaymentOrder {
         id = Random.nextInt(100, 200),
         amountCurrency = AmountCurrency(
             currency = Currency.entries.random(),
-            amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+            amount = Random.nextDouble(1000.0, 100000.0).toFloat(),
         ),
         factory = factories[Random.nextInt(factories.size)],
         productType = productTypes[Random.nextInt(productTypes.size)],
         paymentDate = paymentDate,
         dueDate = dueDate,
         status = status,
-        transactionType = TransactionType.DEBIT
+        transactionType = TransactionType.DEBIT,
     )
 }
 
@@ -78,12 +82,12 @@ internal fun generatePaymentOrderItems(): List<PaymentOrder> {
     val factories = listOf(
         "Guangzhou Metal Works", "Berlin Precision Manufacturing",
         "Shanghai Industrial Group", "Warsaw Production Facility",
-        "Tokyo Electronics Ltd", "Mumbai Steel Plant", "Detroit Auto Parts"
+        "Tokyo Electronics Ltd", "Mumbai Steel Plant", "Detroit Auto Parts",
     )
 
     val productTypes = listOf(
         "Металлопрокат", "Электроника", "Полупроводники",
-        "Автозапчасти", "Сталь", "Микрочипы", "Сырье"
+        "Автозапчасти", "Сталь", "Микрочипы", "Сырье",
     )
 
     return List(6) { index ->
@@ -109,14 +113,14 @@ internal fun generatePaymentOrderItems(): List<PaymentOrder> {
             id = Random.nextInt(2000, 4000),
             amountCurrency = AmountCurrency(
                 currency = Currency.entries.random(),
-                amount = Random.nextDouble(1000.0, 100000.0).toFloat()
+                amount = Random.nextDouble(1000.0, 100000.0).toFloat(),
             ),
             factory = factories[Random.nextInt(factories.size)],
             productType = productTypes[Random.nextInt(productTypes.size)],
             paymentDate = paymentDate,
             dueDate = dueDate,
             status = status,
-            transactionType = TransactionType.DEBIT
+            transactionType = TransactionType.DEBIT,
         )
     }
 }

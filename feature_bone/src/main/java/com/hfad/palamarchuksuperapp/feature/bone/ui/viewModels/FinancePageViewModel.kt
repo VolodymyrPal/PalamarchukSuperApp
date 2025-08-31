@@ -36,7 +36,7 @@ class FinancePageViewModel @Inject constructor(
 
     private val searchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private val financeType: MutableStateFlow<List<TransactionType>> = MutableStateFlow(
-        TransactionType.entries,
+        emptyList(),
     )
 
     private val startDate: MutableStateFlow<Long> = MutableStateFlow(0)
@@ -57,7 +57,7 @@ class FinancePageViewModel @Inject constructor(
                     it.addAll(generateExchangeOrderItems())
                 }.shuffled()
                 FinancePageState(
-                    salesItems = data.filter { transactionTypes.contains(it.transactionType) },
+                    salesItems = data.filteredStatusDate(transactionTypes),
                     financeTypeFilter = transactionTypes,
                     query = query,
                     financeStatistics = if (statistics is AppResult.Success) statistics.data else FinanceStatistics(),
@@ -74,6 +74,11 @@ class FinancePageViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000),
             FinancePageState(),
         )
+
+    private fun List<TypedTransaction>.filteredStatusDate(status: List<TransactionType>): List<TypedTransaction> {
+        val statusToReturn = status.ifEmpty { TransactionType.entries.toList() }
+        return this.filter { it.transactionType in statusToReturn }
+    }
 
     override fun event(event: FinancePageEvent) {
         when (event) {
