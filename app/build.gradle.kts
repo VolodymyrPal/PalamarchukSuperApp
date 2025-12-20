@@ -103,4 +103,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
     implementation("com.github.jeziellago:compose-markdown:0.5.7")
 
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+
+
 }

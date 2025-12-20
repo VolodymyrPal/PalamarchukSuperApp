@@ -87,13 +87,7 @@ class BoneFeature(
                 }
             }
         }
-        // Handle back stack changes, pop parent back stack TODO
-        val backStack = navController.currentBackStack.collectAsStateWithLifecycle()
-        LaunchedEffect(backStack.value) {
-            if (backStack.value.isEmpty()) {
-                parentNavController.popBackStack()
-            }
-        }
+
     }
 
     @OptIn(ExperimentalSharedTransitionApi::class)
