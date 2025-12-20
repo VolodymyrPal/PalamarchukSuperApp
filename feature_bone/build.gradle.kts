@@ -60,7 +60,7 @@ dependencies {
 
     // Database bundles
     implementation(libs.bundles.database)
-    annotationProcessor(libs.room.annotation)
+//    annotationProcessor(libs.room.annotation)
     ksp(libs.room.annotation)
 
     implementation("androidx.biometric:biometric-ktx:1.4.0-alpha02")
