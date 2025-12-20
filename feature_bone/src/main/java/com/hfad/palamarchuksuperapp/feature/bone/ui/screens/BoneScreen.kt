@@ -134,13 +134,9 @@ fun BoneScreen(
     val tabColorContent = colorScheme.onSurface
     val tabColorBackground = colorScheme.surface
 
-    BackHandler {
-        if (pagerState.currentPage != 0) {
-            coroutineScope.launch {
-                pagerState.animateScrollToPage(0)
-            }
-        } else {
-            navController?.popBackStack()
+    BackHandler(enabled = pagerState.currentPage != 0) {
+        coroutineScope.launch {
+            pagerState.animateScrollToPage(0)
         }
     }
     Scaffold(
